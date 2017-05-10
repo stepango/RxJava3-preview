@@ -13,15 +13,21 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableTakeLastOneTest {
 
@@ -63,7 +69,7 @@ public class ObservableTakeLastOneTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 unsubscribed.set(true);
             }
         };

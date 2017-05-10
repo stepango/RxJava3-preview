@@ -13,11 +13,16 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 
 public final class CompletablePeek extends Completable {
@@ -87,7 +92,7 @@ public final class CompletablePeek extends Completable {
             }
             try {
                 onError.accept(e);
-                onTerminate.run();
+                onTerminate.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);
@@ -105,8 +110,8 @@ public final class CompletablePeek extends Completable {
             }
 
             try {
-                onComplete.run();
-                onTerminate.run();
+                onComplete.invoke();
+                onTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
@@ -120,7 +125,7 @@ public final class CompletablePeek extends Completable {
 
         void doAfter() {
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);
@@ -130,7 +135,7 @@ public final class CompletablePeek extends Completable {
         @Override
         public void dispose() {
             try {
-                onDispose.run();
+                onDispose.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);

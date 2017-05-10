@@ -13,23 +13,39 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class FlowableWindowWithTimeTest {
@@ -191,7 +207,7 @@ public class FlowableWindowWithTimeTest {
         .take(10)
         .doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 System.out.println("Main done!");
             }
         })
@@ -201,7 +217,7 @@ public class FlowableWindowWithTimeTest {
                 return w.startWith(indicator)
                         .doOnComplete(new Action() {
                             @Override
-                            public void run() {
+                            public void invoke() {
                                 System.out.println("inner done: " + wip.incrementAndGet());
                             }
                         })
@@ -533,7 +549,7 @@ public class FlowableWindowWithTimeTest {
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 cancel1.set(true);
             }
         })

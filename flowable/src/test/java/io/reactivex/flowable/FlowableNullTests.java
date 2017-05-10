@@ -13,22 +13,49 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.fail;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-
-import org.junit.*;
-import org.reactivestreams.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.Notification;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.processors.*;
+import io.reactivex.flowable.processors.AsyncProcessor;
+import io.reactivex.flowable.processors.BehaviorProcessor;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.fail;
 
 /**
  * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions.
@@ -1210,7 +1237,8 @@ public class FlowableNullTests {
             public void accept(long v) { }
         }, new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         });
     }
 
@@ -1221,7 +1249,8 @@ public class FlowableNullTests {
             public void accept(Subscription s) { }
         }, null, new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         });
     }
 

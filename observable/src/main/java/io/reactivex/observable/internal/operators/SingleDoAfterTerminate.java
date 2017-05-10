@@ -13,11 +13,14 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 
 /**
  * Calls an action after pushing the current item or an error to the downstream.
@@ -88,7 +91,7 @@ public final class SingleDoAfterTerminate<T> extends Single<T> {
 
         private void onAfterTerminate() {
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);

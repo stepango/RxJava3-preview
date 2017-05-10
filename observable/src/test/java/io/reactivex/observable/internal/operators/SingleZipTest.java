@@ -13,15 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
 import io.reactivex.observable.Single;
+
+import static org.junit.Assert.assertEquals;
 
 public class SingleZipTest {
 
@@ -146,7 +155,7 @@ public class SingleZipTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 counter.getAndIncrement();
             }
         });
@@ -170,7 +179,7 @@ public class SingleZipTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 counter.getAndIncrement();
             }
         });

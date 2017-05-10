@@ -13,23 +13,48 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.common.internal.utils.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.internal.utils.ListAddBiConsumer;
+import io.reactivex.common.internal.utils.MergerBiFunction;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFlowable;
+import io.reactivex.flowable.ParallelTransformer;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ParallelFlowableTest {
 
@@ -806,7 +831,7 @@ public class ParallelFlowableTest {
         Flowable.range(1, 20).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 cancelled[0] = true;
             }
         })
@@ -991,7 +1016,7 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 count[0]++;
             }
         })
@@ -1010,7 +1035,7 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doAfterTerminated(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 count[0]++;
             }
         })
@@ -1067,7 +1092,7 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 count[0]++;
             }
         })

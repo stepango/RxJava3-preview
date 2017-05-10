@@ -13,13 +13,18 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableFinallyTest {
 
@@ -36,7 +41,7 @@ public class ObservableFinallyTest {
     private void checkActionCalled(Observable<String> input) {
         input.doAfterTerminate(aAction0).subscribe(observer);
         try {
-            verify(aAction0, times(1)).run();
+            verify(aAction0, times(1)).invoke();
         } catch (Throwable e) {
             throw ExceptionHelper.wrapOrThrow(e);
         }

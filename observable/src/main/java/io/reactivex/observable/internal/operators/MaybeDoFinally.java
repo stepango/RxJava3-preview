@@ -15,12 +15,14 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 
 /**
  * Execute an action after an onSuccess, onError, onComplete or a dispose event.
@@ -99,7 +101,7 @@ public final class MaybeDoFinally<T> extends AbstractMaybeWithUpstream<T, T> {
         void runFinally() {
             if (compareAndSet(0, 1)) {
                 try {
-                    onFinally.run();
+                    onFinally.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

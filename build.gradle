@@ -27,7 +27,6 @@ repositories {
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: 'org.jetbrains.kotlin.jvm'
 
     sourceCompatibility = JavaVersion.VERSION_1_6
     targetCompatibility = JavaVersion.VERSION_1_6
@@ -46,6 +45,7 @@ subprojects {
     apply plugin: 'ru.vyarus.animalsniffer'
     apply plugin: "me.champeau.gradle.jmh"
     apply plugin: "com.github.hierynomus.license"
+    apply plugin: 'org.jetbrains.kotlin.jvm'
 
     group = 'com.github.akarnokd'
 
@@ -64,6 +64,7 @@ subprojects {
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jre7"
+
         testCompile 'junit:junit:4.12'
         testCompile 'org.mockito:mockito-core:2.1.0'
         testCompile group: 'org.testng', name: 'testng', version: '6.10'

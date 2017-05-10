@@ -13,15 +13,20 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 /**
  * Execute a Consumer in each 'rail' for the current element passing through.
@@ -114,7 +119,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
         @Override
         public void cancel() {
             try {
-                parent.onCancel.run();
+                parent.onCancel.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);
@@ -180,7 +185,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
             actual.onError(t);
 
             try {
-                parent.onAfterTerminated.run();
+                parent.onAfterTerminated.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);
@@ -192,7 +197,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
             if (!done) {
                 done = true;
                 try {
-                    parent.onComplete.run();
+                    parent.onComplete.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     actual.onError(ex);
@@ -201,7 +206,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 actual.onComplete();
 
                 try {
-                    parent.onAfterTerminated.run();
+                    parent.onAfterTerminated.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

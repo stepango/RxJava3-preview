@@ -15,10 +15,13 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
 
 /**
  * Executes an Action and signals its exception or completes normally.
@@ -41,7 +44,7 @@ public final class MaybeFromAction<T> extends Maybe<T> implements Callable<T> {
         if (!d.isDisposed()) {
 
             try {
-                action.run();
+                action.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 if (!d.isDisposed()) {
@@ -60,7 +63,7 @@ public final class MaybeFromAction<T> extends Maybe<T> implements Callable<T> {
 
     @Override
     public T call() throws Exception {
-        action.run();
+        action.invoke();
         return null; // considered as onComplete()
     }
 }

@@ -13,20 +13,34 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Action;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableUnsubscribeOnTest {
 
@@ -202,7 +216,7 @@ public class ObservableUnsubscribeOnTest {
         Observable.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         })
@@ -220,7 +234,7 @@ public class ObservableUnsubscribeOnTest {
         Observable.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         })

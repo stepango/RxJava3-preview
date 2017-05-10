@@ -13,24 +13,43 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ConnectableObservable;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.HasUpstreamObservableSource;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObservablePublishTest {
 
@@ -93,7 +112,7 @@ public class ObservablePublishTest {
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
             }
         });
@@ -116,7 +135,7 @@ public class ObservablePublishTest {
         }).doOnComplete(new Action() {
 
             @Override
-            public void run() {
+            public void invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed SLOW");
             }
 
@@ -196,7 +215,7 @@ public class ObservablePublishTest {
                 })
                 .doOnDispose(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         sourceUnsubscribed.set(true);
                     }
                 }).share();
@@ -213,7 +232,7 @@ public class ObservablePublishTest {
                 if (valueCount() == 2) {
                     source.doOnDispose(new Action() {
                         @Override
-                        public void run() {
+                        public void invoke() {
                             child2Unsubscribed.set(true);
                         }
                     }).take(5).subscribe(ts2);
@@ -224,7 +243,7 @@ public class ObservablePublishTest {
 
         source.doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 child1Unsubscribed.set(true);
             }
         }).take(5)

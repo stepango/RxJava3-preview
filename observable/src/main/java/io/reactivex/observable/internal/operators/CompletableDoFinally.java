@@ -15,12 +15,15 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
 
 /**
  * Execute an action after an onError, onComplete or a dispose event.
@@ -94,7 +97,7 @@ public final class CompletableDoFinally extends Completable {
         void runFinally() {
             if (compareAndSet(0, 1)) {
                 try {
-                    onFinally.run();
+                    onFinally.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

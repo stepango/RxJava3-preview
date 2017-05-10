@@ -13,30 +13,61 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
-import io.reactivex.flowable.internal.operators.FlowableReplay.*;
+import io.reactivex.flowable.internal.operators.FlowableReplay.BoundedReplayBuffer;
+import io.reactivex.flowable.internal.operators.FlowableReplay.Node;
+import io.reactivex.flowable.internal.operators.FlowableReplay.SizeAndTimeBoundReplayBuffer;
+import io.reactivex.flowable.internal.operators.FlowableReplay.SizeBoundReplayBuffer;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class FlowableReplayTest {
     @Test
@@ -495,7 +526,7 @@ public class FlowableReplayTest {
             },
             new Action() {
                 @Override
-                public void run() {
+                public void invoke() {
                     System.out.println("Done");
                 }
             });
@@ -538,11 +569,11 @@ public class FlowableReplayTest {
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
         verify(sourceNext, times(1)).accept(2);
-        verify(sourceCompleted, times(1)).run();
+        verify(sourceCompleted, times(1)).invoke();
         verifyObserverMock(spiedSubscriberBeforeConnect, 2, 4);
         verifyObserverMock(spiedSubscriberAfterConnect, 2, 4);
 
-        verify(sourceUnsubscribed, never()).run();
+        verify(sourceUnsubscribed, never()).invoke();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -592,7 +623,7 @@ public class FlowableReplayTest {
         verify(sourceNext, times(1)).accept(1);
         verify(sourceNext, times(1)).accept(2);
         verify(sourceNext, times(1)).accept(3);
-        verify(sourceCompleted, times(1)).run();
+        verify(sourceCompleted, times(1)).invoke();
         verify(mockScheduler, times(1)).createWorker();
         verify(spiedWorker, times(1)).schedule((Runnable)notNull());
         verifyObserverMock(mockObserverBeforeConnect, 2, 6);
@@ -602,7 +633,7 @@ public class FlowableReplayTest {
 //        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish calls cancel too
         verify(spiedWorker, times(1)).dispose();
-        verify(sourceUnsubscribed, never()).run();
+        verify(sourceUnsubscribed, never()).invoke();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -668,7 +699,7 @@ public class FlowableReplayTest {
 //        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish also calls cancel
         verify(spiedWorker, times(1)).dispose();
-        verify(sourceUnsubscribed, never()).run();
+        verify(sourceUnsubscribed, never()).invoke();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -957,7 +988,7 @@ public class FlowableReplayTest {
         o.subscribe();
         o.subscribe();
         o.subscribe();
-        verify(unsubscribe, times(1)).run();
+        verify(unsubscribe, times(1)).invoke();
     }
 
     @Test

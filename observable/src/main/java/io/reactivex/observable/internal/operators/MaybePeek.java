@@ -13,11 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 
 /**
@@ -71,7 +75,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void dispose() {
             try {
-                parent.onDisposeCall.run();
+                parent.onDisposeCall.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);
@@ -156,7 +160,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
             }
 
             try {
-                parent.onCompleteCall.run();
+                parent.onCompleteCall.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onErrorInner(ex);
@@ -171,7 +175,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
         void onAfterTerminate() {
             try {
-                parent.onAfterTerminate.run();
+                parent.onAfterTerminate.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);

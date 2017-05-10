@@ -13,12 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.internal.observers.BasicIntQueueDisposable;
 
@@ -139,7 +142,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
         void runFinally() {
             if (compareAndSet(0, 1)) {
                 try {
-                    onFinally.run();
+                    onFinally.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

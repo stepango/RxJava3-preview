@@ -15,17 +15,17 @@
  */
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.junit.Assert.assertFalse;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.Test;
 
 import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.observers.TestObserver;
+
+import static io.reactivex.interop.RxJava3Interop.ignoreElements;
+import static org.junit.Assert.assertFalse;
 
 public class FlowableToCompletableTest {
 
@@ -89,7 +89,7 @@ public class FlowableToCompletableTest {
         Completable cmp = ignoreElements(Flowable.just("Hello World!").doOnCancel(new Action() {
 
             @Override
-            public void run() {
+            public void invoke() {
                 unsubscribed.set(true);
             }}));
 

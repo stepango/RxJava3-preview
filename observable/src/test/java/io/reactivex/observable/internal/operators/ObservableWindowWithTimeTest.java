@@ -13,23 +13,36 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.Subject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 public class ObservableWindowWithTimeTest {
@@ -191,7 +204,7 @@ public class ObservableWindowWithTimeTest {
         .take(10)
         .doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 System.out.println("Main done!");
             }
         })
@@ -201,7 +214,7 @@ public class ObservableWindowWithTimeTest {
                 return w.startWith(indicator)
                         .doOnComplete(new Action() {
                             @Override
-                            public void run() {
+                            public void invoke() {
                                 System.out.println("inner done: " + wip.incrementAndGet());
                             }
                         })

@@ -13,16 +13,21 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.functions.Action;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.BackpressureOverflowStrategy;
+import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 
@@ -132,7 +137,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             if (callOnOverflow) {
                 if (onOverflow != null) {
                     try {
-                        onOverflow.run();
+                        onOverflow.invoke();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         s.cancel();

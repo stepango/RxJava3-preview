@@ -13,16 +13,21 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.*;
-
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableDoOnRequestTest {
 
@@ -33,7 +38,7 @@ public class FlowableDoOnRequestTest {
         //
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         unsubscribed.set(true);
                     }
                 })

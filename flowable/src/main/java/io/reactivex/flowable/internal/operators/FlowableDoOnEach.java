@@ -18,10 +18,13 @@ import org.reactivestreams.Subscriber;
 import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscribers.*;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableConditionalSubscriber;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
 
 public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
@@ -111,7 +114,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             }
 
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);
@@ -124,7 +127,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return;
             }
             try {
-                onComplete.run();
+                onComplete.invoke();
             } catch (Throwable e) {
                 fail(e);
                 return;
@@ -134,7 +137,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             actual.onComplete();
 
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);
@@ -155,13 +158,13 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 try {
                     onNext.accept(v);
                 } finally {
-                    onAfterTerminate.run();
+                    onAfterTerminate.invoke();
                 }
             } else {
                 if (sourceMode == SYNC) {
-                    onComplete.run();
+                    onComplete.invoke();
 
-                    onAfterTerminate.run();
+                    onAfterTerminate.invoke();
                 }
             }
             return v;
@@ -244,7 +247,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             }
 
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);
@@ -257,7 +260,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return;
             }
             try {
-                onComplete.run();
+                onComplete.invoke();
             } catch (Throwable e) {
                 fail(e);
                 return;
@@ -267,7 +270,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             actual.onComplete();
 
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);
@@ -288,13 +291,13 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 try {
                     onNext.accept(v);
                 } finally {
-                    onAfterTerminate.run();
+                    onAfterTerminate.invoke();
                 }
             } else {
                 if (sourceMode == SYNC) {
-                    onComplete.run();
+                    onComplete.invoke();
 
-                    onAfterTerminate.run();
+                    onAfterTerminate.invoke();
                 }
             }
             return v;

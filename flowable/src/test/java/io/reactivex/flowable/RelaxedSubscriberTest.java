@@ -13,24 +13,45 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-import org.reactivestreams.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.subscribers.ForEachWhileSubscriber;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.ResourceSubscriber;
+import io.reactivex.flowable.subscribers.SafeSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RelaxedSubscriberTest {
 
@@ -617,7 +638,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 ts.onComplete();
             }
         });
@@ -647,7 +668,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 ts.onComplete();
             }
         });
@@ -675,7 +696,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
 
             }
         });
@@ -709,7 +730,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new TestException("Inner");
             }
         });

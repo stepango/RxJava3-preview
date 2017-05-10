@@ -13,19 +13,30 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SingleDoOnTest {
 
@@ -35,7 +46,7 @@ public class SingleDoOnTest {
 
         Single.never().doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 count[0]++;
             }
         }).test(true);
@@ -224,7 +235,7 @@ public class SingleDoOnTest {
         final int[] calls = { 0 };
         TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         }));
@@ -239,7 +250,7 @@ public class SingleDoOnTest {
         Single.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         })
@@ -256,7 +267,7 @@ public class SingleDoOnTest {
         Single.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         })
@@ -284,7 +295,7 @@ public class SingleDoOnTest {
 
             ps.singleOrError().doOnDispose(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })

@@ -15,9 +15,12 @@ package io.reactivex.observable.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.OnErrorNotImplementedException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.CompletableObserver;
 
@@ -48,7 +51,7 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
     @Override
     public void onComplete() {
         try {
-            onComplete.run();
+            onComplete.invoke();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(ex);

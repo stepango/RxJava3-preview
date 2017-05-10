@@ -13,24 +13,39 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableDoOnEachTest {
 
@@ -266,7 +281,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -293,7 +308,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -317,7 +332,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new IOException();
             }
         })
@@ -370,7 +385,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -390,7 +405,7 @@ public class ObservableDoOnEachTest {
         Observable.just(1)
         .doAfterTerminate(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -414,7 +429,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -439,7 +454,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new IOException();
             }
         })
@@ -483,7 +498,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -513,7 +528,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -542,7 +557,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -573,7 +588,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -605,7 +620,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -639,7 +654,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -674,7 +689,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })

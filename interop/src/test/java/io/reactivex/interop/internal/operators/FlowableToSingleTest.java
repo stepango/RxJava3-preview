@@ -13,16 +13,17 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.single;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.*;
 
 import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.observers.TestObserver;
+
+import static io.reactivex.interop.RxJava3Interop.single;
 
 public class FlowableToSingleTest {
 
@@ -79,7 +80,7 @@ public class FlowableToSingleTest {
         Single<String> single = single(Flowable.just("Hello World!").doOnCancel(new Action() {
 
             @Override
-            public void run() {
+            public void invoke() {
                 unsubscribed.set(true);
             }}), "");
         single.subscribe(subscriber);

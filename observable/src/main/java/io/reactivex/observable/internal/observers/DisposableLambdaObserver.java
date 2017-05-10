@@ -13,9 +13,11 @@
 
 package io.reactivex.observable.internal.observers;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
@@ -78,7 +80,7 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
     @Override
     public void dispose() {
         try {
-            onDispose.run();
+            onDispose.invoke();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             RxJavaCommonPlugins.onError(e);

@@ -13,19 +13,28 @@
 
 package io.reactivex.flowable.internal.subscribers;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class LambdaSubscriberTest {
 
@@ -46,7 +55,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -83,7 +92,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -123,7 +132,7 @@ public class LambdaSubscriberTest {
                 }
             }, new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     received.add(100);
                 }
             }, new Consumer<Subscription>() {
@@ -170,7 +179,7 @@ public class LambdaSubscriberTest {
                 }
             }, new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             }, new Consumer<Subscription>() {
@@ -227,7 +236,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -272,7 +281,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -333,7 +342,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
             }
         }, new Consumer<Subscription>() {
             @Override

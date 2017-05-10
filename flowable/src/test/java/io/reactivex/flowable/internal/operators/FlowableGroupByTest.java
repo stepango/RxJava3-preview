@@ -13,27 +13,52 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.*;
+import io.reactivex.common.Notification;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.GroupedFlowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class FlowableGroupByTest {
 
@@ -638,7 +663,7 @@ public class FlowableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void run() {
+                                public void invoke() {
                                     first.countDown();
                                 }
 
@@ -717,7 +742,7 @@ public class FlowableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void run() {
+                                public void invoke() {
                                     first.countDown();
                                 }
 
@@ -809,7 +834,7 @@ public class FlowableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void run() {
+                                public void invoke() {
                                     first.countDown();
                                 }
 
@@ -1256,7 +1281,7 @@ public class FlowableGroupByTest {
                 return g.doOnComplete(new Action() {
 
                     @Override
-                    public void run() {
+                    public void invoke() {
                         System.out.println("//////////////////// COMPLETED-A");
                     }
 
@@ -1282,7 +1307,7 @@ public class FlowableGroupByTest {
                 }).doOnComplete(new Action() {
 
                     @Override
-                    public void run() {
+                    public void invoke() {
                         System.out.println("//////////////////// COMPLETED-B");
                     }
 

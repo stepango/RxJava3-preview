@@ -13,17 +13,26 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeUnsubscribeOnTest {
 
@@ -37,7 +46,7 @@ public class MaybeUnsubscribeOnTest {
 
         pp.doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 name[0] = Thread.currentThread().getName();
                 cdl.countDown();
             }

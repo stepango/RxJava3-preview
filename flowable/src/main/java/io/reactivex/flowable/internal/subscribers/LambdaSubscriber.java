@@ -13,14 +13,17 @@
 
 package io.reactivex.flowable.internal.subscribers;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription> implements RelaxedSubscriber<T>, Subscription, Disposable {
@@ -87,7 +90,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
         if (get() != SubscriptionHelper.CANCELLED) {
             lazySet(SubscriptionHelper.CANCELLED);
             try {
-                onComplete.run();
+                onComplete.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);

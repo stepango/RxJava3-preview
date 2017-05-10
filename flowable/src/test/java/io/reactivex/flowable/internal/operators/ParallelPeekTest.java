@@ -13,19 +13,23 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
-import org.reactivestreams.Subscription;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ParallelPeekTest {
 
@@ -105,7 +109,7 @@ public class ParallelPeekTest {
             .parallel()
             .doOnCancel(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })
@@ -129,7 +133,7 @@ public class ParallelPeekTest {
         .parallel()
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new TestException();
             }
         })
@@ -147,7 +151,7 @@ public class ParallelPeekTest {
             .parallel()
             .doAfterTerminated(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })
@@ -174,7 +178,7 @@ public class ParallelPeekTest {
             .parallel()
             .doAfterTerminated(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })

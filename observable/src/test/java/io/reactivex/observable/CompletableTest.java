@@ -13,25 +13,60 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.CompletableSubject;
+import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test Completable methods and operators.
@@ -559,7 +594,7 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -573,7 +608,9 @@ public class CompletableTest {
     public void fromActionThrows() {
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void run() { throw new TestException(); }
+            public void invoke() {
+                throw new TestException();
+            }
         });
 
         c.blockingAwait();
@@ -1576,7 +1613,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -1592,7 +1629,7 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -1616,7 +1653,9 @@ public class CompletableTest {
     public void doOnCompleteThrows() {
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void run() { throw new TestException(); }
+            public void invoke() {
+                throw new TestException();
+            }
         });
 
         c.blockingAwait();
@@ -1628,7 +1667,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -1644,7 +1683,7 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -1664,7 +1703,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -1698,7 +1737,9 @@ public class CompletableTest {
     public void doOnDisposeThrows() {
         Completable c = normal.completable.doOnDispose(new Action() {
             @Override
-            public void run() { throw new TestException(); }
+            public void invoke() {
+                throw new TestException();
+            }
         });
 
         c.subscribe(new CompletableObserver() {
@@ -1817,7 +1858,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnTerminate(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -1833,7 +1874,7 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnTerminate(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -2248,7 +2289,7 @@ public class CompletableTest {
         final AtomicInteger calls = new AtomicInteger(5);
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
@@ -2283,7 +2324,7 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
@@ -2321,7 +2362,7 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
@@ -2342,7 +2383,7 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
@@ -2366,7 +2407,7 @@ public class CompletableTest {
                 .delay(100, TimeUnit.MILLISECONDS)
                 .doOnComplete(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         complete.set(true);
                     }
                 });
@@ -2390,7 +2431,7 @@ public class CompletableTest {
                 .delay(200, TimeUnit.MILLISECONDS)
                 .doOnComplete(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         complete.set(true);
                     }
                 });
@@ -2412,7 +2453,7 @@ public class CompletableTest {
         final AtomicBoolean complete = new AtomicBoolean();
         normal.completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 complete.set(true);
             }
         }, new Consumer<Throwable>() {
@@ -2432,7 +2473,7 @@ public class CompletableTest {
         final AtomicBoolean complete = new AtomicBoolean();
         error.completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 complete.set(true);
             }
         }, new Consumer<Throwable>() {
@@ -2450,7 +2491,8 @@ public class CompletableTest {
     public void subscribeTwoCallbacksFirstNull() {
         normal.completable.subscribe(new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         }, null);
     }
 
@@ -2458,7 +2500,8 @@ public class CompletableTest {
     public void subscribeTwoCallbacksSecondNull() {
         normal.completable.subscribe(new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         }, null);
     }
 
@@ -2469,7 +2512,9 @@ public class CompletableTest {
             final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
             normal.completable.subscribe(new Action() {
                 @Override
-                public void run() { throw new TestException(); }
+                public void invoke() {
+                    throw new TestException();
+                }
             }, new Consumer<Throwable>() {
                 @Override
                 public void accept(Throwable e) {
@@ -2488,7 +2533,8 @@ public class CompletableTest {
     public void subscribeTwoCallbacksOnErrorThrows() {
         error.completable.subscribe(new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) { throw new TestException(); }
@@ -2523,7 +2569,7 @@ public class CompletableTest {
 
         normal.completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 run.set(true);
             }
         });
@@ -2537,7 +2583,7 @@ public class CompletableTest {
 
         error.completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 run.set(true);
             }
         });
@@ -2748,7 +2794,7 @@ public class CompletableTest {
         normal.completable.delay(1, TimeUnit.SECONDS)
         .doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 name.set(Thread.currentThread().getName());
                 cdl.countDown();
             }
@@ -2818,7 +2864,7 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 complete.set(true);
             }
         });
@@ -2872,7 +2918,7 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 complete.set(true);
             }
         });
@@ -3023,7 +3069,7 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 complete.set(true);
             }
         });
@@ -3077,7 +3123,7 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 complete.set(true);
             }
         });
@@ -3215,7 +3261,7 @@ public class CompletableTest {
         CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(handler);
         try {
-            action.run();
+            action.invoke();
             assertEquals("Should have received exactly 1 exception", 1, handler.count);
             Throwable caught = handler.caught;
             while (caught != null) {
@@ -3236,10 +3282,10 @@ public class CompletableTest {
     public void subscribeOneActionThrowFromOnCompleted() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 normal.completable.subscribe(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         throw new TestException();
                     }
                 });
@@ -3251,11 +3297,11 @@ public class CompletableTest {
     public void subscribeTwoActionsThrowFromOnError() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 error.completable.subscribe(
                 new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                     }
                 },
                 new Consumer<Throwable>() {
@@ -3272,7 +3318,7 @@ public class CompletableTest {
     public void propagateExceptionSubscribeOneAction() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 error.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) {
@@ -3339,7 +3385,7 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
 
             }
         });
@@ -3357,7 +3403,7 @@ public class CompletableTest {
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 if (subscriptionRef.get().isDisposed()) {
                     subscriptionRef.set(null);
                 }
@@ -3378,7 +3424,7 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
             }
         });
 
@@ -3394,7 +3440,7 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
 
             }
         }, new Consumer<Throwable>() {
@@ -3416,7 +3462,8 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) { }
@@ -3531,7 +3578,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -3547,7 +3594,7 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 calls.getAndIncrement();
             }
         });
@@ -3571,7 +3618,9 @@ public class CompletableTest {
     public void doOnCompletedThrows() {
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void run() { throw new TestException(); }
+            public void invoke() {
+                throw new TestException();
+            }
         });
 
         c.blockingAwait();
@@ -3584,7 +3633,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doAfterTerminate(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 doneAfter.set(complete.get());
             }
         });
@@ -3618,7 +3667,7 @@ public class CompletableTest {
 
         Completable c = error.completable.doAfterTerminate(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 doneAfter.set(true);
             }
         });
@@ -3641,7 +3690,8 @@ public class CompletableTest {
     @Test
     public void subscribeEmptyOnError() {
         expectUncaughtTestException(new Action() {
-            @Override public void run() {
+            @Override
+            public void invoke() {
                 error.completable.subscribe();
             }
         });
@@ -3651,10 +3701,10 @@ public class CompletableTest {
     public void subscribeOneActionOnError() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 error.completable.subscribe(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                     }
                 });
             }
@@ -3665,7 +3715,7 @@ public class CompletableTest {
     public void propagateExceptionSubscribeEmpty() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 error.completable.toSingleDefault(0).subscribe();
             }
         });
@@ -3974,7 +4024,7 @@ public class CompletableTest {
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 if (subscriptionRef.get().isDisposed()) {
                     subscriptionRef.set(null);
                 }
@@ -4089,7 +4139,7 @@ public class CompletableTest {
     public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 normal.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) {

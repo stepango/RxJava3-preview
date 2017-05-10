@@ -13,17 +13,22 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.exceptions.*;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.queues.*;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.queues.SimplePlainQueue;
+import io.reactivex.flowable.internal.queues.SpscArrayQueue;
+import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 
 public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -98,7 +103,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 s.cancel();
                 MissingBackpressureException ex = new MissingBackpressureException("Buffer is full");
                 try {
-                    onOverflow.run();
+                    onOverflow.invoke();
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     ex.initCause(e);

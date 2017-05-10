@@ -13,14 +13,14 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
 import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
+
+import static org.junit.Assert.assertEquals;
 
 public class CompletableFromActionTest {
     @Test(expected = NullPointerException.class)
@@ -34,7 +34,7 @@ public class CompletableFromActionTest {
 
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicInteger.incrementAndGet();
             }
         })
@@ -50,7 +50,7 @@ public class CompletableFromActionTest {
 
         Action run = new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicInteger.incrementAndGet();
             }
         };
@@ -74,7 +74,7 @@ public class CompletableFromActionTest {
 
         Completable completable = Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicInteger.incrementAndGet();
             }
         });
@@ -92,7 +92,7 @@ public class CompletableFromActionTest {
     public void fromActionThrows() {
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new UnsupportedOperationException();
             }
         })

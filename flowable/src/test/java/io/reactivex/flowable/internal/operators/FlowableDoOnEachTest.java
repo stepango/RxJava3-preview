@@ -13,26 +13,40 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.UnicastProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableDoOnEachTest {
 
@@ -268,7 +282,7 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -295,7 +309,7 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -319,7 +333,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new IOException();
             }
         })
@@ -404,7 +418,7 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -424,7 +438,7 @@ public class FlowableDoOnEachTest {
         Flowable.just(1)
         .doAfterTerminate(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -448,7 +462,7 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             })
@@ -473,7 +487,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new IOException();
             }
         })
@@ -516,7 +530,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -545,7 +559,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -573,7 +587,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -603,7 +617,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -634,7 +648,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -667,7 +681,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })
@@ -701,7 +715,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[1]++;
             }
         })

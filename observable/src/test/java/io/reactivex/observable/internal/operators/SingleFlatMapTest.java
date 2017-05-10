@@ -13,13 +13,19 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SingleFlatMapTest {
 
@@ -33,7 +39,7 @@ public class SingleFlatMapTest {
             public Completable apply(Integer t) throws Exception {
                 return Completable.complete().doOnComplete(new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         b[0] = true;
                     }
                 });
@@ -55,7 +61,7 @@ public class SingleFlatMapTest {
             public Completable apply(Integer t) throws Exception {
                 return Completable.complete().doOnComplete(new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         b[0] = true;
                     }
                 });

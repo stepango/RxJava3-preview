@@ -13,10 +13,12 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
 
 public final class CompletableFromAction extends Completable {
 
@@ -31,7 +33,7 @@ public final class CompletableFromAction extends Completable {
         Disposable d = Disposables.empty();
         s.onSubscribe(d);
         try {
-            run.run();
+            run.invoke();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {

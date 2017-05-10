@@ -18,7 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 
 /**
  * Delay the emission of the main signal until the other signals an item or completes.
@@ -136,6 +139,7 @@ public final class MaybeDelayOtherObservable<T, U> extends AbstractMaybeWithUpst
             if (e == null) {
                 actual.onError(t);
             } else {
+
                 actual.onError(new CompositeException(e, t));
             }
         }

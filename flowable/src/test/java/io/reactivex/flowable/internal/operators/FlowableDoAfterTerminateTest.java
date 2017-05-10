@@ -15,17 +15,22 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableDoAfterTerminateTest {
 
@@ -41,7 +46,7 @@ public class FlowableDoAfterTerminateTest {
     private void checkActionCalled(Flowable<String> input) {
         input.doAfterTerminate(aAction0).subscribe(observer);
         try {
-            verify(aAction0, times(1)).run();
+            verify(aAction0, times(1)).invoke();
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -83,7 +88,7 @@ public class FlowableDoAfterTerminateTest {
     @Test
     public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Exception {
         Action finallyAction = Mockito.mock(Action.class);
-        doThrow(new IllegalStateException()).when(finallyAction).run();
+        doThrow(new IllegalStateException()).when(finallyAction).invoke();
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
@@ -94,7 +99,7 @@ public class FlowableDoAfterTerminateTest {
 
         testSubscriber.assertValue("value");
 
-        verify(finallyAction).run();
+        verify(finallyAction).invoke();
         // Actual result:
         // Not only IllegalStateException was swallowed
         // But finallyAction was called twice!

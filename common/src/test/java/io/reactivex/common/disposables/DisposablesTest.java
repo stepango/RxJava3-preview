@@ -13,18 +13,27 @@
 
 package io.reactivex.common.disposables;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class DisposablesTest {
 
@@ -63,7 +72,7 @@ public class DisposablesTest {
             private static final long serialVersionUID = -1517510584253657229L;
 
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 set(true);
             }
         }
@@ -80,7 +89,7 @@ public class DisposablesTest {
         try {
             Disposables.fromAction(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IllegalArgumentException();
                 }
             }).dispose();
@@ -92,7 +101,7 @@ public class DisposablesTest {
         try {
             Disposables.fromAction(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new InternalError();
                 }
             }).dispose();
@@ -104,7 +113,7 @@ public class DisposablesTest {
         try {
             Disposables.fromAction(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new IOException();
                 }
             }).dispose();

@@ -13,17 +13,22 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.Action;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertTrue;
 
 public class CompletableTimerTest {
 
@@ -41,7 +46,7 @@ public class CompletableTimerTest {
                 TestObserver<Void> ts = Completable.timer(1, TimeUnit.MILLISECONDS, s)
                 .doOnComplete(new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         try {
                         Thread.sleep(3000);
                         } catch (InterruptedException ex) {

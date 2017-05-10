@@ -13,15 +13,15 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Test;
-
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.Action;
+
+import static org.junit.Assert.assertEquals;
 
 public class CompletableTimerTest {
     @Test
@@ -31,7 +31,7 @@ public class CompletableTimerTest {
         final AtomicLong atomicLong = new AtomicLong();
         Completable.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicLong.incrementAndGet();
             }
         });

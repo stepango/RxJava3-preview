@@ -13,26 +13,43 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.lang.management.ManagementFactory;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ConnectableObservable;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ObservableRefCountTest {
 
@@ -173,7 +190,7 @@ public class ObservableRefCountTest {
                 })
                 .doOnDispose(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeCount.incrementAndGet();
@@ -218,7 +235,7 @@ public class ObservableRefCountTest {
                 })
                 .doOnDispose(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeLatch.countDown();
@@ -256,7 +273,7 @@ public class ObservableRefCountTest {
         Observable<Long> o = synchronousInterval()
                 .doOnDispose(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             subUnsubCount.decrementAndGet();

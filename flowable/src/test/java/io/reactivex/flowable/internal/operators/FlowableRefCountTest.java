@@ -13,27 +13,45 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.lang.management.ManagementFactory;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class FlowableRefCountTest {
 
@@ -174,7 +192,7 @@ public class FlowableRefCountTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeCount.incrementAndGet();
@@ -219,7 +237,7 @@ public class FlowableRefCountTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeLatch.countDown();
@@ -257,7 +275,7 @@ public class FlowableRefCountTest {
         Flowable<Long> o = synchronousInterval()
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             subUnsubCount.decrementAndGet();

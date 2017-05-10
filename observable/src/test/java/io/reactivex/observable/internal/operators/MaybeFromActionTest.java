@@ -13,18 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeFromActionTest {
     @Test(expected = NullPointerException.class)
@@ -38,7 +44,7 @@ public class MaybeFromActionTest {
 
         Maybe.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicInteger.incrementAndGet();
             }
         })
@@ -54,7 +60,7 @@ public class MaybeFromActionTest {
 
         Action run = new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicInteger.incrementAndGet();
             }
         };
@@ -78,7 +84,7 @@ public class MaybeFromActionTest {
 
         Maybe<Object> maybe = Maybe.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 atomicInteger.incrementAndGet();
             }
         });
@@ -96,7 +102,7 @@ public class MaybeFromActionTest {
     public void fromActionThrows() {
         Maybe.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new UnsupportedOperationException();
             }
         })
@@ -111,7 +117,7 @@ public class MaybeFromActionTest {
 
         Maybe<Void> m = Maybe.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 counter[0]++;
             }
         });
@@ -132,7 +138,7 @@ public class MaybeFromActionTest {
 
             TestObserver<Object> to = Maybe.fromAction(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     cdl1.countDown();
                     cdl2.await();
                 }

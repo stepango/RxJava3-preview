@@ -716,7 +716,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new IllegalArgumentException();
             }
         }));
@@ -741,7 +741,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new AssertionError();
             }
         }));
@@ -766,7 +766,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new IOException();
             }
         }));

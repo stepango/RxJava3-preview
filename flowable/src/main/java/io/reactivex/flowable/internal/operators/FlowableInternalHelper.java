@@ -12,15 +12,24 @@
  */
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -119,7 +128,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void run() throws Exception {
+        public void invoke() throws Exception {
             subscriber.onComplete();
         }
     }

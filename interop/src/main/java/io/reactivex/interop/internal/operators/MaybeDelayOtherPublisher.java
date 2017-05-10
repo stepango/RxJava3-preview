@@ -13,16 +13,18 @@
 
 package io.reactivex.interop.internal.operators;
 
-import java.util.concurrent.atomic.AtomicReference;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.internal.operators.AbstractMaybeWithUpstream;
 
 /**

@@ -13,15 +13,21 @@
 
 package io.reactivex.interop.schedulers;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Single;
 
 public class FailOnBlockingTest {
 
@@ -581,7 +587,7 @@ public class FailOnBlockingTest {
             .subscribeOn(Schedulers.single())
             .doOnComplete(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingGet();
                 }
             })
@@ -604,7 +610,7 @@ public class FailOnBlockingTest {
             .subscribeOn(Schedulers.single())
             .doOnComplete(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();
                 }
             })

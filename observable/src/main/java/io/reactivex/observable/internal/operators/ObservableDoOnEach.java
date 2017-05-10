@@ -13,11 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 
 public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
@@ -118,7 +122,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             actual.onError(t);
 
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);
@@ -131,7 +135,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 return;
             }
             try {
-                onComplete.run();
+                onComplete.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);
@@ -142,7 +146,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             actual.onComplete();
 
             try {
-                onAfterTerminate.run();
+                onAfterTerminate.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);

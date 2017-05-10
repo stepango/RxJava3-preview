@@ -13,12 +13,26 @@
 package io.reactivex.observable.internal.operators;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.Notification;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import io.reactivex.observable.ConnectableObservable;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
+import io.reactivex.observable.SingleSource;
 
 /**
  * Helper utility class to support Observable with inner classes.
@@ -117,7 +131,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void run() throws Exception {
+        public void invoke() throws Exception {
             observer.onComplete();
         }
     }

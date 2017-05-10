@@ -13,22 +13,33 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Action;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableUnsubscribeOnTest {
 
@@ -214,7 +225,7 @@ public class FlowableUnsubscribeOnTest {
         Flowable.just(1)
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         })
@@ -232,7 +243,7 @@ public class FlowableUnsubscribeOnTest {
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 calls[0]++;
             }
         })

@@ -13,23 +13,38 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.Callable;
-
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ObservableUsingTest {
 
@@ -389,7 +404,7 @@ public class ObservableUsingTest {
     private static Action createUnsubAction(final List<String> events) {
         return new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 events.add("unsub");
             }
         };
@@ -427,7 +442,7 @@ public class ObservableUsingTest {
     private static Action createOnCompletedAction(final List<String> events) {
         return new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 events.add("completed");
             }
         };

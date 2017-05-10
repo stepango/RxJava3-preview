@@ -13,28 +13,39 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableDoFinallyTest implements Action {
 
     int calls;
 
     @Override
-    public void run() throws Exception {
+    public void invoke() throws Exception {
         calls++;
     }
 
@@ -310,7 +321,7 @@ public class FlowableDoFinallyTest implements Action {
             Flowable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })
@@ -331,7 +342,7 @@ public class FlowableDoFinallyTest implements Action {
             Flowable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })
@@ -446,13 +457,13 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 list.add("cancel");
             }
         })
         .doFinally(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 list.add("finally");
             }
         })
@@ -471,7 +482,7 @@ public class FlowableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         list.add("onComplete");
                     }
                 });
@@ -486,13 +497,13 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.just(1)
         .doOnCancel(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 list.add("cancel");
             }
         })
         .doFinally(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 list.add("finally");
             }
         })
@@ -511,7 +522,7 @@ public class FlowableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         list.add("onComplete");
                     }
                 });

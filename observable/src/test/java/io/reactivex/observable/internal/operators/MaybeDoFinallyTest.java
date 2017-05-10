@@ -13,25 +13,28 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
 
 public class MaybeDoFinallyTest implements Action {
 
     int calls;
 
     @Override
-    public void run() throws Exception {
+    public void invoke() throws Exception {
         calls++;
     }
 
@@ -126,7 +129,7 @@ public class MaybeDoFinallyTest implements Action {
             Maybe.just(1)
             .doFinally(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })
@@ -147,7 +150,7 @@ public class MaybeDoFinallyTest implements Action {
             Maybe.just(1)
             .doFinally(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })

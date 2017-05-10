@@ -13,21 +13,28 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static io.reactivex.flowable.BackpressureOverflowStrategy.*;
-import static io.reactivex.common.internal.functions.Functions.EMPTY_ACTION;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.BackpressureOverflowStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static io.reactivex.common.internal.functions.Functions.EMPTY_ACTION;
+import static io.reactivex.flowable.BackpressureOverflowStrategy.DROP_LATEST;
+import static io.reactivex.flowable.BackpressureOverflowStrategy.DROP_OLDEST;
+import static org.junit.Assert.assertEquals;
 
 public class FlowableOnBackpressureBufferStrategyTest {
 
@@ -37,7 +44,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         final AtomicInteger droppedCount = new AtomicInteger(0);
         Action incrementOnDrop = new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 droppedCount.incrementAndGet();
             }
         };
@@ -83,7 +90,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         final AtomicInteger droppedCount = new AtomicInteger(0);
         Action incrementOnDrop = new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 droppedCount.incrementAndGet();
             }
         };
@@ -175,7 +182,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         Flowable.range(1, 20)
         .onBackpressureBuffer(8, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new TestException();
             }
         }, BackpressureOverflowStrategy.DROP_OLDEST)

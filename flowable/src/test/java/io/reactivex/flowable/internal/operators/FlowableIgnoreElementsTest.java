@@ -13,19 +13,30 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.DisposableSubscriber;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FlowableIgnoreElementsTest {
 
@@ -87,7 +98,7 @@ public class FlowableIgnoreElementsTest {
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 unsub.set(true);
             }})
             .ignoreElements()
@@ -204,7 +215,7 @@ public class FlowableIgnoreElementsTest {
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 unsub.set(true);
             }})
             .ignoreElements()

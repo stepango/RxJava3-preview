@@ -13,14 +13,19 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObservableDoOnTest {
 
@@ -64,7 +69,7 @@ public class ObservableDoOnTest {
         final AtomicBoolean r = new AtomicBoolean();
         String output = Observable.just("one").doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 r.set(true);
             }
         }).blockingSingle();
@@ -78,7 +83,7 @@ public class ObservableDoOnTest {
         final AtomicBoolean r = new AtomicBoolean();
         String output = Observable.just("one").doOnTerminate(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 r.set(true);
             }
         }).blockingSingle();
@@ -93,7 +98,7 @@ public class ObservableDoOnTest {
         final AtomicBoolean r = new AtomicBoolean();
         Observable.<String>error(new TestException()).doOnTerminate(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 r.set(true);
             }
         })

@@ -13,18 +13,27 @@
 
 package io.reactivex.observable.internal.observers;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class LambdaObserverTest {
 
@@ -45,7 +54,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -82,7 +91,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -121,7 +130,7 @@ public class LambdaObserverTest {
                 }
             }, new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     received.add(100);
                 }
             }, new Consumer<Disposable>() {
@@ -167,7 +176,7 @@ public class LambdaObserverTest {
                 }
             }, new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             }, new Consumer<Disposable>() {
@@ -223,7 +232,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -266,7 +275,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -326,7 +335,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
             }
         }, new Consumer<Disposable>() {
             @Override

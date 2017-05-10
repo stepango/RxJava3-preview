@@ -13,17 +13,23 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableIgnoreElementsTest {
 
@@ -85,7 +91,7 @@ public class ObservableIgnoreElementsTest {
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
         .doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 unsub.set(true);
             }})
             .ignoreElements()
@@ -152,7 +158,7 @@ public class ObservableIgnoreElementsTest {
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
         .doOnDispose(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 unsub.set(true);
             }})
             .ignoreElements()

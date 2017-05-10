@@ -13,19 +13,27 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.List;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableDoOnLifecycleTest {
 
@@ -57,7 +65,7 @@ public class FlowableDoOnLifecycleTest {
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         calls[1]++;
                     }
                 });
@@ -80,7 +88,7 @@ public class FlowableDoOnLifecycleTest {
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void invoke() throws Exception {
                         calls[1]++;
                     }
                 })
@@ -121,7 +129,7 @@ public class FlowableDoOnLifecycleTest {
                     Functions.EMPTY_LONG_CONSUMER,
                     new Action() {
                         @Override
-                        public void run() throws Exception {
+                        public void invoke() throws Exception {
                             throw new TestException();
                         }
                     })

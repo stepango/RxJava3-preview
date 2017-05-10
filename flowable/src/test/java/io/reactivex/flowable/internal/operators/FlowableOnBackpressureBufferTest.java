@@ -13,21 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableOnBackpressureBufferTest {
 
@@ -127,7 +135,7 @@ public class FlowableOnBackpressureBufferTest {
         infinite.subscribeOn(Schedulers.computation())
              .onBackpressureBuffer(500, new Action() {
                  @Override
-                 public void run() {
+                 public void invoke() {
                      backpressureCallback.countDown();
                  }
              })
@@ -165,7 +173,7 @@ public class FlowableOnBackpressureBufferTest {
     private static final Action THROWS_NON_FATAL = new Action() {
 
         @Override
-        public void run() {
+        public void invoke() {
             throw new RuntimeException();
         }
     };
@@ -213,7 +221,8 @@ public class FlowableOnBackpressureBufferTest {
     public void fixBackpressureBufferNullStrategy() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(10, new Action() {
             @Override
-            public void run() { }
+            public void invoke() {
+            }
         }, null);
     }
 

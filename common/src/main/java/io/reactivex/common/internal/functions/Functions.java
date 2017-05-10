@@ -12,12 +12,38 @@
  */
 package io.reactivex.common.internal.functions;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Notification;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.common.functions.Predicate;
 
 /**
  * Utility methods to convert the BiFunction, Function3..Function9 instances to Function of Object array.
@@ -153,7 +179,7 @@ public final class Functions {
         }
 
         @Override
-        public void run() throws Exception {
+        public void invoke() throws Exception {
             future.get();
         }
     }
@@ -311,7 +337,7 @@ public final class Functions {
         }
 
         @Override
-        public void run() throws Exception {
+        public void invoke() throws Exception {
             onNotification.accept(Notification.<T>createOnComplete());
         }
     }
@@ -337,7 +363,7 @@ public final class Functions {
 
         @Override
         public void accept(T t) throws Exception {
-            action.run();
+            action.invoke();
         }
     }
 
@@ -667,7 +693,8 @@ public final class Functions {
 
     static final class EmptyAction implements Action {
         @Override
-        public void run() { }
+        public void invoke() {
+        }
 
         @Override
         public String toString() {

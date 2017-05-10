@@ -13,18 +13,21 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
 
 public class FlowableDoOnUnsubscribeTest {
 
@@ -43,7 +46,7 @@ public class FlowableDoOnUnsubscribeTest {
                 .interval(50, TimeUnit.MILLISECONDS)
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         // Test that upper stream will be notified for un-subscription
                         // from a child subscriber
                             upperLatch.countDown();
@@ -59,7 +62,7 @@ public class FlowableDoOnUnsubscribeTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         // Test that lower stream will be notified for a direct un-subscription
                             lowerLatch.countDown();
                             lowerCount.incrementAndGet();
@@ -105,7 +108,7 @@ public class FlowableDoOnUnsubscribeTest {
                 .interval(50, TimeUnit.MILLISECONDS)
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         // Test that upper stream will be notified for un-subscription
                             upperLatch.countDown();
                             upperCount.incrementAndGet();
@@ -120,7 +123,7 @@ public class FlowableDoOnUnsubscribeTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         // Test that lower stream will be notified for un-subscription
                             lowerLatch.countDown();
                             lowerCount.incrementAndGet();

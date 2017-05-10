@@ -13,18 +13,26 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CompletableDoOnTest {
 
@@ -66,7 +74,7 @@ public class CompletableDoOnTest {
         Completable.complete()
             .doOnDispose(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     atomicBoolean.set(true);
                 }
             })

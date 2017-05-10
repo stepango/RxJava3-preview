@@ -13,13 +13,12 @@
 
 package io.reactivex.observable.internal.operators;
 
-
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
@@ -33,7 +32,7 @@ public class CompletablePeekTest {
             Completable.complete()
             .doAfterTerminate(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })

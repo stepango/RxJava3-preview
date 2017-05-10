@@ -27,7 +27,7 @@ public final class ActionDisposable extends ReferenceDisposable<Action> {
     @Override
     protected void onDisposed(@NonNull Action value) {
         try {
-            value.run();
+            value.invoke();
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

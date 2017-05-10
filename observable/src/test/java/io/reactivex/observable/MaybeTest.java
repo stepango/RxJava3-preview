@@ -13,24 +13,67 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.lang.management.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.OnErrorNotImplementedException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.internal.operators.*;
-import io.reactivex.observable.observers.*;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.internal.operators.MaybeConcatArrayDelayError;
+import io.reactivex.observable.internal.operators.MaybeToObservable;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
+import io.reactivex.observable.subjects.MaybeSubject;
+import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MaybeTest {
 
@@ -570,7 +613,7 @@ public class MaybeTest {
         Maybe.empty().observeOn(Schedulers.single())
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 name[0] = Thread.currentThread().getName();
             }
         })
@@ -609,7 +652,7 @@ public class MaybeTest {
 
         Maybe.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -623,7 +666,7 @@ public class MaybeTest {
     public void fromActionThrows() {
         Maybe.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new TestException();
             }
         })
@@ -749,7 +792,7 @@ public class MaybeTest {
     public void doOnCompleteThrows() {
         Maybe.empty().doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 throw new TestException();
             }
         })
@@ -763,7 +806,7 @@ public class MaybeTest {
 
         Maybe.just(1).doOnDispose(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
@@ -786,7 +829,7 @@ public class MaybeTest {
 
             TestObserver<Integer> ts = pp.doOnDispose(new Action() {
                 @Override
-                public void run() throws Exception {
+                public void invoke() throws Exception {
                     throw new TestException();
                 }
             })
@@ -848,7 +891,7 @@ public class MaybeTest {
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
@@ -873,7 +916,7 @@ public class MaybeTest {
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
@@ -893,13 +936,13 @@ public class MaybeTest {
         Maybe.empty()
         .doOnComplete(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 call[0]++;
             }
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
@@ -2138,7 +2181,7 @@ public class MaybeTest {
 
         Action onComplete = new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 values.add(100);
             }
         };

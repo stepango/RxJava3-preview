@@ -13,15 +13,20 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 /**
  * Execute an action after an onError, onComplete or a cancel event.
@@ -144,7 +149,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
         void runFinally() {
             if (compareAndSet(0, 1)) {
                 try {
-                    onFinally.run();
+                    onFinally.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);
@@ -254,7 +259,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
         void runFinally() {
             if (compareAndSet(0, 1)) {
                 try {
-                    onFinally.run();
+                    onFinally.invoke();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

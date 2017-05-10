@@ -13,25 +13,48 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FlowablePublishTest {
 
@@ -94,7 +117,7 @@ public class FlowablePublishTest {
         Flowable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
             }
         });
@@ -117,7 +140,7 @@ public class FlowablePublishTest {
         }).doOnComplete(new Action() {
 
             @Override
-            public void run() {
+            public void invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed SLOW");
             }
 
@@ -197,7 +220,7 @@ public class FlowablePublishTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void run() {
+                    public void invoke() {
                         sourceUnsubscribed.set(true);
                     }
                 }).share();
@@ -214,7 +237,7 @@ public class FlowablePublishTest {
                 if (valueCount() == 2) {
                     source.doOnCancel(new Action() {
                         @Override
-                        public void run() {
+                        public void invoke() {
                             child2Unsubscribed.set(true);
                         }
                     }).take(5).subscribe(ts2);
@@ -225,7 +248,7 @@ public class FlowablePublishTest {
 
         source.doOnCancel(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 child1Unsubscribed.set(true);
             }
         }).take(5)

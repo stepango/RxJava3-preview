@@ -13,12 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.Observable;
+
+import static org.junit.Assert.assertEquals;
 
 public class CompletableRepeatWhenTest {
     @Test
@@ -28,7 +31,7 @@ public class CompletableRepeatWhenTest {
 
         Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void invoke() throws Exception {
                 counter[0]++;
             }
         })

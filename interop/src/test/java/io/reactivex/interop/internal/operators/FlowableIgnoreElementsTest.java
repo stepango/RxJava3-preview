@@ -13,18 +13,23 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.ignoreElements;
-import static org.junit.Assert.*;
-
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Action;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DisposableCompletableObserver;
+import io.reactivex.observable.observers.TestObserver;
+
+import static io.reactivex.interop.RxJava3Interop.ignoreElements;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableIgnoreElementsTest {
 
@@ -85,7 +90,7 @@ public class FlowableIgnoreElementsTest {
         ignoreElements(Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void run() {
+            public void invoke() {
                 unsub.set(true);
             }})
             )
