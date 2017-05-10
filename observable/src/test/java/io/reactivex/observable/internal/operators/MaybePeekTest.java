@@ -101,7 +101,7 @@ public class MaybePeekTest {
         }
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 compl[0]++;
             }
         })
@@ -140,7 +140,7 @@ public class MaybePeekTest {
             Maybe.just(1)
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })

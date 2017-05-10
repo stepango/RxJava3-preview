@@ -19,7 +19,6 @@ package io.reactivex.common.functions;
 public interface Action {
     /**
      * Runs the action and optionally throws a checked exception.
-     * @throws Exception if the implementation wishes to throw a checked exception
      */
-    void invoke() throws Exception;
+    void invoke();
 }

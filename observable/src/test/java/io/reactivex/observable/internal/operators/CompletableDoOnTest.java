@@ -74,7 +74,7 @@ public class CompletableDoOnTest {
         Completable.complete()
             .doOnDispose(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     atomicBoolean.set(true);
                 }
             })

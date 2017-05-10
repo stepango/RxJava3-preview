@@ -281,14 +281,14 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new TestException();
                 }
             })
             .test()
             .assertFailure(TestException.class);
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -308,14 +308,14 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new TestException();
                 }
             })
             .test()
             .assertResult();
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -332,12 +332,12 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
-                throw new IOException();
+            public void invoke() {
+                throw new TestException();
             }
         })
         .test()
-        .assertFailure(IOException.class);
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -385,15 +385,15 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new TestException();
                 }
             })
             .filter(Functions.alwaysTrue())
             .test()
             .assertFailure(TestException.class);
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -405,7 +405,7 @@ public class ObservableDoOnEachTest {
         Observable.just(1)
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -429,15 +429,15 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new TestException();
                 }
             })
             .filter(Functions.alwaysTrue())
             .test()
             .assertResult();
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -454,13 +454,13 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
-                throw new IOException();
+            public void invoke() {
+                throw new TestException();
             }
         })
         .filter(Functions.alwaysTrue())
         .test()
-        .assertFailure(IOException.class);
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -498,7 +498,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -528,7 +528,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -557,7 +557,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -588,7 +588,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -620,7 +620,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -654,7 +654,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -689,7 +689,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })

@@ -33,7 +33,7 @@ public class CompletableDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() throws Exception {
+    public void invoke() {
         calls++;
     }
 
@@ -79,7 +79,7 @@ public class CompletableDoFinallyTest implements Action {
             Completable.complete()
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })

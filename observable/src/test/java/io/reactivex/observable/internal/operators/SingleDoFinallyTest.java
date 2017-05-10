@@ -33,7 +33,7 @@ public class SingleDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() throws Exception {
+    public void invoke() {
         calls++;
     }
 
@@ -79,7 +79,7 @@ public class SingleDoFinallyTest implements Action {
             Single.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })

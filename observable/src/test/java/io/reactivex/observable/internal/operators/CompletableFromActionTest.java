@@ -34,7 +34,7 @@ public class CompletableFromActionTest {
 
         Completable.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicInteger.incrementAndGet();
             }
         })
@@ -50,7 +50,7 @@ public class CompletableFromActionTest {
 
         Action run = new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicInteger.incrementAndGet();
             }
         };
@@ -74,7 +74,7 @@ public class CompletableFromActionTest {
 
         Completable completable = Completable.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicInteger.incrementAndGet();
             }
         });
@@ -92,7 +92,7 @@ public class CompletableFromActionTest {
     public void fromActionThrows() {
         Completable.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new UnsupportedOperationException();
             }
         })

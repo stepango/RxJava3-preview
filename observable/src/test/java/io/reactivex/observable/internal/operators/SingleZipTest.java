@@ -155,7 +155,7 @@ public class SingleZipTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 counter.getAndIncrement();
             }
         });
@@ -179,7 +179,7 @@ public class SingleZipTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 counter.getAndIncrement();
             }
         });

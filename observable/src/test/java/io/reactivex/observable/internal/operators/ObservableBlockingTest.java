@@ -120,7 +120,7 @@ public class ObservableBlockingTest {
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(cons, cons, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add(100);
             }
         });

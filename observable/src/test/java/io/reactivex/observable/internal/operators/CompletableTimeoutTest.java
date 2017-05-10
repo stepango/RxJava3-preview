@@ -52,7 +52,7 @@ public class CompletableTimeoutTest {
 
         Completable other = Completable.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         });

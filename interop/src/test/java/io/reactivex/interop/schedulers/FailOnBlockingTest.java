@@ -587,7 +587,7 @@ public class FailOnBlockingTest {
             .subscribeOn(Schedulers.single())
             .doOnComplete(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingGet();
                 }
             })
@@ -610,7 +610,7 @@ public class FailOnBlockingTest {
             .subscribeOn(Schedulers.single())
             .doOnComplete(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();
                 }
             })

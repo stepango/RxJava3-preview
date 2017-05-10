@@ -831,7 +831,7 @@ public class ParallelFlowableTest {
         Flowable.range(1, 20).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 cancelled[0] = true;
             }
         })
@@ -1016,7 +1016,7 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 count[0]++;
             }
         })
@@ -1035,7 +1035,7 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doAfterTerminated(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 count[0]++;
             }
         })
@@ -1092,7 +1092,7 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 count[0]++;
             }
         })

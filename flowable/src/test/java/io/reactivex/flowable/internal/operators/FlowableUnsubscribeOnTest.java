@@ -225,7 +225,7 @@ public class FlowableUnsubscribeOnTest {
         Flowable.just(1)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         })
@@ -243,7 +243,7 @@ public class FlowableUnsubscribeOnTest {
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         })

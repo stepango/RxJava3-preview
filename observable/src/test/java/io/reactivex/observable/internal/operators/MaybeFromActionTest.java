@@ -44,7 +44,7 @@ public class MaybeFromActionTest {
 
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicInteger.incrementAndGet();
             }
         })
@@ -60,7 +60,7 @@ public class MaybeFromActionTest {
 
         Action run = new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicInteger.incrementAndGet();
             }
         };
@@ -84,7 +84,7 @@ public class MaybeFromActionTest {
 
         Maybe<Object> maybe = Maybe.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicInteger.incrementAndGet();
             }
         });
@@ -102,7 +102,7 @@ public class MaybeFromActionTest {
     public void fromActionThrows() {
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new UnsupportedOperationException();
             }
         })
@@ -117,7 +117,7 @@ public class MaybeFromActionTest {
 
         Maybe<Void> m = Maybe.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 counter[0]++;
             }
         });
@@ -138,9 +138,13 @@ public class MaybeFromActionTest {
 
             TestObserver<Object> to = Maybe.fromAction(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     cdl1.countDown();
-                    cdl2.await();
+                    try {
+                        cdl2.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }).subscribeOn(Schedulers.single()).test();
 
@@ -156,7 +160,7 @@ public class MaybeFromActionTest {
                 Thread.sleep(100);
             }
 
-            TestCommonHelper.assertUndeliverable(errors, 0, InterruptedException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, RuntimeException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }

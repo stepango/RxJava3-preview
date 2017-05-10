@@ -37,7 +37,7 @@ public class SingleDoAfterTerminateTest {
 
     private final Action afterTerminate = new Action() {
         @Override
-        public void invoke() throws Exception {
+        public void invoke() {
             call[0]++;
         }
     };
@@ -98,7 +98,7 @@ public class SingleDoAfterTerminateTest {
             Single.just(1)
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })

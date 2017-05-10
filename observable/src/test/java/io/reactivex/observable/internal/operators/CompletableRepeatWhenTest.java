@@ -31,7 +31,7 @@ public class CompletableRepeatWhenTest {
 
         Completable.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 counter[0]++;
             }
         })

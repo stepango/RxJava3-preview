@@ -549,7 +549,7 @@ public class FlowableWindowWithTimeTest {
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 cancel1.set(true);
             }
         })

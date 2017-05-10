@@ -46,7 +46,7 @@ public class CompletableTimerTest {
                 TestObserver<Void> ts = Completable.timer(1, TimeUnit.MILLISECONDS, s)
                 .doOnComplete(new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         try {
                         Thread.sleep(3000);
                         } catch (InterruptedException ex) {

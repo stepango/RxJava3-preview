@@ -217,7 +217,7 @@ public class MaybeCacheTest {
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 ts.cancel();
             }
         });

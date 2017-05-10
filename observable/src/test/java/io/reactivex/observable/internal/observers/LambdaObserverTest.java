@@ -54,7 +54,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -91,7 +91,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -130,7 +130,7 @@ public class LambdaObserverTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     received.add(100);
                 }
             }, new Consumer<Disposable>() {
@@ -176,7 +176,7 @@ public class LambdaObserverTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             }, new Consumer<Disposable>() {
@@ -232,7 +232,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -275,7 +275,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Disposable>() {
@@ -335,7 +335,7 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
             }
         }, new Consumer<Disposable>() {
             @Override

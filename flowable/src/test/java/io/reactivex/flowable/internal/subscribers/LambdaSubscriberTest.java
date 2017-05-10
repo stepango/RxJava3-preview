@@ -55,7 +55,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -92,7 +92,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -132,7 +132,7 @@ public class LambdaSubscriberTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     received.add(100);
                 }
             }, new Consumer<Subscription>() {
@@ -179,7 +179,7 @@ public class LambdaSubscriberTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             }, new Consumer<Subscription>() {
@@ -236,7 +236,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -281,7 +281,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 received.add(100);
             }
         }, new Consumer<Subscription>() {
@@ -342,7 +342,7 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
             }
         }, new Consumer<Subscription>() {
             @Override

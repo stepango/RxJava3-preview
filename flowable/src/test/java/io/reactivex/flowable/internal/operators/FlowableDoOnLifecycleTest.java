@@ -65,7 +65,7 @@ public class FlowableDoOnLifecycleTest {
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         calls[1]++;
                     }
                 });
@@ -88,7 +88,7 @@ public class FlowableDoOnLifecycleTest {
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         calls[1]++;
                     }
                 })
@@ -129,7 +129,7 @@ public class FlowableDoOnLifecycleTest {
                     Functions.EMPTY_LONG_CONSUMER,
                     new Action() {
                         @Override
-                        public void invoke() throws Exception {
+                        public void invoke() {
                             throw new TestException();
                         }
                     })

@@ -45,7 +45,7 @@ public class FlowableDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() throws Exception {
+    public void invoke() {
         calls++;
     }
 
@@ -321,7 +321,7 @@ public class FlowableDoFinallyTest implements Action {
             Flowable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })
@@ -342,7 +342,7 @@ public class FlowableDoFinallyTest implements Action {
             Flowable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })
@@ -457,13 +457,13 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("cancel");
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("finally");
             }
         })
@@ -482,7 +482,7 @@ public class FlowableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         list.add("onComplete");
                     }
                 });
@@ -497,13 +497,13 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.just(1)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("cancel");
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("finally");
             }
         })
@@ -522,7 +522,7 @@ public class FlowableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         list.add("onComplete");
                     }
                 });

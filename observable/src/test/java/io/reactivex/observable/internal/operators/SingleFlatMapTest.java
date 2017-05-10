@@ -39,7 +39,7 @@ public class SingleFlatMapTest {
             public Completable apply(Integer t) throws Exception {
                 return Completable.complete().doOnComplete(new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         b[0] = true;
                     }
                 });
@@ -61,7 +61,7 @@ public class SingleFlatMapTest {
             public Completable apply(Integer t) throws Exception {
                 return Completable.complete().doOnComplete(new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         b[0] = true;
                     }
                 });

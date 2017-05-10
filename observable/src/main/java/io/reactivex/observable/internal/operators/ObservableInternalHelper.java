@@ -131,7 +131,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void invoke() throws Exception {
+        public void invoke() {
             observer.onComplete();
         }
     }

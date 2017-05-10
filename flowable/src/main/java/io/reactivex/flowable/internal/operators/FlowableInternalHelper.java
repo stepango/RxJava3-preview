@@ -128,7 +128,7 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void invoke() throws Exception {
+        public void invoke() {
             subscriber.onComplete();
         }
     }

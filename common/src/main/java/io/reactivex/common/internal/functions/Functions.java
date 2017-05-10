@@ -179,8 +179,12 @@ public final class Functions {
         }
 
         @Override
-        public void invoke() throws Exception {
-            future.get();
+        public void invoke() {
+            try {
+                future.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -337,8 +341,12 @@ public final class Functions {
         }
 
         @Override
-        public void invoke() throws Exception {
-            onNotification.accept(Notification.<T>createOnComplete());
+        public void invoke() {
+            try {
+                onNotification.accept(Notification.<T>createOnComplete());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

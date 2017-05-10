@@ -46,7 +46,7 @@ public class SingleUnsubscribeOnTest {
 
         pp.doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 name[0] = Thread.currentThread().getName();
                 cdl.countDown();
             }

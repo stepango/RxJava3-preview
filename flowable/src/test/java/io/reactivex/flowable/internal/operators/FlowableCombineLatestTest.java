@@ -1504,7 +1504,7 @@ public class FlowableCombineLatestTest {
                                     })
                                     .doFinally(new Action() {
                                         @Override
-                                        public void invoke() throws Exception {
+                                        public void invoke() {
                                             System.out.println("emptyFlowable: doFinally");
                                         }
                                     }),
@@ -1517,7 +1517,7 @@ public class FlowableCombineLatestTest {
                                     })
                                     .doFinally(new Action() {
                                         @Override
-                                        public void invoke() throws Exception {
+                                        public void invoke() {
                                             System.out.println("errorFlowable: doFinally");
                                         }
                                     })),
@@ -1536,7 +1536,7 @@ public class FlowableCombineLatestTest {
                     })
                     .doFinally(new Action() {
                         @Override
-                        public void invoke() throws Exception {
+                        public void invoke() {
                             System.out.println("combineLatestDelayError: doFinally");
                         }
                     })

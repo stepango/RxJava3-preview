@@ -1145,7 +1145,7 @@ public class ObservableCombineLatestTest {
                                     })
                                     .doFinally(new Action() {
                                         @Override
-                                        public void invoke() throws Exception {
+                                        public void invoke() {
                                             System.out.println("emptyObservable: doFinally");
                                         }
                                     }),
@@ -1158,7 +1158,7 @@ public class ObservableCombineLatestTest {
                                     })
                                     .doFinally(new Action() {
                                         @Override
-                                        public void invoke() throws Exception {
+                                        public void invoke() {
                                             System.out.println("errorObservable: doFinally");
                                         }
                                     })),
@@ -1177,7 +1177,7 @@ public class ObservableCombineLatestTest {
                     })
                     .doFinally(new Action() {
                         @Override
-                        public void invoke() throws Exception {
+                        public void invoke() {
                             System.out.println("combineLatestDelayError: doFinally");
                         }
                     })

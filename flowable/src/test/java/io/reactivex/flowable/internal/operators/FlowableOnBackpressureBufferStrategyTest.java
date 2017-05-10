@@ -44,7 +44,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         final AtomicInteger droppedCount = new AtomicInteger(0);
         Action incrementOnDrop = new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 droppedCount.incrementAndGet();
             }
         };
@@ -90,7 +90,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         final AtomicInteger droppedCount = new AtomicInteger(0);
         Action incrementOnDrop = new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 droppedCount.incrementAndGet();
             }
         };
@@ -182,7 +182,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         Flowable.range(1, 20)
         .onBackpressureBuffer(8, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new TestException();
             }
         }, BackpressureOverflowStrategy.DROP_OLDEST)

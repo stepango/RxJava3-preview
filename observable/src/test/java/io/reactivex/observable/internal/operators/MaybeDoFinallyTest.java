@@ -34,7 +34,7 @@ public class MaybeDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() throws Exception {
+    public void invoke() {
         calls++;
     }
 
@@ -129,7 +129,7 @@ public class MaybeDoFinallyTest implements Action {
             Maybe.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })
@@ -150,7 +150,7 @@ public class MaybeDoFinallyTest implements Action {
             Maybe.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })

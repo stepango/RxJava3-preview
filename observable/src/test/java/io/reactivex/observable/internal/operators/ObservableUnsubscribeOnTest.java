@@ -216,7 +216,7 @@ public class ObservableUnsubscribeOnTest {
         Observable.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         })
@@ -234,7 +234,7 @@ public class ObservableUnsubscribeOnTest {
         Observable.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         })

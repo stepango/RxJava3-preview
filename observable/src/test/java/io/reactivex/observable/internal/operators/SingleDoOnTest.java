@@ -46,7 +46,7 @@ public class SingleDoOnTest {
 
         Single.never().doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 count[0]++;
             }
         }).test(true);
@@ -235,7 +235,7 @@ public class SingleDoOnTest {
         final int[] calls = { 0 };
         TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         }));
@@ -250,7 +250,7 @@ public class SingleDoOnTest {
         Single.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         })
@@ -267,7 +267,7 @@ public class SingleDoOnTest {
         Single.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 calls[0]++;
             }
         })
@@ -295,7 +295,7 @@ public class SingleDoOnTest {
 
             ps.singleOrError().doOnDispose(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })

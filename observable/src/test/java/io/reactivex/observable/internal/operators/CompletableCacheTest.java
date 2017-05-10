@@ -40,7 +40,7 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
     }
 
     @Override
-    public void invoke() throws Exception {
+    public void invoke() {
         count++;
     }
 

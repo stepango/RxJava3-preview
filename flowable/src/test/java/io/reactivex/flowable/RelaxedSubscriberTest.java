@@ -638,7 +638,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 ts.onComplete();
             }
         });
@@ -668,7 +668,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 ts.onComplete();
             }
         });
@@ -696,7 +696,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
 
             }
         });
@@ -730,7 +730,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new TestException("Inner");
             }
         });

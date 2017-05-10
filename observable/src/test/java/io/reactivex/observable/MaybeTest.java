@@ -613,7 +613,7 @@ public class MaybeTest {
         Maybe.empty().observeOn(Schedulers.single())
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 name[0] = Thread.currentThread().getName();
             }
         })
@@ -652,7 +652,7 @@ public class MaybeTest {
 
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -666,7 +666,7 @@ public class MaybeTest {
     public void fromActionThrows() {
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new TestException();
             }
         })
@@ -792,7 +792,7 @@ public class MaybeTest {
     public void doOnCompleteThrows() {
         Maybe.empty().doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new TestException();
             }
         })
@@ -806,7 +806,7 @@ public class MaybeTest {
 
         Maybe.just(1).doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -829,7 +829,7 @@ public class MaybeTest {
 
             TestObserver<Integer> ts = pp.doOnDispose(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })
@@ -891,7 +891,7 @@ public class MaybeTest {
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
@@ -916,7 +916,7 @@ public class MaybeTest {
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
@@ -936,13 +936,13 @@ public class MaybeTest {
         Maybe.empty()
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
@@ -2181,7 +2181,7 @@ public class MaybeTest {
 
         Action onComplete = new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 values.add(100);
             }
         };

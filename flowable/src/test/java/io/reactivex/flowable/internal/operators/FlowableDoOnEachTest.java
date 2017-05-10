@@ -282,14 +282,14 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new RuntimeException();
                 }
             })
             .test()
             .assertFailure(TestException.class);
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, RuntimeException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -309,14 +309,14 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new RuntimeException();
                 }
             })
             .test()
             .assertResult();
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, RuntimeException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -333,12 +333,12 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
-                throw new IOException();
+            public void invoke() {
+                throw new RuntimeException();
             }
         })
         .test()
-        .assertFailure(IOException.class);
+                .assertFailure(RuntimeException.class);
     }
 
     @Test
@@ -418,15 +418,15 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new RuntimeException();
                 }
             })
             .filter(Functions.alwaysTrue())
             .test()
             .assertFailure(TestException.class);
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, RuntimeException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -438,7 +438,7 @@ public class FlowableDoOnEachTest {
         Flowable.just(1)
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -462,15 +462,15 @@ public class FlowableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() throws Exception {
-                    throw new IOException();
+                public void invoke() {
+                    throw new RuntimeException();
                 }
             })
             .filter(Functions.alwaysTrue())
             .test()
             .assertResult();
 
-            TestCommonHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestCommonHelper.assertUndeliverable(errors, 0, RuntimeException.class);
         } finally {
             RxJavaCommonPlugins.reset();
         }
@@ -487,13 +487,13 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
-                throw new IOException();
+            public void invoke() {
+                throw new RuntimeException();
             }
         })
         .filter(Functions.alwaysTrue())
         .test()
-        .assertFailure(IOException.class);
+                .assertFailure(RuntimeException.class);
     }
 
     @Test
@@ -530,7 +530,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -559,7 +559,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -587,7 +587,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -617,7 +617,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -648,7 +648,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -681,7 +681,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })
@@ -715,7 +715,7 @@ public class FlowableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[1]++;
             }
         })

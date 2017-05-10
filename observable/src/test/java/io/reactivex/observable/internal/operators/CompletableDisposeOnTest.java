@@ -107,7 +107,7 @@ public class CompletableDisposeOnTest {
         Completable.complete()
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })
@@ -129,7 +129,7 @@ public class CompletableDisposeOnTest {
         Completable.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 call[0]++;
             }
         })

@@ -31,7 +31,7 @@ public class CompletableTimerTest {
         final AtomicLong atomicLong = new AtomicLong();
         Completable.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 atomicLong.incrementAndGet();
             }
         });

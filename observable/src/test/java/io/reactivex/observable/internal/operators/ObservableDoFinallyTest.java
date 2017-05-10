@@ -44,7 +44,7 @@ public class ObservableDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() throws Exception {
+    public void invoke() {
         calls++;
     }
 
@@ -320,7 +320,7 @@ public class ObservableDoFinallyTest implements Action {
             Observable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })
@@ -341,7 +341,7 @@ public class ObservableDoFinallyTest implements Action {
             Observable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() throws Exception {
+                public void invoke() {
                     throw new TestException();
                 }
             })
@@ -461,13 +461,13 @@ public class ObservableDoFinallyTest implements Action {
         Observable.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("dispose");
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("finally");
             }
         })
@@ -486,7 +486,7 @@ public class ObservableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         list.add("onComplete");
                     }
                 });
@@ -501,13 +501,13 @@ public class ObservableDoFinallyTest implements Action {
         Observable.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("dispose");
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 list.add("finally");
             }
         })
@@ -526,7 +526,7 @@ public class ObservableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() throws Exception {
+                    public void invoke() {
                         list.add("onComplete");
                     }
                 });

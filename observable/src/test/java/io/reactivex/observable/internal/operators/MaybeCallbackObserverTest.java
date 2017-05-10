@@ -111,7 +111,7 @@ public class MaybeCallbackObserverTest {
                     Functions.emptyConsumer(),
                     new Action() {
                         @Override
-                        public void invoke() throws Exception {
+                        public void invoke() {
                             throw new TestException();
                         }
                     });

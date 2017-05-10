@@ -13,6 +13,7 @@
 
 package io.reactivex.common.disposables;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Action;
 
 import static org.junit.Assert.assertEquals;
@@ -716,7 +718,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new IllegalArgumentException();
             }
         }));
@@ -741,7 +743,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
+            public void invoke() {
                 throw new AssertionError();
             }
         }));
@@ -761,13 +763,14 @@ public class CompositeDisposableTest {
     }
 
     @Test
+    @Ignore("Kotlin don't have checked exceptions")
     public void disposeThrowsCheckedException() {
         CompositeDisposable cd = new CompositeDisposable();
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void invoke() throws Exception {
-                throw new IOException();
+            public void invoke() {
+                throw new TestException();
             }
         }));
 
@@ -780,7 +783,7 @@ public class CompositeDisposableTest {
             fail("Failed to throw");
         } catch (RuntimeException ex) {
             // expected
-            if (!(ex.getCause() instanceof IOException)) {
+            if (!(ex.getCause() instanceof TestException)) {
                 fail(ex.toString() + " should have thrown RuntimeException(IOException)");
             }
         }
