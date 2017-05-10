@@ -13,24 +13,36 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableRepeatTest {
 
@@ -200,7 +212,7 @@ public class ObservableRepeatTest {
         Observable.just(1)
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         })
@@ -224,7 +236,7 @@ public class ObservableRepeatTest {
         Observable.error(new TestException())
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return true;
             }
         })
@@ -237,7 +249,7 @@ public class ObservableRepeatTest {
         Observable.just(1)
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return true;
             }
         })
@@ -250,7 +262,7 @@ public class ObservableRepeatTest {
         Observable.just(1)
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 throw new TestException();
             }
         })

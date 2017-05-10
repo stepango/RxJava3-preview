@@ -13,24 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableRepeatTest {
 
@@ -249,7 +261,7 @@ public class FlowableRepeatTest {
         Flowable.just(1)
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         })
@@ -273,7 +285,7 @@ public class FlowableRepeatTest {
         Flowable.error(new TestException())
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return true;
             }
         })
@@ -286,7 +298,7 @@ public class FlowableRepeatTest {
         Flowable.just(1)
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return true;
             }
         })
@@ -299,7 +311,7 @@ public class FlowableRepeatTest {
         Flowable.just(1)
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 throw new TestException();
             }
         })

@@ -408,7 +408,7 @@ public final class Functions {
 
         @Override
         public boolean test(T t) throws Exception {
-            return !supplier.getAsBoolean();
+            return !supplier.invoke();
         }
     }
 

@@ -1090,7 +1090,7 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public boolean getAsBoolean() throws Exception {
+        public Boolean invoke() {
             return false;
         }
 

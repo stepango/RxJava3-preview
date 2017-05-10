@@ -16,22 +16,34 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.internal.operators.*;
+import io.reactivex.flowable.internal.operators.FlowableRange;
+import io.reactivex.flowable.internal.operators.ParallelFromPublisher;
 import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RxJavaFlowablePluginsTest {
 
@@ -194,7 +206,7 @@ public class RxJavaFlowablePluginsTest {
 
             BooleanSupplier bs = new BooleanSupplier() {
                 @Override
-                public boolean getAsBoolean() throws Exception {
+                public Boolean invoke() {
                     return true;
                 }
             };

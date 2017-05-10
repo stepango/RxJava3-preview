@@ -16,19 +16,34 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.internal.operators.*;
+import io.reactivex.observable.internal.operators.CompletableError;
+import io.reactivex.observable.internal.operators.MaybeError;
+import io.reactivex.observable.internal.operators.ObservableRange;
+import io.reactivex.observable.internal.operators.SingleJust;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RxJavaObservablePluginsTest {
 
@@ -209,7 +224,7 @@ public class RxJavaObservablePluginsTest {
 
             BooleanSupplier bs = new BooleanSupplier() {
                 @Override
-                public boolean getAsBoolean() throws Exception {
+                public Boolean invoke() {
                     return true;
                 }
             };

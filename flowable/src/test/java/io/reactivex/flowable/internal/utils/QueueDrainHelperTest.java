@@ -13,19 +13,20 @@
 
 package io.reactivex.flowable.internal.utils;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
+import java.util.ArrayDeque;
+import java.util.concurrent.atomic.AtomicLong;
+
 import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class QueueDrainHelperTest {
 
@@ -33,8 +34,8 @@ public class QueueDrainHelperTest {
     public void isCancelled() {
         assertTrue(QueueDrainHelper.isCancelled(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
-                throw new IOException();
+            public Boolean invoke() {
+                throw new TestException();
             }
         }));
     }
@@ -88,7 +89,7 @@ public class QueueDrainHelperTest {
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         };
@@ -107,7 +108,7 @@ public class QueueDrainHelperTest {
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         };
@@ -129,7 +130,7 @@ public class QueueDrainHelperTest {
             final AtomicLong state = new AtomicLong();
             final BooleanSupplier isCancelled = new BooleanSupplier() {
                 @Override
-                public boolean getAsBoolean() throws Exception {
+                public Boolean invoke() {
                     return false;
                 }
             };
@@ -164,7 +165,7 @@ public class QueueDrainHelperTest {
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return ts.isCancelled();
             }
         };
@@ -192,7 +193,7 @@ public class QueueDrainHelperTest {
         AtomicLong state = new AtomicLong();
         BooleanSupplier isCancelled = new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return ts.isCancelled();
             }
         };

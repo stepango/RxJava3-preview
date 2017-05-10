@@ -12,17 +12,20 @@
  */
 package io.reactivex.flowable.internal.utils;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.FusedQueue;
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.functions.BooleanSupplier;
-import io.reactivex.flowable.internal.queues.*;
 import io.reactivex.flowable.internal.queues.SimplePlainQueue;
+import io.reactivex.flowable.internal.queues.SpscArrayQueue;
+import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
 
 /**
  * Utility class to help with the queue-drain serialization idiom.
@@ -203,7 +206,7 @@ public final class QueueDrainHelper {
 
     static boolean isCancelled(BooleanSupplier cancelled) {
         try {
-            return cancelled.getAsBoolean();
+            return cancelled.invoke();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             return true;

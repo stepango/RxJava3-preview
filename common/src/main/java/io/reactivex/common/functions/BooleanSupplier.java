@@ -13,14 +13,15 @@
 
 package io.reactivex.common.functions;
 
+import kotlin.jvm.functions.Function0;
+
 /**
  * A functional interface (callback) that returns a boolean value.
  */
-public interface BooleanSupplier {
+public interface BooleanSupplier extends Function0<Boolean> {
     /**
      * Returns a boolean value.
      * @return a boolean value
-     * @throws Exception on error
      */
-    boolean getAsBoolean() throws Exception; // NOPMD
+    Boolean invoke(); // NOPMD
 }

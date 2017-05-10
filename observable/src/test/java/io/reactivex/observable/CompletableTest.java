@@ -2264,7 +2264,7 @@ public class CompletableTest {
             }
         }).repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() {
+            public Boolean invoke() {
                 return times.decrementAndGet() == 0;
             }
         });

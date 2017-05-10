@@ -13,9 +13,11 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.Exceptions;
@@ -74,7 +76,7 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
         public void onComplete() {
             boolean b;
             try {
-                b = stop.getAsBoolean();
+                b = stop.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

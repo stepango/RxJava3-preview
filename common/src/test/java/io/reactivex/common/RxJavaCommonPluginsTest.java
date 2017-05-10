@@ -16,22 +16,44 @@
 
 package io.reactivex.common;
 
-import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Scheduler.Worker;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.OnErrorNotImplementedException;
+import io.reactivex.common.exceptions.ProtocolViolationException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.exceptions.UndeliverableException;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RxJavaCommonPluginsTest {
 
@@ -194,7 +216,7 @@ public class RxJavaCommonPluginsTest {
 
             BooleanSupplier bs = new BooleanSupplier() {
                 @Override
-                public boolean getAsBoolean() throws Exception {
+                public Boolean invoke() {
                     return true;
                 }
             };
@@ -1388,7 +1410,7 @@ public class RxJavaCommonPluginsTest {
         try {
             RxJavaCommonPlugins.setOnBeforeBlocking(new BooleanSupplier() {
                 @Override
-                public boolean getAsBoolean() throws Exception {
+                public Boolean invoke() {
                     throw new IllegalArgumentException();
                 }
             });

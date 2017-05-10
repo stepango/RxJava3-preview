@@ -19,7 +19,9 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 
 public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstream<T, T> {
     final BooleanSupplier until;
@@ -70,7 +72,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         public void onComplete() {
             boolean b;
             try {
-                b = stop.getAsBoolean();
+                b = stop.invoke();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

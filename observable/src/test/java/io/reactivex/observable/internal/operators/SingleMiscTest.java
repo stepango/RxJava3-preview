@@ -13,17 +13,28 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.SingleTransformer;
+
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 public class SingleMiscTest {
     @Test
@@ -144,7 +155,7 @@ public class SingleMiscTest {
         })
         .repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return flag.get();
             }
         })

@@ -3054,7 +3054,7 @@ public class MaybeTest {
 
         Maybe.just(1).repeatUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         }).take(5).test().assertResult(1, 1, 1, 1, 1);
@@ -3086,7 +3086,7 @@ public class MaybeTest {
 
         Maybe.just(1).retryUntil(new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         }).test().assertResult(1);

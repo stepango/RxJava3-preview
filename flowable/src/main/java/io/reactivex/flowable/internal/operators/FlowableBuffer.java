@@ -13,11 +13,15 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
@@ -26,7 +30,8 @@ import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.flowable.internal.utils.*;
+import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import io.reactivex.flowable.internal.utils.QueueDrainHelper;
 
 public final class FlowableBuffer<T, C extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, C> {
     final int size;
@@ -327,7 +332,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
         }
 
         @Override
-        public boolean getAsBoolean() {
+        public Boolean invoke() {
             return cancelled;
         }
 

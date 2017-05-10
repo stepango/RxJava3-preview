@@ -13,16 +13,28 @@
 
 package io.reactivex.common.internal.functions;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import org.junit.Test;
-
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.Functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.internal.functions.Functions.HashSetCallable;
+import io.reactivex.common.internal.functions.Functions.NaturalComparator;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class FunctionsTest {
     @Test
@@ -72,7 +84,7 @@ public class FunctionsTest {
     public void booleanSupplierPredicateReverse() throws Exception {
         BooleanSupplier s = new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return false;
             }
         };
@@ -81,7 +93,7 @@ public class FunctionsTest {
 
         s = new BooleanSupplier() {
             @Override
-            public boolean getAsBoolean() throws Exception {
+            public Boolean invoke() {
                 return true;
             }
         };

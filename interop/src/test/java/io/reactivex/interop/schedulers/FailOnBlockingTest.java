@@ -654,7 +654,7 @@ public class FailOnBlockingTest {
         try {
             RxJavaCommonPlugins.setOnBeforeBlocking(new BooleanSupplier() {
                 @Override
-                public boolean getAsBoolean() throws Exception {
+                public Boolean invoke() {
                     return true;
                 }
             });

@@ -12,10 +12,17 @@
  */
 package io.reactivex.common;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadFactory;
+
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.exceptions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.OnErrorNotImplementedException;
+import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
@@ -26,11 +33,6 @@ import io.reactivex.common.internal.schedulers.IoScheduler;
 import io.reactivex.common.internal.schedulers.NewThreadScheduler;
 import io.reactivex.common.internal.schedulers.SingleScheduler;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.common.Schedulers;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadFactory;
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
  */
@@ -575,7 +577,7 @@ public final class RxJavaCommonPlugins {
         BooleanSupplier f = onBeforeBlocking;
         if (f != null) {
             try {
-                return f.getAsBoolean();
+                return f.invoke();
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
