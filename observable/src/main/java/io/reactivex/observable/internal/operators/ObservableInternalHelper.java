@@ -33,6 +33,7 @@ import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.SingleSource;
+import kotlin.Unit;
 
 /**
  * Helper utility class to support Observable with inner classes.
@@ -131,8 +132,9 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void invoke() {
+        public kotlin.Unit invoke() {
             observer.onComplete();
+            return Unit.INSTANCE;
         }
     }
 

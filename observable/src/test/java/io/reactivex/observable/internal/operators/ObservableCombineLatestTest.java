@@ -52,6 +52,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -1145,8 +1146,9 @@ public class ObservableCombineLatestTest {
                                     })
                                     .doFinally(new Action() {
                                         @Override
-                                        public void invoke() {
+                                        public kotlin.Unit invoke() {
                                             System.out.println("emptyObservable: doFinally");
+                                            return Unit.INSTANCE;
                                         }
                                     }),
                             errorObservable
@@ -1158,8 +1160,9 @@ public class ObservableCombineLatestTest {
                                     })
                                     .doFinally(new Action() {
                                         @Override
-                                        public void invoke() {
+                                        public kotlin.Unit invoke() {
                                             System.out.println("errorObservable: doFinally");
+                                            return Unit.INSTANCE;
                                         }
                                     })),
                     new Function<Object[], Object>() {
@@ -1177,8 +1180,9 @@ public class ObservableCombineLatestTest {
                     })
                     .doFinally(new Action() {
                         @Override
-                        public void invoke() {
+                        public kotlin.Unit invoke() {
                             System.out.println("combineLatestDelayError: doFinally");
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe(testObserver);

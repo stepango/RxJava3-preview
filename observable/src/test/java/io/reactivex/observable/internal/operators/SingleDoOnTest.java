@@ -34,6 +34,7 @@ import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,8 +47,9 @@ public class SingleDoOnTest {
 
         Single.never().doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         }).test(true);
 
@@ -235,8 +237,9 @@ public class SingleDoOnTest {
         final int[] calls = { 0 };
         TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         }));
 
@@ -250,8 +253,9 @@ public class SingleDoOnTest {
         Single.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -267,8 +271,9 @@ public class SingleDoOnTest {
         Single.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -295,7 +300,7 @@ public class SingleDoOnTest {
 
             ps.singleOrError().doOnDispose(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

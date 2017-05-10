@@ -30,6 +30,7 @@ import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -74,8 +75,9 @@ public class CompletableDoOnTest {
         Completable.complete()
             .doOnDispose(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     atomicBoolean.set(true);
+                    return Unit.INSTANCE;
                 }
             })
             .test()

@@ -56,6 +56,7 @@ import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -1283,8 +1284,9 @@ public class FlowableMergeTest {
                     // release latch
                     .doOnComplete(new Action() {
                         @Override
-                        public void invoke() {
+                        public kotlin.Unit invoke() {
                                 latch.countDown();
+                            return Unit.INSTANCE;
                         }
                     }).subscribe();
             boolean a = latch.await(2, TimeUnit.SECONDS);

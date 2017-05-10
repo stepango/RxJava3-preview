@@ -718,7 +718,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new IllegalArgumentException();
             }
         }));
@@ -743,7 +743,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new AssertionError();
             }
         }));
@@ -769,7 +769,7 @@ public class CompositeDisposableTest {
 
         cd.add(Disposables.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         }));

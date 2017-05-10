@@ -52,6 +52,7 @@ import io.reactivex.flowable.ParallelTransformer;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -831,8 +832,9 @@ public class ParallelFlowableTest {
         Flowable.range(1, 20).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 cancelled[0] = true;
+                return Unit.INSTANCE;
             }
         })
         .parallel()
@@ -1016,8 +1018,9 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1035,8 +1038,9 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doAfterTerminated(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1092,8 +1096,9 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .sequential()

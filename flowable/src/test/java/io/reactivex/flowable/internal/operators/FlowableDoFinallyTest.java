@@ -35,6 +35,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -45,8 +46,9 @@ public class FlowableDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() {
+    public kotlin.Unit invoke() {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test
@@ -321,7 +323,7 @@ public class FlowableDoFinallyTest implements Action {
             Flowable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -342,7 +344,7 @@ public class FlowableDoFinallyTest implements Action {
             Flowable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -457,14 +459,16 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("cancel");
+                return Unit.INSTANCE;
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("finally");
+                return Unit.INSTANCE;
             }
         })
         .subscribe(
@@ -482,8 +486,9 @@ public class FlowableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         list.add("onComplete");
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -497,14 +502,16 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.just(1)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("cancel");
+                return Unit.INSTANCE;
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("finally");
+                return Unit.INSTANCE;
             }
         })
         .subscribe(
@@ -522,8 +529,9 @@ public class FlowableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         list.add("onComplete");
+                        return Unit.INSTANCE;
                     }
                 });
 

@@ -28,6 +28,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -72,8 +73,9 @@ public class FlowableTakeLastOneTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsubscribed.set(true);
+                return Unit.INSTANCE;
             }
         };
 

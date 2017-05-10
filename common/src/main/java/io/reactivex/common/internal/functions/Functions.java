@@ -44,6 +44,7 @@ import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.functions.Predicate;
+import kotlin.Unit;
 
 /**
  * Utility methods to convert the BiFunction, Function3..Function9 instances to Function of Object array.
@@ -179,12 +180,13 @@ public final class Functions {
         }
 
         @Override
-        public void invoke() {
+        public Unit invoke() {
             try {
                 future.get();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            return Unit.INSTANCE;
         }
     }
 
@@ -341,12 +343,13 @@ public final class Functions {
         }
 
         @Override
-        public void invoke() {
+        public kotlin.Unit invoke() {
             try {
                 onNotification.accept(Notification.<T>createOnComplete());
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            return Unit.INSTANCE;
         }
     }
 
@@ -701,7 +704,8 @@ public final class Functions {
 
     static final class EmptyAction implements Action {
         @Override
-        public void invoke() {
+        public kotlin.Unit invoke() {
+            return Unit.INSTANCE;
         }
 
         @Override

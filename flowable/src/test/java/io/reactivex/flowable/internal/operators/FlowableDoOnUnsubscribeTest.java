@@ -26,6 +26,7 @@ import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,11 +47,12 @@ public class FlowableDoOnUnsubscribeTest {
                 .interval(50, TimeUnit.MILLISECONDS)
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         // Test that upper stream will be notified for un-subscription
                         // from a child subscriber
                             upperLatch.countDown();
                             upperCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnNext(new Consumer<Long>() {
@@ -62,10 +64,11 @@ public class FlowableDoOnUnsubscribeTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         // Test that lower stream will be notified for a direct un-subscription
                             lowerLatch.countDown();
                             lowerCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -108,10 +111,11 @@ public class FlowableDoOnUnsubscribeTest {
                 .interval(50, TimeUnit.MILLISECONDS)
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         // Test that upper stream will be notified for un-subscription
                             upperLatch.countDown();
                             upperCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnNext(new Consumer<Long>() {
@@ -123,10 +127,11 @@ public class FlowableDoOnUnsubscribeTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         // Test that lower stream will be notified for un-subscription
                             lowerLatch.countDown();
                             lowerCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish()

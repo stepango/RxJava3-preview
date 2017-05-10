@@ -25,6 +25,7 @@ import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,8 +34,9 @@ public class CompletableDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() {
+    public kotlin.Unit invoke() {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test
@@ -79,7 +81,7 @@ public class CompletableDoFinallyTest implements Action {
             Completable.complete()
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

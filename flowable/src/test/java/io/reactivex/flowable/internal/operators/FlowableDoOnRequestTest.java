@@ -25,6 +25,7 @@ import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -38,8 +39,9 @@ public class FlowableDoOnRequestTest {
         //
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         unsubscribed.set(true);
+                        return Unit.INSTANCE;
                     }
                 })
                 //

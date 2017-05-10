@@ -28,6 +28,7 @@ import io.reactivex.observable.Completable;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Single;
+import kotlin.Unit;
 
 public class FailOnBlockingTest {
 
@@ -587,8 +588,9 @@ public class FailOnBlockingTest {
             .subscribeOn(Schedulers.single())
             .doOnComplete(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingGet();
+                    return Unit.INSTANCE;
                 }
             })
             .test()
@@ -610,8 +612,9 @@ public class FailOnBlockingTest {
             .subscribeOn(Schedulers.single())
             .doOnComplete(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();
+                    return Unit.INSTANCE;
                 }
             })
             .test()

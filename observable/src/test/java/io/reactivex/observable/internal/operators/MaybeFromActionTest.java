@@ -27,6 +27,7 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -44,8 +45,9 @@ public class MaybeFromActionTest {
 
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
+                return Unit.INSTANCE;
             }
         })
             .test()
@@ -60,8 +62,9 @@ public class MaybeFromActionTest {
 
         Action run = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
+                return Unit.INSTANCE;
             }
         };
 
@@ -84,8 +87,9 @@ public class MaybeFromActionTest {
 
         Maybe<Object> maybe = Maybe.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -102,7 +106,7 @@ public class MaybeFromActionTest {
     public void fromActionThrows() {
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new UnsupportedOperationException();
             }
         })
@@ -117,8 +121,9 @@ public class MaybeFromActionTest {
 
         Maybe<Void> m = Maybe.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 counter[0]++;
+                return Unit.INSTANCE;
             }
         });
 
@@ -138,13 +143,14 @@ public class MaybeFromActionTest {
 
             TestObserver<Object> to = Maybe.fromAction(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     cdl1.countDown();
                     try {
                         cdl2.await();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+                    return Unit.INSTANCE;
                 }
             }).subscribeOn(Schedulers.single()).test();
 

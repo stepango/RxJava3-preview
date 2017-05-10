@@ -29,6 +29,7 @@ import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
 import io.reactivex.observable.Single;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -155,8 +156,9 @@ public class SingleZipTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 counter.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -179,8 +181,9 @@ public class SingleZipTest {
 
         Single<Integer> source = Single.just(1).doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 counter.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 

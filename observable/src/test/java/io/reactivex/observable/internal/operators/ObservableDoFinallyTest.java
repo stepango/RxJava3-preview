@@ -34,6 +34,7 @@ import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -44,8 +45,9 @@ public class ObservableDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() {
+    public kotlin.Unit invoke() {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test
@@ -320,7 +322,7 @@ public class ObservableDoFinallyTest implements Action {
             Observable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -341,7 +343,7 @@ public class ObservableDoFinallyTest implements Action {
             Observable.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -461,14 +463,16 @@ public class ObservableDoFinallyTest implements Action {
         Observable.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("dispose");
+                return Unit.INSTANCE;
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("finally");
+                return Unit.INSTANCE;
             }
         })
         .subscribe(
@@ -486,8 +490,9 @@ public class ObservableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         list.add("onComplete");
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -501,14 +506,16 @@ public class ObservableDoFinallyTest implements Action {
         Observable.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("dispose");
+                return Unit.INSTANCE;
             }
         })
         .doFinally(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add("finally");
+                return Unit.INSTANCE;
             }
         })
         .subscribe(
@@ -526,8 +533,9 @@ public class ObservableDoFinallyTest implements Action {
                 },
                 new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         list.add("onComplete");
+                        return Unit.INSTANCE;
                     }
                 });
 

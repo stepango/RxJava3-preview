@@ -27,6 +27,7 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -72,8 +73,9 @@ public class DisposablesTest {
             private static final long serialVersionUID = -1517510584253657229L;
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 set(true);
+                return Unit.INSTANCE;
             }
         }
 
@@ -89,7 +91,7 @@ public class DisposablesTest {
         try {
             Disposables.fromAction(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new IllegalArgumentException();
                 }
             }).dispose();
@@ -101,7 +103,7 @@ public class DisposablesTest {
         try {
             Disposables.fromAction(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new InternalError();
                 }
             }).dispose();
@@ -113,7 +115,7 @@ public class DisposablesTest {
         try {
             Disposables.fromAction(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             }).dispose();

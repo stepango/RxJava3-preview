@@ -31,6 +31,7 @@ import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,8 +56,9 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Subscription>() {
             @Override
@@ -92,8 +94,9 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Subscription>() {
             @Override
@@ -132,8 +135,9 @@ public class LambdaSubscriberTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     received.add(100);
+                    return Unit.INSTANCE;
                 }
             }, new Consumer<Subscription>() {
                 @Override
@@ -179,7 +183,7 @@ public class LambdaSubscriberTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             }, new Consumer<Subscription>() {
@@ -236,8 +240,9 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Subscription>() {
             @Override
@@ -281,8 +286,9 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Subscription>() {
             @Override
@@ -342,7 +348,8 @@ public class LambdaSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, new Consumer<Subscription>() {
             @Override

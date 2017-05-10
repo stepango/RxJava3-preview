@@ -26,6 +26,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,8 +35,9 @@ public class MaybeDoFinallyTest implements Action {
     int calls;
 
     @Override
-    public void invoke() {
+    public kotlin.Unit invoke() {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test
@@ -129,7 +131,7 @@ public class MaybeDoFinallyTest implements Action {
             Maybe.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -150,7 +152,7 @@ public class MaybeDoFinallyTest implements Action {
             Maybe.just(1)
             .doFinally(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

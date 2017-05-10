@@ -42,6 +42,7 @@ import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -207,8 +208,9 @@ public class FlowableWindowWithTimeTest {
         .take(10)
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 System.out.println("Main done!");
+                return Unit.INSTANCE;
             }
         })
         .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
@@ -217,8 +219,9 @@ public class FlowableWindowWithTimeTest {
                 return w.startWith(indicator)
                         .doOnComplete(new Action() {
                             @Override
-                            public void invoke() {
+                            public kotlin.Unit invoke() {
                                 System.out.println("inner done: " + wip.incrementAndGet());
+                                return Unit.INSTANCE;
                             }
                         })
                         ;
@@ -549,8 +552,9 @@ public class FlowableWindowWithTimeTest {
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 cancel1.set(true);
+                return Unit.INSTANCE;
             }
         })
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)

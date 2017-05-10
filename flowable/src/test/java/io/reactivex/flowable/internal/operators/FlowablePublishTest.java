@@ -47,6 +47,7 @@ import io.reactivex.flowable.extensions.HasUpstreamPublisher;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -117,8 +118,9 @@ public class FlowablePublishTest {
         Flowable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
+                return Unit.INSTANCE;
             }
         });
 
@@ -140,8 +142,9 @@ public class FlowablePublishTest {
         }).doOnComplete(new Action() {
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed SLOW");
+                return Unit.INSTANCE;
             }
 
         });
@@ -220,8 +223,9 @@ public class FlowablePublishTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         sourceUnsubscribed.set(true);
+                        return Unit.INSTANCE;
                     }
                 }).share();
         ;
@@ -237,8 +241,9 @@ public class FlowablePublishTest {
                 if (valueCount() == 2) {
                     source.doOnCancel(new Action() {
                         @Override
-                        public void invoke() {
+                        public kotlin.Unit invoke() {
                             child2Unsubscribed.set(true);
+                            return Unit.INSTANCE;
                         }
                     }).take(5).subscribe(ts2);
                 }
@@ -248,8 +253,9 @@ public class FlowablePublishTest {
 
         source.doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 child1Unsubscribed.set(true);
+                return Unit.INSTANCE;
             }
         }).take(5)
         .subscribe(ts1);

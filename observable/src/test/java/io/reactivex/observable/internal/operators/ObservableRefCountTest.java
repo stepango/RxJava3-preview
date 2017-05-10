@@ -41,6 +41,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -190,10 +191,11 @@ public class ObservableRefCountTest {
                 })
                 .doOnDispose(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish().refCount();
@@ -235,10 +237,11 @@ public class ObservableRefCountTest {
                 })
                 .doOnDispose(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeLatch.countDown();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -273,10 +276,11 @@ public class ObservableRefCountTest {
         Observable<Long> o = synchronousInterval()
                 .doOnDispose(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             subUnsubCount.decrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnSubscribe(new Consumer<Disposable>() {

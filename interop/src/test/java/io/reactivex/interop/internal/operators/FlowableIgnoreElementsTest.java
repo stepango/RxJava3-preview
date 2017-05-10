@@ -25,6 +25,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.observers.DisposableCompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static io.reactivex.interop.RxJava3Interop.ignoreElements;
 import static org.junit.Assert.assertEquals;
@@ -90,8 +91,9 @@ public class FlowableIgnoreElementsTest {
         ignoreElements(Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsub.set(true);
+                return Unit.INSTANCE;
             }})
             )
             .subscribe().dispose();

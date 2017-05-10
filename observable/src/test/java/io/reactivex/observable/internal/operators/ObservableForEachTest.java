@@ -159,7 +159,7 @@ public class ObservableForEachTest {
             Observable.just(1).forEachWhile(Functions.alwaysTrue(), Functions.emptyConsumer(),
                     new Action() {
                         @Override
-                        public void invoke() {
+                        public kotlin.Unit invoke() {
                             throw new TestException();
                         }
                     });

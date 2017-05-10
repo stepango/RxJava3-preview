@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -69,8 +70,9 @@ public class FlowableDoOnTest {
         final AtomicBoolean r = new AtomicBoolean();
         String output = Flowable.just("one").doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 r.set(true);
+                return Unit.INSTANCE;
             }
         }).blockingSingle();
 
@@ -83,8 +85,9 @@ public class FlowableDoOnTest {
         final AtomicBoolean r = new AtomicBoolean();
         Flowable.<String>error(new TestException()).doOnTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 r.set(true);
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -97,8 +100,9 @@ public class FlowableDoOnTest {
         final AtomicBoolean r = new AtomicBoolean();
         String output = Flowable.just("one").doOnTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 r.set(true);
+                return Unit.INSTANCE;
             }
         }).blockingSingle();
 

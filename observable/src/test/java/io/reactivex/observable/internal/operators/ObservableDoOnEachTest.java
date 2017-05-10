@@ -40,6 +40,7 @@ import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -281,7 +282,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -308,7 +309,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -332,7 +333,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         })
@@ -385,7 +386,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -405,8 +406,9 @@ public class ObservableDoOnEachTest {
         Observable.just(1)
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -429,7 +431,7 @@ public class ObservableDoOnEachTest {
             })
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -454,7 +456,7 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         })
@@ -498,8 +500,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[1]++;
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -528,8 +531,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -557,8 +561,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[1]++;
+                return Unit.INSTANCE;
             }
         })
         .filter(Functions.alwaysTrue())
@@ -588,8 +593,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .filter(Functions.alwaysTrue())
@@ -620,8 +626,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[1]++;
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -654,8 +661,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[1]++;
+                return Unit.INSTANCE;
             }
         })
         .filter(Functions.alwaysTrue())
@@ -689,8 +697,9 @@ public class ObservableDoOnEachTest {
         })
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[1]++;
+                return Unit.INSTANCE;
             }
         })
         .filter(Functions.alwaysTrue())

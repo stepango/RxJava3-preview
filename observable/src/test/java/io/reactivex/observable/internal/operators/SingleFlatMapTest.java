@@ -23,6 +23,7 @@ import io.reactivex.observable.Observable;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,8 +40,9 @@ public class SingleFlatMapTest {
             public Completable apply(Integer t) throws Exception {
                 return Completable.complete().doOnComplete(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         b[0] = true;
+                        return Unit.INSTANCE;
                     }
                 });
             }
@@ -61,8 +63,9 @@ public class SingleFlatMapTest {
             public Completable apply(Integer t) throws Exception {
                 return Completable.complete().doOnComplete(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         b[0] = true;
+                        return Unit.INSTANCE;
                     }
                 });
             }

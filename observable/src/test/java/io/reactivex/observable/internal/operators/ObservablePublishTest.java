@@ -42,6 +42,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.HasUpstreamObservableSource;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -112,8 +113,9 @@ public class ObservablePublishTest {
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
+                return Unit.INSTANCE;
             }
         });
 
@@ -135,8 +137,9 @@ public class ObservablePublishTest {
         }).doOnComplete(new Action() {
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed SLOW");
+                return Unit.INSTANCE;
             }
 
         });
@@ -215,8 +218,9 @@ public class ObservablePublishTest {
                 })
                 .doOnDispose(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         sourceUnsubscribed.set(true);
+                        return Unit.INSTANCE;
                     }
                 }).share();
         ;
@@ -232,8 +236,9 @@ public class ObservablePublishTest {
                 if (valueCount() == 2) {
                     source.doOnDispose(new Action() {
                         @Override
-                        public void invoke() {
+                        public kotlin.Unit invoke() {
                             child2Unsubscribed.set(true);
+                            return Unit.INSTANCE;
                         }
                     }).take(5).subscribe(ts2);
                 }
@@ -243,8 +248,9 @@ public class ObservablePublishTest {
 
         source.doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 child1Unsubscribed.set(true);
+                return Unit.INSTANCE;
             }
         }).take(5)
         .subscribe(ts1);

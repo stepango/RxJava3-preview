@@ -28,6 +28,7 @@ import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,8 +38,9 @@ public class SingleDoAfterTerminateTest {
 
     private final Action afterTerminate = new Action() {
         @Override
-        public void invoke() {
+        public kotlin.Unit invoke() {
             call[0]++;
+            return Unit.INSTANCE;
         }
     };
 
@@ -98,7 +100,7 @@ public class SingleDoAfterTerminateTest {
             Single.just(1)
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

@@ -32,6 +32,7 @@ import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -101,8 +102,9 @@ public class MaybePeekTest {
         }
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 compl[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test();
@@ -140,7 +142,7 @@ public class MaybePeekTest {
             Maybe.just(1)
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

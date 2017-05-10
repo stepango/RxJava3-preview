@@ -46,6 +46,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -660,8 +661,9 @@ public class ObservableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void invoke() {
+                                public kotlin.Unit invoke() {
                                     first.countDown();
+                                    return Unit.INSTANCE;
                                 }
 
                             });
@@ -739,8 +741,9 @@ public class ObservableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void invoke() {
+                                public kotlin.Unit invoke() {
                                     first.countDown();
+                                    return Unit.INSTANCE;
                                 }
 
                             });
@@ -831,8 +834,9 @@ public class ObservableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void invoke() {
+                                public kotlin.Unit invoke() {
                                     first.countDown();
+                                    return Unit.INSTANCE;
                                 }
 
                             });
@@ -1278,8 +1282,9 @@ public class ObservableGroupByTest {
                 return g.doOnComplete(new Action() {
 
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         System.out.println("//////////////////// COMPLETED-A");
+                        return Unit.INSTANCE;
                     }
 
                 }).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
@@ -1304,8 +1309,9 @@ public class ObservableGroupByTest {
                 }).doOnComplete(new Action() {
 
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         System.out.println("//////////////////// COMPLETED-B");
+                        return Unit.INSTANCE;
                     }
 
                 });

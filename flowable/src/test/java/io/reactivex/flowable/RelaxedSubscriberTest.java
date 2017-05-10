@@ -47,6 +47,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.ResourceSubscriber;
 import io.reactivex.flowable.subscribers.SafeSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -638,8 +639,9 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 ts.onComplete();
+                return Unit.INSTANCE;
             }
         });
 
@@ -668,8 +670,9 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 ts.onComplete();
+                return Unit.INSTANCE;
             }
         });
 
@@ -696,8 +699,8 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
-
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         });
 
@@ -730,7 +733,7 @@ public class RelaxedSubscriberTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException("Inner");
             }
         });

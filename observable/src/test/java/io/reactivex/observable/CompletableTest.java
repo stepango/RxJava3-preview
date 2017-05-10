@@ -56,6 +56,7 @@ import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.CompletableSubject;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -594,8 +595,9 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -608,7 +610,7 @@ public class CompletableTest {
     public void fromActionThrows() {
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         });
@@ -1613,8 +1615,9 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1629,8 +1632,9 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1653,7 +1657,7 @@ public class CompletableTest {
     public void doOnCompleteThrows() {
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         });
@@ -1667,8 +1671,9 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1683,8 +1688,9 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1703,8 +1709,9 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1737,7 +1744,7 @@ public class CompletableTest {
     public void doOnDisposeThrows() {
         Completable c = normal.completable.doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         });
@@ -1858,8 +1865,9 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1874,8 +1882,9 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -2289,10 +2298,11 @@ public class CompletableTest {
         final AtomicInteger calls = new AtomicInteger(5);
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
+                return Unit.INSTANCE;
             }
         }).retry();
 
@@ -2324,10 +2334,11 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
+                return Unit.INSTANCE;
             }
         }).retry(5);
 
@@ -2362,10 +2373,11 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
+                return Unit.INSTANCE;
             }
         }).retry(new Predicate<Throwable>() {
             @Override
@@ -2383,10 +2395,11 @@ public class CompletableTest {
 
         Completable c = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
                     throw new TestException();
                 }
+                return Unit.INSTANCE;
             }
         }).retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -2407,8 +2420,9 @@ public class CompletableTest {
                 .delay(100, TimeUnit.MILLISECONDS)
                 .doOnComplete(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         complete.set(true);
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -2431,8 +2445,9 @@ public class CompletableTest {
                 .delay(200, TimeUnit.MILLISECONDS)
                 .doOnComplete(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         complete.set(true);
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -2453,8 +2468,9 @@ public class CompletableTest {
         final AtomicBoolean complete = new AtomicBoolean();
         normal.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 complete.set(true);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -2473,8 +2489,9 @@ public class CompletableTest {
         final AtomicBoolean complete = new AtomicBoolean();
         error.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 complete.set(true);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -2491,7 +2508,8 @@ public class CompletableTest {
     public void subscribeTwoCallbacksFirstNull() {
         normal.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, null);
     }
@@ -2500,7 +2518,8 @@ public class CompletableTest {
     public void subscribeTwoCallbacksSecondNull() {
         normal.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, null);
     }
@@ -2512,7 +2531,7 @@ public class CompletableTest {
             final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
             normal.completable.subscribe(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             }, new Consumer<Throwable>() {
@@ -2533,7 +2552,8 @@ public class CompletableTest {
     public void subscribeTwoCallbacksOnErrorThrows() {
         error.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -2569,8 +2589,9 @@ public class CompletableTest {
 
         normal.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 run.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -2583,8 +2604,9 @@ public class CompletableTest {
 
         error.completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 run.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -2794,9 +2816,10 @@ public class CompletableTest {
         normal.completable.delay(1, TimeUnit.SECONDS)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 name.set(Thread.currentThread().getName());
                 cdl.countDown();
+                return Unit.INSTANCE;
             }
         })
         .unsubscribeOn(Schedulers.computation())
@@ -2864,8 +2887,9 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 complete.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -2918,8 +2942,9 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 complete.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3069,8 +3094,9 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 complete.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3123,8 +3149,9 @@ public class CompletableTest {
 
         c.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 complete.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3282,13 +3309,14 @@ public class CompletableTest {
     public void subscribeOneActionThrowFromOnCompleted() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 normal.completable.subscribe(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         throw new TestException();
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
     }
@@ -3297,11 +3325,12 @@ public class CompletableTest {
     public void subscribeTwoActionsThrowFromOnError() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 error.completable.subscribe(
                 new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
+                        return Unit.INSTANCE;
                     }
                 },
                 new Consumer<Throwable>() {
@@ -3310,6 +3339,7 @@ public class CompletableTest {
                         throw new TestException();
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
     }
@@ -3318,12 +3348,13 @@ public class CompletableTest {
     public void propagateExceptionSubscribeOneAction() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 error.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) {
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
     }
@@ -3385,8 +3416,8 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void invoke() {
-
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         });
 
@@ -3403,10 +3434,11 @@ public class CompletableTest {
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (subscriptionRef.get().isDisposed()) {
                     subscriptionRef.set(null);
                 }
+                return Unit.INSTANCE;
             }
         });
         subscriptionRef.set(completableSubscription);
@@ -3424,7 +3456,8 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         });
 
@@ -3440,8 +3473,8 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void invoke() {
-
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -3462,7 +3495,8 @@ public class CompletableTest {
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -3578,8 +3612,9 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -3594,8 +3629,9 @@ public class CompletableTest {
 
         Completable c = error.completable.doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -3618,7 +3654,7 @@ public class CompletableTest {
     public void doOnCompletedThrows() {
         Completable c = normal.completable.doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         });
@@ -3633,8 +3669,9 @@ public class CompletableTest {
 
         Completable c = normal.completable.doAfterTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 doneAfter.set(complete.get());
+                return Unit.INSTANCE;
             }
         });
 
@@ -3667,8 +3704,9 @@ public class CompletableTest {
 
         Completable c = error.completable.doAfterTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 doneAfter.set(true);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3691,8 +3729,9 @@ public class CompletableTest {
     public void subscribeEmptyOnError() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 error.completable.subscribe();
+                return Unit.INSTANCE;
             }
         });
     }
@@ -3701,12 +3740,14 @@ public class CompletableTest {
     public void subscribeOneActionOnError() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 error.completable.subscribe(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
+                        return Unit.INSTANCE;
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
     }
@@ -3715,8 +3756,9 @@ public class CompletableTest {
     public void propagateExceptionSubscribeEmpty() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 error.completable.toSingleDefault(0).subscribe();
+                return Unit.INSTANCE;
             }
         });
     }
@@ -4024,10 +4066,11 @@ public class CompletableTest {
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (subscriptionRef.get().isDisposed()) {
                     subscriptionRef.set(null);
                 }
+                return Unit.INSTANCE;
             }
         }, Functions.emptyConsumer());
         subscriptionRef.set(completableSubscription);
@@ -4139,13 +4182,14 @@ public class CompletableTest {
     public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
         expectUncaughtTestException(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 normal.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) {
                         throw new TestException();
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
     }

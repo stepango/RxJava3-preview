@@ -20,6 +20,7 @@ import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,8 +32,9 @@ public class CompletableRepeatWhenTest {
 
         Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 counter[0]++;
+                return Unit.INSTANCE;
             }
         })
         .repeatWhen(new Function<Observable<Object>, Observable<Object>>() {

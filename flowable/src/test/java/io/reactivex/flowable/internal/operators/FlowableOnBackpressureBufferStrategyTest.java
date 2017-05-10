@@ -30,6 +30,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static io.reactivex.common.internal.functions.Functions.EMPTY_ACTION;
 import static io.reactivex.flowable.BackpressureOverflowStrategy.DROP_LATEST;
@@ -44,8 +45,9 @@ public class FlowableOnBackpressureBufferStrategyTest {
         final AtomicInteger droppedCount = new AtomicInteger(0);
         Action incrementOnDrop = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 droppedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         };
         TestSubscriber<Long> ts = createTestSubscriber();
@@ -90,8 +92,9 @@ public class FlowableOnBackpressureBufferStrategyTest {
         final AtomicInteger droppedCount = new AtomicInteger(0);
         Action incrementOnDrop = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 droppedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         };
         TestSubscriber<Long> ts = createTestSubscriber();
@@ -182,7 +185,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
         Flowable.range(1, 20)
         .onBackpressureBuffer(8, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         }, BackpressureOverflowStrategy.DROP_OLDEST)

@@ -31,6 +31,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -65,8 +66,9 @@ public class FlowableDoOnLifecycleTest {
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         calls[1]++;
+                        return Unit.INSTANCE;
                     }
                 });
             }
@@ -88,8 +90,9 @@ public class FlowableDoOnLifecycleTest {
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         calls[1]++;
+                        return Unit.INSTANCE;
                     }
                 })
             );
@@ -129,7 +132,7 @@ public class FlowableDoOnLifecycleTest {
                     Functions.EMPTY_LONG_CONSUMER,
                     new Action() {
                         @Override
-                        public void invoke() {
+                        public kotlin.Unit invoke() {
                             throw new TestException();
                         }
                     })

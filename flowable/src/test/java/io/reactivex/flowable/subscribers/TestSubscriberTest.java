@@ -48,6 +48,7 @@ import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -232,8 +233,9 @@ public class TestSubscriberTest {
         //
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         unsub.set(true);
+                        return Unit.INSTANCE;
                     }
                 })
                 //

@@ -49,6 +49,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -663,8 +664,9 @@ public class FlowableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void invoke() {
+                                public kotlin.Unit invoke() {
                                     first.countDown();
+                                    return Unit.INSTANCE;
                                 }
 
                             });
@@ -742,8 +744,9 @@ public class FlowableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void invoke() {
+                                public kotlin.Unit invoke() {
                                     first.countDown();
+                                    return Unit.INSTANCE;
                                 }
 
                             });
@@ -834,8 +837,9 @@ public class FlowableGroupByTest {
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
-                                public void invoke() {
+                                public kotlin.Unit invoke() {
                                     first.countDown();
+                                    return Unit.INSTANCE;
                                 }
 
                             });
@@ -1281,8 +1285,9 @@ public class FlowableGroupByTest {
                 return g.doOnComplete(new Action() {
 
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         System.out.println("//////////////////// COMPLETED-A");
+                        return Unit.INSTANCE;
                     }
 
                 }).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
@@ -1307,8 +1312,9 @@ public class FlowableGroupByTest {
                 }).doOnComplete(new Action() {
 
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         System.out.println("//////////////////// COMPLETED-B");
+                        return Unit.INSTANCE;
                     }
 
                 });

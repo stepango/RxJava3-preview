@@ -34,6 +34,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -225,8 +226,9 @@ public class FlowableUnsubscribeOnTest {
         Flowable.just(1)
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         })
         .unsubscribeOn(Schedulers.single())
@@ -243,8 +245,9 @@ public class FlowableUnsubscribeOnTest {
         Flowable.error(new TestException())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         })
         .unsubscribeOn(Schedulers.single())

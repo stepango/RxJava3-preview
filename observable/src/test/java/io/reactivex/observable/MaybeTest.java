@@ -65,6 +65,7 @@ import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.MaybeSubject;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -613,8 +614,9 @@ public class MaybeTest {
         Maybe.empty().observeOn(Schedulers.single())
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 name[0] = Thread.currentThread().getName();
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -652,8 +654,9 @@ public class MaybeTest {
 
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -666,7 +669,7 @@ public class MaybeTest {
     public void fromActionThrows() {
         Maybe.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         })
@@ -792,7 +795,7 @@ public class MaybeTest {
     public void doOnCompleteThrows() {
         Maybe.empty().doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         })
@@ -806,8 +809,9 @@ public class MaybeTest {
 
         Maybe.just(1).doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test(true)
@@ -829,7 +833,7 @@ public class MaybeTest {
 
             TestObserver<Integer> ts = pp.doOnDispose(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -891,10 +895,11 @@ public class MaybeTest {
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -916,10 +921,11 @@ public class MaybeTest {
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -936,16 +942,18 @@ public class MaybeTest {
         Maybe.empty()
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .doAfterTerminate(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 if (call[0] == 1) {
                     call[0] = -1;
                 }
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -2181,8 +2189,9 @@ public class MaybeTest {
 
         Action onComplete = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 values.add(100);
+                return Unit.INSTANCE;
             }
         };
 

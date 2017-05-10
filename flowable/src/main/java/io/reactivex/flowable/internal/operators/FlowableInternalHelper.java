@@ -30,6 +30,7 @@ import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
+import kotlin.Unit;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -128,8 +129,9 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void invoke() {
+        public kotlin.Unit invoke() {
             subscriber.onComplete();
+            return Unit.INSTANCE;
         }
     }
 

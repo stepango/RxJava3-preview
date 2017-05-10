@@ -32,7 +32,7 @@ public class CompletablePeekTest {
             Completable.complete()
             .doAfterTerminate(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

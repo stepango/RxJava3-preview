@@ -25,6 +25,7 @@ import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -91,8 +92,9 @@ public class ObservableIgnoreElementsTest {
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsub.set(true);
+                return Unit.INSTANCE;
             }})
             .ignoreElements()
             .toObservable()
@@ -158,8 +160,9 @@ public class ObservableIgnoreElementsTest {
         Observable.range(1, 10).concatWith(Observable.<Integer>never())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsub.set(true);
+                return Unit.INSTANCE;
             }})
             .ignoreElements()
             .subscribe()

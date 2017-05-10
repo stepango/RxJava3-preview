@@ -37,6 +37,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -121,8 +122,9 @@ public class FlowableBlockingTest {
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(cons, cons, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 

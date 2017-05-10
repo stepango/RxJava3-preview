@@ -54,6 +54,7 @@ import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.fail;
 
@@ -1237,7 +1238,8 @@ public class FlowableNullTests {
             public void accept(long v) { }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         });
     }
@@ -1249,7 +1251,8 @@ public class FlowableNullTests {
             public void accept(Subscription s) { }
         }, null, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         });
     }

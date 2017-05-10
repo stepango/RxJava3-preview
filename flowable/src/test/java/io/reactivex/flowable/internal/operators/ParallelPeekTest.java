@@ -109,7 +109,7 @@ public class ParallelPeekTest {
             .parallel()
             .doOnCancel(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -133,7 +133,7 @@ public class ParallelPeekTest {
         .parallel()
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new TestException();
             }
         })
@@ -151,7 +151,7 @@ public class ParallelPeekTest {
             .parallel()
             .doAfterTerminated(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })
@@ -178,7 +178,7 @@ public class ParallelPeekTest {
             .parallel()
             .doAfterTerminated(new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             })

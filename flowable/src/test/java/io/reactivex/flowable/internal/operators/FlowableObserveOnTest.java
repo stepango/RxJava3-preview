@@ -58,6 +58,7 @@ import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -155,9 +156,9 @@ public class FlowableObserveOnTest {
         }).doAfterTerminate(new Action() {
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 completedLatch.countDown();
-
+                return Unit.INSTANCE;
             }
         }).subscribe(observer);
 

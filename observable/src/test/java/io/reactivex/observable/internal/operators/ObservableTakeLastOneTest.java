@@ -25,6 +25,7 @@ import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -69,8 +70,9 @@ public class ObservableTakeLastOneTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Action unsubscribeAction = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsubscribed.set(true);
+                return Unit.INSTANCE;
             }
         };
         Observable.just(1)

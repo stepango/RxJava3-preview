@@ -22,6 +22,7 @@ import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static io.reactivex.interop.RxJava3Interop.single;
 
@@ -80,8 +81,9 @@ public class FlowableToSingleTest {
         Single<String> single = single(Flowable.just("Hello World!").doOnCancel(new Action() {
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsubscribed.set(true);
+                return Unit.INSTANCE;
             }}), "");
         single.subscribe(subscriber);
         subscriber.assertComplete();

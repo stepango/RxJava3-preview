@@ -40,6 +40,7 @@ import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.Subject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -204,8 +205,9 @@ public class ObservableWindowWithTimeTest {
         .take(10)
         .doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 System.out.println("Main done!");
+                return Unit.INSTANCE;
             }
         })
         .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
@@ -214,8 +216,9 @@ public class ObservableWindowWithTimeTest {
                 return w.startWith(indicator)
                         .doOnComplete(new Action() {
                             @Override
-                            public void invoke() {
+                            public kotlin.Unit invoke() {
                                 System.out.println("inner done: " + wip.incrementAndGet());
+                                return Unit.INSTANCE;
                             }
                         })
                         ;

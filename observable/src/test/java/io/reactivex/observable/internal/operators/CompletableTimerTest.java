@@ -27,6 +27,7 @@ import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertTrue;
 
@@ -46,12 +47,13 @@ public class CompletableTimerTest {
                 TestObserver<Void> ts = Completable.timer(1, TimeUnit.MILLISECONDS, s)
                 .doOnComplete(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                         try {
                         Thread.sleep(3000);
                         } catch (InterruptedException ex) {
                             interrupted.set(true);
                         }
+                        return Unit.INSTANCE;
                     }
                 })
                 .test();

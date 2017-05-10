@@ -39,6 +39,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -406,8 +407,9 @@ public class FlowableUsingTest {
     private static Action createUnsubAction(final List<String> events) {
         return new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 events.add("unsub");
+                return Unit.INSTANCE;
             }
         };
     }
@@ -444,8 +446,9 @@ public class FlowableUsingTest {
     private static Action createOnCompletedAction(final List<String> events) {
         return new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 events.add("completed");
+                return Unit.INSTANCE;
             }
         };
     }

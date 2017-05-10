@@ -53,6 +53,7 @@ import io.reactivex.flowable.internal.operators.FlowableReplay.SizeBoundReplayBu
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -526,8 +527,9 @@ public class FlowableReplayTest {
             },
             new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     System.out.println("Done");
+                    return Unit.INSTANCE;
                 }
             });
             assertEquals(2, effectCounter.get());

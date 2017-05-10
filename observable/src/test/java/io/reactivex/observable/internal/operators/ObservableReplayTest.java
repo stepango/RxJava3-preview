@@ -50,6 +50,7 @@ import io.reactivex.observable.internal.operators.ObservableReplay.SizeAndTimeBo
 import io.reactivex.observable.internal.operators.ObservableReplay.SizeBoundReplayBuffer;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -523,8 +524,9 @@ public class ObservableReplayTest {
             },
             new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     System.out.println("Done");
+                    return Unit.INSTANCE;
                 }
             });
             assertEquals(2, effectCounter.get());

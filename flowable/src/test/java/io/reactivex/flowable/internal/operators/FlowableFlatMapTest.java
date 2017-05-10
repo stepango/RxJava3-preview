@@ -43,6 +43,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -333,11 +334,12 @@ public class FlowableFlatMapTest {
             }
         }).doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                     int n = subscriptionCount.decrementAndGet();
                     if (n < 0) {
                         Assert.fail("Too many unsubscriptions! " + (n - 1));
                     }
+                return Unit.INSTANCE;
             }
         });
     }

@@ -23,6 +23,7 @@ import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static io.reactivex.interop.RxJava3Interop.ignoreElements;
 import static org.junit.Assert.assertFalse;
@@ -89,8 +90,9 @@ public class FlowableToCompletableTest {
         Completable cmp = ignoreElements(Flowable.just("Hello World!").doOnCancel(new Action() {
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsubscribed.set(true);
+                return Unit.INSTANCE;
             }}));
 
         cmp.subscribe(subscriber);

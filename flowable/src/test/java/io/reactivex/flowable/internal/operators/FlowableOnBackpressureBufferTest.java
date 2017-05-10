@@ -32,6 +32,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -135,8 +136,9 @@ public class FlowableOnBackpressureBufferTest {
         infinite.subscribeOn(Schedulers.computation())
              .onBackpressureBuffer(500, new Action() {
                  @Override
-                 public void invoke() {
+                 public kotlin.Unit invoke() {
                      backpressureCallback.countDown();
+                     return Unit.INSTANCE;
                  }
              })
              /*.take(1000)*/
@@ -173,7 +175,7 @@ public class FlowableOnBackpressureBufferTest {
     private static final Action THROWS_NON_FATAL = new Action() {
 
         @Override
-        public void invoke() {
+        public kotlin.Unit invoke() {
             throw new RuntimeException();
         }
     };
@@ -221,7 +223,8 @@ public class FlowableOnBackpressureBufferTest {
     public void fixBackpressureBufferNullStrategy() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(10, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, null);
     }

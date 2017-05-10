@@ -43,6 +43,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -192,10 +193,11 @@ public class FlowableRefCountTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish().refCount();
@@ -237,10 +239,11 @@ public class FlowableRefCountTest {
                 })
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             unsubscribeLatch.countDown();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -275,10 +278,11 @@ public class FlowableRefCountTest {
         Flowable<Long> o = synchronousInterval()
                 .doOnCancel(new Action() {
                     @Override
-                    public void invoke() {
+                    public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
                             // when we are unsubscribed
                             subUnsubCount.decrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnSubscribe(new Consumer<Subscription>() {

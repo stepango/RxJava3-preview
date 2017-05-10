@@ -37,6 +37,7 @@ import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -404,8 +405,9 @@ public class ObservableUsingTest {
     private static Action createUnsubAction(final List<String> events) {
         return new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 events.add("unsub");
+                return Unit.INSTANCE;
             }
         };
     }
@@ -442,8 +444,9 @@ public class ObservableUsingTest {
     private static Action createOnCompletedAction(final List<String> events) {
         return new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 events.add("completed");
+                return Unit.INSTANCE;
             }
         };
     }

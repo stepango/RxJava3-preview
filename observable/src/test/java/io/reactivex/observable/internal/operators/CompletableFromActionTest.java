@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,8 +35,9 @@ public class CompletableFromActionTest {
 
         Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
+                return Unit.INSTANCE;
             }
         })
             .test()
@@ -50,8 +52,9 @@ public class CompletableFromActionTest {
 
         Action run = new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
+                return Unit.INSTANCE;
             }
         };
 
@@ -74,8 +77,9 @@ public class CompletableFromActionTest {
 
         Completable completable = Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -92,7 +96,7 @@ public class CompletableFromActionTest {
     public void fromActionThrows() {
         Completable.fromAction(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 throw new UnsupportedOperationException();
             }
         })

@@ -35,6 +35,7 @@ import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -216,8 +217,9 @@ public class ObservableUnsubscribeOnTest {
         Observable.just(1)
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         })
         .unsubscribeOn(Schedulers.single())
@@ -234,8 +236,9 @@ public class ObservableUnsubscribeOnTest {
         Observable.error(new TestException())
         .doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 calls[0]++;
+                return Unit.INSTANCE;
             }
         })
         .unsubscribeOn(Schedulers.single())

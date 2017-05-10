@@ -29,6 +29,7 @@ import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -46,9 +47,10 @@ public class SingleUnsubscribeOnTest {
 
         pp.doOnDispose(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 name[0] = Thread.currentThread().getName();
                 cdl.countDown();
+                return Unit.INSTANCE;
             }
         })
         .single(-99)

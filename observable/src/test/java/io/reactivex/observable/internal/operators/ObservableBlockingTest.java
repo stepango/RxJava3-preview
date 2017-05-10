@@ -33,6 +33,7 @@ import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BlockingFirstObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -120,8 +121,9 @@ public class ObservableBlockingTest {
         .subscribeOn(Schedulers.computation())
         .blockingSubscribe(cons, cons, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 

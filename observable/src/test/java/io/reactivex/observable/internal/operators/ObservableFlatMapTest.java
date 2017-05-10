@@ -43,6 +43,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -333,11 +334,12 @@ public class ObservableFlatMapTest {
             }
         }).doOnComplete(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                     int n = subscriptionCount.decrementAndGet();
                     if (n < 0) {
                         Assert.fail("Too many unsubscriptions! " + (n - 1));
                     }
+                return Unit.INSTANCE;
             }
         });
     }

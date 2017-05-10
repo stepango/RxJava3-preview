@@ -31,6 +31,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.DisposableSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -98,8 +99,9 @@ public class FlowableIgnoreElementsTest {
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsub.set(true);
+                return Unit.INSTANCE;
             }})
             .ignoreElements()
 
@@ -215,8 +217,9 @@ public class FlowableIgnoreElementsTest {
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 unsub.set(true);
+                return Unit.INSTANCE;
             }})
             .ignoreElements()
             .subscribe().dispose();

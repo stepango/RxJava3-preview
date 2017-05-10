@@ -30,6 +30,7 @@ import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -54,8 +55,9 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Disposable>() {
             @Override
@@ -91,8 +93,9 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Disposable>() {
             @Override
@@ -130,8 +133,9 @@ public class LambdaObserverTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     received.add(100);
+                    return Unit.INSTANCE;
                 }
             }, new Consumer<Disposable>() {
                 @Override
@@ -176,7 +180,7 @@ public class LambdaObserverTest {
                 }
             }, new Action() {
                 @Override
-                public void invoke() {
+                public kotlin.Unit invoke() {
                     throw new TestException();
                 }
             }, new Consumer<Disposable>() {
@@ -232,8 +236,9 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Disposable>() {
             @Override
@@ -275,8 +280,9 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 received.add(100);
+                return Unit.INSTANCE;
             }
         }, new Consumer<Disposable>() {
             @Override
@@ -335,7 +341,8 @@ public class LambdaObserverTest {
             }
         }, new Action() {
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
+                return Unit.INSTANCE;
             }
         }, new Consumer<Disposable>() {
             @Override

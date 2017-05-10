@@ -25,6 +25,7 @@ import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -40,8 +41,9 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
     }
 
     @Override
-    public void invoke() {
+    public kotlin.Unit invoke() {
         count++;
+        return Unit.INSTANCE;
     }
 
     @Test

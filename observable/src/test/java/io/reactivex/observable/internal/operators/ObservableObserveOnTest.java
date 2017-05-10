@@ -48,6 +48,7 @@ import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -145,9 +146,9 @@ public class ObservableObserveOnTest {
         }).doAfterTerminate(new Action() {
 
             @Override
-            public void invoke() {
+            public kotlin.Unit invoke() {
                 completedLatch.countDown();
-
+                return Unit.INSTANCE;
             }
         }).subscribe(observer);
 
