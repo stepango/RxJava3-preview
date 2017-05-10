@@ -13,18 +13,26 @@
 
 package io.reactivex.common.disposables;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.functions.Action;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CompositeDisposableTest {
 
@@ -291,7 +299,7 @@ public class CompositeDisposableTest {
         csub.remove(csub1); // try removing agian
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testAddingNullDisposableIllegal() {
         CompositeDisposable csub = new CompositeDisposable();
         csub.add(null);
