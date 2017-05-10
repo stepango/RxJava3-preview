@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -29,6 +28,7 @@ import io.reactivex.observable.Maybe;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Single;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 public class FailOnBlockingTest {
 
@@ -586,7 +586,7 @@ public class FailOnBlockingTest {
 
             Completable.complete()
             .subscribeOn(Schedulers.single())
-            .doOnComplete(new Action() {
+                    .doOnComplete(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingGet();
@@ -610,7 +610,7 @@ public class FailOnBlockingTest {
 
             Completable.complete()
             .subscribeOn(Schedulers.single())
-            .doOnComplete(new Action() {
+                    .doOnComplete(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     Completable.complete().delay(10, TimeUnit.SECONDS).blockingAwait();

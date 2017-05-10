@@ -27,7 +27,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -41,6 +40,7 @@ import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -280,7 +280,7 @@ public class ObservableDoOnEachTest {
                     s.onError(new TestException());
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -307,7 +307,7 @@ public class ObservableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -331,7 +331,7 @@ public class ObservableDoOnEachTest {
                 s.onComplete();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -384,7 +384,7 @@ public class ObservableDoOnEachTest {
                     s.onError(new TestException());
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -404,7 +404,7 @@ public class ObservableDoOnEachTest {
     public void onCompleteAfter() {
         final int[] call = { 0 };
         Observable.just(1)
-        .doAfterTerminate(new Action() {
+                .doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -429,7 +429,7 @@ public class ObservableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -454,7 +454,7 @@ public class ObservableDoOnEachTest {
                 s.onComplete();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -498,7 +498,7 @@ public class ObservableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -529,7 +529,7 @@ public class ObservableDoOnEachTest {
                 throw new TestException();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -559,7 +559,7 @@ public class ObservableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -591,7 +591,7 @@ public class ObservableDoOnEachTest {
                 throw new TestException();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -624,7 +624,7 @@ public class ObservableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -659,7 +659,7 @@ public class ObservableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -695,7 +695,7 @@ public class ObservableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;

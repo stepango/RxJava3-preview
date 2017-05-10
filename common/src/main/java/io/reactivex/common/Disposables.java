@@ -16,9 +16,13 @@ package io.reactivex.common;
 import java.util.concurrent.Future;
 
 import io.reactivex.common.annotations.NonNull;
-import io.reactivex.common.functions.Action;
-import io.reactivex.common.internal.disposables.*;
-import io.reactivex.common.internal.functions.*;
+import io.reactivex.common.internal.disposables.ActionDisposable;
+import io.reactivex.common.internal.disposables.DisposedDisposable;
+import io.reactivex.common.internal.disposables.FutureDisposable;
+import io.reactivex.common.internal.disposables.RunnableDisposable;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Utility class to help create disposables by wrapping
@@ -50,7 +54,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     @NonNull
-    public static Disposable fromAction(@NonNull Action run) {
+    public static Disposable fromAction(@NonNull Function0 run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
     }

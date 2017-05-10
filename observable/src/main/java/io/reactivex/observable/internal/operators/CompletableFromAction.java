@@ -16,15 +16,15 @@ package io.reactivex.observable.internal.operators;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
+import kotlin.jvm.functions.Function0;
 
 public final class CompletableFromAction extends Completable {
 
-    final Action run;
+    final Function0 run;
 
-    public CompletableFromAction(Action run) {
+    public CompletableFromAction(Function0 run) {
         this.run = run;
     }
 

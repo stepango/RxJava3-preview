@@ -33,7 +33,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -47,6 +46,7 @@ import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -658,7 +658,7 @@ public class ObservableGroupByTest {
 
                     })
                             // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Action() {
+                            .take(2).doOnComplete(new Function0() {
 
                                 @Override
                                 public kotlin.Unit invoke() {
@@ -738,7 +738,7 @@ public class ObservableGroupByTest {
 
                     })
                             // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Action() {
+                            .take(2).doOnComplete(new Function0() {
 
                                 @Override
                                 public kotlin.Unit invoke() {
@@ -831,7 +831,7 @@ public class ObservableGroupByTest {
 
                     })
                             // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Action() {
+                            .take(2).doOnComplete(new Function0() {
 
                                 @Override
                                 public kotlin.Unit invoke() {
@@ -1279,7 +1279,7 @@ public class ObservableGroupByTest {
 
             @Override
             public Observable<String> apply(final GroupedObservable<Boolean, Integer> g) {
-                return g.doOnComplete(new Action() {
+                return g.doOnComplete(new Function0() {
 
                     @Override
                     public kotlin.Unit invoke() {
@@ -1306,7 +1306,7 @@ public class ObservableGroupByTest {
                         }
                     }
 
-                }).doOnComplete(new Action() {
+                }).doOnComplete(new Function0() {
 
                     @Override
                     public kotlin.Unit invoke() {

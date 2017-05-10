@@ -42,7 +42,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
@@ -66,6 +65,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.MaybeSubject;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -612,7 +612,7 @@ public class MaybeTest {
         final String[] name = { null };
 
         Maybe.empty().observeOn(Schedulers.single())
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 name[0] = Thread.currentThread().getName();
@@ -652,7 +652,7 @@ public class MaybeTest {
     public void fromAction() {
         final int[] call = { 0 };
 
-        Maybe.fromAction(new Action() {
+        Maybe.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -667,7 +667,7 @@ public class MaybeTest {
 
     @Test
     public void fromActionThrows() {
-        Maybe.fromAction(new Action() {
+        Maybe.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -793,7 +793,7 @@ public class MaybeTest {
 
     @Test
     public void doOnCompleteThrows() {
-        Maybe.empty().doOnComplete(new Action() {
+        Maybe.empty().doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -807,7 +807,7 @@ public class MaybeTest {
     public void doOnDispose() {
         final int[] call = { 0 };
 
-        Maybe.just(1).doOnDispose(new Action() {
+        Maybe.just(1).doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -831,7 +831,7 @@ public class MaybeTest {
         try {
             MaybeSubject<Integer> pp = MaybeSubject.create();
 
-            TestObserver<Integer> ts = pp.doOnDispose(new Action() {
+            TestObserver<Integer> ts = pp.doOnDispose(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -893,7 +893,7 @@ public class MaybeTest {
                 call[0]++;
             }
         })
-        .doAfterTerminate(new Action() {
+                .doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (call[0] == 1) {
@@ -919,7 +919,7 @@ public class MaybeTest {
                 call[0]++;
             }
         })
-        .doAfterTerminate(new Action() {
+                .doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (call[0] == 1) {
@@ -940,14 +940,14 @@ public class MaybeTest {
         final int[] call = { 0 };
 
         Maybe.empty()
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
                 return Unit.INSTANCE;
             }
         })
-        .doAfterTerminate(new Action() {
+                .doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (call[0] == 1) {
@@ -2187,7 +2187,7 @@ public class MaybeTest {
     public void subscribeToOnComplete() {
         final List<Integer> values = new ArrayList<Integer>();
 
-        Action onComplete = new Action() {
+        Function0 onComplete = new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 values.add(100);

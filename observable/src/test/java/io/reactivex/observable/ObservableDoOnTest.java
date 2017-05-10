@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -68,7 +68,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.just("one").doOnComplete(new Action() {
+        String output = Observable.just("one").doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 r.set(true);
@@ -83,7 +83,7 @@ public class ObservableDoOnTest {
     @Test
     public void doOnTerminateComplete() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.just("one").doOnTerminate(new Action() {
+        String output = Observable.just("one").doOnTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 r.set(true);
@@ -99,7 +99,7 @@ public class ObservableDoOnTest {
     @Test
     public void doOnTerminateError() {
         final AtomicBoolean r = new AtomicBoolean();
-        Observable.<String>error(new TestException()).doOnTerminate(new Action() {
+        Observable.<String>error(new TestException()).doOnTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 r.set(true);

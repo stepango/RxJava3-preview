@@ -13,19 +13,59 @@
 
 package io.reactivex.observable;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.Notification;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.Timed;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
-import io.reactivex.common.internal.utils.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Cancellable;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import io.reactivex.common.internal.utils.ArrayListSupplier;
+import io.reactivex.common.internal.utils.ExceptionHelper;
+import io.reactivex.common.internal.utils.HashMapSupplier;
 import io.reactivex.observable.extensions.ScalarCallable;
-import io.reactivex.observable.internal.observers.*;
+import io.reactivex.observable.internal.observers.BlockingFirstObserver;
+import io.reactivex.observable.internal.observers.BlockingLastObserver;
+import io.reactivex.observable.internal.observers.ForEachWhileObserver;
+import io.reactivex.observable.internal.observers.FutureObserver;
+import io.reactivex.observable.internal.observers.LambdaObserver;
 import io.reactivex.observable.internal.operators.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.SafeObserver;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function0;
 
 /**
  * The Observable class that is designed similar to the Reactive-Streams Pattern, minus the backpressure,
@@ -3718,7 +3758,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
@@ -3771,7 +3811,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
@@ -3829,7 +3869,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3884,7 +3924,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3940,7 +3980,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3998,7 +4038,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4058,7 +4098,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4123,7 +4163,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4191,7 +4231,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4263,7 +4303,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4340,7 +4380,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4421,7 +4461,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4504,7 +4544,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
@@ -4565,7 +4605,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
@@ -5058,7 +5098,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Function0 onComplete) {
         ObservableBlockingSubscribe.subscribe(this, onNext, onError, onComplete);
     }
 
@@ -6815,7 +6855,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Registers an {@link Action} to be called when this ObservableSource invokes either
+     * Registers an {@link Function0} to be called when this ObservableSource invokes either
      * {@link Observer#onComplete onComplete} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterTerminate.png" alt="">
@@ -6825,15 +6865,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onFinally
-     *            an {@link Action} to be invoked when the source ObservableSource finishes
+     *            an {@link Function0} to be invoked when the source ObservableSource finishes
      * @return an Observable that emits the same items as the source ObservableSource, then invokes the
-     *         {@link Action}
+     *         {@link Function0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doOnTerminate(Action)
+     * @see #doOnTerminate(Function0)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doAfterTerminate(Action onFinally) {
+    public final Observable<T> doAfterTerminate(Function0 onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_ACTION, onFinally);
     }
@@ -6858,7 +6898,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Observable<T> doFinally(Action onFinally) {
+    public final Observable<T> doFinally(Function0 onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableDoFinally<T>(this, onFinally));
     }
@@ -6888,7 +6928,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnDispose(Action onDispose) {
+    public final Observable<T> doOnDispose(Function0 onDispose) {
         return doOnLifecycle(Functions.emptyConsumer(), onDispose);
     }
 
@@ -6908,7 +6948,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnComplete(Action onComplete) {
+    public final Observable<T> doOnComplete(Function0 onComplete) {
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_ACTION);
     }
 
@@ -6927,7 +6967,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    private Observable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete, Action onAfterTerminate) {
+    private Observable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Function0 onComplete, Function0 onAfterTerminate) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -7034,7 +7074,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Action onDispose) {
+    public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Function0 onDispose) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onDispose, "onDispose is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableDoOnLifecycle<T>(this, onSubscribe, onDispose));
@@ -7100,11 +7140,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the action to invoke when the source ObservableSource calls {@code onComplete} or {@code onError}
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doAfterTerminate(Action)
+     * @see #doAfterTerminate(Function0)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnTerminate(final Action onTerminate) {
+    public final Observable<T> doOnTerminate(final Function0 onTerminate) {
         ObjectHelper.requireNonNull(onTerminate, "onTerminate is null");
         return doOnEach(Functions.emptyConsumer(),
                 Functions.actionConsumer(onTerminate), onTerminate,
@@ -7957,7 +7997,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @param onComplete
-     *            {@link Action} to execute when completion is signalled.
+     *            {@link Function0} to execute when completion is signalled.
      * @return
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
@@ -7969,7 +8009,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, Consumer<? super Throwable> onError,
-            final Action onComplete) {
+                                         final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -10763,7 +10803,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete) {
+                                      Function0 onComplete) {
         return subscribe(onNext, onError, onComplete, Functions.emptyConsumer());
     }
 
@@ -10796,7 +10836,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete, Consumer<? super Disposable> onSubscribe) {
+                                      Function0 onComplete, Consumer<? super Disposable> onSubscribe) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -13507,7 +13547,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -13550,7 +13590,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -13595,7 +13635,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnDispose(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">

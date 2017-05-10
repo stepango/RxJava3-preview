@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.Action;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,7 +30,7 @@ public class CompletableTimerTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final AtomicLong atomicLong = new AtomicLong();
-        Completable.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Action() {
+        Completable.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 atomicLong.incrementAndGet();

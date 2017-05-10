@@ -15,12 +15,12 @@ package io.reactivex.observable.internal.operators;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,7 +30,7 @@ public class CompletableRepeatWhenTest {
 
         final int[] counter = { 0 };
 
-        Completable.fromAction(new Action() {
+        Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 counter[0]++;

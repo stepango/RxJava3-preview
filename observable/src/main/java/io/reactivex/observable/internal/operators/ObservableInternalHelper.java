@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.common.Emitter;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Scheduler;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
@@ -34,6 +33,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.SingleSource;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Helper utility class to support Observable with inner classes.
@@ -124,7 +124,7 @@ public final class ObservableInternalHelper {
         }
     }
 
-    static final class ObserverOnComplete<T> implements Action {
+    static final class ObserverOnComplete<T> implements Function0 {
         final Observer<T> observer;
 
         ObserverOnComplete(Observer<T> observer) {
@@ -146,7 +146,7 @@ public final class ObservableInternalHelper {
         return new ObserverOnError<T>(observer);
     }
 
-    public static <T> Action observerOnComplete(Observer<T> observer) {
+    public static <T> Function0 observerOnComplete(Observer<T> observer) {
         return new ObserverOnComplete<T>(observer);
     }
 

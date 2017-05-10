@@ -29,7 +29,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -716,7 +716,7 @@ public class CompositeDisposableTest {
     public void disposeThrowsIAE() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        cd.add(Disposables.fromAction(new Action() {
+        cd.add(Disposables.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new IllegalArgumentException();
@@ -741,7 +741,7 @@ public class CompositeDisposableTest {
     public void disposeThrowsError() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        cd.add(Disposables.fromAction(new Action() {
+        cd.add(Disposables.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new AssertionError();
@@ -767,7 +767,7 @@ public class CompositeDisposableTest {
     public void disposeThrowsCheckedException() {
         CompositeDisposable cd = new CompositeDisposable();
 
-        cd.add(Disposables.fromAction(new Action() {
+        cd.add(Disposables.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();

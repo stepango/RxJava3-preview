@@ -22,7 +22,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SimplePlainQueue;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
@@ -30,15 +29,16 @@ import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function0;
 
 public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithUpstream<T, T> {
     final int bufferSize;
     final boolean unbounded;
     final boolean delayError;
-    final Action onOverflow;
+    final Function0 onOverflow;
 
     public FlowableOnBackpressureBuffer(Flowable<T> source, int bufferSize, boolean unbounded,
-            boolean delayError, Action onOverflow) {
+                                        boolean delayError, Function0 onOverflow) {
         super(source);
         this.bufferSize = bufferSize;
         this.unbounded = unbounded;
@@ -58,7 +58,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         final Subscriber<? super T> actual;
         final SimplePlainQueue<T> queue;
         final boolean delayError;
-        final Action onOverflow;
+        final Function0 onOverflow;
 
         Subscription s;
 
@@ -72,7 +72,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         boolean outputFused;
 
         BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize,
-                boolean unbounded, boolean delayError, Action onOverflow) {
+                                     boolean unbounded, boolean delayError, Function0 onOverflow) {
             this.actual = actual;
             this.onOverflow = onOverflow;
             this.delayError = delayError;

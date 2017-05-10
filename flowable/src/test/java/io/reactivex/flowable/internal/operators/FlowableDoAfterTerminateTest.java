@@ -20,11 +20,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -34,12 +34,12 @@ import static org.mockito.Mockito.verify;
 
 public class FlowableDoAfterTerminateTest {
 
-    private Action aAction0;
+    private Function0 aAction0;
     private Subscriber<String> observer;
 
     @Before
     public void before() {
-        aAction0 = Mockito.mock(Action.class);
+        aAction0 = Mockito.mock(Function0.class);
         observer = TestHelper.mockSubscriber();
     }
 
@@ -87,7 +87,7 @@ public class FlowableDoAfterTerminateTest {
 
     @Test
     public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Exception {
-        Action finallyAction = Mockito.mock(Action.class);
+        Function0 finallyAction = Mockito.mock(Function0.class);
         doThrow(new IllegalStateException()).when(finallyAction).invoke();
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();

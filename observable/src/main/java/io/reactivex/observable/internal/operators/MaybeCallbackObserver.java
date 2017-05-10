@@ -19,10 +19,10 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
+import kotlin.jvm.functions.Function0;
 
 /**
  * MaybeObserver that delegates the onSuccess, onError and onComplete method calls to callbacks.
@@ -40,10 +40,10 @@ implements MaybeObserver<T>, Disposable {
 
     final Consumer<? super Throwable> onError;
 
-    final Action onComplete;
+    final Function0 onComplete;
 
     public MaybeCallbackObserver(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError,
-            Action onComplete) {
+                                 Function0 onComplete) {
         super();
         this.onSuccess = onSuccess;
         this.onError = onError;

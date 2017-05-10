@@ -24,11 +24,11 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,7 +51,7 @@ public class CompletableTimeoutTest {
 
         final int[] call = { 0 };
 
-        Completable other = Completable.fromAction(new Action() {
+        Completable other = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;

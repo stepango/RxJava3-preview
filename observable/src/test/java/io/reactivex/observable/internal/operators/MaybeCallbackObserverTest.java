@@ -23,9 +23,9 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -109,7 +109,7 @@ public class MaybeCallbackObserverTest {
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<Object>(
                     Functions.emptyConsumer(),
                     Functions.emptyConsumer(),
-                    new Action() {
+                    new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                             throw new TestException();

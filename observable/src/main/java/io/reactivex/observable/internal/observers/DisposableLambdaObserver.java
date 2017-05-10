@@ -16,22 +16,22 @@ package io.reactivex.observable.internal.observers;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function0;
 
 public final class DisposableLambdaObserver<T> implements Observer<T>, Disposable {
     final Observer<? super T> actual;
     final Consumer<? super Disposable> onSubscribe;
-    final Action onDispose;
+    final Function0 onDispose;
 
     Disposable s;
 
     public DisposableLambdaObserver(Observer<? super T> actual,
-            Consumer<? super Disposable> onSubscribe,
-            Action onDispose) {
+                                    Consumer<? super Disposable> onSubscribe,
+                                    Function0 onDispose) {
         this.actual = actual;
         this.onSubscribe = onSubscribe;
         this.onDispose = onDispose;

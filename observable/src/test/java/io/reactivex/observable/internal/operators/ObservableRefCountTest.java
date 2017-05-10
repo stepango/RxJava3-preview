@@ -29,7 +29,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -42,6 +41,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -189,7 +189,7 @@ public class ObservableRefCountTest {
                             subscribeCount.incrementAndGet();
                     }
                 })
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
@@ -235,7 +235,7 @@ public class ObservableRefCountTest {
                             subscribeLatch.countDown();
                     }
                 })
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
@@ -274,7 +274,7 @@ public class ObservableRefCountTest {
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Observable<Long> o = synchronousInterval()
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");

@@ -29,7 +29,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -43,6 +42,7 @@ import io.reactivex.observable.extensions.HasUpstreamObservableSource;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -111,7 +111,7 @@ public class ObservablePublishTest {
     public void testBackpressureFastSlow() {
         ConnectableObservable<Integer> is = Observable.range(1, Observable.bufferSize() * 2).publish();
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
@@ -134,7 +134,7 @@ public class ObservablePublishTest {
                 return i;
             }
 
-        }).doOnComplete(new Action() {
+        }).doOnComplete(new Function0() {
 
             @Override
             public kotlin.Unit invoke() {
@@ -216,7 +216,7 @@ public class ObservablePublishTest {
                         sourceEmission.incrementAndGet();
                     }
                 })
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         sourceUnsubscribed.set(true);
@@ -234,7 +234,7 @@ public class ObservablePublishTest {
             @Override
             public void onNext(Integer t) {
                 if (valueCount() == 2) {
-                    source.doOnDispose(new Action() {
+                    source.doOnDispose(new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                             child2Unsubscribed.set(true);
@@ -246,7 +246,7 @@ public class ObservablePublishTest {
             }
         };
 
-        source.doOnDispose(new Action() {
+        source.doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 child1Unsubscribed.set(true);

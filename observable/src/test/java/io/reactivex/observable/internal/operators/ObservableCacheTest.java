@@ -27,7 +27,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -35,6 +34,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -120,7 +120,7 @@ public class ObservableCacheTest {
 
     @Test
     public void testUnsubscribeSource() throws Exception {
-        Action unsubscribe = mock(Action.class);
+        Function0 unsubscribe = mock(Function0.class);
         Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).cache();
         o.subscribe();
         o.subscribe();

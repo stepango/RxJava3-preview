@@ -29,13 +29,13 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -215,7 +215,7 @@ public class ObservableUnsubscribeOnTest {
         final int[] calls = { 0 };
 
         Observable.just(1)
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls[0]++;
@@ -234,7 +234,7 @@ public class ObservableUnsubscribeOnTest {
         final int[] calls = { 0 };
 
         Observable.error(new TestException())
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls[0]++;

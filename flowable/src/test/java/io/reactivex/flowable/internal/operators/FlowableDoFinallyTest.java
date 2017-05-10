@@ -26,7 +26,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -36,12 +35,13 @@ import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class FlowableDoFinallyTest implements Action {
+public class FlowableDoFinallyTest implements Function0 {
 
     int calls;
 
@@ -321,7 +321,7 @@ public class FlowableDoFinallyTest implements Action {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .doFinally(new Action() {
+                    .doFinally(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -342,7 +342,7 @@ public class FlowableDoFinallyTest implements Action {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .doFinally(new Action() {
+                    .doFinally(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -457,14 +457,14 @@ public class FlowableDoFinallyTest implements Action {
         final List<String> list = new ArrayList<String>();
 
         Flowable.error(new TestException())
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("cancel");
                 return Unit.INSTANCE;
             }
         })
-        .doFinally(new Action() {
+                .doFinally(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("finally");
@@ -484,7 +484,7 @@ public class FlowableDoFinallyTest implements Action {
                         list.add("onError");
                     }
                 },
-                new Action() {
+                new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         list.add("onComplete");
@@ -500,14 +500,14 @@ public class FlowableDoFinallyTest implements Action {
         final List<String> list = new ArrayList<String>();
 
         Flowable.just(1)
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("cancel");
                 return Unit.INSTANCE;
             }
         })
-        .doFinally(new Action() {
+                .doFinally(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("finally");
@@ -527,7 +527,7 @@ public class FlowableDoFinallyTest implements Action {
                         list.add("onError");
                     }
                 },
-                new Action() {
+                new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         list.add("onComplete");

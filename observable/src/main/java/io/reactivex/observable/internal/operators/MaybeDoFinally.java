@@ -19,10 +19,10 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Execute an action after an onSuccess, onError, onComplete or a dispose event.
@@ -33,9 +33,9 @@ import io.reactivex.observable.MaybeSource;
 @Experimental
 public final class MaybeDoFinally<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Action onFinally;
+    final Function0 onFinally;
 
-    public MaybeDoFinally(MaybeSource<T> source, Action onFinally) {
+    public MaybeDoFinally(MaybeSource<T> source, Function0 onFinally) {
         super(source);
         this.onFinally = onFinally;
     }
@@ -51,11 +51,11 @@ public final class MaybeDoFinally<T> extends AbstractMaybeWithUpstream<T, T> {
 
         final MaybeObserver<? super T> actual;
 
-        final Action onFinally;
+        final Function0 onFinally;
 
         Disposable d;
 
-        DoFinallyObserver(MaybeObserver<? super T> actual, Action onFinally) {
+        DoFinallyObserver(MaybeObserver<? super T> actual, Function0 onFinally) {
             this.actual = actual;
             this.onFinally = onFinally;
         }

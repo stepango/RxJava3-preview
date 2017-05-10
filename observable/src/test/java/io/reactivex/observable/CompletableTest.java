@@ -42,7 +42,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.BooleanSupplier;
@@ -57,6 +56,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.CompletableSubject;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -593,7 +593,7 @@ public class CompletableTest {
     public void fromActionNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = Completable.fromAction(new Action() {
+        Completable c = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -608,7 +608,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void fromActionThrows() {
-        Completable c = Completable.fromAction(new Action() {
+        Completable c = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -1613,7 +1613,7 @@ public class CompletableTest {
     public void doOnCompleteNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnComplete(new Action() {
+        Completable c = normal.completable.doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -1630,7 +1630,7 @@ public class CompletableTest {
     public void doOnCompleteError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnComplete(new Action() {
+        Completable c = error.completable.doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -1655,7 +1655,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void doOnCompleteThrows() {
-        Completable c = normal.completable.doOnComplete(new Action() {
+        Completable c = normal.completable.doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -1669,7 +1669,7 @@ public class CompletableTest {
     public void doOnDisposeNormalDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnDispose(new Action() {
+        Completable c = normal.completable.doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -1686,7 +1686,7 @@ public class CompletableTest {
     public void doOnDisposeErrorDoesntCall() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnDispose(new Action() {
+        Completable c = error.completable.doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -1707,7 +1707,7 @@ public class CompletableTest {
     public void doOnDisposeChildCancels() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnDispose(new Action() {
+        Completable c = normal.completable.doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -1742,7 +1742,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void doOnDisposeThrows() {
-        Completable c = normal.completable.doOnDispose(new Action() {
+        Completable c = normal.completable.doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -1863,7 +1863,7 @@ public class CompletableTest {
     public void doOnTerminateNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnTerminate(new Action() {
+        Completable c = normal.completable.doOnTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -1880,7 +1880,7 @@ public class CompletableTest {
     public void doOnTerminateError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnTerminate(new Action() {
+        Completable c = error.completable.doOnTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -2296,7 +2296,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void retry5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
-        Completable c = Completable.fromAction(new Action() {
+        Completable c = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
@@ -2332,7 +2332,7 @@ public class CompletableTest {
     public void retryTimes5Normal() {
         final AtomicInteger calls = new AtomicInteger(5);
 
-        Completable c = Completable.fromAction(new Action() {
+        Completable c = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
@@ -2371,7 +2371,7 @@ public class CompletableTest {
     public void retryPredicate5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
 
-        Completable c = Completable.fromAction(new Action() {
+        Completable c = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
@@ -2393,7 +2393,7 @@ public class CompletableTest {
     public void retryWhen5Times() {
         final AtomicInteger calls = new AtomicInteger(5);
 
-        Completable c = Completable.fromAction(new Action() {
+        Completable c = Completable.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (calls.decrementAndGet() != 0) {
@@ -2418,7 +2418,7 @@ public class CompletableTest {
 
         Completable c = normal.completable
                 .delay(100, TimeUnit.MILLISECONDS)
-                .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         complete.set(true);
@@ -2443,7 +2443,7 @@ public class CompletableTest {
 
         Completable c = normal.completable
                 .delay(200, TimeUnit.MILLISECONDS)
-                .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         complete.set(true);
@@ -2466,7 +2466,7 @@ public class CompletableTest {
     public void subscribeTwoCallbacksNormal() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
-        normal.completable.subscribe(new Action() {
+        normal.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 complete.set(true);
@@ -2487,7 +2487,7 @@ public class CompletableTest {
     public void subscribeTwoCallbacksError() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
         final AtomicBoolean complete = new AtomicBoolean();
-        error.completable.subscribe(new Action() {
+        error.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 complete.set(true);
@@ -2506,7 +2506,7 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void subscribeTwoCallbacksFirstNull() {
-        normal.completable.subscribe(new Action() {
+        normal.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -2516,7 +2516,7 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void subscribeTwoCallbacksSecondNull() {
-        normal.completable.subscribe(new Action() {
+        normal.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -2529,7 +2529,7 @@ public class CompletableTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
-            normal.completable.subscribe(new Action() {
+            normal.completable.subscribe(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -2550,7 +2550,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void subscribeTwoCallbacksOnErrorThrows() {
-        error.completable.subscribe(new Action() {
+        error.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -2587,7 +2587,7 @@ public class CompletableTest {
     public void subscribeActionNormal() {
         final AtomicBoolean run = new AtomicBoolean();
 
-        normal.completable.subscribe(new Action() {
+        normal.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 run.set(true);
@@ -2602,7 +2602,7 @@ public class CompletableTest {
     public void subscribeActionError() {
         final AtomicBoolean run = new AtomicBoolean();
 
-        error.completable.subscribe(new Action() {
+        error.completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 run.set(true);
@@ -2615,7 +2615,7 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void subscribeActionNull() {
-        normal.completable.subscribe((Action)null);
+        normal.completable.subscribe((Function0) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2814,7 +2814,7 @@ public class CompletableTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         normal.completable.delay(1, TimeUnit.SECONDS)
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 name.set(Thread.currentThread().getName());
@@ -2885,7 +2885,7 @@ public class CompletableTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
+        c.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 complete.set(true);
@@ -2940,7 +2940,7 @@ public class CompletableTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
+        c.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 complete.set(true);
@@ -3092,7 +3092,7 @@ public class CompletableTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
+        c.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 complete.set(true);
@@ -3147,7 +3147,7 @@ public class CompletableTest {
 
         final AtomicBoolean complete = new AtomicBoolean();
 
-        c.subscribe(new Action() {
+        c.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 complete.set(true);
@@ -3283,7 +3283,7 @@ public class CompletableTest {
         to.assertNoErrors();
     }
 
-    private static void expectUncaughtTestException(Action action) {
+    private static void expectUncaughtTestException(Function0 action) {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(handler);
@@ -3307,10 +3307,10 @@ public class CompletableTest {
 
     @Test
     public void subscribeOneActionThrowFromOnCompleted() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
-                normal.completable.subscribe(new Action() {
+                normal.completable.subscribe(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         throw new TestException();
@@ -3323,11 +3323,11 @@ public class CompletableTest {
 
     @Test
     public void subscribeTwoActionsThrowFromOnError() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 error.completable.subscribe(
-                new Action() {
+                        new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         return Unit.INSTANCE;
@@ -3346,7 +3346,7 @@ public class CompletableTest {
 
     @Test
     public void propagateExceptionSubscribeOneAction() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 error.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
@@ -3414,7 +3414,7 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
+        Disposable completableSubscription = completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -3432,7 +3432,7 @@ public class CompletableTest {
         Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
-        Disposable completableSubscription = completable.subscribe(new Action() {
+        Disposable completableSubscription = completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (subscriptionRef.get().isDisposed()) {
@@ -3454,7 +3454,7 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
+        Disposable completableSubscription = completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -3471,7 +3471,7 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
+        Disposable completableSubscription = completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -3493,7 +3493,7 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
+        Disposable completableSubscription = completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -3610,7 +3610,7 @@ public class CompletableTest {
     public void doOnCompletedNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnComplete(new Action() {
+        Completable c = normal.completable.doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -3627,7 +3627,7 @@ public class CompletableTest {
     public void doOnCompletedError() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = error.completable.doOnComplete(new Action() {
+        Completable c = error.completable.doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls.getAndIncrement();
@@ -3652,7 +3652,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void doOnCompletedThrows() {
-        Completable c = normal.completable.doOnComplete(new Action() {
+        Completable c = normal.completable.doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -3667,7 +3667,7 @@ public class CompletableTest {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         final AtomicBoolean complete = new AtomicBoolean();
 
-        Completable c = normal.completable.doAfterTerminate(new Action() {
+        Completable c = normal.completable.doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 doneAfter.set(complete.get());
@@ -3702,7 +3702,7 @@ public class CompletableTest {
     public void doAfterTerminateWithError() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
 
-        Completable c = error.completable.doAfterTerminate(new Action() {
+        Completable c = error.completable.doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 doneAfter.set(true);
@@ -3727,7 +3727,7 @@ public class CompletableTest {
 
     @Test
     public void subscribeEmptyOnError() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 error.completable.subscribe();
@@ -3738,10 +3738,10 @@ public class CompletableTest {
 
     @Test
     public void subscribeOneActionOnError() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
-                error.completable.subscribe(new Action() {
+                error.completable.subscribe(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         return Unit.INSTANCE;
@@ -3754,7 +3754,7 @@ public class CompletableTest {
 
     @Test
     public void propagateExceptionSubscribeEmpty() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 error.completable.toSingleDefault(0).subscribe();
@@ -4064,7 +4064,7 @@ public class CompletableTest {
         Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
-        Disposable completableSubscription = completable.subscribe(new Action() {
+        Disposable completableSubscription = completable.subscribe(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 if (subscriptionRef.get().isDisposed()) {
@@ -4180,7 +4180,7 @@ public class CompletableTest {
 
     @Test
     public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
-        expectUncaughtTestException(new Action() {
+        expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 normal.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {

@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
@@ -30,6 +29,7 @@ import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
 import io.reactivex.observable.Single;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
@@ -154,7 +154,7 @@ public class SingleZipTest {
     public void noDisposeOnAllSuccess() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Single<Integer> source = Single.just(1).doOnDispose(new Action() {
+        Single<Integer> source = Single.just(1).doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 counter.getAndIncrement();
@@ -179,7 +179,7 @@ public class SingleZipTest {
     public void noDisposeOnAllSuccess2() {
         final AtomicInteger counter = new AtomicInteger();
 
-        Single<Integer> source = Single.just(1).doOnDispose(new Action() {
+        Single<Integer> source = Single.just(1).doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 counter.getAndIncrement();

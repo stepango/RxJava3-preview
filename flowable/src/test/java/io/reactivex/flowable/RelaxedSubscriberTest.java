@@ -35,7 +35,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Predicate;
@@ -48,6 +47,7 @@ import io.reactivex.flowable.subscribers.ResourceSubscriber;
 import io.reactivex.flowable.subscribers.SafeSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -637,7 +637,7 @@ public class RelaxedSubscriberTest {
             public void accept(Throwable e) throws Exception {
                 ts.onError(e);
             }
-        }, new Action() {
+        }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 ts.onComplete();
@@ -668,7 +668,7 @@ public class RelaxedSubscriberTest {
             public void accept(Throwable e) throws Exception {
                 ts.onError(e);
             }
-        }, new Action() {
+        }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 ts.onComplete();
@@ -697,7 +697,7 @@ public class RelaxedSubscriberTest {
             public void accept(Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
-        }, new Action() {
+        }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -731,7 +731,7 @@ public class RelaxedSubscriberTest {
             @Override
             public void accept(Throwable e) throws Exception {
             }
-        }, new Action() {
+        }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException("Inner");

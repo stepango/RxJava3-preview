@@ -34,7 +34,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -51,6 +50,7 @@ import io.reactivex.observable.internal.operators.ObservableReplay.SizeBoundRepl
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -522,7 +522,7 @@ public class ObservableReplayTest {
                     t1.printStackTrace();
                 }
             },
-            new Action() {
+                    new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     System.out.println("Done");
@@ -542,8 +542,8 @@ public class ObservableReplayTest {
     public void testIssue2191_UnsubscribeSource() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Action sourceCompleted = mock(Action.class);
-        Action sourceUnsubscribed = mock(Action.class);
+        Function0 sourceCompleted = mock(Function0.class);
+        Function0 sourceUnsubscribed = mock(Function0.class);
         Observer<Integer> spiedSubscriberBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> spiedSubscriberAfterConnect = TestHelper.mockObserver();
 
@@ -592,8 +592,8 @@ public class ObservableReplayTest {
     public void testIssue2191_SchedulerUnsubscribe() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Action sourceCompleted = mock(Action.class);
-        Action sourceUnsubscribed = mock(Action.class);
+        Function0 sourceCompleted = mock(Function0.class);
+        Function0 sourceUnsubscribed = mock(Function0.class);
         final TestScheduler mockScheduler = new TestScheduler();
 
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
@@ -645,9 +645,9 @@ public class ObservableReplayTest {
     public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Action sourceCompleted = mock(Action.class);
+        Function0 sourceCompleted = mock(Function0.class);
         Consumer<Throwable> sourceError = mock(Consumer.class);
-        Action sourceUnsubscribed = mock(Action.class);
+        Function0 sourceUnsubscribed = mock(Function0.class);
         final TestScheduler mockScheduler = new TestScheduler();
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
@@ -967,7 +967,7 @@ public class ObservableReplayTest {
 
     @Test
     public void testUnsubscribeSource() throws Exception {
-        Action unsubscribe = mock(Action.class);
+        Function0 unsubscribe = mock(Function0.class);
         Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).cache();
         o.subscribe();
         o.subscribe();

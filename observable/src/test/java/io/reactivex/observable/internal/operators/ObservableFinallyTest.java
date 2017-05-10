@@ -16,11 +16,11 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function0;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -28,13 +28,13 @@ import static org.mockito.Mockito.verify;
 
 public class ObservableFinallyTest {
 
-    private Action aAction0;
+    private Function0 aAction0;
     private Observer<String> observer;
 
     // mocking has to be unchecked, unfortunately
     @Before
     public void before() {
-        aAction0 = mock(Action.class);
+        aAction0 = mock(Function0.class);
         observer = TestHelper.mockObserver();
     }
 

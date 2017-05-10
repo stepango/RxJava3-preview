@@ -20,13 +20,13 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Execute a Consumer in each 'rail' for the current element passing through.
@@ -40,21 +40,21 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
     final Consumer<? super T> onNext;
     final Consumer<? super T> onAfterNext;
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
-    final Action onAfterTerminated;
+    final Function0 onComplete;
+    final Function0 onAfterTerminated;
     final Consumer<? super Subscription> onSubscribe;
     final LongConsumer onRequest;
-    final Action onCancel;
+    final Function0 onCancel;
 
     public ParallelPeek(ParallelFlowable<T> source,
-            Consumer<? super T> onNext,
-            Consumer<? super T> onAfterNext,
-            Consumer<? super Throwable> onError,
-            Action onComplete,
-            Action onAfterTerminated,
-            Consumer<? super Subscription> onSubscribe,
-            LongConsumer onRequest,
-            Action onCancel
+                        Consumer<? super T> onNext,
+                        Consumer<? super T> onAfterNext,
+                        Consumer<? super Throwable> onError,
+                        Function0 onComplete,
+                        Function0 onAfterTerminated,
+                        Consumer<? super Subscription> onSubscribe,
+                        LongConsumer onRequest,
+                        Function0 onCancel
     ) {
         this.source = source;
 

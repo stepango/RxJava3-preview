@@ -14,18 +14,104 @@
 package io.reactivex.observable;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Cancellable;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.extensions.FuseToObservable;
 import io.reactivex.observable.internal.observers.BlockingMultiObserver;
-import io.reactivex.observable.internal.operators.*;
+import io.reactivex.observable.internal.operators.MaybeAmb;
+import io.reactivex.observable.internal.operators.MaybeCache;
+import io.reactivex.observable.internal.operators.MaybeCallbackObserver;
+import io.reactivex.observable.internal.operators.MaybeConcatArray;
+import io.reactivex.observable.internal.operators.MaybeConcatArrayDelayError;
+import io.reactivex.observable.internal.operators.MaybeConcatIterable;
+import io.reactivex.observable.internal.operators.MaybeContains;
+import io.reactivex.observable.internal.operators.MaybeCount;
+import io.reactivex.observable.internal.operators.MaybeCreate;
+import io.reactivex.observable.internal.operators.MaybeDefer;
+import io.reactivex.observable.internal.operators.MaybeDelay;
+import io.reactivex.observable.internal.operators.MaybeDelayOtherObservable;
+import io.reactivex.observable.internal.operators.MaybeDelaySubscriptionOtherObservable;
+import io.reactivex.observable.internal.operators.MaybeDetach;
+import io.reactivex.observable.internal.operators.MaybeDoAfterSuccess;
+import io.reactivex.observable.internal.operators.MaybeDoFinally;
+import io.reactivex.observable.internal.operators.MaybeDoOnEvent;
+import io.reactivex.observable.internal.operators.MaybeEmpty;
+import io.reactivex.observable.internal.operators.MaybeEqualSingle;
+import io.reactivex.observable.internal.operators.MaybeError;
+import io.reactivex.observable.internal.operators.MaybeErrorCallable;
+import io.reactivex.observable.internal.operators.MaybeFilter;
+import io.reactivex.observable.internal.operators.MaybeFlatMapBiSelector;
+import io.reactivex.observable.internal.operators.MaybeFlatMapCompletable;
+import io.reactivex.observable.internal.operators.MaybeFlatMapIterableObservable;
+import io.reactivex.observable.internal.operators.MaybeFlatMapNotification;
+import io.reactivex.observable.internal.operators.MaybeFlatMapSingle;
+import io.reactivex.observable.internal.operators.MaybeFlatMapSingleElement;
+import io.reactivex.observable.internal.operators.MaybeFlatten;
+import io.reactivex.observable.internal.operators.MaybeFromAction;
+import io.reactivex.observable.internal.operators.MaybeFromCallable;
+import io.reactivex.observable.internal.operators.MaybeFromCompletable;
+import io.reactivex.observable.internal.operators.MaybeFromFuture;
+import io.reactivex.observable.internal.operators.MaybeFromRunnable;
+import io.reactivex.observable.internal.operators.MaybeFromSingle;
+import io.reactivex.observable.internal.operators.MaybeHide;
+import io.reactivex.observable.internal.operators.MaybeIgnoreElementCompletable;
+import io.reactivex.observable.internal.operators.MaybeIsEmptySingle;
+import io.reactivex.observable.internal.operators.MaybeJust;
+import io.reactivex.observable.internal.operators.MaybeLift;
+import io.reactivex.observable.internal.operators.MaybeMap;
+import io.reactivex.observable.internal.operators.MaybeMergeArray;
+import io.reactivex.observable.internal.operators.MaybeNever;
+import io.reactivex.observable.internal.operators.MaybeObserveOn;
+import io.reactivex.observable.internal.operators.MaybeOnErrorComplete;
+import io.reactivex.observable.internal.operators.MaybeOnErrorNext;
+import io.reactivex.observable.internal.operators.MaybeOnErrorReturn;
+import io.reactivex.observable.internal.operators.MaybePeek;
+import io.reactivex.observable.internal.operators.MaybeSubscribeOn;
+import io.reactivex.observable.internal.operators.MaybeSwitchIfEmpty;
+import io.reactivex.observable.internal.operators.MaybeTakeUntilMaybe;
+import io.reactivex.observable.internal.operators.MaybeTakeUntilObservable;
+import io.reactivex.observable.internal.operators.MaybeTimeoutMaybe;
+import io.reactivex.observable.internal.operators.MaybeTimeoutObservable;
+import io.reactivex.observable.internal.operators.MaybeTimer;
+import io.reactivex.observable.internal.operators.MaybeToObservable;
+import io.reactivex.observable.internal.operators.MaybeToSingle;
+import io.reactivex.observable.internal.operators.MaybeUnsafeCreate;
+import io.reactivex.observable.internal.operators.MaybeUnsubscribeOn;
+import io.reactivex.observable.internal.operators.MaybeUsing;
+import io.reactivex.observable.internal.operators.MaybeZipArray;
+import io.reactivex.observable.internal.operators.MaybeZipIterable;
+import io.reactivex.observable.internal.operators.ObservableConcatMap;
+import io.reactivex.observable.internal.operators.ObservableFlatMap;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Represents a deferred computation and emission of a maybe value or exception.
@@ -533,7 +619,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> fromAction(final Action run) {
+    public static <T> Maybe<T> fromAction(final Function0 run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeFromAction<T>(run));
     }
@@ -2288,7 +2374,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Registers an {@link Action} to be called when this Maybe invokes either
+     * Registers an {@link Function0} to be called when this Maybe invokes either
      * {@link MaybeObserver#onComplete onSuccess},
      * {@link MaybeObserver#onComplete onComplete} or {@link MaybeObserver#onError onError}.
      * <p>
@@ -2299,14 +2385,14 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param onAfterTerminate
-     *            an {@link Action} to be invoked when the source Maybe finishes
+     *            an {@link Function0} to be invoked when the source Maybe finishes
      * @return a Maybe that emits the same items as the source Maybe, then invokes the
-     *         {@link Action}
+     *         {@link Function0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> doAfterTerminate(Action onAfterTerminate) {
+    public final Maybe<T> doAfterTerminate(Function0 onAfterTerminate) {
         return RxJavaObservablePlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
                 Functions.emptyConsumer(), // onSuccess
@@ -2335,7 +2421,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Maybe<T> doFinally(Action onFinally) {
+    public final Maybe<T> doFinally(Function0 onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeDoFinally<T>(this, onFinally));
     }
@@ -2353,7 +2439,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> doOnDispose(Action onDispose) {
+    public final Maybe<T> doOnDispose(Function0 onDispose) {
         return RxJavaObservablePlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
                 Functions.emptyConsumer(), // onSuccess
@@ -2380,7 +2466,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> doOnComplete(Action onComplete) {
+    public final Maybe<T> doOnComplete(Function0 onComplete) {
         return RxJavaObservablePlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
                 Functions.emptyConsumer(), // onSuccess
@@ -3513,7 +3599,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError,
-            Action onComplete) {
+                                      Function0 onComplete) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");

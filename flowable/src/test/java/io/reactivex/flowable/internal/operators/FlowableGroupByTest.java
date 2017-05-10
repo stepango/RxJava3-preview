@@ -36,7 +36,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -50,6 +49,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -661,7 +661,7 @@ public class FlowableGroupByTest {
 
                     })
                             // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Action() {
+                            .take(2).doOnComplete(new Function0() {
 
                                 @Override
                                 public kotlin.Unit invoke() {
@@ -741,7 +741,7 @@ public class FlowableGroupByTest {
 
                     })
                             // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Action() {
+                            .take(2).doOnComplete(new Function0() {
 
                                 @Override
                                 public kotlin.Unit invoke() {
@@ -834,7 +834,7 @@ public class FlowableGroupByTest {
 
                     })
                             // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Action() {
+                            .take(2).doOnComplete(new Function0() {
 
                                 @Override
                                 public kotlin.Unit invoke() {
@@ -1282,7 +1282,7 @@ public class FlowableGroupByTest {
 
             @Override
             public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
-                return g.doOnComplete(new Action() {
+                return g.doOnComplete(new Function0() {
 
                     @Override
                     public kotlin.Unit invoke() {
@@ -1309,7 +1309,7 @@ public class FlowableGroupByTest {
                         }
                     }
 
-                }).doOnComplete(new Action() {
+                }).doOnComplete(new Function0() {
 
                     @Override
                     public kotlin.Unit invoke() {

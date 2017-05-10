@@ -39,7 +39,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
@@ -55,6 +54,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.fail;
 
@@ -1236,7 +1236,7 @@ public class FlowableNullTests {
         just1.doOnLifecycle(null, new LongConsumer() {
             @Override
             public void accept(long v) { }
-        }, new Action() {
+        }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
@@ -1249,7 +1249,7 @@ public class FlowableNullTests {
         just1.doOnLifecycle(new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) { }
-        }, null, new Action() {
+        }, null, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;

@@ -23,7 +23,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.LongConsumer;
@@ -32,6 +31,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +64,7 @@ public class FlowableDoOnLifecycleTest {
                     public void accept(Subscription s) throws Exception {
                         calls[0]++;
                     }
-                }, Functions.EMPTY_LONG_CONSUMER, new Action() {
+                }, Functions.EMPTY_LONG_CONSUMER, new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         calls[1]++;
@@ -88,7 +88,7 @@ public class FlowableDoOnLifecycleTest {
                     public void accept(Subscription s) throws Exception {
                         calls[0]++;
                     }
-                }, Functions.EMPTY_LONG_CONSUMER, new Action() {
+                }, Functions.EMPTY_LONG_CONSUMER, new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         calls[1]++;
@@ -130,7 +130,7 @@ public class FlowableDoOnLifecycleTest {
             Flowable.just(1)
             .doOnLifecycle(Functions.emptyConsumer(),
                     Functions.EMPTY_LONG_CONSUMER,
-                    new Action() {
+                    new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                             throw new TestException();

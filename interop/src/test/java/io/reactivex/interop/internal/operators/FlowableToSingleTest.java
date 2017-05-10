@@ -18,11 +18,11 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static io.reactivex.interop.RxJava3Interop.single;
 
@@ -78,7 +78,7 @@ public class FlowableToSingleTest {
     public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestObserver<String> subscriber = TestObserver.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Single<String> single = single(Flowable.just("Hello World!").doOnCancel(new Action() {
+        Single<String> single = single(Flowable.just("Hello World!").doOnCancel(new Function0() {
 
             @Override
             public kotlin.Unit invoke() {

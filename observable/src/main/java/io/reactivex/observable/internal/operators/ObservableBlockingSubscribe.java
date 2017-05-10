@@ -13,14 +13,21 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
-import io.reactivex.common.internal.utils.*;
-import io.reactivex.observable.*;
-import io.reactivex.observable.internal.observers.*;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import io.reactivex.common.internal.utils.BlockingHelper;
+import io.reactivex.common.internal.utils.BlockingIgnoringReceiver;
+import io.reactivex.common.internal.utils.ExceptionHelper;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.internal.observers.BlockingObserver;
+import io.reactivex.observable.internal.observers.LambdaObserver;
 import io.reactivex.observable.internal.utils.NotificationLite;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Utility methods to consume an Observable in a blocking manner with callbacks or Observer.
@@ -97,7 +104,7 @@ public final class ObservableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(ObservableSource<? extends T> o, final Consumer<? super T> onNext,
-            final Consumer<? super Throwable> onError, final Action onComplete) {
+                                     final Consumer<? super Throwable> onError, final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");

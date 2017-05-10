@@ -17,12 +17,12 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Peeks into the lifecycle of a Maybe and MaybeObserver.
@@ -37,15 +37,15 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
     final Consumer<? super Throwable> onErrorCall;
 
-    final Action onCompleteCall;
+    final Function0 onCompleteCall;
 
-    final Action onAfterTerminate;
+    final Function0 onAfterTerminate;
 
-    final Action onDisposeCall;
+    final Function0 onDisposeCall;
 
     public MaybePeek(MaybeSource<T> source, Consumer<? super Disposable> onSubscribeCall,
-            Consumer<? super T> onSuccessCall, Consumer<? super Throwable> onErrorCall, Action onCompleteCall,
-            Action onAfterTerminate, Action onDispose) {
+                     Consumer<? super T> onSuccessCall, Consumer<? super Throwable> onErrorCall, Function0 onCompleteCall,
+                     Function0 onAfterTerminate, Function0 onDispose) {
         super(source);
         this.onSubscribeCall = onSubscribeCall;
         this.onSuccessCall = onSuccessCall;

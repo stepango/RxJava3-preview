@@ -25,7 +25,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -33,6 +32,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -134,7 +134,7 @@ public class FlowableOnBackpressureBufferTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-             .onBackpressureBuffer(500, new Action() {
+                .onBackpressureBuffer(500, new Function0() {
                  @Override
                  public kotlin.Unit invoke() {
                      backpressureCallback.countDown();
@@ -172,7 +172,7 @@ public class FlowableOnBackpressureBufferTest {
 
     });
 
-    private static final Action THROWS_NON_FATAL = new Action() {
+    private static final Function0 THROWS_NON_FATAL = new Function0() {
 
         @Override
         public kotlin.Unit invoke() {
@@ -221,7 +221,7 @@ public class FlowableOnBackpressureBufferTest {
 
     @Test(expected = NullPointerException.class)
     public void fixBackpressureBufferNullStrategy() throws InterruptedException {
-        Flowable.empty().onBackpressureBuffer(10, new Action() {
+        Flowable.empty().onBackpressureBuffer(10, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;

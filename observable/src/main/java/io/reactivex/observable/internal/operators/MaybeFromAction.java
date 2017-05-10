@@ -19,9 +19,9 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Executes an Action and signals its exception or completes normally.
@@ -30,9 +30,9 @@ import io.reactivex.observable.MaybeObserver;
  */
 public final class MaybeFromAction<T> extends Maybe<T> implements Callable<T> {
 
-    final Action action;
+    final Function0 action;
 
-    public MaybeFromAction(Action action) {
+    public MaybeFromAction(Function0 action) {
         this.action = action;
     }
 

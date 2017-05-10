@@ -22,12 +22,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -106,7 +106,7 @@ public class CompletableDisposeOnTest {
         final int[] call = { 0 };
 
         Completable.complete()
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -129,7 +129,7 @@ public class CompletableDisposeOnTest {
         final int[] call = { 0 };
 
         Completable.error(new TestException())
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;

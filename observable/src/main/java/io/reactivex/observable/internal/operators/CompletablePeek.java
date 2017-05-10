@@ -17,30 +17,30 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.CompletableSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function0;
 
 public final class CompletablePeek extends Completable {
 
     final CompletableSource source;
     final Consumer<? super Disposable> onSubscribe;
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
-    final Action onTerminate;
-    final Action onAfterTerminate;
-    final Action onDispose;
+    final Function0 onComplete;
+    final Function0 onTerminate;
+    final Function0 onAfterTerminate;
+    final Function0 onDispose;
 
     public CompletablePeek(CompletableSource source, Consumer<? super Disposable> onSubscribe,
                            Consumer<? super Throwable> onError,
-                           Action onComplete,
-                           Action onTerminate,
-                           Action onAfterTerminate,
-                           Action onDispose) {
+                           Function0 onComplete,
+                           Function0 onTerminate,
+                           Function0 onAfterTerminate,
+                           Function0 onDispose) {
         this.source = source;
         this.onSubscribe = onSubscribe;
         this.onError = onError;

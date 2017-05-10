@@ -22,10 +22,10 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function0;
 
 public final class ForEachWhileSubscriber<T>
 extends AtomicReference<Subscription>
@@ -38,12 +38,12 @@ implements RelaxedSubscriber<T>, Disposable {
 
     final Consumer<? super Throwable> onError;
 
-    final Action onComplete;
+    final Function0 onComplete;
 
     boolean done;
 
     public ForEachWhileSubscriber(Predicate<? super T> onNext,
-            Consumer<? super Throwable> onError, Action onComplete) {
+                                  Consumer<? super Throwable> onError, Function0 onComplete) {
         this.onNext = onNext;
         this.onError = onError;
         this.onComplete = onComplete;

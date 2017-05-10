@@ -30,7 +30,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -42,6 +41,7 @@ import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -281,7 +281,7 @@ public class FlowableDoOnEachTest {
                     s.onError(new TestException());
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new RuntimeException();
@@ -308,7 +308,7 @@ public class FlowableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new RuntimeException();
@@ -332,7 +332,7 @@ public class FlowableDoOnEachTest {
                 s.onComplete();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new RuntimeException();
@@ -417,7 +417,7 @@ public class FlowableDoOnEachTest {
                     s.onError(new TestException());
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new RuntimeException();
@@ -437,7 +437,7 @@ public class FlowableDoOnEachTest {
     public void onCompleteAfter() {
         final int[] call = { 0 };
         Flowable.just(1)
-        .doAfterTerminate(new Action() {
+                .doAfterTerminate(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -462,7 +462,7 @@ public class FlowableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new RuntimeException();
@@ -487,7 +487,7 @@ public class FlowableDoOnEachTest {
                 s.onComplete();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new RuntimeException();
@@ -530,7 +530,7 @@ public class FlowableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -560,7 +560,7 @@ public class FlowableDoOnEachTest {
                 throw new TestException();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -589,7 +589,7 @@ public class FlowableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -620,7 +620,7 @@ public class FlowableDoOnEachTest {
                 throw new TestException();
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[0]++;
@@ -652,7 +652,7 @@ public class FlowableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -686,7 +686,7 @@ public class FlowableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;
@@ -721,7 +721,7 @@ public class FlowableDoOnEachTest {
                 call[0]++;
             }
         })
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 call[1]++;

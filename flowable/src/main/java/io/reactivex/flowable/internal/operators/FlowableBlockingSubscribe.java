@@ -13,15 +13,23 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import org.reactivestreams.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
-import io.reactivex.common.internal.utils.*;
-import io.reactivex.flowable.internal.subscribers.*;
-import io.reactivex.flowable.internal.utils.*;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import io.reactivex.common.internal.utils.BlockingHelper;
+import io.reactivex.common.internal.utils.BlockingIgnoringReceiver;
+import io.reactivex.common.internal.utils.ExceptionHelper;
+import io.reactivex.flowable.internal.subscribers.BlockingSubscriber;
+import io.reactivex.flowable.internal.subscribers.LambdaSubscriber;
+import io.reactivex.flowable.internal.utils.MaxRequestSubscription;
+import io.reactivex.flowable.internal.utils.NotificationLite;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Utility methods to consume a Publisher in a blocking manner with callbacks or Subscriber.
@@ -103,7 +111,7 @@ public final class FlowableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
-            final Consumer<? super Throwable> onError, final Action onComplete) {
+                                     final Consumer<? super Throwable> onError, final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");

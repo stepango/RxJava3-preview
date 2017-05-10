@@ -30,7 +30,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -38,6 +37,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
@@ -120,7 +120,7 @@ public class FlowableBlockingTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(cons, cons, new Action() {
+                .blockingSubscribe(cons, cons, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add(100);

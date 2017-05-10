@@ -23,10 +23,10 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Execute an action after an onError, onComplete or a cancel event.
@@ -37,9 +37,9 @@ import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 @Experimental
 public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    final Action onFinally;
+    final Function0 onFinally;
 
-    public FlowableDoFinally(Flowable<T> source, Action onFinally) {
+    public FlowableDoFinally(Flowable<T> source, Function0 onFinally) {
         super(source);
         this.onFinally = onFinally;
     }
@@ -59,7 +59,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         final Subscriber<? super T> actual;
 
-        final Action onFinally;
+        final Function0 onFinally;
 
         Subscription s;
 
@@ -67,7 +67,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         boolean syncFused;
 
-        DoFinallySubscriber(Subscriber<? super T> actual, Action onFinally) {
+        DoFinallySubscriber(Subscriber<? super T> actual, Function0 onFinally) {
             this.actual = actual;
             this.onFinally = onFinally;
         }
@@ -164,7 +164,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         final ConditionalSubscriber<? super T> actual;
 
-        final Action onFinally;
+        final Function0 onFinally;
 
         Subscription s;
 
@@ -172,7 +172,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         boolean syncFused;
 
-        DoFinallyConditionalSubscriber(ConditionalSubscriber<? super T> actual, Action onFinally) {
+        DoFinallyConditionalSubscriber(ConditionalSubscriber<? super T> actual, Function0 onFinally) {
             this.actual = actual;
             this.onFinally = onFinally;
         }

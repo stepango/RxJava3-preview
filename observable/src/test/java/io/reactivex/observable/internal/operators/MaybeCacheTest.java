@@ -19,7 +19,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Maybe;
@@ -27,6 +26,7 @@ import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -216,7 +216,7 @@ public class MaybeCacheTest {
 
         Maybe<Integer> source = pp.singleElement().cache();
 
-        source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
+        source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 ts.cancel();

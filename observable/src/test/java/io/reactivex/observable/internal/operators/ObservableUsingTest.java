@@ -28,7 +28,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -38,6 +37,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -295,8 +295,8 @@ public class ObservableUsingTest {
     public void testUsingDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Action completion = createOnCompletedAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 completion = createOnCompletedAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -322,8 +322,8 @@ public class ObservableUsingTest {
     public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Action completion = createOnCompletedAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 completion = createOnCompletedAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -352,7 +352,7 @@ public class ObservableUsingTest {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -380,7 +380,7 @@ public class ObservableUsingTest {
         final List<String> events = new ArrayList<String>();
         final Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -402,8 +402,8 @@ public class ObservableUsingTest {
         assertEquals(Arrays.asList("error", /* "unsub",*/ "disposed"), events);
     }
 
-    private static Action createUnsubAction(final List<String> events) {
-        return new Action() {
+    private static Function0 createUnsubAction(final List<String> events) {
+        return new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 events.add("unsub");
@@ -441,8 +441,8 @@ public class ObservableUsingTest {
         };
     }
 
-    private static Action createOnCompletedAction(final List<String> events) {
-        return new Action() {
+    private static Function0 createOnCompletedAction(final List<String> events) {
+        return new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 events.add("completed");

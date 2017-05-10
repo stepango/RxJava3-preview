@@ -23,7 +23,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -35,6 +34,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +45,7 @@ public class SingleDoOnTest {
     public void doOnDispose() {
         final int[] count = { 0 };
 
-        Single.never().doOnDispose(new Action() {
+        Single.never().doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 count[0]++;
@@ -235,7 +235,7 @@ public class SingleDoOnTest {
     @Test
     public void doOnDisposeDispose() {
         final int[] calls = { 0 };
-        TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Action() {
+        TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls[0]++;
@@ -251,7 +251,7 @@ public class SingleDoOnTest {
         final int[] calls = { 0 };
 
         Single.just(1)
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls[0]++;
@@ -269,7 +269,7 @@ public class SingleDoOnTest {
         final int[] calls = { 0 };
 
         Single.error(new TestException())
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 calls[0]++;
@@ -298,7 +298,7 @@ public class SingleDoOnTest {
         try {
             PublishSubject<Integer> ps = PublishSubject.create();
 
-            ps.singleOrError().doOnDispose(new Action() {
+            ps.singleOrError().doOnDispose(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();

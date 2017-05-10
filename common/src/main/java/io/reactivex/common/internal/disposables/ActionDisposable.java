@@ -13,19 +13,19 @@
 package io.reactivex.common.internal.disposables;
 
 import io.reactivex.common.annotations.NonNull;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.jvm.functions.Function0;
 
-public final class ActionDisposable extends ReferenceDisposable<Action> {
+public final class ActionDisposable extends ReferenceDisposable<Function0> {
 
     private static final long serialVersionUID = -8219729196779211169L;
 
-    public ActionDisposable(Action value) {
+    public ActionDisposable(Function0 value) {
         super(value);
     }
 
     @Override
-    protected void onDisposed(@NonNull Action value) {
+    protected void onDisposed(@NonNull Function0 value) {
         try {
             value.invoke();
         } catch (Throwable ex) {

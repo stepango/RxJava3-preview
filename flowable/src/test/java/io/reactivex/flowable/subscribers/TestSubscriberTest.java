@@ -36,7 +36,6 @@ import io.reactivex.common.TestConsumer;
 import io.reactivex.common.TestConsumer.TestWaitStrategy;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -49,6 +48,7 @@ import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -231,7 +231,7 @@ public class TestSubscriberTest {
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Flowable.just(1)
         //
-                .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         unsub.set(true);

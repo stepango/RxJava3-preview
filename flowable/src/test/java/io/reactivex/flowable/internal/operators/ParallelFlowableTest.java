@@ -36,7 +36,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
@@ -53,6 +52,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -830,7 +830,7 @@ public class ParallelFlowableTest {
     public void filterThrows() throws Exception {
         final boolean[] cancelled = { false };
         Flowable.range(1, 20).concatWith(Flowable.<Integer>never())
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 cancelled[0] = true;
@@ -1016,7 +1016,7 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 count[0]++;
@@ -1036,7 +1036,7 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .doAfterTerminated(new Action() {
+                .doAfterTerminated(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 count[0]++;
@@ -1094,7 +1094,7 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 count[0]++;

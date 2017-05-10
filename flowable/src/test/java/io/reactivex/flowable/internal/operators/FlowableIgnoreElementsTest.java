@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -32,6 +31,7 @@ import io.reactivex.flowable.subscribers.DisposableSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -97,7 +97,7 @@ public class FlowableIgnoreElementsTest {
     public void testUnsubscribesFromUpstreamFlowable() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 unsub.set(true);
@@ -215,7 +215,7 @@ public class FlowableIgnoreElementsTest {
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
         Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 unsub.set(true);

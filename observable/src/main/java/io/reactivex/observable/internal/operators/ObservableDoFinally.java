@@ -18,12 +18,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.internal.observers.BasicIntQueueDisposable;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Execute an action after an onError, onComplete or a dispose event.
@@ -34,9 +34,9 @@ import io.reactivex.observable.internal.observers.BasicIntQueueDisposable;
 @Experimental
 public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream<T, T> {
 
-    final Action onFinally;
+    final Function0 onFinally;
 
-    public ObservableDoFinally(ObservableSource<T> source, Action onFinally) {
+    public ObservableDoFinally(ObservableSource<T> source, Function0 onFinally) {
         super(source);
         this.onFinally = onFinally;
     }
@@ -52,7 +52,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
         final Observer<? super T> actual;
 
-        final Action onFinally;
+        final Function0 onFinally;
 
         Disposable d;
 
@@ -60,7 +60,7 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
         boolean syncFused;
 
-        DoFinallyObserver(Observer<? super T> actual, Action onFinally) {
+        DoFinallyObserver(Observer<? super T> actual, Function0 onFinally) {
             this.actual = actual;
             this.onFinally = onFinally;
         }

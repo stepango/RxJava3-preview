@@ -14,18 +14,96 @@
 package io.reactivex.observable;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Cancellable;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.extensions.*;
-import io.reactivex.observable.internal.observers.*;
-import io.reactivex.observable.internal.operators.*;
+import io.reactivex.observable.extensions.FuseToMaybe;
+import io.reactivex.observable.extensions.FuseToObservable;
+import io.reactivex.observable.internal.observers.BiConsumerSingleObserver;
+import io.reactivex.observable.internal.observers.BlockingMultiObserver;
+import io.reactivex.observable.internal.observers.ConsumerSingleObserver;
+import io.reactivex.observable.internal.observers.FutureSingleObserver;
+import io.reactivex.observable.internal.operators.CompletableFromSingle;
+import io.reactivex.observable.internal.operators.CompletableToObservable;
+import io.reactivex.observable.internal.operators.MaybeFilterSingle;
+import io.reactivex.observable.internal.operators.MaybeFromSingle;
+import io.reactivex.observable.internal.operators.ObservableConcatMap;
+import io.reactivex.observable.internal.operators.ObservableFlatMap;
+import io.reactivex.observable.internal.operators.ObservableSingleSingle;
+import io.reactivex.observable.internal.operators.SingleAmb;
+import io.reactivex.observable.internal.operators.SingleCache;
+import io.reactivex.observable.internal.operators.SingleContains;
+import io.reactivex.observable.internal.operators.SingleCreate;
+import io.reactivex.observable.internal.operators.SingleDefer;
+import io.reactivex.observable.internal.operators.SingleDelay;
+import io.reactivex.observable.internal.operators.SingleDelayWithCompletable;
+import io.reactivex.observable.internal.operators.SingleDelayWithObservable;
+import io.reactivex.observable.internal.operators.SingleDelayWithSingle;
+import io.reactivex.observable.internal.operators.SingleDoAfterSuccess;
+import io.reactivex.observable.internal.operators.SingleDoAfterTerminate;
+import io.reactivex.observable.internal.operators.SingleDoFinally;
+import io.reactivex.observable.internal.operators.SingleDoOnDispose;
+import io.reactivex.observable.internal.operators.SingleDoOnError;
+import io.reactivex.observable.internal.operators.SingleDoOnEvent;
+import io.reactivex.observable.internal.operators.SingleDoOnSubscribe;
+import io.reactivex.observable.internal.operators.SingleDoOnSuccess;
+import io.reactivex.observable.internal.operators.SingleEquals;
+import io.reactivex.observable.internal.operators.SingleError;
+import io.reactivex.observable.internal.operators.SingleFlatMap;
+import io.reactivex.observable.internal.operators.SingleFlatMapCompletable;
+import io.reactivex.observable.internal.operators.SingleFlatMapIterableObservable;
+import io.reactivex.observable.internal.operators.SingleFlatMapMaybe;
+import io.reactivex.observable.internal.operators.SingleFromCallable;
+import io.reactivex.observable.internal.operators.SingleFromUnsafeSource;
+import io.reactivex.observable.internal.operators.SingleHide;
+import io.reactivex.observable.internal.operators.SingleInternalHelper;
+import io.reactivex.observable.internal.operators.SingleJust;
+import io.reactivex.observable.internal.operators.SingleLift;
+import io.reactivex.observable.internal.operators.SingleMap;
+import io.reactivex.observable.internal.operators.SingleNever;
+import io.reactivex.observable.internal.operators.SingleObserveOn;
+import io.reactivex.observable.internal.operators.SingleOnErrorReturn;
+import io.reactivex.observable.internal.operators.SingleResumeNext;
+import io.reactivex.observable.internal.operators.SingleSubscribeOn;
+import io.reactivex.observable.internal.operators.SingleTakeUntil;
+import io.reactivex.observable.internal.operators.SingleTimeout;
+import io.reactivex.observable.internal.operators.SingleTimer;
+import io.reactivex.observable.internal.operators.SingleToObservable;
+import io.reactivex.observable.internal.operators.SingleUnsubscribeOn;
+import io.reactivex.observable.internal.operators.SingleUsing;
+import io.reactivex.observable.internal.operators.SingleZipArray;
+import io.reactivex.observable.internal.operators.SingleZipIterable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function0;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -1689,7 +1767,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Registers an {@link Action} to be called after this Single invokes either onSuccess or onError.
+     * Registers an {@link Function0} to be called after this Single invokes either onSuccess or onError.
      * * <p>Note that the {@code doAfterSuccess} action is shared between subscriptions and as such
      * should be thread-safe.</p>
      * <p>
@@ -1700,16 +1778,16 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      *
      * @param onAfterTerminate
-     *            an {@link Action} to be invoked when the source Single finishes
+     *            an {@link Function0} to be invoked when the source Single finishes
      * @return a Single that emits the same items as the source Single, then invokes the
-     *         {@link Action}
+     *         {@link Function0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @since 2.0.6 - experimental
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Single<T> doAfterTerminate(Action onAfterTerminate) {
+    public final Single<T> doAfterTerminate(Function0 onAfterTerminate) {
         ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoAfterTerminate<T>(this, onAfterTerminate));
     }
@@ -1732,7 +1810,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Single<T> doFinally(Action onFinally) {
+    public final Single<T> doFinally(Function0 onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoFinally<T>(this, onFinally));
     }
@@ -1823,7 +1901,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnDispose(final Action onDispose) {
+    public final Single<T> doOnDispose(final Function0 onDispose) {
         ObjectHelper.requireNonNull(onDispose, "onDispose is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoOnDispose<T>(this, onDispose));
     }

@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.Emitter;
 import io.reactivex.common.Scheduler;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
@@ -31,6 +30,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -121,7 +121,7 @@ public final class FlowableInternalHelper {
         }
     }
 
-    static final class SubscriberOnComplete<T> implements Action {
+    static final class SubscriberOnComplete<T> implements Function0 {
         final Subscriber<T> subscriber;
 
         SubscriberOnComplete(Subscriber<T> subscriber) {
@@ -143,7 +143,7 @@ public final class FlowableInternalHelper {
         return new SubscriberOnError<T>(subscriber);
     }
 
-    public static <T> Action subscriberOnComplete(Subscriber<T> subscriber) {
+    public static <T> Function0 subscriberOnComplete(Subscriber<T> subscriber) {
         return new SubscriberOnComplete<T>(subscriber);
     }
 

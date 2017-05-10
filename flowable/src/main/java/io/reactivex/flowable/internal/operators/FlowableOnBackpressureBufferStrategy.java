@@ -25,11 +25,11 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.BackpressureOverflowStrategy;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Handle backpressure with a bounded buffer and custom strategy.
@@ -40,12 +40,12 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
     final long bufferSize;
 
-    final Action onOverflow;
+    final Function0 onOverflow;
 
     final BackpressureOverflowStrategy strategy;
 
     public FlowableOnBackpressureBufferStrategy(Flowable<T> source,
-            long bufferSize, Action onOverflow, BackpressureOverflowStrategy strategy) {
+                                                long bufferSize, Function0 onOverflow, BackpressureOverflowStrategy strategy) {
         super(source);
         this.bufferSize = bufferSize;
         this.onOverflow = onOverflow;
@@ -65,7 +65,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
         final Subscriber<? super T> actual;
 
-        final Action onOverflow;
+        final Function0 onOverflow;
 
         final BackpressureOverflowStrategy strategy;
 
@@ -82,8 +82,8 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         volatile boolean done;
         Throwable error;
 
-        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
-                BackpressureOverflowStrategy strategy, long bufferSize) {
+        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Function0 onOverflow,
+                                               BackpressureOverflowStrategy strategy, long bufferSize) {
             this.actual = actual;
             this.onOverflow = onOverflow;
             this.strategy = strategy;

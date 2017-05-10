@@ -12,18 +12,76 @@
  */
 package io.reactivex.observable;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Cancellable;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.extensions.*;
-import io.reactivex.observable.internal.observers.*;
-import io.reactivex.observable.internal.operators.*;
+import io.reactivex.observable.extensions.FuseToMaybe;
+import io.reactivex.observable.extensions.FuseToObservable;
+import io.reactivex.observable.internal.observers.BlockingMultiObserver;
+import io.reactivex.observable.internal.observers.CallbackCompletableObserver;
+import io.reactivex.observable.internal.observers.EmptyCompletableObserver;
+import io.reactivex.observable.internal.operators.CompletableAmb;
+import io.reactivex.observable.internal.operators.CompletableCache;
+import io.reactivex.observable.internal.operators.CompletableConcat;
+import io.reactivex.observable.internal.operators.CompletableConcatArray;
+import io.reactivex.observable.internal.operators.CompletableConcatIterable;
+import io.reactivex.observable.internal.operators.CompletableCreate;
+import io.reactivex.observable.internal.operators.CompletableDefer;
+import io.reactivex.observable.internal.operators.CompletableDelay;
+import io.reactivex.observable.internal.operators.CompletableDisposeOn;
+import io.reactivex.observable.internal.operators.CompletableDoFinally;
+import io.reactivex.observable.internal.operators.CompletableDoOnEvent;
+import io.reactivex.observable.internal.operators.CompletableEmpty;
+import io.reactivex.observable.internal.operators.CompletableError;
+import io.reactivex.observable.internal.operators.CompletableErrorSupplier;
+import io.reactivex.observable.internal.operators.CompletableFromAction;
+import io.reactivex.observable.internal.operators.CompletableFromCallable;
+import io.reactivex.observable.internal.operators.CompletableFromObservable;
+import io.reactivex.observable.internal.operators.CompletableFromRunnable;
+import io.reactivex.observable.internal.operators.CompletableFromSingle;
+import io.reactivex.observable.internal.operators.CompletableFromUnsafeSource;
+import io.reactivex.observable.internal.operators.CompletableHide;
+import io.reactivex.observable.internal.operators.CompletableLift;
+import io.reactivex.observable.internal.operators.CompletableMerge;
+import io.reactivex.observable.internal.operators.CompletableMergeArray;
+import io.reactivex.observable.internal.operators.CompletableMergeDelayErrorArray;
+import io.reactivex.observable.internal.operators.CompletableMergeDelayErrorIterable;
+import io.reactivex.observable.internal.operators.CompletableMergeIterable;
+import io.reactivex.observable.internal.operators.CompletableNever;
+import io.reactivex.observable.internal.operators.CompletableObserveOn;
+import io.reactivex.observable.internal.operators.CompletableOnErrorComplete;
+import io.reactivex.observable.internal.operators.CompletablePeek;
+import io.reactivex.observable.internal.operators.CompletableResumeNext;
+import io.reactivex.observable.internal.operators.CompletableSubscribeOn;
+import io.reactivex.observable.internal.operators.CompletableTimeout;
+import io.reactivex.observable.internal.operators.CompletableTimer;
+import io.reactivex.observable.internal.operators.CompletableToObservable;
+import io.reactivex.observable.internal.operators.CompletableToSingle;
+import io.reactivex.observable.internal.operators.CompletableUsing;
+import io.reactivex.observable.internal.operators.MaybeDelayWithCompletable;
+import io.reactivex.observable.internal.operators.MaybeFromCompletable;
+import io.reactivex.observable.internal.operators.ObservableDelaySubscriptionOther;
+import io.reactivex.observable.internal.operators.SingleDelayWithCompletable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.
@@ -299,7 +357,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable fromAction(final Action run) {
+    public static Completable fromAction(final Function0 run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return RxJavaObservablePlugins.onAssembly(new CompletableFromAction(run));
     }
@@ -1016,7 +1074,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnComplete(Action onComplete) {
+    public final Completable doOnComplete(Function0 onComplete) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
                 onComplete, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
@@ -1035,7 +1093,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnDispose(Action onDispose) {
+    public final Completable doOnDispose(Function0 onDispose) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, onDispose);
@@ -1096,10 +1154,10 @@ public abstract class Completable implements CompletableSource {
     private Completable doOnLifecycle(
             final Consumer<? super Disposable> onSubscribe,
             final Consumer<? super Throwable> onError,
-            final Action onComplete,
-            final Action onTerminate,
-            final Action onAfterTerminate,
-            final Action onDispose) {
+            final Function0 onComplete,
+            final Function0 onTerminate,
+            final Function0 onAfterTerminate,
+            final Function0 onDispose) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -1140,7 +1198,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnTerminate(final Action onTerminate) {
+    public final Completable doOnTerminate(final Function0 onTerminate) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION, onTerminate,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
@@ -1158,7 +1216,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doAfterTerminate(final Action onAfterTerminate) {
+    public final Completable doAfterTerminate(final Function0 onAfterTerminate) {
         return doOnLifecycle(
                 Functions.emptyConsumer(),
                 Functions.emptyConsumer(),
@@ -1185,7 +1243,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Completable doFinally(Action onFinally) {
+    public final Completable doFinally(Function0 onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaObservablePlugins.onAssembly(new CompletableDoFinally(this, onFinally));
     }
@@ -1605,7 +1663,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError) {
+    public final Disposable subscribe(final Function0 onComplete, final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 
@@ -1630,7 +1688,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Action onComplete) {
+    public final Disposable subscribe(final Function0 onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 
         CallbackCompletableObserver s = new CallbackCompletableObserver(onComplete);

@@ -22,7 +22,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
@@ -30,6 +29,7 @@ import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -45,7 +45,7 @@ public class SingleUnsubscribeOnTest {
 
         final CountDownLatch cdl = new CountDownLatch(1);
 
-        pp.doOnDispose(new Action() {
+        pp.doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 name[0] = Thread.currentThread().getName();

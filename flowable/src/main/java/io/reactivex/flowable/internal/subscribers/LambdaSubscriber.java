@@ -22,21 +22,21 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function0;
 
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription> implements RelaxedSubscriber<T>, Subscription, Disposable {
 
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
+    final Function0 onComplete;
     final Consumer<? super Subscription> onSubscribe;
 
     public LambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete,
-            Consumer<? super Subscription> onSubscribe) {
+                            Function0 onComplete,
+                            Consumer<? super Subscription> onSubscribe) {
         super();
         this.onNext = onNext;
         this.onError = onError;

@@ -19,10 +19,10 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.CompletableObserver;
+import kotlin.jvm.functions.Function0;
 
 public final class CallbackCompletableObserver
 extends AtomicReference<Disposable> implements CompletableObserver, Disposable, Consumer<Throwable> {
@@ -31,14 +31,14 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
     private static final long serialVersionUID = -4361286194466301354L;
 
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
+    final Function0 onComplete;
 
-    public CallbackCompletableObserver(Action onComplete) {
+    public CallbackCompletableObserver(Function0 onComplete) {
         this.onError = this;
         this.onComplete = onComplete;
     }
 
-    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Action onComplete) {
+    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Function0 onComplete) {
         this.onError = onError;
         this.onComplete = onComplete;
     }

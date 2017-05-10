@@ -19,11 +19,11 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Execute an action after an onSuccess, onError or a dispose event.
@@ -36,9 +36,9 @@ public final class SingleDoFinally<T> extends Single<T> {
 
     final SingleSource<T> source;
 
-    final Action onFinally;
+    final Function0 onFinally;
 
-    public SingleDoFinally(SingleSource<T> source, Action onFinally) {
+    public SingleDoFinally(SingleSource<T> source, Function0 onFinally) {
         this.source = source;
         this.onFinally = onFinally;
     }
@@ -54,11 +54,11 @@ public final class SingleDoFinally<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        final Action onFinally;
+        final Function0 onFinally;
 
         Disposable d;
 
-        DoFinallyObserver(SingleObserver<? super T> actual, Action onFinally) {
+        DoFinallyObserver(SingleObserver<? super T> actual, Function0 onFinally) {
             this.actual = actual;
             this.onFinally = onFinally;
         }

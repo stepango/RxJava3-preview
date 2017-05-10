@@ -31,7 +31,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -43,6 +42,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -206,7 +206,7 @@ public class FlowableWindowWithTimeTest {
         FlowableWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 System.out.println("Main done!");
@@ -217,7 +217,7 @@ public class FlowableWindowWithTimeTest {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> w) {
                 return w.startWith(indicator)
-                        .doOnComplete(new Action() {
+                        .doOnComplete(new Function0() {
                             @Override
                             public kotlin.Unit invoke() {
                                 System.out.println("inner done: " + wip.incrementAndGet());
@@ -550,7 +550,7 @@ public class FlowableWindowWithTimeTest {
     public void restartTimerMany() throws Exception {
         final AtomicBoolean cancel1 = new AtomicBoolean();
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
-        .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 cancel1.set(true);

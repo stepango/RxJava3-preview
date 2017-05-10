@@ -19,22 +19,22 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function0;
 
 public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
 
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
+    final Function0 onComplete;
     final Consumer<? super Disposable> onSubscribe;
 
     public LambdaObserver(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete,
-            Consumer<? super Disposable> onSubscribe) {
+                          Function0 onComplete,
+                          Consumer<? super Disposable> onSubscribe) {
         super();
         this.onNext = onNext;
         this.onError = onError;

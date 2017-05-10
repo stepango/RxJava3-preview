@@ -21,11 +21,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +37,7 @@ public class FlowableDoOnRequestTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Flowable.just(1).concatWith(Flowable.<Integer>never())
         //
-                .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         unsubscribed.set(true);

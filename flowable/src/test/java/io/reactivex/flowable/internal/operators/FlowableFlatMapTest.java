@@ -34,7 +34,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -44,6 +43,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -332,7 +332,7 @@ public class FlowableFlatMapTest {
                         Assert.fail("Too many subscriptions! " + (n + 1));
                     }
             }
-        }).doOnComplete(new Action() {
+        }).doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                     int n = subscriptionCount.decrementAndGet();

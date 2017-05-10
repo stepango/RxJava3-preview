@@ -26,7 +26,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -34,6 +33,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BlockingFirstObserver;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -119,7 +119,7 @@ public class ObservableBlockingTest {
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(cons, cons, new Action() {
+                .blockingSubscribe(cons, cons, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add(100);

@@ -33,7 +33,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -53,6 +52,7 @@ import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -1144,7 +1144,7 @@ public class ObservableCombineLatestTest {
                                             System.out.println("emptyObservable: " + integerNotification);
                                         }
                                     })
-                                    .doFinally(new Action() {
+                                    .doFinally(new Function0() {
                                         @Override
                                         public kotlin.Unit invoke() {
                                             System.out.println("emptyObservable: doFinally");
@@ -1158,7 +1158,7 @@ public class ObservableCombineLatestTest {
                                             System.out.println("errorObservable: " + integerNotification);
                                         }
                                     })
-                                    .doFinally(new Action() {
+                                    .doFinally(new Function0() {
                                         @Override
                                         public kotlin.Unit invoke() {
                                             System.out.println("errorObservable: doFinally");
@@ -1178,7 +1178,7 @@ public class ObservableCombineLatestTest {
                             System.out.println("combineLatestDelayError: " + integerNotification);
                         }
                     })
-                    .doFinally(new Action() {
+                    .doFinally(new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                             System.out.println("combineLatestDelayError: doFinally");

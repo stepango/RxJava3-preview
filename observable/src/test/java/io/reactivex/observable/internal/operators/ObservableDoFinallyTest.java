@@ -23,7 +23,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -35,12 +34,13 @@ import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ObservableDoFinallyTest implements Action {
+public class ObservableDoFinallyTest implements Function0 {
 
     int calls;
 
@@ -320,7 +320,7 @@ public class ObservableDoFinallyTest implements Action {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Observable.just(1)
-            .doFinally(new Action() {
+                    .doFinally(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -341,7 +341,7 @@ public class ObservableDoFinallyTest implements Action {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Observable.just(1)
-            .doFinally(new Action() {
+                    .doFinally(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -461,14 +461,14 @@ public class ObservableDoFinallyTest implements Action {
         final List<String> list = new ArrayList<String>();
 
         Observable.error(new TestException())
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("dispose");
                 return Unit.INSTANCE;
             }
         })
-        .doFinally(new Action() {
+                .doFinally(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("finally");
@@ -488,7 +488,7 @@ public class ObservableDoFinallyTest implements Action {
                         list.add("onError");
                     }
                 },
-                new Action() {
+                new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         list.add("onComplete");
@@ -504,14 +504,14 @@ public class ObservableDoFinallyTest implements Action {
         final List<String> list = new ArrayList<String>();
 
         Observable.just(1)
-        .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("dispose");
                 return Unit.INSTANCE;
             }
         })
-        .doFinally(new Action() {
+                .doFinally(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 list.add("finally");
@@ -531,7 +531,7 @@ public class ObservableDoFinallyTest implements Action {
                         list.add("onError");
                     }
                 },
-                new Action() {
+                new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         list.add("onComplete");

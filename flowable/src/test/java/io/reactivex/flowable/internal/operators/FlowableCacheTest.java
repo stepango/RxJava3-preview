@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
@@ -36,6 +35,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -147,7 +147,7 @@ public class FlowableCacheTest {
 
     @Test
     public void testUnsubscribeSource() throws Exception {
-        Action unsubscribe = mock(Action.class);
+        Function0 unsubscribe = mock(Function0.class);
         Flowable<Integer> o = Flowable.just(1).doOnCancel(unsubscribe).cache();
         o.subscribe();
         o.subscribe();

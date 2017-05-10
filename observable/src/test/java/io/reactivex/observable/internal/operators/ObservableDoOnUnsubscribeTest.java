@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,7 +45,7 @@ public class ObservableDoOnUnsubscribeTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         // Test that upper stream will be notified for un-subscription
@@ -62,7 +62,7 @@ public class ObservableDoOnUnsubscribeTest {
                             onNextLatch.countDown();
                     }
                 })
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         // Test that lower stream will be notified for a direct un-subscription
@@ -109,7 +109,7 @@ public class ObservableDoOnUnsubscribeTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         // Test that upper stream will be notified for un-subscription
@@ -125,7 +125,7 @@ public class ObservableDoOnUnsubscribeTest {
                             onNextLatch.countDown();
                     }
                 })
-                .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         // Test that lower stream will be notified for un-subscription

@@ -32,7 +32,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -44,6 +43,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -191,7 +191,7 @@ public class FlowableRefCountTest {
                             subscribeCount.incrementAndGet();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
@@ -237,7 +237,7 @@ public class FlowableRefCountTest {
                             subscribeLatch.countDown();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");
@@ -276,7 +276,7 @@ public class FlowableRefCountTest {
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Flowable<Long> o = synchronousInterval()
-                .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                             System.out.println("******************************* Unsubscribe received");

@@ -19,11 +19,11 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.CompletableSource;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Execute an action after an onError, onComplete or a dispose event.
@@ -35,9 +35,9 @@ public final class CompletableDoFinally extends Completable {
 
     final CompletableSource source;
 
-    final Action onFinally;
+    final Function0 onFinally;
 
-    public CompletableDoFinally(CompletableSource source, Action onFinally) {
+    public CompletableDoFinally(CompletableSource source, Function0 onFinally) {
         this.source = source;
         this.onFinally = onFinally;
     }
@@ -53,11 +53,11 @@ public final class CompletableDoFinally extends Completable {
 
         final CompletableObserver actual;
 
-        final Action onFinally;
+        final Function0 onFinally;
 
         Disposable d;
 
-        DoFinallyObserver(CompletableObserver actual, Action onFinally) {
+        DoFinallyObserver(CompletableObserver actual, Function0 onFinally) {
             this.actual = actual;
             this.onFinally = onFinally;
         }

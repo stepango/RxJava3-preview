@@ -42,7 +42,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.LongConsumer;
@@ -57,6 +56,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -1282,7 +1282,7 @@ public class FlowableMergeTest {
                     // log count
                     .doOnNext(printCount())
                     // release latch
-                    .doOnComplete(new Action() {
+                    .doOnComplete(new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                                 latch.countDown();

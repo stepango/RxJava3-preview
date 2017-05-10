@@ -28,7 +28,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -41,6 +40,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.Subject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -203,7 +203,7 @@ public class ObservableWindowWithTimeTest {
         ObservableWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 System.out.println("Main done!");
@@ -214,7 +214,7 @@ public class ObservableWindowWithTimeTest {
             @Override
             public Observable<Integer> apply(Observable<Integer> w) {
                 return w.startWith(indicator)
-                        .doOnComplete(new Action() {
+                        .doOnComplete(new Function0() {
                             @Override
                             public kotlin.Unit invoke() {
                                 System.out.println("inner done: " + wip.incrementAndGet());

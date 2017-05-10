@@ -20,22 +20,22 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscribers.BasicFuseableConditionalSubscriber;
 import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
+import kotlin.jvm.functions.Function0;
 
 public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
-    final Action onAfterTerminate;
+    final Function0 onComplete;
+    final Function0 onAfterTerminate;
 
     public FlowableDoOnEach(Flowable<T> source, Consumer<? super T> onNext,
-            Consumer<? super Throwable> onError,
-            Action onComplete,
-            Action onAfterTerminate) {
+                            Consumer<? super Throwable> onError,
+                            Function0 onComplete,
+                            Function0 onAfterTerminate) {
         super(source);
         this.onNext = onNext;
         this.onError = onError;
@@ -57,15 +57,15 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
     static final class DoOnEachSubscriber<T> extends BasicFuseableSubscriber<T, T> {
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
-        final Action onComplete;
-        final Action onAfterTerminate;
+        final Function0 onComplete;
+        final Function0 onAfterTerminate;
 
         DoOnEachSubscriber(
                 Subscriber<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,
-                Action onComplete,
-                Action onAfterTerminate) {
+                Function0 onComplete,
+                Function0 onAfterTerminate) {
             super(actual);
             this.onNext = onNext;
             this.onError = onError;
@@ -174,15 +174,15 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
     static final class DoOnEachConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
-        final Action onComplete;
-        final Action onAfterTerminate;
+        final Function0 onComplete;
+        final Function0 onAfterTerminate;
 
         DoOnEachConditionalSubscriber(
                 ConditionalSubscriber<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,
-                Action onComplete,
-                Action onAfterTerminate) {
+                Function0 onComplete,
+                Function0 onAfterTerminate) {
             super(actual);
             this.onNext = onNext;
             this.onError = onError;

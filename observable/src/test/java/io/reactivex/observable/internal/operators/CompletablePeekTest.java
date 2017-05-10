@@ -20,8 +20,8 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
+import kotlin.jvm.functions.Function0;
 
 public class CompletablePeekTest {
 
@@ -30,7 +30,7 @@ public class CompletablePeekTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Completable.complete()
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();

@@ -16,7 +16,6 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
@@ -24,6 +23,7 @@ import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -38,7 +38,7 @@ public class SingleFlatMapTest {
         .flatMapCompletable(new Function<Integer, Completable>() {
             @Override
             public Completable apply(Integer t) throws Exception {
-                return Completable.complete().doOnComplete(new Action() {
+                return Completable.complete().doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         b[0] = true;
@@ -61,7 +61,7 @@ public class SingleFlatMapTest {
         .flatMapCompletable(new Function<Integer, Completable>() {
             @Override
             public Completable apply(Integer t) throws Exception {
-                return Completable.complete().doOnComplete(new Action() {
+                return Completable.complete().doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         b[0] = true;

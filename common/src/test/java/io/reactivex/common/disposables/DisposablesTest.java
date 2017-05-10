@@ -25,9 +25,9 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -68,7 +68,7 @@ public class DisposablesTest {
 
     @Test
     public void fromAction() {
-        class AtomicAction extends AtomicBoolean implements Action {
+        class AtomicAction extends AtomicBoolean implements Function0 {
 
             private static final long serialVersionUID = -1517510584253657229L;
 
@@ -89,7 +89,7 @@ public class DisposablesTest {
     @Test
     public void fromActionThrows() {
         try {
-            Disposables.fromAction(new Action() {
+            Disposables.fromAction(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new IllegalArgumentException();
@@ -101,7 +101,7 @@ public class DisposablesTest {
         }
 
         try {
-            Disposables.fromAction(new Action() {
+            Disposables.fromAction(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new InternalError();
@@ -113,7 +113,7 @@ public class DisposablesTest {
         }
 
         try {
-            Disposables.fromAction(new Action() {
+            Disposables.fromAction(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();

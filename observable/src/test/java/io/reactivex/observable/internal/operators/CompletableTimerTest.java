@@ -23,11 +23,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertTrue;
 
@@ -45,7 +45,7 @@ public class CompletableTimerTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Void> ts = Completable.timer(1, TimeUnit.MILLISECONDS, s)
-                .doOnComplete(new Action() {
+                        .doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         try {

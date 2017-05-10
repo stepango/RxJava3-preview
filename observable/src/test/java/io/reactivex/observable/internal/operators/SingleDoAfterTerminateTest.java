@@ -20,7 +20,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Single;
@@ -29,6 +28,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,7 +36,7 @@ public class SingleDoAfterTerminateTest {
 
     private final int[] call = { 0 };
 
-    private final Action afterTerminate = new Action() {
+    private final Function0 afterTerminate = new Function0() {
         @Override
         public kotlin.Unit invoke() {
             call[0]++;
@@ -98,7 +98,7 @@ public class SingleDoAfterTerminateTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Single.just(1)
-            .doAfterTerminate(new Action() {
+                    .doAfterTerminate(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();

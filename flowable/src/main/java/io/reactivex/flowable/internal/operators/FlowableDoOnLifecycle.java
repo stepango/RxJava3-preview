@@ -18,20 +18,20 @@ import org.reactivestreams.Subscription;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function0;
 
 public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream<T, T> {
     private final Consumer<? super Subscription> onSubscribe;
     private final LongConsumer onRequest;
-    private final Action onCancel;
+    private final Function0 onCancel;
 
     public FlowableDoOnLifecycle(Flowable<T> source, Consumer<? super Subscription> onSubscribe,
-            LongConsumer onRequest, Action onCancel) {
+                                 LongConsumer onRequest, Function0 onCancel) {
         super(source);
         this.onSubscribe = onSubscribe;
         this.onRequest = onRequest;
@@ -47,14 +47,14 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
         final Subscriber<? super T> actual;
         final Consumer<? super Subscription> onSubscribe;
         final LongConsumer onRequest;
-        final Action onCancel;
+        final Function0 onCancel;
 
         Subscription s;
 
         SubscriptionLambdaSubscriber(Subscriber<? super T> actual,
-                Consumer<? super Subscription> onSubscribe,
-                LongConsumer onRequest,
-                Action onCancel) {
+                                     Consumer<? super Subscription> onSubscribe,
+                                     LongConsumer onRequest,
+                                     Function0 onCancel) {
             this.actual = actual;
             this.onSubscribe = onSubscribe;
             this.onCancel = onCancel;

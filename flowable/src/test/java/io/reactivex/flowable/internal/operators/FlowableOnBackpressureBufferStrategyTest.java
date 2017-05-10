@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.BackpressureOverflowStrategy;
@@ -31,6 +30,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static io.reactivex.common.internal.functions.Functions.EMPTY_ACTION;
 import static io.reactivex.flowable.BackpressureOverflowStrategy.DROP_LATEST;
@@ -43,7 +43,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
     public void backpressureWithBufferDropOldest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = new Action() {
+        Function0 incrementOnDrop = new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 droppedCount.incrementAndGet();
@@ -90,7 +90,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
     public void backpressureWithBufferDropLatest() throws InterruptedException {
         int bufferSize = 3;
         final AtomicInteger droppedCount = new AtomicInteger(0);
-        Action incrementOnDrop = new Action() {
+        Function0 incrementOnDrop = new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 droppedCount.incrementAndGet();
@@ -183,7 +183,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
     @Test
     public void overflowCrashes() {
         Flowable.range(1, 20)
-        .onBackpressureBuffer(8, new Action() {
+                .onBackpressureBuffer(8, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();

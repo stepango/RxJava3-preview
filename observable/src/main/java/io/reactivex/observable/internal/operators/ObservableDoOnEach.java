@@ -17,22 +17,22 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function0;
 
 public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
-    final Action onComplete;
-    final Action onAfterTerminate;
+    final Function0 onComplete;
+    final Function0 onAfterTerminate;
 
     public ObservableDoOnEach(ObservableSource<T> source, Consumer<? super T> onNext,
                               Consumer<? super Throwable> onError,
-                              Action onComplete,
-                              Action onAfterTerminate) {
+                              Function0 onComplete,
+                              Function0 onAfterTerminate) {
         super(source);
         this.onNext = onNext;
         this.onError = onError;
@@ -49,8 +49,8 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
         final Observer<? super T> actual;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
-        final Action onComplete;
-        final Action onAfterTerminate;
+        final Function0 onComplete;
+        final Function0 onAfterTerminate;
 
         Disposable s;
 
@@ -60,8 +60,8 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 Observer<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,
-                Action onComplete,
-                Action onAfterTerminate) {
+                Function0 onComplete,
+                Function0 onAfterTerminate) {
             this.actual = actual;
             this.onNext = onNext;
             this.onError = onError;

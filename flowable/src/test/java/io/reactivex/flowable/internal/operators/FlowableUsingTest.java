@@ -32,7 +32,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -40,6 +39,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -297,8 +297,8 @@ public class FlowableUsingTest {
     public void testUsingDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Action completion = createOnCompletedAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 completion = createOnCompletedAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
             @Override
@@ -324,8 +324,8 @@ public class FlowableUsingTest {
     public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Action completion = createOnCompletedAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 completion = createOnCompletedAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
             @Override
@@ -354,7 +354,7 @@ public class FlowableUsingTest {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
             @Override
@@ -382,7 +382,7 @@ public class FlowableUsingTest {
         final List<String> events = new ArrayList<String>();
         final Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
-        final Action unsub = createUnsubAction(events);
+        final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
             @Override
@@ -404,8 +404,8 @@ public class FlowableUsingTest {
         assertEquals(Arrays.asList("error", "disposed"), events);
     }
 
-    private static Action createUnsubAction(final List<String> events) {
-        return new Action() {
+    private static Function0 createUnsubAction(final List<String> events) {
+        return new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 events.add("unsub");
@@ -443,8 +443,8 @@ public class FlowableUsingTest {
         };
     }
 
-    private static Action createOnCompletedAction(final List<String> events) {
-        return new Action() {
+    private static Function0 createOnCompletedAction(final List<String> events) {
+        return new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 events.add("completed");

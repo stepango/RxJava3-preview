@@ -25,7 +25,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -33,6 +32,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -157,7 +157,7 @@ public class ObservableForEachTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Observable.just(1).forEachWhile(Functions.alwaysTrue(), Functions.emptyConsumer(),
-                    new Action() {
+                    new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                             throw new TestException();

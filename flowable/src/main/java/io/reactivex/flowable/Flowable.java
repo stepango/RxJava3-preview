@@ -12,22 +12,67 @@
  */
 package io.reactivex.flowable;
 
-import java.util.*;
-import java.util.concurrent.*;
+import org.reactivestreams.Processor;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import hu.akarnokd.reactivestreams.extensions.ConstantValuePublisher;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.Notification;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.Timed;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Cancellable;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
-import io.reactivex.common.internal.utils.*;
+import io.reactivex.common.internal.utils.ArrayListSupplier;
+import io.reactivex.common.internal.utils.ExceptionHelper;
+import io.reactivex.common.internal.utils.HashMapSupplier;
 import io.reactivex.flowable.internal.operators.*;
-import io.reactivex.flowable.internal.subscribers.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.internal.subscribers.BlockingFirstSubscriber;
+import io.reactivex.flowable.internal.subscribers.BlockingLastSubscriber;
+import io.reactivex.flowable.internal.subscribers.ForEachWhileSubscriber;
+import io.reactivex.flowable.internal.subscribers.FutureSubscriber;
+import io.reactivex.flowable.internal.subscribers.LambdaSubscriber;
+import io.reactivex.flowable.internal.subscribers.StrictSubscriber;
+import io.reactivex.flowable.subscribers.SafeSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function0;
 
 /**
  * The Flowable class that implements the Reactive-Streams Pattern and offers factory methods,
@@ -4163,7 +4208,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -4216,7 +4261,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
@@ -4273,7 +4318,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4333,7 +4378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4395,7 +4440,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4458,7 +4503,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4523,7 +4568,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4593,7 +4638,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4666,7 +4711,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4743,7 +4788,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4825,7 +4870,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -4911,7 +4956,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
@@ -5000,7 +5045,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -5061,7 +5106,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -5632,7 +5677,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Function0 onComplete) {
         FlowableBlockingSubscribe.subscribe(this, onNext, onError, onComplete);
     }
 
@@ -7651,7 +7696,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Flowable<T> doFinally(Action onFinally) {
+    public final Flowable<T> doFinally(Function0 onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableDoFinally<T>(this, onFinally));
     }
@@ -7684,7 +7729,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Registers an {@link Action} to be called when this Publisher invokes either
+     * Registers an {@link Function0} to be called when this Publisher invokes either
      * {@link Subscriber#onComplete onComplete} or {@link Subscriber#onError onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
@@ -7697,16 +7742,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param onAfterTerminate
-     *            an {@link Action} to be invoked when the source Publisher finishes
+     *            an {@link Function0} to be invoked when the source Publisher finishes
      * @return a Flowable that emits the same items as the source Publisher, then invokes the
-     *         {@link Action}
+     *         {@link Function0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doOnTerminate(Action)
+     * @see #doOnTerminate(Function0)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doAfterTerminate(Action onAfterTerminate) {
+    public final Flowable<T> doAfterTerminate(Function0 onAfterTerminate) {
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION, onAfterTerminate);
     }
@@ -7739,7 +7784,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnCancel(Action onCancel) {
+    public final Flowable<T> doOnCancel(Function0 onCancel) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.EMPTY_LONG_CONSUMER, onCancel);
     }
 
@@ -7763,7 +7808,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnComplete(Action onComplete) {
+    public final Flowable<T> doOnComplete(Function0 onComplete) {
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(),
                 onComplete, Functions.EMPTY_ACTION);
     }
@@ -7788,7 +7833,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     private Flowable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete, Action onAfterTerminate) {
+                                 Function0 onComplete, Function0 onAfterTerminate) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -7915,7 +7960,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnLifecycle(final Consumer<? super Subscription> onSubscribe,
-            final LongConsumer onRequest, final Action onCancel) {
+                                           final LongConsumer onRequest, final Function0 onCancel) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onRequest, "onRequest is null");
         ObjectHelper.requireNonNull(onCancel, "onCancel is null");
@@ -8023,12 +8068,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the action to invoke when the source Publisher calls {@code onComplete} or {@code onError}
      * @return the source Publisher with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doAfterTerminate(Action)
+     * @see #doAfterTerminate(Function0)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnTerminate(final Action onTerminate) {
+    public final Flowable<T> doOnTerminate(final Function0 onTerminate) {
         return doOnEach(Functions.emptyConsumer(), Functions.actionConsumer(onTerminate),
                 onTerminate, Functions.EMPTY_ACTION);
     }
@@ -8963,7 +9008,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @param onComplete
-     *            {@link Action} to execute when completion is signalled.
+     *            {@link Function0} to execute when completion is signalled.
      * @return
      *            a {@link Disposable} that allows cancelling an asynchronous sequence
      * @throws NullPointerException
@@ -8976,7 +9021,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, final Consumer<? super Throwable> onError,
-            final Action onComplete) {
+                                         final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -9890,7 +9935,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded,
-            Action onOverflow) {
+                                                  Function0 onOverflow) {
         ObjectHelper.requireNonNull(onOverflow, "onOverflow is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
         return RxJavaFlowablePlugins.onAssembly(new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, onOverflow));
@@ -9920,7 +9965,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onBackpressureBuffer(int capacity, Action onOverflow) {
+    public final Flowable<T> onBackpressureBuffer(int capacity, Function0 onOverflow) {
         return onBackpressureBuffer(capacity, false, false, onOverflow);
     }
 
@@ -9960,7 +10005,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
+    public final Flowable<T> onBackpressureBuffer(long capacity, Function0 onOverflow, BackpressureOverflowStrategy overflowStrategy) {
         ObjectHelper.requireNonNull(overflowStrategy, "strategy is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
         return RxJavaFlowablePlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<T>(this, capacity, onOverflow, overflowStrategy));
@@ -12758,7 +12803,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete) {
+                                      Function0 onComplete) {
         return subscribe(onNext, onError, onComplete, FlowableInternalHelper.RequestMax.INSTANCE);
     }
 
@@ -12795,7 +12840,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
-            Action onComplete, Consumer<? super Subscription> onSubscribe) {
+                                      Function0 onComplete, Consumer<? super Subscription> onSubscribe) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
@@ -15885,7 +15930,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -15933,7 +15978,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -15984,7 +16029,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * use {@link #doOnCancel(Function0)} as well or use {@code using()} to do cleanup in case of completion
      * or cancellation.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">

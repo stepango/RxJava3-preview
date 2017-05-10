@@ -18,18 +18,18 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function0;
 
 public final class SingleDoOnDispose<T> extends Single<T> {
     final SingleSource<T> source;
 
-    final Action onDispose;
+    final Function0 onDispose;
 
-    public SingleDoOnDispose(SingleSource<T> source, Action onDispose) {
+    public SingleDoOnDispose(SingleSource<T> source, Function0 onDispose) {
         this.source = source;
         this.onDispose = onDispose;
     }
@@ -41,7 +41,7 @@ public final class SingleDoOnDispose<T> extends Single<T> {
     }
 
     static final class DoOnDisposeObserver<T>
-    extends AtomicReference<Action>
+            extends AtomicReference<Function0>
     implements SingleObserver<T>, Disposable {
         private static final long serialVersionUID = -8583764624474935784L;
 
@@ -49,14 +49,14 @@ public final class SingleDoOnDispose<T> extends Single<T> {
 
         Disposable d;
 
-        DoOnDisposeObserver(SingleObserver<? super T> actual, Action onDispose) {
+        DoOnDisposeObserver(SingleObserver<? super T> actual, Function0 onDispose) {
             this.actual = actual;
             this.lazySet(onDispose);
         }
 
         @Override
         public void dispose() {
-            Action a = getAndSet(null);
+            Function0 a = getAndSet(null);
             if (a != null) {
                 try {
                     a.invoke();

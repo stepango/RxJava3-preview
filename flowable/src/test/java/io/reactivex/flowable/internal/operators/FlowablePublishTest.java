@@ -31,7 +31,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -48,6 +47,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -116,7 +116,7 @@ public class FlowablePublishTest {
     public void testBackpressureFastSlow() {
         ConnectableFlowable<Integer> is = Flowable.range(1, Flowable.bufferSize() * 2).publish();
         Flowable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
@@ -139,7 +139,7 @@ public class FlowablePublishTest {
                 return i;
             }
 
-        }).doOnComplete(new Action() {
+        }).doOnComplete(new Function0() {
 
             @Override
             public kotlin.Unit invoke() {
@@ -221,7 +221,7 @@ public class FlowablePublishTest {
                         sourceEmission.incrementAndGet();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
                         sourceUnsubscribed.set(true);
@@ -239,7 +239,7 @@ public class FlowablePublishTest {
             @Override
             public void onNext(Integer t) {
                 if (valueCount() == 2) {
-                    source.doOnCancel(new Action() {
+                    source.doOnCancel(new Function0() {
                         @Override
                         public kotlin.Unit invoke() {
                             child2Unsubscribed.set(true);
@@ -251,7 +251,7 @@ public class FlowablePublishTest {
             }
         };
 
-        source.doOnCancel(new Action() {
+        source.doOnCancel(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 child1Unsubscribed.set(true);

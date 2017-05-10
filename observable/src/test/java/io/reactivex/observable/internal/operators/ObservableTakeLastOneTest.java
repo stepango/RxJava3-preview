@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
@@ -26,6 +25,7 @@ import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -68,7 +68,7 @@ public class ObservableTakeLastOneTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Action unsubscribeAction = new Action() {
+        Function0 unsubscribeAction = new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 unsubscribed.set(true);

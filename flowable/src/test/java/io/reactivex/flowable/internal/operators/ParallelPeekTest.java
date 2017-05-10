@@ -22,11 +22,11 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -107,7 +107,7 @@ public class ParallelPeekTest {
         try {
             Flowable.<Integer>never()
             .parallel()
-            .doOnCancel(new Action() {
+                    .doOnCancel(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -131,7 +131,7 @@ public class ParallelPeekTest {
     public void onCompleteCrash() {
         Flowable.just(1)
         .parallel()
-        .doOnComplete(new Action() {
+                .doOnComplete(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new TestException();
@@ -149,7 +149,7 @@ public class ParallelPeekTest {
         try {
             Flowable.just(1)
             .parallel()
-            .doAfterTerminated(new Action() {
+                    .doAfterTerminated(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
@@ -176,7 +176,7 @@ public class ParallelPeekTest {
         try {
             Flowable.<Integer>error(new IOException())
             .parallel()
-            .doAfterTerminated(new Action() {
+                    .doAfterTerminated(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();

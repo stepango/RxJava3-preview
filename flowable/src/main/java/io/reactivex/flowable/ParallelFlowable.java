@@ -13,19 +13,51 @@
 
 package io.reactivex.flowable;
 
-import java.util.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
-import io.reactivex.common.internal.utils.*;
-import io.reactivex.flowable.internal.operators.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import io.reactivex.common.internal.utils.ExceptionHelper;
+import io.reactivex.common.internal.utils.ListAddBiConsumer;
+import io.reactivex.common.internal.utils.MergerBiFunction;
+import io.reactivex.common.internal.utils.SorterFunction;
+import io.reactivex.flowable.internal.operators.ParallelCollect;
+import io.reactivex.flowable.internal.operators.ParallelConcatMap;
+import io.reactivex.flowable.internal.operators.ParallelDoOnNextTry;
+import io.reactivex.flowable.internal.operators.ParallelFilter;
+import io.reactivex.flowable.internal.operators.ParallelFilterTry;
+import io.reactivex.flowable.internal.operators.ParallelFlatMap;
+import io.reactivex.flowable.internal.operators.ParallelFromArray;
+import io.reactivex.flowable.internal.operators.ParallelFromPublisher;
+import io.reactivex.flowable.internal.operators.ParallelJoin;
+import io.reactivex.flowable.internal.operators.ParallelMap;
+import io.reactivex.flowable.internal.operators.ParallelMapTry;
+import io.reactivex.flowable.internal.operators.ParallelPeek;
+import io.reactivex.flowable.internal.operators.ParallelReduce;
+import io.reactivex.flowable.internal.operators.ParallelReduceFull;
+import io.reactivex.flowable.internal.operators.ParallelRunOn;
+import io.reactivex.flowable.internal.operators.ParallelSortedJoin;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Abstract base class for Parallel publishers that take an array of Subscribers.
@@ -611,7 +643,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doOnComplete(@NonNull Action onComplete) {
+    public final ParallelFlowable<T> doOnComplete(@NonNull Function0 onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 Functions.emptyConsumer(),
@@ -633,7 +665,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doAfterTerminated(@NonNull Action onAfterTerminate) {
+    public final ParallelFlowable<T> doAfterTerminated(@NonNull Function0 onAfterTerminate) {
         ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 Functions.emptyConsumer(),
@@ -699,7 +731,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doOnCancel(@NonNull Action onCancel) {
+    public final ParallelFlowable<T> doOnCancel(@NonNull Function0 onCancel) {
         ObjectHelper.requireNonNull(onCancel, "onCancel is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 Functions.emptyConsumer(),

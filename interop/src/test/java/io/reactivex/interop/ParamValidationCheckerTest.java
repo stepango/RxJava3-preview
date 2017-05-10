@@ -13,22 +13,87 @@
 
 package io.reactivex.interop;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.BooleanSupplier;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
-import io.reactivex.observable.*;
+import io.reactivex.flowable.BackpressureOverflowStrategy;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
+import io.reactivex.flowable.FlowableOperator;
+import io.reactivex.flowable.FlowableTransformer;
+import io.reactivex.flowable.ParallelFailureHandling;
+import io.reactivex.flowable.ParallelFlowable;
+import io.reactivex.flowable.ParallelTransformer;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableEmitter;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableOnSubscribe;
+import io.reactivex.observable.CompletableOperator;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.CompletableTransformer;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeEmitter;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeOnSubscribe;
+import io.reactivex.observable.MaybeOperator;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.MaybeTransformer;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableEmitter;
+import io.reactivex.observable.ObservableOnSubscribe;
+import io.reactivex.observable.ObservableOperator;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.ObservableTransformer;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleEmitter;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleOnSubscribe;
+import io.reactivex.observable.SingleOperator;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.SingleTransformer;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Check that static and instance methods validate their parameters against
@@ -162,7 +227,7 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "debounce", Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // null Action allowed
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "onBackpressureBuffer", Long.TYPE, Action.class, BackpressureOverflowStrategy.class));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "onBackpressureBuffer", Long.TYPE, Function0.class, BackpressureOverflowStrategy.class));
 
         // zero repeat is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "repeat", Long.TYPE));
@@ -539,7 +604,7 @@ public class ParamValidationCheckerTest {
         defaultValues.put(CompletableSource.class, new NeverCompletable());
         defaultValues.put(Completable.class, new NeverCompletable());
 
-        defaultValues.put(Action.class, Functions.EMPTY_ACTION);
+        defaultValues.put(Function0.class, Functions.EMPTY_ACTION);
         defaultValues.put(Runnable.class, Functions.EMPTY_RUNNABLE);
         defaultValues.put(Consumer.class, Functions.emptyConsumer());
         defaultValues.put(LongConsumer.class, Functions.EMPTY_LONG_CONSUMER);

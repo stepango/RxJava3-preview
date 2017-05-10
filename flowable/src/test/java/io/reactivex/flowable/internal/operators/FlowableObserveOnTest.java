@@ -41,7 +41,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -59,6 +58,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -153,7 +153,7 @@ public class FlowableObserveOnTest {
                 assertTrue(correctThreadName);
             }
 
-        }).doAfterTerminate(new Action() {
+        }).doAfterTerminate(new Function0() {
 
             @Override
             public kotlin.Unit invoke() {

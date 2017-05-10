@@ -16,11 +16,11 @@ package io.reactivex.observable.internal.operators;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Calls an action after pushing the current item or an error to the downstream.
@@ -31,9 +31,9 @@ public final class SingleDoAfterTerminate<T> extends Single<T> {
 
     final SingleSource<T> source;
 
-    final Action onAfterTerminate;
+    final Function0 onAfterTerminate;
 
-    public SingleDoAfterTerminate(SingleSource<T> source, Action onAfterTerminate) {
+    public SingleDoAfterTerminate(SingleSource<T> source, Function0 onAfterTerminate) {
         this.source = source;
         this.onAfterTerminate = onAfterTerminate;
     }
@@ -47,11 +47,11 @@ public final class SingleDoAfterTerminate<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        final Action onAfterTerminate;
+        final Function0 onAfterTerminate;
 
         Disposable d;
 
-        DoAfterTerminateObserver(SingleObserver<? super T> actual, Action onAfterTerminate) {
+        DoAfterTerminateObserver(SingleObserver<? super T> actual, Function0 onAfterTerminate) {
             this.actual = actual;
             this.onAfterTerminate = onAfterTerminate;
         }

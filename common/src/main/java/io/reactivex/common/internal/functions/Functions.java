@@ -29,7 +29,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BooleanSupplier;
@@ -45,6 +44,7 @@ import io.reactivex.common.functions.Function9;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.functions.Predicate;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Utility methods to convert the BiFunction, Function3..Function9 instances to Function of Object array.
@@ -115,7 +115,7 @@ public final class Functions {
 
     public static final Runnable EMPTY_RUNNABLE = new EmptyRunnable();
 
-    public static final Action EMPTY_ACTION = new EmptyAction();
+    public static final Function0 EMPTY_ACTION = new EmptyAction();
 
     static final Consumer<Object> EMPTY_CONSUMER = new EmptyConsumer();
 
@@ -172,7 +172,7 @@ public final class Functions {
         return (Comparator<T>)NATURAL_COMPARATOR;
     }
 
-    static final class FutureAction implements Action {
+    static final class FutureAction implements Function0 {
         final Future<?> future;
 
         FutureAction(Future<?> future) {
@@ -195,7 +195,7 @@ public final class Functions {
      * @param future the future to call get() on, not null
      * @return the new Action instance
      */
-    public static Action futureAction(Future<?> future) {
+    public static Function0 futureAction(Future<?> future) {
         return new FutureAction(future);
     }
 
@@ -335,7 +335,7 @@ public final class Functions {
         }
     }
 
-    static final class NotificationOnComplete<T> implements Action {
+    static final class NotificationOnComplete<T> implements Function0 {
         final Consumer<? super Notification<T>> onNotification;
 
         NotificationOnComplete(Consumer<? super Notification<T>> onNotification) {
@@ -361,14 +361,14 @@ public final class Functions {
         return new NotificationOnError<T>(onNotification);
     }
 
-    public static <T> Action notificationOnComplete(Consumer<? super Notification<T>> onNotification) {
+    public static <T> Function0 notificationOnComplete(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnComplete<T>(onNotification);
     }
 
     static final class ActionConsumer<T> implements Consumer<T> {
-        final Action action;
+        final Function0 action;
 
-        ActionConsumer(Action action) {
+        ActionConsumer(Function0 action) {
             this.action = action;
         }
 
@@ -378,7 +378,7 @@ public final class Functions {
         }
     }
 
-    public static <T> Consumer<T> actionConsumer(Action action) {
+    public static <T> Consumer<T> actionConsumer(Function0 action) {
         return new ActionConsumer<T>(action);
     }
 
@@ -702,7 +702,7 @@ public final class Functions {
         }
     }
 
-    static final class EmptyAction implements Action {
+    static final class EmptyAction implements Function0 {
         @Override
         public kotlin.Unit invoke() {
             return Unit.INSTANCE;

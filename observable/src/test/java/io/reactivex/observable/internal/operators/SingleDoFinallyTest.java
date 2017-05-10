@@ -20,16 +20,16 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 
-public class SingleDoFinallyTest implements Action {
+public class SingleDoFinallyTest implements Function0 {
 
     int calls;
 
@@ -79,7 +79,7 @@ public class SingleDoFinallyTest implements Action {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Single.just(1)
-            .doFinally(new Action() {
+                    .doFinally(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();

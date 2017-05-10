@@ -25,12 +25,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Action;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -73,7 +73,7 @@ public class CompletableDoOnTest {
         assertFalse(atomicBoolean.get());
 
         Completable.complete()
-            .doOnDispose(new Action() {
+                .doOnDispose(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     atomicBoolean.set(true);

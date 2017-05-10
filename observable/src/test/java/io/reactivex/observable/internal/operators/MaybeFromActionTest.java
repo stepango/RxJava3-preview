@@ -24,10 +24,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.functions.Action;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -43,7 +43,7 @@ public class MaybeFromActionTest {
     public void fromAction() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe.fromAction(new Action() {
+        Maybe.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
@@ -60,7 +60,7 @@ public class MaybeFromActionTest {
     public void fromActionTwice() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Action run = new Action() {
+        Function0 run = new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
@@ -85,7 +85,7 @@ public class MaybeFromActionTest {
     public void fromActionInvokesLazy() {
         final AtomicInteger atomicInteger = new AtomicInteger();
 
-        Maybe<Object> maybe = Maybe.fromAction(new Action() {
+        Maybe<Object> maybe = Maybe.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 atomicInteger.incrementAndGet();
@@ -104,7 +104,7 @@ public class MaybeFromActionTest {
 
     @Test
     public void fromActionThrows() {
-        Maybe.fromAction(new Action() {
+        Maybe.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 throw new UnsupportedOperationException();
@@ -119,7 +119,7 @@ public class MaybeFromActionTest {
     public void callable() throws Exception {
         final int[] counter = { 0 };
 
-        Maybe<Void> m = Maybe.fromAction(new Action() {
+        Maybe<Void> m = Maybe.fromAction(new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 counter[0]++;
@@ -141,7 +141,7 @@ public class MaybeFromActionTest {
             final CountDownLatch cdl1 = new CountDownLatch(1);
             final CountDownLatch cdl2 = new CountDownLatch(1);
 
-            TestObserver<Object> to = Maybe.fromAction(new Action() {
+            TestObserver<Object> to = Maybe.fromAction(new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     cdl1.countDown();

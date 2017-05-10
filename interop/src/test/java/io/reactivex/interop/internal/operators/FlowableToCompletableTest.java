@@ -19,11 +19,11 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.common.functions.Action;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static io.reactivex.interop.RxJava3Interop.ignoreElements;
 import static org.junit.Assert.assertFalse;
@@ -87,7 +87,7 @@ public class FlowableToCompletableTest {
     public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestObserver<String> subscriber = TestObserver.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Completable cmp = ignoreElements(Flowable.just("Hello World!").doOnCancel(new Action() {
+        Completable cmp = ignoreElements(Flowable.just("Hello World!").doOnCancel(new Function0() {
 
             @Override
             public kotlin.Unit invoke() {
