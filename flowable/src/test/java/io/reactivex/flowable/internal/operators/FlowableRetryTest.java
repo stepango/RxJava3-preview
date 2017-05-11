@@ -36,7 +36,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -47,6 +46,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1014,7 +1014,7 @@ public class FlowableRetryTest {
     @Test
     public void retryUntil() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .retryUntil(new BooleanSupplier() {
+                .retryUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return false;

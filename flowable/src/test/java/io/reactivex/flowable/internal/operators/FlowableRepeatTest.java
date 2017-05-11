@@ -26,13 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -259,7 +259,7 @@ public class FlowableRepeatTest {
     @Test
     public void repeatUntil() {
         Flowable.just(1)
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -283,7 +283,7 @@ public class FlowableRepeatTest {
     @Test
     public void repeatUntilError() {
         Flowable.error(new TestException())
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return true;
@@ -296,7 +296,7 @@ public class FlowableRepeatTest {
     @Test
     public void repeatUntilFalse() {
         Flowable.just(1)
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return true;
@@ -309,7 +309,7 @@ public class FlowableRepeatTest {
     @Test
     public void repeatUntilSupplierCrash() {
         Flowable.just(1)
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 throw new TestException();

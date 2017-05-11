@@ -26,12 +26,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.internal.utils.QueueDrainHelper;
+import kotlin.jvm.functions.Function0;
 
 public final class FlowableBuffer<T, C extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, C> {
     final int size;
@@ -295,7 +295,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
     static final class PublisherBufferOverlappingSubscriber<T, C extends Collection<? super T>>
     extends AtomicLong
-    implements RelaxedSubscriber<T>, Subscription, BooleanSupplier {
+            implements RelaxedSubscriber<T>, Subscription, Function0<Boolean> {
 
         private static final long serialVersionUID = -7370244972039324525L;
 

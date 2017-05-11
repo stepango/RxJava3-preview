@@ -42,7 +42,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
@@ -923,7 +922,7 @@ public class ParamValidationCheckerTest {
     @SuppressWarnings("rawtypes")
     static final class AllFunctionals
     implements BiFunction, BiConsumer,
-    Predicate, BiPredicate, BooleanSupplier,
+            Predicate, BiPredicate, Function0,
     Function3, Function4, Function5, Function6, Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,

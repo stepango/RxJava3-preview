@@ -44,7 +44,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -2262,7 +2261,7 @@ public class CompletableTest {
                 calls.getAndIncrement();
                 return null;
             }
-        }).repeatUntil(new BooleanSupplier() {
+        }).repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return times.decrementAndGet() == 0;

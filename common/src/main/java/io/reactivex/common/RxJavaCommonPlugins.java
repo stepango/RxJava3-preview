@@ -24,7 +24,6 @@ import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
@@ -33,6 +32,8 @@ import io.reactivex.common.internal.schedulers.IoScheduler;
 import io.reactivex.common.internal.schedulers.NewThreadScheduler;
 import io.reactivex.common.internal.schedulers.SingleScheduler;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.jvm.functions.Function0;
+
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
  */
@@ -68,7 +69,7 @@ public final class RxJavaCommonPlugins {
     static volatile Function<? super Scheduler, ? extends Scheduler> onNewThreadHandler;
 
     @Nullable
-    static volatile BooleanSupplier onBeforeBlocking;
+    static volatile Function0<Boolean> onBeforeBlocking;
 
     /** Prevents changing the plugins. */
     static volatile boolean lockdown;
@@ -574,7 +575,7 @@ public final class RxJavaCommonPlugins {
      */
     @Experimental
     public static boolean onBeforeBlocking() {
-        BooleanSupplier f = onBeforeBlocking;
+        Function0<Boolean> f = onBeforeBlocking;
         if (f != null) {
             try {
                 return f.invoke();
@@ -595,7 +596,7 @@ public final class RxJavaCommonPlugins {
      * @since 2.0.5 - experimental
      */
     @Experimental
-    public static void setOnBeforeBlocking(@Nullable BooleanSupplier handler) {
+    public static void setOnBeforeBlocking(@Nullable Function0<Boolean> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -610,7 +611,7 @@ public final class RxJavaCommonPlugins {
      */
     @Experimental
     @Nullable
-    public static BooleanSupplier getOnBeforeBlocking() {
+    public static Function0<Boolean> getOnBeforeBlocking() {
         return onBeforeBlocking;
     }
 

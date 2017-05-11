@@ -45,7 +45,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
@@ -3052,7 +3051,7 @@ public class MaybeTest {
 
         Maybe.just(1).repeat(5).test().assertResult(1, 1, 1, 1, 1);
 
-        Maybe.just(1).repeatUntil(new BooleanSupplier() {
+        Maybe.just(1).repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -3084,7 +3083,7 @@ public class MaybeTest {
             }
         }).test().assertResult(1);
 
-        Maybe.just(1).retryUntil(new BooleanSupplier() {
+        Maybe.just(1).retryUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return false;

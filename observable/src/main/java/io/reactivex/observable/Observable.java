@@ -39,7 +39,6 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Cancellable;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -9092,7 +9091,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> repeatUntil(BooleanSupplier stop) {
+    public final Observable<T> repeatUntil(Function0<Boolean> stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableRepeatUntil<T>(this, stop));
     }
@@ -9746,7 +9745,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> retryUntil(final BooleanSupplier stop) {
+    public final Observable<T> retryUntil(final Function0<Boolean> stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
         return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
     }

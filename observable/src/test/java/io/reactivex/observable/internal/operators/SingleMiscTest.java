@@ -24,7 +24,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Predicate;
@@ -32,6 +31,7 @@ import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.SingleTransformer;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -153,7 +153,7 @@ public class SingleMiscTest {
 
             }
         })
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return flag.get();

@@ -44,7 +44,6 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Cancellable;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -10796,7 +10795,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> repeatUntil(BooleanSupplier stop) {
+    public final Flowable<T> repeatUntil(Function0<Boolean> stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableRepeatUntil<T>(this, stop));
     }
@@ -11556,7 +11555,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> retryUntil(final BooleanSupplier stop) {
+    public final Flowable<T> retryUntil(final Function0<Boolean> stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
         return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
     }

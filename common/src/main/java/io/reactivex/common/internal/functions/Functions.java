@@ -31,7 +31,6 @@ import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
@@ -400,9 +399,9 @@ public final class Functions {
     }
 
     static final class BooleanSupplierPredicateReverse<T> implements Predicate<T> {
-        final BooleanSupplier supplier;
+        final Function0<Boolean> supplier;
 
-        BooleanSupplierPredicateReverse(BooleanSupplier supplier) {
+        BooleanSupplierPredicateReverse(Function0<Boolean> supplier) {
             this.supplier = supplier;
         }
 
@@ -412,7 +411,7 @@ public final class Functions {
         }
     }
 
-    public static <T> Predicate<T> predicateReverseFor(BooleanSupplier supplier) {
+    public static <T> Predicate<T> predicateReverseFor(Function0<Boolean> supplier) {
         return new BooleanSupplierPredicateReverse<T>(supplier);
     }
 

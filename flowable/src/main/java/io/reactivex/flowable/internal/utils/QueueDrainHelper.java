@@ -22,10 +22,10 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueue;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.flowable.internal.queues.SimplePlainQueue;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
 import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Utility class to help with the queue-drain serialization idiom.
@@ -179,7 +179,7 @@ public final class QueueDrainHelper {
                                                   Subscriber<? super T> actual,
                                                   Queue<T> queue,
                                                   AtomicLong state,
-                                                  BooleanSupplier isCancelled) {
+                                                  Function0<Boolean> isCancelled) {
         for (; ; ) {
             long r = state.get();
 
@@ -204,7 +204,7 @@ public final class QueueDrainHelper {
 
     }
 
-    static boolean isCancelled(BooleanSupplier cancelled) {
+    static boolean isCancelled(Function0<Boolean> cancelled) {
         try {
             return cancelled.invoke();
         } catch (Throwable ex) {
@@ -227,7 +227,7 @@ public final class QueueDrainHelper {
                                          Subscriber<? super T> actual,
                                          Queue<T> queue,
                                          AtomicLong state,
-                                         BooleanSupplier isCancelled) {
+                                         Function0<Boolean> isCancelled) {
 
 // TODO enable fast-path
 //        if (n == -1 || n == Long.MAX_VALUE) {
@@ -321,7 +321,7 @@ public final class QueueDrainHelper {
     public static <T> void postComplete(Subscriber<? super T> actual,
                                         Queue<T> queue,
                                         AtomicLong state,
-                                        BooleanSupplier isCancelled) {
+                                        Function0<Boolean> isCancelled) {
 
         if (queue.isEmpty()) {
             actual.onComplete();

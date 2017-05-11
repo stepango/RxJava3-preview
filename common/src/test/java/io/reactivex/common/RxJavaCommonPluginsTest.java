@@ -40,11 +40,11 @@ import io.reactivex.common.exceptions.ProtocolViolationException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -214,7 +214,7 @@ public class RxJavaCommonPluginsTest {
                 }
             };
 
-            BooleanSupplier bs = new BooleanSupplier() {
+            Function0<Boolean> bs = new Function0() {
                 @Override
                 public Boolean invoke() {
                     return true;
@@ -248,8 +248,7 @@ public class RxJavaCommonPluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Consumer.class)) {
                             m.invoke(null, a1);
-                        } else
-                        if (paramType.isAssignableFrom(BooleanSupplier.class)) {
+                        } else if (paramType.isAssignableFrom(Function0.class)) {
                             m.invoke(null, bs);
                         } else {
                             m.invoke(null, f2);
@@ -1408,7 +1407,7 @@ public class RxJavaCommonPluginsTest {
     @Test
     public void onBeforeBlocking() {
         try {
-            RxJavaCommonPlugins.setOnBeforeBlocking(new BooleanSupplier() {
+            RxJavaCommonPlugins.setOnBeforeBlocking(new Function0() {
                 @Override
                 public Boolean invoke() {
                     throw new IllegalArgumentException();

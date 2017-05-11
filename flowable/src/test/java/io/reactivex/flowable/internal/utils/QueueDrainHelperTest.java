@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,7 +32,7 @@ public class QueueDrainHelperTest {
 
     @Test
     public void isCancelled() {
-        assertTrue(QueueDrainHelper.isCancelled(new BooleanSupplier() {
+        assertTrue(QueueDrainHelper.isCancelled(new Function0() {
             @Override
             public Boolean invoke() {
                 throw new TestException();
@@ -87,7 +87,7 @@ public class QueueDrainHelperTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
+        Function0<Boolean> isCancelled = new Function0() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -106,7 +106,7 @@ public class QueueDrainHelperTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
+        Function0<Boolean> isCancelled = new Function0() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -128,7 +128,7 @@ public class QueueDrainHelperTest {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             final ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
             final AtomicLong state = new AtomicLong();
-            final BooleanSupplier isCancelled = new BooleanSupplier() {
+            final Function0<Boolean> isCancelled = new Function0() {
                 @Override
                 public Boolean invoke() {
                     return false;
@@ -163,7 +163,7 @@ public class QueueDrainHelperTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
+        Function0<Boolean> isCancelled = new Function0() {
             @Override
             public Boolean invoke() {
                 return ts.isCancelled();
@@ -191,7 +191,7 @@ public class QueueDrainHelperTest {
         };
         ArrayDeque<Integer> queue = new ArrayDeque<Integer>();
         AtomicLong state = new AtomicLong();
-        BooleanSupplier isCancelled = new BooleanSupplier() {
+        Function0<Boolean> isCancelled = new Function0() {
             @Override
             public Boolean invoke() {
                 return ts.isCancelled();

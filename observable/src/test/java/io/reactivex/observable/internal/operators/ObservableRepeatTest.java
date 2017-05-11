@@ -25,7 +25,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -33,6 +32,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -210,7 +210,7 @@ public class ObservableRepeatTest {
     @Test
     public void repeatUntil() {
         Observable.just(1)
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -234,7 +234,7 @@ public class ObservableRepeatTest {
     @Test
     public void repeatUntilError() {
         Observable.error(new TestException())
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return true;
@@ -247,7 +247,7 @@ public class ObservableRepeatTest {
     @Test
     public void repeatUntilFalse() {
         Observable.just(1)
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 return true;
@@ -260,7 +260,7 @@ public class ObservableRepeatTest {
     @Test
     public void repeatUntilSupplierCrash() {
         Observable.just(1)
-        .repeatUntil(new BooleanSupplier() {
+                .repeatUntil(new Function0() {
             @Override
             public Boolean invoke() {
                 throw new TestException();

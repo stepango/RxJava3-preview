@@ -29,7 +29,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -37,6 +36,7 @@ import io.reactivex.observable.internal.operators.CompletableError;
 import io.reactivex.observable.internal.operators.MaybeError;
 import io.reactivex.observable.internal.operators.ObservableRange;
 import io.reactivex.observable.internal.operators.SingleJust;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -222,7 +222,7 @@ public class RxJavaObservablePluginsTest {
                 }
             };
 
-            BooleanSupplier bs = new BooleanSupplier() {
+            Function0<Boolean> bs = new Function0() {
                 @Override
                 public Boolean invoke() {
                     return true;
@@ -256,8 +256,7 @@ public class RxJavaObservablePluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Consumer.class)) {
                             m.invoke(null, a1);
-                        } else
-                        if (paramType.isAssignableFrom(BooleanSupplier.class)) {
+                        } else if (paramType.isAssignableFrom(Function0.class)) {
                             m.invoke(null, bs);
                         } else {
                             m.invoke(null, f2);

@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -652,7 +651,7 @@ public class FailOnBlockingTest {
     @Test
     public void failWithCustomHandler() {
         try {
-            RxJavaCommonPlugins.setOnBeforeBlocking(new BooleanSupplier() {
+            RxJavaCommonPlugins.setOnBeforeBlocking(new Function0() {
                 @Override
                 public Boolean invoke() {
                     return true;

@@ -30,13 +30,13 @@ import java.util.concurrent.Callable;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.operators.FlowableRange;
 import io.reactivex.flowable.internal.operators.ParallelFromPublisher;
 import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -204,7 +204,7 @@ public class RxJavaFlowablePluginsTest {
                 }
             };
 
-            BooleanSupplier bs = new BooleanSupplier() {
+            Function0<Boolean> bs = new Function0() {
                 @Override
                 public Boolean invoke() {
                     return true;
@@ -238,8 +238,7 @@ public class RxJavaFlowablePluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Consumer.class)) {
                             m.invoke(null, a1);
-                        } else
-                        if (paramType.isAssignableFrom(BooleanSupplier.class)) {
+                        } else if (paramType.isAssignableFrom(Function0.class)) {
                             m.invoke(null, bs);
                         } else {
                             m.invoke(null, f2);

@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -30,6 +29,7 @@ import io.reactivex.common.functions.Function9;
 import io.reactivex.common.internal.functions.Functions.HashSetCallable;
 import io.reactivex.common.internal.functions.Functions.NaturalComparator;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -82,7 +82,7 @@ public class FunctionsTest {
 
     @Test
     public void booleanSupplierPredicateReverse() throws Exception {
-        BooleanSupplier s = new BooleanSupplier() {
+        Function0<Boolean> s = new Function0() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -91,7 +91,7 @@ public class FunctionsTest {
 
         assertTrue(Functions.predicateReverseFor(s).test(1));
 
-        s = new BooleanSupplier() {
+        s = new Function0() {
             @Override
             public Boolean invoke() {
                 return true;

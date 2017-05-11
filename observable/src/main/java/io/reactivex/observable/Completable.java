@@ -25,7 +25,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.functions.Cancellable;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
@@ -1397,7 +1396,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable repeatUntil(BooleanSupplier stop) {
+    public final Completable repeatUntil(Function0<Boolean> stop) {
         return fromObservable(toObservable().repeatUntil(stop));
     }
 

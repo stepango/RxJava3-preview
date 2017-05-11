@@ -21,13 +21,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionArbiter;
+import kotlin.jvm.functions.Function0;
 
 public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T, T> {
-    final BooleanSupplier until;
-    public FlowableRepeatUntil(Flowable<T> source, BooleanSupplier until) {
+    final Function0<Boolean> until;
+
+    public FlowableRepeatUntil(Flowable<T> source, Function0<Boolean> until) {
         super(source);
         this.until = until;
     }
@@ -49,8 +50,9 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
         final Subscriber<? super T> actual;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
-        final BooleanSupplier stop;
-        RepeatSubscriber(Subscriber<? super T> actual, BooleanSupplier until, SubscriptionArbiter sa, Publisher<? extends T> source) {
+        final Function0<Boolean> stop;
+
+        RepeatSubscriber(Subscriber<? super T> actual, Function0<Boolean> until, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;

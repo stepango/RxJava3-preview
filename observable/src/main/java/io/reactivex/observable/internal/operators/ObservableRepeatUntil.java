@@ -17,15 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BooleanSupplier;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function0;
 
 public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstream<T, T> {
-    final BooleanSupplier until;
-    public ObservableRepeatUntil(Observable<T> source, BooleanSupplier until) {
+    final Function0<Boolean> until;
+
+    public ObservableRepeatUntil(Observable<T> source, Function0<Boolean> until) {
         super(source);
         this.until = until;
     }
@@ -46,8 +47,9 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         final Observer<? super T> actual;
         final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
-        final BooleanSupplier stop;
-        RepeatUntilObserver(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
+        final Function0<Boolean> stop;
+
+        RepeatUntilObserver(Observer<? super T> actual, Function0<Boolean> until, SequentialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;
