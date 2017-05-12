@@ -16,7 +16,6 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.Flowable;
 
 @Test
@@ -25,9 +24,9 @@ public class FilterTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements * 2).filter(new Predicate<Integer>() {
+                Flowable.range(0, (int) elements * 2).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                     @Override
-                    public boolean test(Integer v) throws Exception {
+                    public Boolean invoke(Integer v) {
                         return (v & 1) == 0;
                     }
                 })

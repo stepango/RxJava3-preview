@@ -15,15 +15,19 @@ package io.reactivex.observable.subjects;
 
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AbstractAppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.internal.utils.*;
+import io.reactivex.observable.internal.utils.AppendOnlyLinkedArrayList;
+import io.reactivex.observable.internal.utils.NotificationLite;
 
 /**
  * Subject that emits the most recent item it has observed and all subsequent observed items to each subscribed
@@ -447,7 +451,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
 
             if (o != null) {
-                if (test(o)) {
+                if (invoke(o)) {
                     return;
                 }
 
@@ -481,11 +485,11 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 fastPath = true;
             }
 
-            test(value);
+            invoke(value);
         }
 
         @Override
-        public boolean test(Object o) {
+        public Boolean invoke(Object o) {
             return cancelled || NotificationLite.accept(o, actual);
         }
 

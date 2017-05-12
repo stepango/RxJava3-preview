@@ -28,7 +28,6 @@ import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -1328,7 +1327,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable onErrorComplete(final Predicate<? super Throwable> predicate) {
+    public final Completable onErrorComplete(final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
         return RxJavaObservablePlugins.onAssembly(new CompletableOnErrorComplete(this, predicate));
@@ -1481,7 +1480,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable retry(Predicate<? super Throwable> predicate) {
+    public final Completable retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         return fromObservable(toObservable().retry(predicate));
     }
 

@@ -13,32 +13,57 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.ReplayProcessor;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableTests {
 
     Subscriber<Number> w;
 
-    private static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
+    private static final kotlin.jvm.functions.Function1<Integer, Boolean> IS_EVEN = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
         @Override
-        public boolean test(Integer v) {
+        public Boolean invoke(Integer v) {
             return v % 2 == 0;
         }
     };
@@ -1037,9 +1062,9 @@ public class FlowableTests {
         for (int i = 0;i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
+                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
                         @Override
-                        public boolean test(Boolean v) {
+                        public Boolean invoke(Boolean v) {
                             return v;
                         }
                     })

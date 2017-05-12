@@ -13,26 +13,39 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Subscriber;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
-
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableDistinctUntilChangedTest {
 
@@ -163,9 +176,9 @@ public class FlowableDistinctUntilChangedTest {
                 return a.equals(b);
             }
         })
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         })
@@ -197,9 +210,9 @@ public class FlowableDistinctUntilChangedTest {
                 return a.equals(b);
             }
         })
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         })
@@ -373,9 +386,9 @@ public class FlowableDistinctUntilChangedTest {
     public void conditionalNormal() {
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -387,9 +400,9 @@ public class FlowableDistinctUntilChangedTest {
     public void conditionalNormal2() {
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5).hide()
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -403,9 +416,9 @@ public class FlowableDistinctUntilChangedTest {
 
         TestSubscriber<Integer> ts = up.hide()
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -426,9 +439,9 @@ public class FlowableDistinctUntilChangedTest {
                 throw new TestException();
             }
         })
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -442,9 +455,9 @@ public class FlowableDistinctUntilChangedTest {
 
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -461,9 +474,9 @@ public class FlowableDistinctUntilChangedTest {
 
         up
         .distinctUntilChanged()
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })

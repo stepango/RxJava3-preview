@@ -41,7 +41,6 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ListAddBiConsumer;
 import io.reactivex.common.internal.utils.MergerBiFunction;
@@ -812,9 +811,9 @@ public class ParallelFlowableTest {
         Flowable.range(1, 20)
         .parallel()
         .runOn(Schedulers.computation())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -839,9 +838,9 @@ public class ParallelFlowableTest {
         })
         .parallel()
         .runOn(Schedulers.computation())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 if (v == 10) {
                     throw new TestException();
                 }

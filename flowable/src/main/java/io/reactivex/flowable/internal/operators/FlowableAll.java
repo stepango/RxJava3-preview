@@ -12,20 +12,21 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolean> {
 
-    final Predicate<? super T> predicate;
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
-    public FlowableAll(Flowable<T> source, Predicate<? super T> predicate) {
+    public FlowableAll(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -38,13 +39,13 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
     static final class AllSubscriber<T> extends DeferredScalarSubscription<Boolean> implements RelaxedSubscriber<T> {
 
         private static final long serialVersionUID = -3521127104134758517L;
-        final Predicate<? super T> predicate;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
         Subscription s;
 
         boolean done;
 
-        AllSubscriber(Subscriber<? super Boolean> actual, Predicate<? super T> predicate) {
+        AllSubscriber(Subscriber<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             super(actual);
             this.predicate = predicate;
         }
@@ -64,7 +65,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
             }
             boolean b;
             try {
-                b = predicate.test(t);
+                b = predicate.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

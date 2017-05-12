@@ -13,28 +13,36 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.Subject;
+
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableTakeWhileTest {
 
     @Test
     public void testTakeWhile1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Integer> take = w.takeWhile(new Predicate<Integer>() {
+        Observable<Integer> take = w.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer input) {
+            public Boolean invoke(Integer input) {
                 return input < 3;
             }
         });
@@ -51,9 +59,9 @@ public class ObservableTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         Subject<Integer> s = PublishSubject.create();
-        Observable<Integer> take = s.takeWhile(new Predicate<Integer>() {
+        Observable<Integer> take = s.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer input) {
+            public Boolean invoke(Integer input) {
                 return input < 3;
             }
         });
@@ -80,11 +88,11 @@ public class ObservableTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> take = w.takeWhile(new Predicate<String>() {
+        Observable<String> take = w.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             int index;
 
             @Override
-            public boolean test(String input) {
+            public Boolean invoke(String input) {
                 return index++ < 2;
             }
         });
@@ -109,9 +117,9 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        source.takeWhile(new Predicate<String>() {
+        source.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return false;
             }
         }).blockingLast("");
@@ -124,9 +132,9 @@ public class ObservableTakeWhileTest {
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(source)
-                .takeWhile(new Predicate<String>() {
+                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 throw testException;
             }
         });
@@ -151,11 +159,11 @@ public class ObservableTakeWhileTest {
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(w)
-                .takeWhile(new Predicate<String>() {
+                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             int index;
 
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return index++ < 1;
             }
         });
@@ -216,9 +224,9 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testNoUnsubscribeDownstream() {
-        Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Predicate<Integer>() {
+        Observable<Integer> source = Observable.range(1, 1000).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         });
@@ -236,9 +244,9 @@ public class ObservableTakeWhileTest {
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just("abc").takeWhile(new Predicate<String>() {
+        Observable.just("abc").takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String t1) {
+            public Boolean invoke(String t1) {
                 throw new TestException();
             }
         }).subscribe(ts);

@@ -14,18 +14,32 @@
 package io.reactivex.observable;
 
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
+import org.junit.Test;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
+
+import static org.junit.Assert.assertTrue;
 
 public class SingleNullTests {
 
@@ -739,7 +753,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        error.retry((Predicate<Throwable>)null);
+        error.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

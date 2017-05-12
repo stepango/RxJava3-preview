@@ -45,7 +45,6 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.flowable.Flowable;
@@ -1006,9 +1005,9 @@ public class FlowableObserveOnTest {
     public void conditionalConsumer() {
         Flowable.range(1, 5)
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -1043,9 +1042,9 @@ public class FlowableObserveOnTest {
 
         Flowable.range(1, 5)
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -1064,9 +1063,9 @@ public class FlowableObserveOnTest {
 
         Flowable.range(1, 5)
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -1110,9 +1109,9 @@ public class FlowableObserveOnTest {
 
         up
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -1138,9 +1137,9 @@ public class FlowableObserveOnTest {
 
         Flowable.range(1, 5).hide()
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -1160,9 +1159,9 @@ public class FlowableObserveOnTest {
         Flowable.range(1, 5)
         .map(Functions.<Integer>identity())
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -1571,9 +1570,9 @@ public class FlowableObserveOnTest {
     public void conditionalNormal() {
         Flowable.range(1, 1000).hide()
         .observeOn(Schedulers.single())
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })

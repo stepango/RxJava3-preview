@@ -33,7 +33,6 @@ import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.flowable.BackpressureStrategy;
@@ -174,10 +173,10 @@ public class FlowablePublishTest {
 
             @Override
             public Flowable<Integer> apply(Flowable<Integer> xs) {
-                return xs.takeUntil(xs.skipWhile(new Predicate<Integer>() {
+                return xs.takeUntil(xs.skipWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer i) {
+                    public Boolean invoke(Integer i) {
                         return i <= 3;
                     }
 
@@ -198,10 +197,10 @@ public class FlowablePublishTest {
         Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ConnectableFlowable<Integer> xsp = xs.publish();
-        xsp.takeUntil(xsp.skipWhile(new Predicate<Integer>() {
+        xsp.takeUntil(xsp.skipWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
             @Override
-            public boolean test(Integer i) {
+            public Boolean invoke(Integer i) {
                 return i <= 3;
             }
 

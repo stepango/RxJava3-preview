@@ -13,22 +13,36 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-import org.junit.rules.TestName;
-import org.reactivestreams.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.ResourceSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FlowableBackpressureTests {
 
@@ -358,9 +372,9 @@ public class FlowableBackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation())
                 .skip(10000)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                     @Override
-                    public boolean test(Integer i) {
+                    public Boolean invoke(Integer i) {
                         return i > 11000;
                     }
                 }).take(NUM).subscribe(ts);
@@ -645,9 +659,9 @@ public class FlowableBackpressureTests {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        firehose(c).takeWhile(new Predicate<Integer>() {
+        firehose(c).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 100000;
             }
         })

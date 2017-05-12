@@ -13,18 +13,19 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
-    final Predicate<? super T> predicate;
-    public FlowableTakeUntilPredicate(Flowable<T> source, Predicate<? super T> predicate) {
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+
+    public FlowableTakeUntilPredicate(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -36,10 +37,11 @@ public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUps
 
     static final class InnerSubscriber<T> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
-        final Predicate<? super T> predicate;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
         Subscription s;
         boolean done;
-        InnerSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
+
+        InnerSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -58,7 +60,7 @@ public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUps
                 actual.onNext(t);
                 boolean b;
                 try {
-                    b = predicate.test(t);
+                    b = predicate.invoke(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.cancel();

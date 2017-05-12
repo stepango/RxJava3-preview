@@ -13,12 +13,12 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
@@ -31,9 +31,9 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
 
     final ParallelFlowable<T> source;
 
-    final Predicate<? super T> predicate;
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
-    public ParallelFilter(ParallelFlowable<T> source, Predicate<? super T> predicate) {
+    public ParallelFilter(ParallelFlowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -66,13 +66,13 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
     }
 
     abstract static class BaseFilterSubscriber<T> implements ConditionalSubscriber<T>, Subscription {
-        final Predicate<? super T> predicate;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
         Subscription s;
 
         boolean done;
 
-        BaseFilterSubscriber(Predicate<? super T> predicate) {
+        BaseFilterSubscriber(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             this.predicate = predicate;
         }
 
@@ -98,7 +98,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
 
         final Subscriber<? super T> actual;
 
-        ParallelFilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
+        ParallelFilterSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             super(predicate);
             this.actual = actual;
         }
@@ -118,7 +118,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
                 boolean b;
 
                 try {
-                    b = predicate.test(t);
+                    b = predicate.invoke(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancel();
@@ -157,7 +157,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
 
         final ConditionalSubscriber<? super T> actual;
 
-        ParallelFilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Predicate<? super T> predicate) {
+        ParallelFilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             super(predicate);
             this.actual = actual;
         }
@@ -177,7 +177,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
                 boolean b;
 
                 try {
-                    b = predicate.test(t);
+                    b = predicate.invoke(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancel();

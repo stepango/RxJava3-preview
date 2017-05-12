@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.CompositeException;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -261,11 +260,11 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      * <p>The comparison is performed via Objects.equals(); since most exceptions don't
      * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
      * overload to test against the class of an error instead of an instance of an error
-     * or {@link #assertError(Predicate)} to test with different condition.
+     * or {@link #assertError(kotlin.jvm.functions.Function1)} to test with different condition.
      * @param error the error to check
      * @return this;
      * @see #assertError(Class)
-     * @see #assertError(Predicate)
+     * @see #assertError(kotlin.jvm.functions.Function1)
      */
     public final U assertError(Throwable error) {
         return assertError(Functions.equalsWith(error));
@@ -279,7 +278,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      */
     @SuppressWarnings({ "unchecked", "rawtypes", "cast" })
     public final U assertError(Class<? extends Throwable> errorClass) {
-        return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
+        return (U) assertError((kotlin.jvm.functions.Function1) Functions.isInstanceOf(errorClass));
     }
 
     /**
@@ -291,7 +290,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertError(Predicate<Throwable> errorPredicate) {
+    public final U assertError(kotlin.jvm.functions.Function1<Throwable, Boolean> errorPredicate) {
         int s = errors.size();
         if (s == 0) {
             throw fail("No errors");
@@ -301,7 +300,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
 
         for (Throwable e : errors) {
             try {
-                if (errorPredicate.test(e)) {
+                if (errorPredicate.invoke(e)) {
                     found = true;
                     break;
                 }
@@ -370,7 +369,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValue(Predicate<T> valuePredicate) {
+    public final U assertValue(kotlin.jvm.functions.Function1<T, Boolean> valuePredicate) {
         assertValueAt(0, valuePredicate);
 
         if (values.size() > 1) {
@@ -391,13 +390,13 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      */
     @Experimental
     @SuppressWarnings("unchecked")
-    public final U assertNever(Predicate<? super T> valuePredicate) {
+    public final U assertNever(kotlin.jvm.functions.Function1<? super T, Boolean> valuePredicate) {
         int s = values.size();
 
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             try {
-                if (valuePredicate.test(v)) {
+                if (valuePredicate.invoke(v)) {
                     throw fail("Value at position " + i + " matches predicate " + valuePredicate.toString() + ", which was not expected.");
                 }
             } catch (Exception ex) {
@@ -417,7 +416,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValueAt(int index, Predicate<T> valuePredicate) {
+    public final U assertValueAt(int index, kotlin.jvm.functions.Function1<T, Boolean> valuePredicate) {
         int s = values.size();
         if (s == 0) {
             throw fail("No values");
@@ -430,7 +429,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
         boolean found = false;
 
         try {
-            if (valuePredicate.test(values.get(index))) {
+            if (valuePredicate.invoke(values.get(index))) {
                 found = true;
             }
         } catch (Exception ex) {
@@ -692,7 +691,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      * @param values the expected values, asserted in order
      * @return this
      * @see #assertFailure(Class, Object...)
-     * @see #assertFailure(Predicate, Object...)
+     * @see #assertFailure(kotlin.jvm.functions.Function1, Object...)
      * @see #assertFailureAndMessage(Class, String, Object...)
      */
     public final U assertResult(T... values) {
@@ -725,7 +724,7 @@ public abstract class TestConsumer<T, U extends TestConsumer<T, U>> implements D
      * @param values the expected values, asserted in order
      * @return this
      */
-    public final U assertFailure(Predicate<Throwable> errorPredicate, T... values) {
+    public final U assertFailure(kotlin.jvm.functions.Function1<Throwable, Boolean> errorPredicate, T... values) {
         return assertSubscribed()
                 .assertValues(values)
                 .assertError(errorPredicate)

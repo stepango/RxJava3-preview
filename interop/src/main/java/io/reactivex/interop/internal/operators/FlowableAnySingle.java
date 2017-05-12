@@ -15,21 +15,23 @@ package io.reactivex.interop.internal.operators;
 import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Predicate;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
 import io.reactivex.flowable.extensions.FuseToFlowable;
 import io.reactivex.flowable.internal.operators.FlowableAny;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
 
 public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseToFlowable<Boolean> {
     final Flowable<T> source;
 
-    final Predicate<? super T> predicate;
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
-    public FlowableAnySingle(Flowable<T> source, Predicate<? super T> predicate) {
+    public FlowableAnySingle(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -48,13 +50,13 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
 
         final SingleObserver<? super Boolean> actual;
 
-        final Predicate<? super T> predicate;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
         Subscription s;
 
         boolean done;
 
-        AnySubscriber(SingleObserver<? super Boolean> actual, Predicate<? super T> predicate) {
+        AnySubscriber(SingleObserver<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -74,7 +76,7 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
             }
             boolean b;
             try {
-                b = predicate.test(t);
+                b = predicate.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

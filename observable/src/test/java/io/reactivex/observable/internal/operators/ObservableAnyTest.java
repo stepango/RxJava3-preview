@@ -13,31 +13,42 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableAnyTest {
 
     @Test
     public void testAnyWithTwoItemsObservable() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }).toObservable();
@@ -70,9 +81,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithOneItemObservable() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }).toObservable();
@@ -105,9 +116,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithEmptyObservable() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }).toObservable();
@@ -140,9 +151,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithPredicate1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         }).toObservable();
@@ -160,9 +171,9 @@ public class ObservableAnyTest {
     @Test
     public void testExists1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         }).toObservable();
@@ -180,9 +191,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithPredicate2Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 1;
             }
         }).toObservable();
@@ -201,9 +212,9 @@ public class ObservableAnyTest {
     public void testAnyWithEmptyAndPredicateObservable() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t) {
+            public Boolean invoke(Integer t) {
                 return true;
             }
         }).toObservable();
@@ -221,9 +232,9 @@ public class ObservableAnyTest {
     @Test
     public void testWithFollowingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> anyEven = o.any(new Predicate<Integer>() {
+        Observable<Boolean> anyEven = o.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer i) {
+            public Boolean invoke(Integer i) {
                 return i % 2 == 0;
             }
         }).toObservable();
@@ -248,9 +259,9 @@ public class ObservableAnyTest {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").any(new Predicate<String>() {
+        Observable.just("Boo!").any(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String v) {
+            public Boolean invoke(String v) {
                 throw ex;
             }
         }).subscribe(ts);
@@ -266,9 +277,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         });
@@ -299,9 +310,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         });
@@ -332,9 +343,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         });
@@ -365,9 +376,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithPredicate1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         });
@@ -384,9 +395,9 @@ public class ObservableAnyTest {
     @Test
     public void testExists1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         });
@@ -403,9 +414,9 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithPredicate2() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 1;
             }
         });
@@ -423,9 +434,9 @@ public class ObservableAnyTest {
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t) {
+            public Boolean invoke(Integer t) {
                 return true;
             }
         });
@@ -442,9 +453,9 @@ public class ObservableAnyTest {
     @Test
     public void testWithFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Single<Boolean> anyEven = o.any(new Predicate<Integer>() {
+        Single<Boolean> anyEven = o.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer i) {
+            public Boolean invoke(Integer i) {
                 return i % 2 == 0;
             }
         });
@@ -469,9 +480,9 @@ public class ObservableAnyTest {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").any(new Predicate<String>() {
+        Observable.just("Boo!").any(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String v) {
+            public Boolean invoke(String v) {
                 throw ex;
             }
         }).subscribe(ts);
@@ -522,9 +533,9 @@ public class ObservableAnyTest {
                     observer.onComplete();
                 }
             }
-            .any(new Predicate<Integer>() {
+                    .any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                 @Override
-                public boolean test(Integer v) throws Exception {
+                public Boolean invoke(Integer v) {
                     throw new TestException();
                 }
             })

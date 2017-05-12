@@ -35,7 +35,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.GroupedObservable;
 import io.reactivex.observable.Observable;
@@ -579,9 +578,9 @@ public class ObservableGroupByTest {
                         Observable<Event> eventStream = eventGroupedObservable;
                         if (eventGroupedObservable.getKey() >= 2) {
                             // filter these
-                            eventStream = eventGroupedObservable.filter(new Predicate<Event>() {
+                            eventStream = eventGroupedObservable.filter(new kotlin.jvm.functions.Function1<Event, Boolean>() {
                                 @Override
-                                public boolean test(Event t1) {
+                                public Boolean invoke(Event t1) {
                                     return false;
                                 }
                             });

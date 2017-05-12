@@ -13,10 +13,12 @@
 
 package io.reactivex.observable.subjects;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.internal.utils.AbstractAppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.internal.utils.*;
+import io.reactivex.observable.internal.utils.AppendOnlyLinkedArrayList;
+import io.reactivex.observable.internal.utils.NotificationLite;
 
 /**
  * Serializes calls to the Observer methods.
@@ -177,7 +179,7 @@ import io.reactivex.observable.internal.utils.*;
     }
 
     @Override
-    public boolean test(Object o) {
+    public Boolean invoke(Object o) {
         return NotificationLite.acceptFull(o, actual);
     }
 

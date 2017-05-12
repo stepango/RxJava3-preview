@@ -20,7 +20,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Consumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Observer;
 import kotlin.jvm.functions.Function0;
@@ -32,7 +31,7 @@ implements Observer<T>, Disposable {
 
     private static final long serialVersionUID = -4403180040475402120L;
 
-    final Predicate<? super T> onNext;
+    final kotlin.jvm.functions.Function1<? super T, Boolean> onNext;
 
     final Consumer<? super Throwable> onError;
 
@@ -40,7 +39,7 @@ implements Observer<T>, Disposable {
 
     boolean done;
 
-    public ForEachWhileObserver(Predicate<? super T> onNext,
+    public ForEachWhileObserver(kotlin.jvm.functions.Function1<? super T, Boolean> onNext,
                                 Consumer<? super Throwable> onError, Function0 onComplete) {
         this.onNext = onNext;
         this.onError = onError;
@@ -60,7 +59,7 @@ implements Observer<T>, Disposable {
 
         boolean b;
         try {
-            b = onNext.test(t);
+            b = onNext.invoke(t);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             dispose();

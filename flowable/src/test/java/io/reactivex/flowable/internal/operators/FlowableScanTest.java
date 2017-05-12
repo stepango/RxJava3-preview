@@ -13,24 +13,48 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-import org.reactivestreams.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.exceptions.UndeliverableException;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Burst;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEventStream;
 import io.reactivex.flowable.FlowableEventStream.Event;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableScanTest {
 
@@ -120,10 +144,10 @@ public class FlowableScanTest {
                 return t1 + t2;
             }
 
-        }).filter(new Predicate<Integer>() {
+        }).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 // this will cause request(1) when 0 is emitted
                 return t1 > 0;
             }

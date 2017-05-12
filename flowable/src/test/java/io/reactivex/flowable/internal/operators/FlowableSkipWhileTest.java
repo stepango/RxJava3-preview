@@ -13,26 +13,31 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableSkipWhileTest {
 
     Subscriber<Integer> w = TestHelper.mockSubscriber();
 
-    private static final Predicate<Integer> LESS_THAN_FIVE = new Predicate<Integer>() {
+    private static final kotlin.jvm.functions.Function1<Integer, Boolean> LESS_THAN_FIVE = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
         @Override
-        public boolean test(Integer v) {
+        public Boolean invoke(Integer v) {
             if (v == 42) {
                 throw new RuntimeException("that's not the answer to everything!");
             }
@@ -40,10 +45,10 @@ public class FlowableSkipWhileTest {
         }
     };
 
-    private static final Predicate<Integer> INDEX_LESS_THAN_THREE = new Predicate<Integer>() {
+    private static final kotlin.jvm.functions.Function1<Integer, Boolean> INDEX_LESS_THAN_THREE = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
         int index;
         @Override
-        public boolean test(Integer value) {
+        public Boolean invoke(Integer value) {
             return index++ < 3;
         }
     };

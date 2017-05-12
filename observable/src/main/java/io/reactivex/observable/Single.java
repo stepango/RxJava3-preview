@@ -41,7 +41,6 @@ import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -1924,7 +1923,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> filter(Predicate<? super T> predicate) {
+    public final Maybe<T> filter(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeFilterSingle<T>(this, predicate));
     }
@@ -2454,7 +2453,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> retry(Predicate<? super Throwable> predicate) {
+    public final Single<T> retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         return toSingle(toObservable().retry(predicate));
     }
 

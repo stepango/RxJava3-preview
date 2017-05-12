@@ -13,18 +13,29 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.NoSuchElementException;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 public class ObservableLastTest {
 
@@ -94,10 +105,10 @@ public class ObservableLastTest {
     @Test
     public void testLastWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -116,10 +127,10 @@ public class ObservableLastTest {
     public void testLastWithPredicateAndOneElement() {
         Maybe<Integer> o = Observable.just(1, 2)
             .filter(
-                new Predicate<Integer>() {
+                    new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -138,10 +149,10 @@ public class ObservableLastTest {
     public void testLastWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
             .filter(
-                new Predicate<Integer>() {
+                    new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 }).lastElement();
@@ -199,10 +210,10 @@ public class ObservableLastTest {
     @Test
     public void testLastOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -220,10 +231,10 @@ public class ObservableLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> o = Observable.just(1, 2)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -242,10 +253,10 @@ public class ObservableLastTest {
     public void testLastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
                 .filter(
-                new Predicate<Integer>() {
+                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })

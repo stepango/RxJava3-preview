@@ -13,21 +13,31 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableRangeTest {
 
@@ -475,9 +485,9 @@ public class FlowableRangeTest {
         };
 
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -536,9 +546,9 @@ public class FlowableRangeTest {
         };
 
         Flowable.range(1, 5)
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })

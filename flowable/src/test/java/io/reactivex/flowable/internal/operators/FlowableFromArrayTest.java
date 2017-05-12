@@ -16,12 +16,13 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 import hu.akarnokd.reactivestreams.extensions.ConstantValuePublisher;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 
 public class FlowableFromArrayTest {
@@ -143,9 +144,9 @@ public class FlowableFromArrayTest {
     @Test
     public void conditionalFiltered() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -173,9 +174,9 @@ public class FlowableFromArrayTest {
     @Test
     public void conditionalSlowPathSkipCancel() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v < 2;
             }
         })

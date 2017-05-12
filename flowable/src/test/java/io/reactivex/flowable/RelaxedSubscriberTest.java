@@ -37,7 +37,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.subscribers.ForEachWhileSubscriber;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -577,9 +576,9 @@ public class RelaxedSubscriberTest {
 
         final List<Integer> list = new ArrayList<Integer>();
 
-        Disposable d = pp.forEachWhile(new Predicate<Integer>() {
+        Disposable d = pp.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 list.add(v);
                 return v < 3;
             }
@@ -598,9 +597,9 @@ public class RelaxedSubscriberTest {
 
     @Test
     public void doubleSubscribe() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
@@ -626,9 +625,9 @@ public class RelaxedSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 ts.onNext(v);
                 return true;
             }
@@ -658,9 +657,9 @@ public class RelaxedSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 throw new TestException();
             }
         }, new Consumer<Throwable>() {
@@ -687,9 +686,9 @@ public class RelaxedSubscriberTest {
 
     @Test
     public void onErrorThrows() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, new Consumer<Throwable>() {
@@ -722,9 +721,9 @@ public class RelaxedSubscriberTest {
 
     @Test
     public void onCompleteThrows() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, new Consumer<Throwable>() {

@@ -13,22 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableTakeLastTest {
 
@@ -149,9 +156,9 @@ public class FlowableTakeLastTest {
                 .empty()
                 .count()
 
-                .filter(new Predicate<Long>() {
+                .filter(new kotlin.jvm.functions.Function1<Long, Boolean>() {
                     @Override
-                    public boolean test(Long v) {
+                    public Boolean invoke(Long v) {
                         return false;
                     }
                 })

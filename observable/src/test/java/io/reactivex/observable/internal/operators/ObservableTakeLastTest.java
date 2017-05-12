@@ -13,20 +13,29 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.mockito.InOrder;
-
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableTakeLastTest {
 
@@ -146,9 +155,9 @@ public class ObservableTakeLastTest {
         assertNull(Observable
                 .empty()
                 .count()
-                .filter(new Predicate<Long>() {
+                .filter(new kotlin.jvm.functions.Function1<Long, Boolean>() {
                     @Override
-                    public boolean test(Long v) {
+                    public Boolean invoke(Long v) {
                         return false;
                     }
                 })

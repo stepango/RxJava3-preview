@@ -89,7 +89,7 @@ public class FunctionsTest {
             }
         };
 
-        assertTrue(Functions.predicateReverseFor(s).test(1));
+        assertTrue(Functions.predicateReverseFor(s).invoke(1));
 
         s = new Function0() {
             @Override
@@ -98,7 +98,7 @@ public class FunctionsTest {
             }
         };
 
-        assertFalse(Functions.predicateReverseFor(s).test(1));
+        assertFalse(Functions.predicateReverseFor(s).invoke(1));
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -15,9 +15,11 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 
 /**
  * Filters the upstream SingleSource via a predicate, returning the success item or completing if
@@ -28,9 +30,9 @@ import io.reactivex.observable.*;
 public final class MaybeFilterSingle<T> extends Maybe<T> {
     final SingleSource<T> source;
 
-    final Predicate<? super T> predicate;
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
-    public MaybeFilterSingle(SingleSource<T> source, Predicate<? super T> predicate) {
+    public MaybeFilterSingle(SingleSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -44,11 +46,11 @@ public final class MaybeFilterSingle<T> extends Maybe<T> {
 
         final MaybeObserver<? super T> actual;
 
-        final Predicate<? super T> predicate;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
         Disposable d;
 
-        FilterMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super T> predicate) {
+        FilterMaybeObserver(MaybeObserver<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -79,7 +81,7 @@ public final class MaybeFilterSingle<T> extends Maybe<T> {
             boolean b;
 
             try {
-                b = predicate.test(value);
+                b = predicate.invoke(value);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(ex);

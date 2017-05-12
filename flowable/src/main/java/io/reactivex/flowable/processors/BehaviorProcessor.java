@@ -13,20 +13,27 @@
 
 package io.reactivex.flowable.processors;
 
-import java.lang.reflect.Array;
-import java.util.concurrent.atomic.*;
-import java.util.concurrent.locks.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.lang.reflect.Array;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AbstractAppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.flowable.internal.utils.*;
+import io.reactivex.flowable.internal.utils.AppendOnlyLinkedArrayList;
+import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import io.reactivex.flowable.internal.utils.NotificationLite;
 
 /**
  * Processor that emits the most recent item it has observed and all subsequent observed items to each subscribed
@@ -490,7 +497,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
 
             if (o != null) {
-                if (test(o)) {
+                if (invoke(o)) {
                     return;
                 }
 
@@ -524,11 +531,11 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 fastPath = true;
             }
 
-            test(value);
+            invoke(value);
         }
 
         @Override
-        public boolean test(Object o) {
+        public Boolean invoke(Object o) {
             if (cancelled) {
                 return true;
             }

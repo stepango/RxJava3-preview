@@ -45,7 +45,6 @@ import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.processors.AsyncProcessor;
 import io.reactivex.flowable.processors.BehaviorProcessor;
@@ -1555,9 +1554,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnErrorNull() {
-        just1.forEachWhile(new Predicate<Integer>() {
+        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, null);
@@ -1565,9 +1564,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnCompleteNull() {
-        just1.forEachWhile(new Predicate<Integer>() {
+        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, new Consumer<Throwable>() {
@@ -1955,7 +1954,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        just1.retry((Predicate<Throwable>)null);
+        just1.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2250,7 +2249,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void takeUntilPredicateNull() {
-        just1.takeUntil((Predicate<Integer>)null);
+        just1.takeUntil((kotlin.jvm.functions.Function1<Integer, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

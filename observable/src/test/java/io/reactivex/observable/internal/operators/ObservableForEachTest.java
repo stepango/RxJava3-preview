@@ -27,7 +27,6 @@ import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
@@ -51,9 +50,9 @@ public class ObservableForEachTest {
                 list.add(v);
             }
         })
-        .forEachWhile(new Predicate<Integer>() {
+                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v < 3;
             }
         });
@@ -72,9 +71,9 @@ public class ObservableForEachTest {
                 list.add(v);
             }
         })
-        .forEachWhile(new Predicate<Integer>() {
+                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, new Consumer<Throwable>() {
@@ -114,9 +113,9 @@ public class ObservableForEachTest {
     public void whilePredicateThrows() {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
-            Observable.just(1).forEachWhile(new Predicate<Integer>() {
+            Observable.just(1).forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                 @Override
-                public boolean test(Integer v) throws Exception {
+                public Boolean invoke(Integer v) {
                     throw new TestException();
                 }
             });

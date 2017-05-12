@@ -14,13 +14,14 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.Predicate;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BasicFuseableObserver;
 
 public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T, T> {
-    final Predicate<? super T> predicate;
-    public ObservableFilter(ObservableSource<T> source, Predicate<? super T> predicate) {
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+
+    public ObservableFilter(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -31,9 +32,9 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
     }
 
     static final class FilterObserver<T> extends BasicFuseableObserver<T, T> {
-        final Predicate<? super T> filter;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> filter;
 
-        FilterObserver(Observer<? super T> actual, Predicate<? super T> filter) {
+        FilterObserver(Observer<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> filter) {
             super(actual);
             this.filter = filter;
         }
@@ -43,7 +44,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
             if (sourceMode == NONE) {
                 boolean b;
                 try {
-                    b = filter.test(t);
+                    b = filter.invoke(t);
                 } catch (Throwable e) {
                     fail(e);
                     return;
@@ -66,7 +67,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
         public T poll() throws Exception {
             for (;;) {
                 T v = qs.poll();
-                if (v == null || filter.test(v)) {
+                if (v == null || filter.invoke(v)) {
                     return v;
                 }
             }

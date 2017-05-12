@@ -54,7 +54,6 @@ import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.internal.operators.MaybeConcatArrayDelayError;
@@ -424,19 +423,19 @@ public class MaybeTest {
 
     @Test
     public void filterThrows() {
-        Maybe.just(1).filter(new Predicate<Integer>() {
+        Maybe.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
-                throw new IOException();
+            public Boolean invoke(Integer v) {
+                throw new TestException();
             }
-        }).test().assertFailure(IOException.class);
+        }).test().assertFailure(TestException.class);
     }
 
     @Test
     public void filterTrue() {
-        Maybe.just(1).filter(new Predicate<Integer>() {
+        Maybe.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v == 1;
             }
         }).test().assertResult(1);
@@ -444,9 +443,9 @@ public class MaybeTest {
 
     @Test
     public void filterFalse() {
-        Maybe.just(2).filter(new Predicate<Integer>() {
+        Maybe.just(2).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v == 1;
             }
         }).test().assertResult();
@@ -454,9 +453,9 @@ public class MaybeTest {
 
     @Test
     public void filterEmpty() {
-        Maybe.<Integer>empty().filter(new Predicate<Integer>() {
+        Maybe.<Integer>empty().filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v == 1;
             }
         }).test().assertResult();
@@ -469,19 +468,19 @@ public class MaybeTest {
 
     @Test
     public void singleFilterThrows() {
-        Single.just(1).filter(new Predicate<Integer>() {
+        Single.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
-                throw new IOException();
+            public Boolean invoke(Integer v) {
+                throw new TestException();
             }
-        }).test().assertFailure(IOException.class);
+        }).test().assertFailure(TestException.class);
     }
 
     @Test
     public void singleFilterTrue() {
-        Single.just(1).filter(new Predicate<Integer>() {
+        Single.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v == 1;
             }
         }).test().assertResult(1);
@@ -489,9 +488,9 @@ public class MaybeTest {
 
     @Test
     public void singleFilterFalse() {
-        Single.just(2).filter(new Predicate<Integer>() {
+        Single.just(2).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v == 1;
             }
         }).test().assertResult();

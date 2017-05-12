@@ -16,22 +16,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class FlowablePublishFunctionTest {
@@ -468,15 +475,15 @@ public class FlowablePublishFunctionTest {
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
-                        v.filter(new Predicate<Integer>() {
+                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                             @Override
-                            public boolean test(Integer w) throws Exception {
+                            public Boolean invoke(Integer w) {
                                 return w % 2 == 0;
                             }
                         }),
-                        v.filter(new Predicate<Integer>() {
+                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                             @Override
-                            public boolean test(Integer w) throws Exception {
+                            public Boolean invoke(Integer w) {
                                 return w % 2 != 0;
                             }
                         }));
@@ -495,15 +502,15 @@ public class FlowablePublishFunctionTest {
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
-                        v.filter(new Predicate<Integer>() {
+                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                             @Override
-                            public boolean test(Integer w) throws Exception {
+                            public Boolean invoke(Integer w) {
                                 return w % 2 == 0;
                             }
                         }),
-                        v.filter(new Predicate<Integer>() {
+                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                             @Override
-                            public boolean test(Integer w) throws Exception {
+                            public Boolean invoke(Integer w) {
                                 return w % 2 != 0;
                             }
                         }));
@@ -523,15 +530,15 @@ public class FlowablePublishFunctionTest {
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
-                        v.filter(new Predicate<Integer>() {
+                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                             @Override
-                            public boolean test(Integer w) throws Exception {
+                            public Boolean invoke(Integer w) {
                                 return w % 2 == 0;
                             }
                         }),
-                        v.filter(new Predicate<Integer>() {
+                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                             @Override
-                            public boolean test(Integer w) throws Exception {
+                            public Boolean invoke(Integer w) {
                                 return w % 2 != 0;
                             }
                         }));

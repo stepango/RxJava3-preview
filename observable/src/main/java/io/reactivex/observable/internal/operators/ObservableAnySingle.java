@@ -12,19 +12,24 @@
  */
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.extensions.FuseToObservable;
 
 public final class ObservableAnySingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
     final ObservableSource<T> source;
 
-    final Predicate<? super T> predicate;
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
-    public ObservableAnySingle(ObservableSource<T> source, Predicate<? super T> predicate) {
+    public ObservableAnySingle(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -42,13 +47,13 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
     static final class AnyObserver<T> implements Observer<T>, Disposable {
 
         final SingleObserver<? super Boolean> actual;
-        final Predicate<? super T> predicate;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
 
         Disposable s;
 
         boolean done;
 
-        AnyObserver(SingleObserver<? super Boolean> actual, Predicate<? super T> predicate) {
+        AnyObserver(SingleObserver<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -67,7 +72,7 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
             }
             boolean b;
             try {
-                b = predicate.test(t);
+                b = predicate.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();

@@ -13,29 +13,37 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
-import org.reactivestreams.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableTakeWhileTest {
 
     @Test
     public void testTakeWhile1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Integer> take = w.takeWhile(new Predicate<Integer>() {
+        Flowable<Integer> take = w.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer input) {
+            public Boolean invoke(Integer input) {
                 return input < 3;
             }
         });
@@ -52,9 +60,9 @@ public class FlowableTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         FlowableProcessor<Integer> s = PublishProcessor.create();
-        Flowable<Integer> take = s.takeWhile(new Predicate<Integer>() {
+        Flowable<Integer> take = s.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer input) {
+            public Boolean invoke(Integer input) {
                 return input < 3;
             }
         });
@@ -81,11 +89,11 @@ public class FlowableTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> take = w.takeWhile(new Predicate<String>() {
+        Flowable<String> take = w.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             int index;
 
             @Override
-            public boolean test(String input) {
+            public Boolean invoke(String input) {
                 return index++ < 2;
             }
         });
@@ -110,9 +118,9 @@ public class FlowableTakeWhileTest {
             }
         });
 
-        source.takeWhile(new Predicate<String>() {
+        source.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return false;
             }
         }).blockingLast("");
@@ -125,9 +133,9 @@ public class FlowableTakeWhileTest {
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(source)
-                .takeWhile(new Predicate<String>() {
+                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 throw testException;
             }
         });
@@ -152,11 +160,11 @@ public class FlowableTakeWhileTest {
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(w)
-                .takeWhile(new Predicate<String>() {
+                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             int index;
 
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return index++ < 1;
             }
         });
@@ -217,9 +225,9 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testBackpressure() {
-        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 100;
             }
         });
@@ -238,9 +246,9 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testNoUnsubscribeDownstream() {
-        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         });
@@ -257,9 +265,9 @@ public class FlowableTakeWhileTest {
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.just("abc").takeWhile(new Predicate<String>() {
+        Flowable.just("abc").takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String t1) {
+            public Boolean invoke(String t1) {
                 throw new TestException();
             }
         }).subscribe(ts);

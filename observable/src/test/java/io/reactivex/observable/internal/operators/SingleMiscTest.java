@@ -26,7 +26,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
@@ -231,9 +230,9 @@ public class SingleMiscTest {
                 return 1;
             }
         })
-        .retry(new Predicate<Throwable>() {
+                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
             @Override
-            public boolean test(Throwable e) throws Exception {
+            public Boolean invoke(Throwable e) {
                 return true;
             }
         })

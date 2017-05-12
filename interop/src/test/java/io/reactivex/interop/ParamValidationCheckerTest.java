@@ -52,7 +52,6 @@ import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.BackpressureOverflowStrategy;
 import io.reactivex.flowable.BackpressureStrategy;
@@ -243,7 +242,7 @@ public class ParamValidationCheckerTest {
 
         // zero retry is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
-        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, Predicate.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, kotlin.jvm.functions.Function1.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleWithTimeout", Long.TYPE, TimeUnit.class));
@@ -359,7 +358,7 @@ public class ParamValidationCheckerTest {
 
         // zero retry is allowed
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
-        addOverride(new ParamOverride(Maybe.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, Predicate.class));
+        addOverride(new ParamOverride(Maybe.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, kotlin.jvm.functions.Function1.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Maybe.class, 0, ParamMode.ANY, "delaySubscription", Long.TYPE, TimeUnit.class));
@@ -483,7 +482,7 @@ public class ParamValidationCheckerTest {
 
         // zero retry is allowed
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
-        addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, Predicate.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE, kotlin.jvm.functions.Function1.class));
 
         // negative time is considered as zero time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleWithTimeout", Long.TYPE, TimeUnit.class));
@@ -922,7 +921,7 @@ public class ParamValidationCheckerTest {
     @SuppressWarnings("rawtypes")
     static final class AllFunctionals
     implements BiFunction, BiConsumer,
-            Predicate, BiPredicate, Function0,
+            kotlin.jvm.functions.Function1, BiPredicate, Function0,
     Function3, Function4, Function5, Function6, Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,
@@ -1009,7 +1008,7 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public boolean test(Object t) throws Exception {
+        public Boolean invoke(Object t) {
             return false;
         }
 

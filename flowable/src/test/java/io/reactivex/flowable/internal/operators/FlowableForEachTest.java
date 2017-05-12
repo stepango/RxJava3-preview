@@ -13,15 +13,17 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.*;
-
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
+
+import static org.junit.Assert.assertEquals;
 
 public class FlowableForEachTest {
 
@@ -36,9 +38,9 @@ public class FlowableForEachTest {
                 list.add(v);
             }
         })
-        .forEachWhile(new Predicate<Integer>() {
+                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v < 3;
             }
         });
@@ -57,9 +59,9 @@ public class FlowableForEachTest {
                 list.add(v);
             }
         })
-        .forEachWhile(new Predicate<Integer>() {
+                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, new Consumer<Throwable>() {

@@ -13,29 +13,34 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableFilterTest {
 
     @Test
     public void testFilter() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> observable = w.filter(new Predicate<String>() {
+        Observable<String> observable = w.filter(new kotlin.jvm.functions.Function1<String, Boolean>() {
 
             @Override
-            public boolean test(String t1) {
+            public Boolean invoke(String t1) {
                 return t1.equals("two");
             }
         });
@@ -97,9 +102,9 @@ public class ObservableFilterTest {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
 
         Observable.range(1, 5)
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -116,9 +121,9 @@ public class ObservableFilterTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -135,9 +140,9 @@ public class ObservableFilterTest {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
 
         Observable.range(1, 5)
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 return v % 2 == 0;
             }
         })
@@ -150,9 +155,9 @@ public class ObservableFilterTest {
     @Test
     public void filterThrows() {
         Observable.range(1, 5)
-        .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) throws Exception {
+            public Boolean invoke(Integer v) {
                 throw new TestException();
             }
         })

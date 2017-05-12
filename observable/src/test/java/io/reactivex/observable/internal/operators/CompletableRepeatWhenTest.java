@@ -16,7 +16,6 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
 import kotlin.Unit;
@@ -41,9 +40,9 @@ public class CompletableRepeatWhenTest {
             @Override
             public Observable<Object> apply(Observable<Object> f) throws Exception {
                 final int[] j = { 3 };
-                return f.takeWhile(new Predicate<Object>() {
+                return f.takeWhile(new kotlin.jvm.functions.Function1<Object, Boolean>() {
                     @Override
-                    public boolean test(Object v) throws Exception {
+                    public Boolean invoke(Object v) {
                         return j[0]-- != 0;
                     }
                 });

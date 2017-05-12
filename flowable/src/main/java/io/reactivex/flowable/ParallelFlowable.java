@@ -33,7 +33,6 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -219,7 +218,7 @@ public abstract class ParallelFlowable<T> {
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
-    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate) {
+    public final ParallelFlowable<T> filter(@NonNull kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         return RxJavaFlowablePlugins.onAssembly(new ParallelFilter<T>(this, predicate));
     }
@@ -237,7 +236,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @Experimental
-    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull ParallelFailureHandling errorHandler) {
+    public final ParallelFlowable<T> filter(@NonNull kotlin.jvm.functions.Function1<? super T, Boolean> predicate, @NonNull ParallelFailureHandling errorHandler) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
@@ -258,7 +257,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @Experimental
-    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final ParallelFlowable<T> filter(@NonNull kotlin.jvm.functions.Function1<? super T, Boolean> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));

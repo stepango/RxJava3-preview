@@ -23,7 +23,6 @@ import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.ConnectableObservable;
@@ -252,7 +251,7 @@ public final class ObservableInternalHelper {
         return new ReplayFunction<T, R>(selector, scheduler);
     }
 
-    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Predicate<Notification<Object>> {
+    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, kotlin.jvm.functions.Function1<Notification<Object>, Boolean> {
         INSTANCE;
 
         @Override
@@ -261,7 +260,7 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public boolean test(Notification<Object> t) throws Exception {
+        public Boolean invoke(Notification<Object> t) {
             return t.isOnError();
         }
     }

@@ -41,7 +41,6 @@ import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.common.functions.Predicate;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 
@@ -138,22 +137,22 @@ public final class Functions {
 
     public static final LongConsumer EMPTY_LONG_CONSUMER = new EmptyLongConsumer();
 
-    static final Predicate<Object> ALWAYS_TRUE = new TruePredicate();
+    static final kotlin.jvm.functions.Function1<Object, Boolean> ALWAYS_TRUE = new TruePredicate();
 
-    static final Predicate<Object> ALWAYS_FALSE = new FalsePredicate();
+    static final kotlin.jvm.functions.Function1<Object, Boolean> ALWAYS_FALSE = new FalsePredicate();
 
     static final Callable<Object> NULL_SUPPLIER = new NullCallable();
 
     static final Comparator<Object> NATURAL_COMPARATOR = new NaturalObjectComparator();
 
     @SuppressWarnings("unchecked")
-    public static <T> Predicate<T> alwaysTrue() {
-        return (Predicate<T>)ALWAYS_TRUE;
+    public static <T> kotlin.jvm.functions.Function1<T, Boolean> alwaysTrue() {
+        return (kotlin.jvm.functions.Function1<T, Boolean>) ALWAYS_TRUE;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Predicate<T> alwaysFalse() {
-        return (Predicate<T>)ALWAYS_FALSE;
+    public static <T> kotlin.jvm.functions.Function1<T, Boolean> alwaysFalse() {
+        return (kotlin.jvm.functions.Function1<T, Boolean>) ALWAYS_FALSE;
     }
 
     @SuppressWarnings("unchecked")
@@ -278,7 +277,7 @@ public final class Functions {
         return new ArrayListCapacityCallable<T>(capacity);
     }
 
-    static final class EqualsPredicate<T> implements Predicate<T> {
+    static final class EqualsPredicate<T> implements kotlin.jvm.functions.Function1<T, Boolean> {
         final T value;
 
         EqualsPredicate(T value) {
@@ -286,12 +285,12 @@ public final class Functions {
         }
 
         @Override
-        public boolean test(T t) throws Exception {
+        public Boolean invoke(T t) {
             return ObjectHelper.equals(t, value);
         }
     }
 
-    public static <T> Predicate<T> equalsWith(T value) {
+    public static <T> kotlin.jvm.functions.Function1<T, Boolean> equalsWith(T value) {
         return new EqualsPredicate<T>(value);
     }
 
@@ -381,7 +380,7 @@ public final class Functions {
         return new ActionConsumer<T>(action);
     }
 
-    static final class ClassFilter<T, U> implements Predicate<T> {
+    static final class ClassFilter<T, U> implements kotlin.jvm.functions.Function1<T, Boolean> {
         final Class<U> clazz;
 
         ClassFilter(Class<U> clazz) {
@@ -389,16 +388,16 @@ public final class Functions {
         }
 
         @Override
-        public boolean test(T t) throws Exception {
+        public Boolean invoke(T t) {
             return clazz.isInstance(t);
         }
     }
 
-    public static <T, U> Predicate<T> isInstanceOf(Class<U> clazz) {
+    public static <T, U> kotlin.jvm.functions.Function1<T, Boolean> isInstanceOf(Class<U> clazz) {
         return new ClassFilter<T, U>(clazz);
     }
 
-    static final class BooleanSupplierPredicateReverse<T> implements Predicate<T> {
+    static final class BooleanSupplierPredicateReverse<T> implements kotlin.jvm.functions.Function1<T, Boolean> {
         final Function0<Boolean> supplier;
 
         BooleanSupplierPredicateReverse(Function0<Boolean> supplier) {
@@ -406,12 +405,12 @@ public final class Functions {
         }
 
         @Override
-        public boolean test(T t) throws Exception {
+        public Boolean invoke(T t) {
             return !supplier.invoke();
         }
     }
 
-    public static <T> Predicate<T> predicateReverseFor(Function0<Boolean> supplier) {
+    public static <T> kotlin.jvm.functions.Function1<T, Boolean> predicateReverseFor(Function0<Boolean> supplier) {
         return new BooleanSupplierPredicateReverse<T>(supplier);
     }
 
@@ -742,16 +741,16 @@ public final class Functions {
         public void accept(long v) { }
     }
 
-    static final class TruePredicate implements Predicate<Object> {
+    static final class TruePredicate implements kotlin.jvm.functions.Function1<Object, Boolean> {
         @Override
-        public boolean test(Object o) {
+        public Boolean invoke(Object o) {
             return true;
         }
     }
 
-    static final class FalsePredicate implements Predicate<Object> {
+    static final class FalsePredicate implements kotlin.jvm.functions.Function1<Object, Boolean> {
         @Override
-        public boolean test(Object o) {
+        public Boolean invoke(Object o) {
             return false;
         }
     }

@@ -38,7 +38,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.GroupedFlowable;
 import io.reactivex.flowable.TestHelper;
@@ -985,9 +984,9 @@ public class FlowableRetryTest {
     @Test
     public void retryPredicate() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .retry(new Predicate<Throwable>() {
+                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
             @Override
-            public boolean test(Throwable v) throws Exception {
+            public Boolean invoke(Throwable v) {
                 return true;
             }
         })
@@ -999,9 +998,9 @@ public class FlowableRetryTest {
     @Test
     public void retryLongPredicateInvalid() {
         try {
-            Flowable.just(1).retry(-99, new Predicate<Throwable>() {
+            Flowable.just(1).retry(-99, new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
                 @Override
-                public boolean test(Throwable e) throws Exception {
+                public Boolean invoke(Throwable e) {
                     return true;
                 }
             });

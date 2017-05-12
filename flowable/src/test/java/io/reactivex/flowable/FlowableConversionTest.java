@@ -13,16 +13,20 @@
 
 package io.reactivex.flowable;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import org.junit.*;
-import org.reactivestreams.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.internal.operators.*;
+import io.reactivex.flowable.internal.operators.FlowableFilter;
+import io.reactivex.flowable.internal.operators.FlowableMap;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 
 public class FlowableConversionTest {
@@ -72,7 +76,7 @@ public class FlowableConversionTest {
             }
         }
 
-        public final CylonDetectorObservable<T> beep(Predicate<? super T> predicate) {
+        public final CylonDetectorObservable<T> beep(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
             return new CylonDetectorObservable<T>(new FlowableFilter<T>(Flowable.fromPublisher(onSubscribe), predicate));
         }
 

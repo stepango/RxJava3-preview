@@ -13,15 +13,32 @@
 
 package io.reactivex.observable;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import org.junit.Assert;
+import org.junit.Test;
 
-import org.junit.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.Notification;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.observers.TestObserver;
 
@@ -1583,9 +1600,9 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnErrorNull() {
-        just1.forEachWhile(new Predicate<Integer>() {
+        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, null);
@@ -1593,9 +1610,9 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnCompleteNull() {
-        just1.forEachWhile(new Predicate<Integer>() {
+        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }, new Consumer<Throwable>() {
@@ -1965,7 +1982,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        just1.retry((Predicate<Throwable>)null);
+        just1.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2270,7 +2287,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void takeUntilPredicateNull() {
-        just1.takeUntil((Predicate<Integer>)null);
+        just1.takeUntil((kotlin.jvm.functions.Function1<Integer, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

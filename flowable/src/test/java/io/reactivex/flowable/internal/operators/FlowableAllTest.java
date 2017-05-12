@@ -13,32 +13,38 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class FlowableAllTest {
 
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1)
-            .all(new Predicate<Integer>() {
+                .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                 @Override
-                public boolean test(Integer t1) {
+                public Boolean invoke(Integer t1) {
                     return false;
                 }
             })
@@ -58,9 +64,9 @@ public class FlowableAllTest {
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(new Predicate<String>() {
+        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return s.length() == 3;
             }
         })
@@ -78,9 +84,9 @@ public class FlowableAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(new Predicate<String>() {
+        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return s.length() == 3;
             }
         })
@@ -98,9 +104,9 @@ public class FlowableAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(new Predicate<String>() {
+        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return s.length() == 3;
             }
         })
@@ -119,9 +125,9 @@ public class FlowableAllTest {
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
 
-        obs.all(new Predicate<String>() {
+        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String s) {
+            public Boolean invoke(String s) {
                 return s.length() == 3;
             }
         })
@@ -135,9 +141,9 @@ public class FlowableAllTest {
     @Test
     public void testFollowingFirstFlowable() {
         Flowable<Integer> o = Flowable.fromArray(1, 3, 5, 6);
-        Flowable<Boolean> allOdd = o.all(new Predicate<Integer>() {
+        Flowable<Boolean> allOdd = o.all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer i) {
+            public Boolean invoke(Integer i) {
                 return i % 2 == 1;
             }
         })
@@ -148,9 +154,9 @@ public class FlowableAllTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1)
-            .all(new Predicate<Integer>() {
+                .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                 @Override
-                public boolean test(Integer t1) {
+                public Boolean invoke(Integer t1) {
                     return false;
                 }
             })
@@ -168,9 +174,9 @@ public class FlowableAllTest {
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
-        Flowable.empty().all(new Predicate<Object>() {
+        Flowable.empty().all(new kotlin.jvm.functions.Function1<Object, Boolean>() {
             @Override
-            public boolean test(Object t1) {
+            public Boolean invoke(Object t1) {
                 return false;
             }
         })
@@ -185,9 +191,9 @@ public class FlowableAllTest {
     public void testBackpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
 
-        Flowable.empty().all(new Predicate<Object>() {
+        Flowable.empty().all(new kotlin.jvm.functions.Function1<Object, Boolean>() {
             @Override
-            public boolean test(Object t) {
+            public Boolean invoke(Object t) {
                 return false;
             }
         })
@@ -206,9 +212,9 @@ public class FlowableAllTest {
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Flowable.just("Boo!").all(new Predicate<String>() {
+        Flowable.just("Boo!").all(new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String v) {
+            public Boolean invoke(String v) {
                 throw ex;
             }
         })
@@ -242,9 +248,9 @@ public class FlowableAllTest {
                     observer.onComplete();
                 }
             }
-            .all(new Predicate<Integer>() {
+                    .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                 @Override
-                public boolean test(Integer v) throws Exception {
+                public Boolean invoke(Integer v) {
                     throw new TestException();
                 }
             })
@@ -272,9 +278,9 @@ public class FlowableAllTest {
                     observer.onComplete();
                 }
             }
-            .all(new Predicate<Integer>() {
+                    .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                 @Override
-                public boolean test(Integer v) throws Exception {
+                public Boolean invoke(Integer v) {
                     throw new TestException();
                 }
             })

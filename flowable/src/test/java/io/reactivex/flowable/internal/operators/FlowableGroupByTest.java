@@ -38,7 +38,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.GroupedFlowable;
@@ -582,9 +581,9 @@ public class FlowableGroupByTest {
                         Flowable<Event> eventStream = eventGroupedFlowable;
                         if (eventGroupedFlowable.getKey() >= 2) {
                             // filter these
-                            eventStream = eventGroupedFlowable.filter(new Predicate<Event>() {
+                            eventStream = eventGroupedFlowable.filter(new kotlin.jvm.functions.Function1<Event, Boolean>() {
                                 @Override
-                                public boolean test(Event t1) {
+                                public Boolean invoke(Event t1) {
                                     return false;
                                 }
                             });

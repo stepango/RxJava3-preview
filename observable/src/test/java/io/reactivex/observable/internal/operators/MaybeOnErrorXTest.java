@@ -13,14 +13,16 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
+import java.io.IOException;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 
 public class MaybeOnErrorXTest {
@@ -82,13 +84,13 @@ public class MaybeOnErrorXTest {
     @Test
     public void onErrorCompletePredicateThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-        .onErrorComplete(new Predicate<Throwable>() {
+                .onErrorComplete(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
             @Override
-            public boolean test(Throwable v) throws Exception {
-                throw new IOException();
+            public Boolean invoke(Throwable v) {
+                throw new RuntimeException();
             }
         })
-        .test(), TestException.class, IOException.class);
+                .test(), TestException.class, RuntimeException.class);
     }
 
     @Test

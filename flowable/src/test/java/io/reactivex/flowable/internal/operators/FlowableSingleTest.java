@@ -13,21 +13,35 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 
 public class FlowableSingleTest {
 
@@ -196,10 +210,10 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2)
                 .filter(
-                new Predicate<Integer>() {
+                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -218,10 +232,10 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateAndTooManyElementsFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4)
                 .filter(
-                new Predicate<Integer>() {
+                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -240,10 +254,10 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateAndEmptyFlowable() {
         Flowable<Integer> observable = Flowable.just(1)
                 .filter(
-                new Predicate<Integer>() {
+                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
 
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -300,9 +314,9 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -320,9 +334,9 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElementsFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })
@@ -340,9 +354,9 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndEmptyFlowable() {
         Flowable<Integer> observable = Flowable.just(1)
-                .filter(new Predicate<Integer>() {
+                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
                     @Override
-                    public boolean test(Integer t1) {
+                    public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
                     }
                 })

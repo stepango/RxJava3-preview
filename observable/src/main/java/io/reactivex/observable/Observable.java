@@ -49,7 +49,6 @@ import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ArrayListSupplier;
@@ -4666,7 +4665,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<Boolean> all(Predicate<? super T> predicate) {
+    public final Single<Boolean> all(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableAllSingle<T>(this, predicate));
     }
@@ -4718,7 +4717,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<Boolean> any(Predicate<? super T> predicate) {
+    public final Single<Boolean> any(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableAnySingle<T>(this, predicate));
     }
@@ -7252,7 +7251,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> filter(Predicate<? super T> predicate) {
+    public final Observable<T> filter(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableFilter<T>(this, predicate));
     }
@@ -7945,7 +7944,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onNext
-     *            {@link Predicate} to execute for each item.
+     *            {@link kotlin.jvm.functions.Function1} to execute for each item.
      * @return
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
@@ -7954,7 +7953,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable forEachWhile(Predicate<? super T> onNext) {
+    public final Disposable forEachWhile(kotlin.jvm.functions.Function1<? super T, Boolean> onNext) {
         return forEachWhile(onNext, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
     }
 
@@ -7967,7 +7966,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onNext
-     *            {@link Predicate} to execute for each item.
+     *            {@link kotlin.jvm.functions.Function1} to execute for each item.
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @return
@@ -7979,7 +7978,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
+    public final Disposable forEachWhile(kotlin.jvm.functions.Function1<? super T, Boolean> onNext, Consumer<? super Throwable> onError) {
         return forEachWhile(onNext, onError, Functions.EMPTY_ACTION);
     }
 
@@ -7992,7 +7991,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onNext
-     *            {@link Predicate} to execute for each item.
+     *            {@link kotlin.jvm.functions.Function1} to execute for each item.
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @param onComplete
@@ -8007,7 +8006,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable forEachWhile(final Predicate<? super T> onNext, Consumer<? super Throwable> onError,
+    public final Disposable forEachWhile(final kotlin.jvm.functions.Function1<? super T, Boolean> onNext, Consumer<? super Throwable> onError,
                                          final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
@@ -9706,7 +9705,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> retry(long times, Predicate<? super Throwable> predicate) {
+    public final Observable<T> retry(long times, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         if (times < 0) {
             throw new IllegalArgumentException("times >= 0 required but it was " + times);
         }
@@ -9729,7 +9728,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> retry(Predicate<? super Throwable> predicate) {
+    public final Observable<T> retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         return retry(Long.MAX_VALUE, predicate);
     }
 
@@ -10553,7 +10552,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> skipWhile(Predicate<? super T> predicate) {
+    public final Observable<T> skipWhile(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableSkipWhile<T>(this, predicate));
     }
@@ -11543,7 +11542,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
      * <p>
-     * The difference between this operator and {@link #takeWhile(Predicate)} is that here, the condition is
+     * The difference between this operator and {@link #takeWhile(kotlin.jvm.functions.Function1)} is that here, the condition is
      * evaluated <em>after</em> the item is emitted.
      *
      * <dl>
@@ -11556,12 +11555,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that first emits items emitted by the source Observable, checks the specified
      *         condition after each item, and then completes when the condition is satisfied.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
-     * @see Observable#takeWhile(Predicate)
+     * @see Observable#takeWhile(kotlin.jvm.functions.Function1)
      * @since 1.1.0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> takeUntil(Predicate<? super T> stopPredicate) {
+    public final Observable<T> takeUntil(kotlin.jvm.functions.Function1<? super T, Boolean> stopPredicate) {
         ObjectHelper.requireNonNull(stopPredicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableTakeUntilPredicate<T>(this, stopPredicate));
     }
@@ -11581,11 +11580,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits the items from the source ObservableSource so long as each item satisfies the
      *         condition defined by {@code predicate}, then completes
      * @see <a href="http://reactivex.io/documentation/operators/takewhile.html">ReactiveX operators documentation: TakeWhile</a>
-     * @see Observable#takeUntil(Predicate)
+     * @see Observable#takeUntil(kotlin.jvm.functions.Function1)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> takeWhile(Predicate<? super T> predicate) {
+    public final Observable<T> takeWhile(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableTakeWhile<T>(this, predicate));
     }

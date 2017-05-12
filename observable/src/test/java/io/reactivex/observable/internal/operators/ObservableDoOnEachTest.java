@@ -29,7 +29,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -139,9 +138,9 @@ public class ObservableDoOnEachTest {
         for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
+                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
                         @Override
-                        public boolean test(Boolean value) {
+                        public Boolean invoke(Boolean value) {
                             return value;
                         }
                     })
@@ -165,9 +164,9 @@ public class ObservableDoOnEachTest {
         for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
-                    .takeWhile(new Predicate<Boolean>() {
+                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
                         @Override
-                        public boolean test(Boolean value) {
+                        public Boolean invoke(Boolean value) {
                             return value;
                         }
                     })

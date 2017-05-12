@@ -16,17 +16,19 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 
 public final class ObservableRetryPredicate<T> extends AbstractObservableWithUpstream<T, T> {
-    final Predicate<? super Throwable> predicate;
+    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
     final long count;
     public ObservableRetryPredicate(Observable<T> source,
-            long count,
-            Predicate<? super Throwable> predicate) {
+                                    long count,
+                                    kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
         this.count = count;
@@ -48,10 +50,10 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         final Observer<? super T> actual;
         final SequentialDisposable sa;
         final ObservableSource<? extends T> source;
-        final Predicate<? super Throwable> predicate;
+        final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
         long remaining;
         RepeatObserver(Observer<? super T> actual, long count,
-                Predicate<? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
+                       kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;
@@ -79,7 +81,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
             } else {
                 boolean b;
                 try {
-                    b = predicate.test(t);
+                    b = predicate.invoke(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     actual.onError(new CompositeException(t, e));

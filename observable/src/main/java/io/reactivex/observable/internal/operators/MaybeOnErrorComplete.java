@@ -14,10 +14,11 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Predicate;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 
 /**
  * Emits an onComplete if the source emits an onError and the predicate returns true for
@@ -27,10 +28,10 @@ import io.reactivex.observable.*;
  */
 public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Predicate<? super Throwable> predicate;
+    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
 
     public MaybeOnErrorComplete(MaybeSource<T> source,
-            Predicate<? super Throwable> predicate) {
+                                kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -44,11 +45,11 @@ public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, 
 
         final MaybeObserver<? super T> actual;
 
-        final Predicate<? super Throwable> predicate;
+        final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
 
         Disposable d;
 
-        OnErrorCompleteMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super Throwable> predicate) {
+        OnErrorCompleteMaybeObserver(MaybeObserver<? super T> actual, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -72,7 +73,7 @@ public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, 
             boolean b;
 
             try {
-                b = predicate.test(e);
+                b = predicate.invoke(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(new CompositeException(e, ex));

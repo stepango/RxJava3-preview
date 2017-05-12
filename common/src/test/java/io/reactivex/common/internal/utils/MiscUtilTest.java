@@ -13,15 +13,20 @@
 
 package io.reactivex.common.internal.utils;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.internal.utils.AbstractAppendOnlyLinkedArrayList.NonThrowingPredicate;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MiscUtilTest {
     @Test
@@ -99,7 +104,7 @@ public class MiscUtilTest {
 
         list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) {
+            public Boolean invoke(Integer t2) {
                 out.add(t2);
                 return t2 == 2;
             }
@@ -120,7 +125,7 @@ public class MiscUtilTest {
 
         list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) {
+            public Boolean invoke(Integer t2) {
                 out.add(t2);
                 return t2 == 2;
             }
@@ -141,7 +146,7 @@ public class MiscUtilTest {
 
         list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) {
+            public Boolean invoke(Integer t2) {
                 out.add(t2);
                 return t2 == 3;
             }
@@ -162,7 +167,7 @@ public class MiscUtilTest {
 
         list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) {
+            public Boolean invoke(Integer t2) {
                 out.add(t2);
                 return false;
             }

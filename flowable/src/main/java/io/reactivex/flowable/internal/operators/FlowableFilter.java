@@ -15,15 +15,17 @@ package io.reactivex.flowable.internal.operators;
 
 import org.reactivestreams.Subscriber;
 
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscribers.*;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableConditionalSubscriber;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
 
 public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> {
-    final Predicate<? super T> predicate;
-    public FlowableFilter(Flowable<T> source, Predicate<? super T> predicate) {
+    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+
+    public FlowableFilter(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -40,9 +42,9 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
 
     static final class FilterSubscriber<T> extends BasicFuseableSubscriber<T, T>
     implements ConditionalSubscriber<T> {
-        final Predicate<? super T> filter;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> filter;
 
-        FilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> filter) {
+        FilterSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> filter) {
             super(actual);
             this.filter = filter;
         }
@@ -65,7 +67,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
             }
             boolean b;
             try {
-                b = filter.test(t);
+                b = filter.invoke(t);
             } catch (Throwable e) {
                 fail(e);
                 return true;
@@ -85,7 +87,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public T poll() throws Throwable {
             FusedQueueSubscription<T> qs = this.qs;
-            Predicate<? super T> f = filter;
+            kotlin.jvm.functions.Function1<? super T, Boolean> f = filter;
 
             for (;;) {
                 T t = qs.poll();
@@ -93,7 +95,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                     return null;
                 }
 
-                if (f.test(t)) {
+                if (f.invoke(t)) {
                     return t;
                 }
 
@@ -107,9 +109,9 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
     }
 
     static final class FilterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
-        final Predicate<? super T> filter;
+        final kotlin.jvm.functions.Function1<? super T, Boolean> filter;
 
-        FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Predicate<? super T> filter) {
+        FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> filter) {
             super(actual);
             this.filter = filter;
         }
@@ -133,7 +135,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
 
             boolean b;
             try {
-                b = filter.test(t);
+                b = filter.invoke(t);
             } catch (Throwable e) {
                 fail(e);
                 return true;
@@ -150,7 +152,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public T poll() throws Throwable {
             FusedQueueSubscription<T> qs = this.qs;
-            Predicate<? super T> f = filter;
+            kotlin.jvm.functions.Function1<? super T, Boolean> f = filter;
 
             for (;;) {
                 T t = qs.poll();
@@ -158,7 +160,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                     return null;
                 }
 
-                if (f.test(t)) {
+                if (f.invoke(t)) {
                     return t;
                 }
 

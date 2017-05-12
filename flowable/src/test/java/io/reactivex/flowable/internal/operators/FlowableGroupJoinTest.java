@@ -15,23 +15,34 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.Arrays;
+import java.util.List;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableGroupJoinTest {
 
@@ -175,9 +186,9 @@ public class FlowableGroupJoinTest {
                 new RelaxedSubscriber<PPF>() {
                     @Override
                     public void onNext(final PPF ppf) {
-                        ppf.fruits.filter(new Predicate<PersonFruit>() {
+                        ppf.fruits.filter(new kotlin.jvm.functions.Function1<PersonFruit, Boolean>() {
                             @Override
-                            public boolean test(PersonFruit t1) {
+                            public Boolean invoke(PersonFruit t1) {
                                 return ppf.person.id == t1.personId;
                             }
                         }).subscribe(new Consumer<PersonFruit>() {

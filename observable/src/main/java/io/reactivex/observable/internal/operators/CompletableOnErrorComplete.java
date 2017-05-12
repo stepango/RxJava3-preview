@@ -14,17 +14,19 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Predicate;
-import io.reactivex.observable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
 
 public final class CompletableOnErrorComplete extends Completable {
 
     final CompletableSource source;
 
-    final Predicate<? super Throwable> predicate;
+    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
 
-    public CompletableOnErrorComplete(CompletableSource source, Predicate<? super Throwable> predicate) {
+    public CompletableOnErrorComplete(CompletableSource source, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -53,7 +55,7 @@ public final class CompletableOnErrorComplete extends Completable {
             boolean b;
 
             try {
-                b = predicate.test(e);
+                b = predicate.invoke(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.onError(new CompositeException(e, ex));

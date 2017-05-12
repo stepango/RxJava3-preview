@@ -35,7 +35,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.Predicate;
 import io.reactivex.observable.GroupedObservable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -892,9 +891,9 @@ public class ObservableRetryTest {
     @Test
     public void retryPredicate() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .retry(new Predicate<Throwable>() {
+                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
             @Override
-            public boolean test(Throwable v) throws Exception {
+            public Boolean invoke(Throwable v) {
                 return true;
             }
         })
@@ -920,9 +919,9 @@ public class ObservableRetryTest {
     @Test
     public void retryLongPredicateInvalid() {
         try {
-            Observable.just(1).retry(-99, new Predicate<Throwable>() {
+            Observable.just(1).retry(-99, new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
                 @Override
-                public boolean test(Throwable e) throws Exception {
+                public Boolean invoke(Throwable e) {
                     return true;
                 }
             });

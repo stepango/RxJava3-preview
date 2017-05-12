@@ -13,35 +13,41 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.interop.RxJava3Interop;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableAnyTest {
 
     @Test
     public void testAnyWithTwoItems() {
         Flowable<Integer> w = Flowable.just(1, 2);
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         });
@@ -72,9 +78,9 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithOneItem() {
         Flowable<Integer> w = Flowable.just(1);
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         });
@@ -105,9 +111,9 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithEmpty() {
         Flowable<Integer> w = Flowable.empty();
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         });
@@ -138,9 +144,9 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithPredicate1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         });
@@ -157,9 +163,9 @@ public class FlowableAnyTest {
     @Test
     public void testExists1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 2;
             }
         });
@@ -176,9 +182,9 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithPredicate2() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1) {
+            public Boolean invoke(Integer t1) {
                 return t1 < 1;
             }
         });
@@ -196,9 +202,9 @@ public class FlowableAnyTest {
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Flowable<Integer> w = Flowable.empty();
-        Single<Boolean> observable = RxJava3Interop.any(w, new Predicate<Integer>() {
+        Single<Boolean> observable = RxJava3Interop.any(w, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t) {
+            public Boolean invoke(Integer t) {
                 return true;
             }
         });
@@ -215,9 +221,9 @@ public class FlowableAnyTest {
     @Test
     public void testWithFollowingFirst() {
         Flowable<Integer> o = Flowable.fromArray(1, 3, 5, 6);
-        Single<Boolean> anyEven = RxJava3Interop.any(o, new Predicate<Integer>() {
+        Single<Boolean> anyEven = RxJava3Interop.any(o, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer i) {
+            public Boolean invoke(Integer i) {
                 return i % 2 == 0;
             }
         });
@@ -242,9 +248,9 @@ public class FlowableAnyTest {
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
 
-        RxJava3Interop.any(Flowable.just(1), new Predicate<Integer>() {
+        RxJava3Interop.any(Flowable.just(1), new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer t) {
+            public Boolean invoke(Integer t) {
                 return true;
             }
         })
@@ -258,9 +264,9 @@ public class FlowableAnyTest {
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
-        RxJava3Interop.any(Flowable.just(1), new Predicate<Integer>() {
+        RxJava3Interop.any(Flowable.just(1), new kotlin.jvm.functions.Function1<Integer, Boolean>() {
             @Override
-            public boolean test(Integer v) {
+            public Boolean invoke(Integer v) {
                 return true;
             }
         }).subscribe(ts);
@@ -276,9 +282,9 @@ public class FlowableAnyTest {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        RxJava3Interop.any(Flowable.just("Boo!"), new Predicate<String>() {
+        RxJava3Interop.any(Flowable.just("Boo!"), new kotlin.jvm.functions.Function1<String, Boolean>() {
             @Override
-            public boolean test(String v) {
+            public Boolean invoke(String v) {
                 throw ex;
             }
         }).subscribe(ts);

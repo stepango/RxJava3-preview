@@ -16,22 +16,84 @@
 
 package io.reactivex.interop;
 
-import java.util.*;
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
-import io.reactivex.common.annotations.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.*;
-import io.reactivex.common.internal.utils.*;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.internal.operators.*;
-import io.reactivex.interop.internal.operators.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.annotations.CheckReturnValue;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.SchedulerSupport;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.common.internal.functions.ObjectHelper;
+import io.reactivex.common.internal.utils.ArrayListSupplier;
+import io.reactivex.common.internal.utils.HashMapSupplier;
+import io.reactivex.flowable.BackpressureKind;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.BackpressureSupport;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
+import io.reactivex.flowable.internal.operators.FlowableConcatMap;
+import io.reactivex.flowable.internal.operators.FlowableConcatMapPublisher;
+import io.reactivex.flowable.internal.operators.FlowableOnBackpressureError;
+import io.reactivex.interop.internal.operators.CompletableConcat;
+import io.reactivex.interop.internal.operators.CompletableFromPublisher;
+import io.reactivex.interop.internal.operators.CompletableMerge;
+import io.reactivex.interop.internal.operators.CompletableToFlowable;
+import io.reactivex.interop.internal.operators.FlowableAllSingle;
+import io.reactivex.interop.internal.operators.FlowableAnySingle;
+import io.reactivex.interop.internal.operators.FlowableCollectSingle;
+import io.reactivex.interop.internal.operators.FlowableCountSingle;
+import io.reactivex.interop.internal.operators.FlowableElementAtMaybe;
+import io.reactivex.interop.internal.operators.FlowableElementAtSingle;
+import io.reactivex.interop.internal.operators.FlowableFlatMapCompletableCompletable;
+import io.reactivex.interop.internal.operators.FlowableFlatMapMaybe;
+import io.reactivex.interop.internal.operators.FlowableFlatMapPublisher;
+import io.reactivex.interop.internal.operators.FlowableFlatMapSingle;
+import io.reactivex.interop.internal.operators.FlowableFromObservable;
+import io.reactivex.interop.internal.operators.FlowableIgnoreElementsCompletable;
+import io.reactivex.interop.internal.operators.FlowableLastMaybe;
+import io.reactivex.interop.internal.operators.FlowableLastSingle;
+import io.reactivex.interop.internal.operators.FlowableReduceMaybe;
+import io.reactivex.interop.internal.operators.FlowableReduceSeedSingle;
+import io.reactivex.interop.internal.operators.FlowableReduceWithSingle;
+import io.reactivex.interop.internal.operators.FlowableSingleMaybe;
+import io.reactivex.interop.internal.operators.FlowableSingleSingle;
+import io.reactivex.interop.internal.operators.FlowableToListSingle;
+import io.reactivex.interop.internal.operators.InteropInternalHelper;
+import io.reactivex.interop.internal.operators.MaybeConcatArray;
+import io.reactivex.interop.internal.operators.MaybeConcatArrayDelayError;
+import io.reactivex.interop.internal.operators.MaybeConcatIterable;
+import io.reactivex.interop.internal.operators.MaybeFlatMapIterableFlowable;
+import io.reactivex.interop.internal.operators.MaybeTakeUntilPublisher;
+import io.reactivex.interop.internal.operators.MaybeTimeoutPublisher;
+import io.reactivex.interop.internal.operators.MaybeToFlowable;
+import io.reactivex.interop.internal.operators.MaybeToPublisher;
+import io.reactivex.interop.internal.operators.ObservableFromPublisher;
+import io.reactivex.interop.internal.operators.SchedulerWhen;
+import io.reactivex.interop.internal.operators.SingleFlatMapIterableFlowable;
+import io.reactivex.interop.internal.operators.SingleTakeUntilPublisher;
+import io.reactivex.interop.internal.operators.SingleToFlowable;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.RxJavaObservablePlugins;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
 
 /**
  * The base utility class that hosts factory methods and
@@ -519,7 +581,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<Boolean> any(Flowable<T> source, Predicate<? super T> predicate) {
+    public static <T> Single<Boolean> any(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new FlowableAnySingle<T>(source, predicate));
@@ -527,7 +589,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<Boolean> all(Flowable<T> source, Predicate<? super T> predicate) {
+    public static <T> Single<Boolean> all(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new FlowableAllSingle<T>(source, predicate));
