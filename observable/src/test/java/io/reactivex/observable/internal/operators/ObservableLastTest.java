@@ -29,6 +29,7 @@ import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -105,7 +106,7 @@ public class ObservableLastTest {
     @Test
     public void testLastWithPredicate() {
         Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -127,7 +128,7 @@ public class ObservableLastTest {
     public void testLastWithPredicateAndOneElement() {
         Maybe<Integer> o = Observable.just(1, 2)
             .filter(
-                    new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -149,7 +150,7 @@ public class ObservableLastTest {
     public void testLastWithPredicateAndEmpty() {
         Maybe<Integer> o = Observable.just(1)
             .filter(
-                    new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -210,7 +211,7 @@ public class ObservableLastTest {
     @Test
     public void testLastOrDefaultWithPredicate() {
         Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -231,7 +232,7 @@ public class ObservableLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> o = Observable.just(1, 2)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -253,7 +254,7 @@ public class ObservableLastTest {
     public void testLastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> o = Observable.just(1)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {

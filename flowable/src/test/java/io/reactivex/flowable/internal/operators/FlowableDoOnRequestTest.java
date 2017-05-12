@@ -21,11 +21,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,9 +45,9 @@ public class FlowableDoOnRequestTest {
                     }
                 })
                 //
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long n) {
+                    public Unit invoke(Long n) {
                         // do nothing
                         return Unit.INSTANCE;
                     }
@@ -62,9 +62,9 @@ public class FlowableDoOnRequestTest {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.range(1, 5)
         //
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long n) {
+                    public Unit invoke(Long n) {
                         requests.add(n);
                         return Unit.INSTANCE;
                     }

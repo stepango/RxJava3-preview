@@ -30,6 +30,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -56,7 +57,7 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithTwoItemsFlowable() {
         Flowable<Integer> w = Flowable.just(1, 2);
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -92,7 +93,7 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithOneItemFlowable() {
         Flowable<Integer> w = Flowable.just(1);
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -126,7 +127,7 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithEmptyFlowable() {
         Flowable<Integer> w = Flowable.empty();
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -161,7 +162,7 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithPredicate1Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 2;
@@ -181,7 +182,7 @@ public class FlowableAnyTest {
     @Test
     public void testExists1Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 2;
@@ -201,7 +202,7 @@ public class FlowableAnyTest {
     @Test
     public void testAnyWithPredicate2Flowable() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 1;
@@ -222,7 +223,7 @@ public class FlowableAnyTest {
     public void testAnyWithEmptyAndPredicateFlowable() {
         // If the source is empty, always output false.
         Flowable<Integer> w = Flowable.empty();
-        Flowable<Boolean> observable = w.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> observable = w.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t) {
                 return true;
@@ -242,7 +243,7 @@ public class FlowableAnyTest {
     @Test
     public void testWithFollowingFirstFlowable() {
         Flowable<Integer> o = Flowable.fromArray(1, 3, 5, 6);
-        Flowable<Boolean> anyEven = o.any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Boolean> anyEven = o.any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer i) {
                 return i % 2 == 0;
@@ -268,7 +269,7 @@ public class FlowableAnyTest {
     public void testBackpressureIfNoneRequestedNoneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
 
-        Flowable.just(1).any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable.just(1).any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t) {
                 return true;
@@ -284,7 +285,7 @@ public class FlowableAnyTest {
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDeliveredFlowable() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
-        Flowable.just(1).any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable.just(1).any(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -302,7 +303,7 @@ public class FlowableAnyTest {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Flowable.just("Boo!").any(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Flowable.just("Boo!").any(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String v) {
                 throw ex;
@@ -347,7 +348,7 @@ public class FlowableAnyTest {
                     observer.onComplete();
                 }
             }
-                    .any(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .any(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();

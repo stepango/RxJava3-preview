@@ -42,6 +42,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -435,7 +436,7 @@ public class FlowableMapTest {
                 return v + 1;
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -454,7 +455,7 @@ public class FlowableMapTest {
                 throw new TestException();
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -473,7 +474,7 @@ public class FlowableMapTest {
                 return v + 1;
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -494,7 +495,7 @@ public class FlowableMapTest {
                 return v + 1;
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -518,7 +519,7 @@ public class FlowableMapTest {
                 return v + 1;
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -572,7 +573,7 @@ public class FlowableMapTest {
                 throw new TestException();
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -606,7 +607,7 @@ public class FlowableMapTest {
                     throw new TestException();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     return true;
@@ -634,7 +635,7 @@ public class FlowableMapTest {
                 return v + 1;
             }
         })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -673,7 +674,7 @@ public class FlowableMapTest {
                     throw new TestException();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     return true;

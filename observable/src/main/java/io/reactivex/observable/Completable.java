@@ -80,6 +80,7 @@ import io.reactivex.observable.internal.operators.ObservableDelaySubscriptionOth
 import io.reactivex.observable.internal.operators.SingleDelayWithCompletable;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.
@@ -1327,7 +1328,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable onErrorComplete(final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Completable onErrorComplete(final Function1<? super Throwable, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
         return RxJavaObservablePlugins.onAssembly(new CompletableOnErrorComplete(this, predicate));
@@ -1480,7 +1481,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Completable retry(Function1<? super Throwable, Boolean> predicate) {
         return fromObservable(toObservable().retry(predicate));
     }
 

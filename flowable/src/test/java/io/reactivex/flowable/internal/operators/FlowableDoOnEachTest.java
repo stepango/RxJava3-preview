@@ -41,6 +41,7 @@ import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -139,7 +140,7 @@ public class FlowableDoOnEachTest {
         for (int i = 0; i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
+                    .takeWhile(new Function1<Boolean, Boolean>() {
                         @Override
                         public Boolean invoke(Boolean value) {
                             return value;
@@ -165,7 +166,7 @@ public class FlowableDoOnEachTest {
         for (int i = 0; i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
-                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
+                    .takeWhile(new Function1<Boolean, Boolean>() {
                         @Override
                         public Boolean invoke(Boolean value) {
                             return value;

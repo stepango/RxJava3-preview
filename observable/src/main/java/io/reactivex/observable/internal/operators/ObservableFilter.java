@@ -17,11 +17,12 @@ import io.reactivex.common.annotations.Nullable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BasicFuseableObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public ObservableFilter(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public ObservableFilter(ObservableSource<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -32,9 +33,9 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
     }
 
     static final class FilterObserver<T> extends BasicFuseableObserver<T, T> {
-        final kotlin.jvm.functions.Function1<? super T, Boolean> filter;
+        final Function1<? super T, Boolean> filter;
 
-        FilterObserver(Observer<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> filter) {
+        FilterObserver(Observer<? super T> actual, Function1<? super T, Boolean> filter) {
             super(actual);
             this.filter = filter;
         }

@@ -21,11 +21,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public FlowableTakeUntilPredicate(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public FlowableTakeUntilPredicate(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -37,11 +38,11 @@ public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUps
 
     static final class InnerSubscriber<T> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
         Subscription s;
         boolean done;
 
-        InnerSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        InnerSubscriber(Subscriber<? super T> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

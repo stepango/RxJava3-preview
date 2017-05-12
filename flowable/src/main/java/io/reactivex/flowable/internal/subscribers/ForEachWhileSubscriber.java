@@ -25,6 +25,7 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class ForEachWhileSubscriber<T>
 extends AtomicReference<Subscription>
@@ -33,7 +34,7 @@ implements RelaxedSubscriber<T>, Disposable {
 
     private static final long serialVersionUID = -4403180040475402120L;
 
-    final kotlin.jvm.functions.Function1<? super T, Boolean> onNext;
+    final Function1<? super T, Boolean> onNext;
 
     final Consumer<? super Throwable> onError;
 
@@ -41,7 +42,7 @@ implements RelaxedSubscriber<T>, Disposable {
 
     boolean done;
 
-    public ForEachWhileSubscriber(kotlin.jvm.functions.Function1<? super T, Boolean> onNext,
+    public ForEachWhileSubscriber(Function1<? super T, Boolean> onNext,
                                   Consumer<? super Throwable> onError, Function0 onComplete) {
         this.onNext = onNext;
         this.onError = onError;

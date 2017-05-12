@@ -44,7 +44,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -57,6 +56,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -1252,10 +1252,10 @@ public class FlowableMergeTest {
                         @Override
                         public Flowable<Integer> apply(final Integer number) {
                             return Flowable.range(1, Integer.MAX_VALUE)
-                                    .doOnRequest(new LongConsumer() {
+                                    .doOnRequest(new Function1<Long, Unit>() {
 
                                         @Override
-                                        public Unit invoke(long n) {
+                                        public Unit invoke(Long n) {
                                             messages.add(">>>>>>>> A requested[" + number + "]: " + n);
                                             return Unit.INSTANCE;
                                         }
@@ -1267,10 +1267,10 @@ public class FlowableMergeTest {
                                     .onBackpressureBuffer()
                                     // do in parallel
                                     .subscribeOn(Schedulers.computation())
-                                    .doOnRequest(new LongConsumer() {
+                                    .doOnRequest(new Function1<Long, Unit>() {
 
                                         @Override
-                                        public Unit invoke(long n) {
+                                        public Unit invoke(Long n) {
                                             messages.add(">>>>>>>> B requested[" + number + "]: " + n);
                                             return Unit.INSTANCE;
                                         }

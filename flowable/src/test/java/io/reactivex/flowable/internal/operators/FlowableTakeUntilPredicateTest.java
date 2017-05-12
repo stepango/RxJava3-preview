@@ -28,6 +28,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -40,7 +41,7 @@ public class FlowableTakeUntilPredicateTest {
     public void takeEmpty() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        Flowable.empty().takeUntil(new kotlin.jvm.functions.Function1<Object, Boolean>() {
+        Flowable.empty().takeUntil(new Function1<Object, Boolean>() {
             @Override
             public Boolean invoke(Object v) {
                 return true;
@@ -55,7 +56,7 @@ public class FlowableTakeUntilPredicateTest {
     public void takeAll() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        Flowable.just(1, 2).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable.just(1, 2).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return false;
@@ -71,7 +72,7 @@ public class FlowableTakeUntilPredicateTest {
     public void takeFirst() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        Flowable.just(1, 2).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable.just(1, 2).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -87,7 +88,7 @@ public class FlowableTakeUntilPredicateTest {
     public void takeSome() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        Flowable.just(1, 2, 3).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable.just(1, 2, 3).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 == 2;
@@ -105,7 +106,7 @@ public class FlowableTakeUntilPredicateTest {
     public void functionThrows() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        kotlin.jvm.functions.Function1<Integer, Boolean> predicate = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Function1<Integer, Boolean> predicate = new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                     throw new TestException("Forced failure");
@@ -126,7 +127,7 @@ public class FlowableTakeUntilPredicateTest {
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
         .concatWith(Flowable.just(2))
-                .takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return false;
@@ -142,7 +143,7 @@ public class FlowableTakeUntilPredicateTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
 
-        Flowable.range(1, 1000).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable.range(1, 1000).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return false;
@@ -158,7 +159,7 @@ public class FlowableTakeUntilPredicateTest {
     public void testErrorIncludesLastValueAsCause() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         final TestException e = new TestException("Forced failure");
-        kotlin.jvm.functions.Function1<String, Boolean> predicate = new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Function1<String, Boolean> predicate = new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String t) {
                     throw e;

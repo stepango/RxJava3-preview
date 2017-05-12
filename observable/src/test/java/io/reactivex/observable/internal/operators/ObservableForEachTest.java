@@ -32,6 +32,7 @@ import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,7 +51,7 @@ public class ObservableForEachTest {
                 list.add(v);
             }
         })
-                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v < 3;
@@ -71,7 +72,7 @@ public class ObservableForEachTest {
                 list.add(v);
             }
         })
-                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -113,7 +114,7 @@ public class ObservableForEachTest {
     public void whilePredicateThrows() {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
-            Observable.just(1).forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+            Observable.just(1).forEachWhile(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();

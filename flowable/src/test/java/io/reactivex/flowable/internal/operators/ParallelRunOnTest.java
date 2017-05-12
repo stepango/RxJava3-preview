@@ -31,6 +31,7 @@ import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -67,7 +68,7 @@ public class ParallelRunOnTest {
         Flowable.range(1, 1000)
         .parallel(2)
         .runOn(Schedulers.computation())
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;

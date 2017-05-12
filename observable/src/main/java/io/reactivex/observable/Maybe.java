@@ -110,6 +110,7 @@ import io.reactivex.observable.internal.operators.ObservableConcatMap;
 import io.reactivex.observable.internal.operators.ObservableFlatMap;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Represents a deferred computation and emission of a maybe value or exception.
@@ -2584,7 +2585,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> filter(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Maybe<T> filter(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeFilter<T>(this, predicate));
     }
@@ -3079,7 +3080,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> onErrorComplete(final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Maybe<T> onErrorComplete(final Function1<? super Throwable, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
         return RxJavaObservablePlugins.onAssembly(new MaybeOnErrorComplete<T>(this, predicate));
@@ -3408,7 +3409,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> retry(long times, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Maybe<T> retry(long times, Function1<? super Throwable, Boolean> predicate) {
         return toObservable().retry(times, predicate).singleElement();
     }
 
@@ -3424,7 +3425,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Maybe<T> retry(Function1<? super Throwable, Boolean> predicate) {
         return retry(Long.MAX_VALUE, predicate);
     }
 

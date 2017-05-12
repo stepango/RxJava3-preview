@@ -22,6 +22,7 @@ import java.util.NoSuchElementException;
 
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,7 +35,7 @@ public class FlowableFirstTest {
 
     Subscriber<String> w;
 
-    private static final kotlin.jvm.functions.Function1<String, Boolean> IS_D = new kotlin.jvm.functions.Function1<String, Boolean>() {
+    private static final Function1<String, Boolean> IS_D = new Function1<String, Boolean>() {
         @Override
         public Boolean invoke(String value) {
             return "d".equals(value);
@@ -132,7 +133,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstWithPredicateFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -152,7 +153,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstWithPredicateAndOneElementFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -172,7 +173,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstWithPredicateAndEmptyFlowable() {
         Flowable<Integer> observable = Flowable.just(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -233,7 +234,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -253,7 +254,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateAndOneElementFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -273,7 +274,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateAndEmptyFlowable() {
         Flowable<Integer> observable = Flowable.just(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;

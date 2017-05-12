@@ -42,6 +42,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -380,7 +381,7 @@ public class ObservableRetryWithPredicateTest {
     public void predicateThrows() {
 
         TestObserver<Object> to = Observable.error(new TestException("Outer"))
-                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+                .retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable e) {
                 throw new TestException("Inner");

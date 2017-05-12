@@ -64,6 +64,7 @@ import io.reactivex.observable.subjects.MaybeSubject;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -423,7 +424,7 @@ public class MaybeTest {
 
     @Test
     public void filterThrows() {
-        Maybe.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Maybe.just(1).filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 throw new TestException();
@@ -433,7 +434,7 @@ public class MaybeTest {
 
     @Test
     public void filterTrue() {
-        Maybe.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Maybe.just(1).filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v == 1;
@@ -443,7 +444,7 @@ public class MaybeTest {
 
     @Test
     public void filterFalse() {
-        Maybe.just(2).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Maybe.just(2).filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v == 1;
@@ -453,7 +454,7 @@ public class MaybeTest {
 
     @Test
     public void filterEmpty() {
-        Maybe.<Integer>empty().filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Maybe.<Integer>empty().filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v == 1;
@@ -468,7 +469,7 @@ public class MaybeTest {
 
     @Test
     public void singleFilterThrows() {
-        Single.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Single.just(1).filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 throw new TestException();
@@ -478,7 +479,7 @@ public class MaybeTest {
 
     @Test
     public void singleFilterTrue() {
-        Single.just(1).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Single.just(1).filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v == 1;
@@ -488,7 +489,7 @@ public class MaybeTest {
 
     @Test
     public void singleFilterFalse() {
-        Single.just(2).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Single.just(2).filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v == 1;

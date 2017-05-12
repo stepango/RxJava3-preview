@@ -38,6 +38,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -186,7 +187,7 @@ public class ObservableGroupJoinTest {
                 new Observer<PPF>() {
                     @Override
                     public void onNext(final PPF ppf) {
-                        ppf.fruits.filter(new kotlin.jvm.functions.Function1<PersonFruit, Boolean>() {
+                        ppf.fruits.filter(new Function1<PersonFruit, Boolean>() {
                             @Override
                             public Boolean invoke(PersonFruit t1) {
                                 return ppf.person.id == t1.personId;

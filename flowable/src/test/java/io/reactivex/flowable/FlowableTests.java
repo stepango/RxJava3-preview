@@ -43,6 +43,7 @@ import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -61,7 +62,7 @@ public class FlowableTests {
 
     Subscriber<Number> w;
 
-    private static final kotlin.jvm.functions.Function1<Integer, Boolean> IS_EVEN = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+    private static final Function1<Integer, Boolean> IS_EVEN = new Function1<Integer, Boolean>() {
         @Override
         public Boolean invoke(Integer v) {
             return v % 2 == 0;
@@ -1062,7 +1063,7 @@ public class FlowableTests {
         for (int i = 0;i < expectedCount; i++) {
             Flowable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
+                    .takeWhile(new Function1<Boolean, Boolean>() {
                         @Override
                         public Boolean invoke(Boolean v) {
                             return v;

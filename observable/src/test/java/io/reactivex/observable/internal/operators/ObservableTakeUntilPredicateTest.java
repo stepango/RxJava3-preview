@@ -29,6 +29,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -41,7 +42,7 @@ public class ObservableTakeUntilPredicateTest {
     public void takeEmpty() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.empty().takeUntil(new kotlin.jvm.functions.Function1<Object, Boolean>() {
+        Observable.empty().takeUntil(new Function1<Object, Boolean>() {
             @Override
             public Boolean invoke(Object v) {
                 return true;
@@ -56,7 +57,7 @@ public class ObservableTakeUntilPredicateTest {
     public void takeAll() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.just(1, 2).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable.just(1, 2).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return false;
@@ -72,7 +73,7 @@ public class ObservableTakeUntilPredicateTest {
     public void takeFirst() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.just(1, 2).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable.just(1, 2).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -88,7 +89,7 @@ public class ObservableTakeUntilPredicateTest {
     public void takeSome() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Observable.just(1, 2, 3).takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable.just(1, 2, 3).takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 == 2;
@@ -106,7 +107,7 @@ public class ObservableTakeUntilPredicateTest {
     public void functionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        kotlin.jvm.functions.Function1<Integer, Boolean> predicate = (new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Function1<Integer, Boolean> predicate = (new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                     throw new TestException("Forced failure");
@@ -127,7 +128,7 @@ public class ObservableTakeUntilPredicateTest {
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
-                .takeUntil(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .takeUntil(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return false;
@@ -144,7 +145,7 @@ public class ObservableTakeUntilPredicateTest {
     public void testErrorIncludesLastValueAsCause() {
         TestObserver<String> ts = new TestObserver<String>();
         final TestException e = new TestException("Forced failure");
-        kotlin.jvm.functions.Function1<String, Boolean> predicate = (new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Function1<String, Boolean> predicate = (new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String t) {
                     throw e;

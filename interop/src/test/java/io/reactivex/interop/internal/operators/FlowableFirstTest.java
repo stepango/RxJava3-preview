@@ -25,6 +25,7 @@ import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
+import kotlin.jvm.functions.Function1;
 
 import static io.reactivex.interop.RxJava3Interop.first;
 import static io.reactivex.interop.RxJava3Interop.firstElement;
@@ -42,7 +43,7 @@ public class FlowableFirstTest {
 
     MaybeObserver<Object> wm;
 
-    private static final kotlin.jvm.functions.Function1<String, Boolean> IS_D = new kotlin.jvm.functions.Function1<String, Boolean>() {
+    private static final Function1<String, Boolean> IS_D = new Function1<String, Boolean>() {
         @Override
         public Boolean invoke(String value) {
             return "d".equals(value);
@@ -132,7 +133,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstWithPredicate() {
         Maybe<Integer> observable = firstElement(Flowable.just(1, 2, 3, 4, 5, 6)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -150,7 +151,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstWithPredicateAndOneElement() {
         Maybe<Integer> observable = firstElement(Flowable.just(1, 2)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -168,7 +169,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstWithPredicateAndEmpty() {
         Maybe<Integer> observable = firstElement(Flowable.just(1)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -222,7 +223,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicate() {
         Single<Integer> observable = first(Flowable.just(1, 2, 3, 4, 5, 6)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -240,7 +241,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateAndOneElement() {
         Single<Integer> observable = first(Flowable.just(1, 2)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -258,7 +259,7 @@ public class FlowableFirstTest {
     @Test
     public void testFirstOrDefaultWithPredicateAndEmpty() {
         Single<Integer> observable = first(Flowable.just(1)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;

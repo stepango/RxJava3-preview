@@ -29,6 +29,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -156,7 +157,7 @@ public class FlowableTakeLastTest {
                 .empty()
                 .count()
 
-                .filter(new kotlin.jvm.functions.Function1<Long, Boolean>() {
+                .filter(new Function1<Long, Boolean>() {
                     @Override
                     public Boolean invoke(Long v) {
                         return false;

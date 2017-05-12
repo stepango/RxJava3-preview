@@ -28,6 +28,7 @@ import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.ParallelFailureHandling;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public class ParallelFilterTryTest implements Consumer<Object> {
 
@@ -116,7 +117,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithError() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -131,7 +132,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithStop() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -146,7 +147,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             int count;
             @Override
             public Boolean invoke(Integer v) {
@@ -165,7 +166,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -185,7 +186,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithSkip() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -201,7 +202,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailHandlerThrows() {
         TestSubscriber<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -246,7 +247,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithErrorConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -262,7 +263,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithStopConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -278,7 +279,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             int count;
             @Override
             public Boolean invoke(Integer v) {
@@ -298,7 +299,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -319,7 +320,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailWithSkipConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;
@@ -336,7 +337,7 @@ public class ParallelFilterTryTest implements Consumer<Object> {
     public void filterFailHandlerThrowsConditional() {
         TestSubscriber<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return 1 / v > 0;

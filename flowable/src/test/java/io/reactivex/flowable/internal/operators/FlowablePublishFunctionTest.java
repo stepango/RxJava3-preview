@@ -35,6 +35,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -475,13 +476,13 @@ public class FlowablePublishFunctionTest {
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
-                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        v.filter(new Function1<Integer, Boolean>() {
                             @Override
                             public Boolean invoke(Integer w) {
                                 return w % 2 == 0;
                             }
                         }),
-                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        v.filter(new Function1<Integer, Boolean>() {
                             @Override
                             public Boolean invoke(Integer w) {
                                 return w % 2 != 0;
@@ -502,13 +503,13 @@ public class FlowablePublishFunctionTest {
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
-                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        v.filter(new Function1<Integer, Boolean>() {
                             @Override
                             public Boolean invoke(Integer w) {
                                 return w % 2 == 0;
                             }
                         }),
-                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        v.filter(new Function1<Integer, Boolean>() {
                             @Override
                             public Boolean invoke(Integer w) {
                                 return w % 2 != 0;
@@ -530,13 +531,13 @@ public class FlowablePublishFunctionTest {
             @Override
             public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
                 return Flowable.mergeArray(
-                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        v.filter(new Function1<Integer, Boolean>() {
                             @Override
                             public Boolean invoke(Integer w) {
                                 return w % 2 == 0;
                             }
                         }),
-                        v.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        v.filter(new Function1<Integer, Boolean>() {
                             @Override
                             public Boolean invoke(Integer w) {
                                 return w % 2 != 0;

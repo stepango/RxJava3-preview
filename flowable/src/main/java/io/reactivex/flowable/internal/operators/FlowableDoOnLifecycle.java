@@ -19,19 +19,20 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Consumer;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream<T, T> {
     private final Consumer<? super Subscription> onSubscribe;
-    private final LongConsumer onRequest;
+    private final Function1<Long, Unit> onRequest;
     private final Function0 onCancel;
 
     public FlowableDoOnLifecycle(Flowable<T> source, Consumer<? super Subscription> onSubscribe,
-                                 LongConsumer onRequest, Function0 onCancel) {
+                                 Function1<Long, Unit> onRequest, Function0 onCancel) {
         super(source);
         this.onSubscribe = onSubscribe;
         this.onRequest = onRequest;
@@ -46,14 +47,14 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
     static final class SubscriptionLambdaSubscriber<T> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Consumer<? super Subscription> onSubscribe;
-        final LongConsumer onRequest;
+        final Function1<Long, Unit> onRequest;
         final Function0 onCancel;
 
         Subscription s;
 
         SubscriptionLambdaSubscriber(Subscriber<? super T> actual,
                                      Consumer<? super Subscription> onSubscribe,
-                                     LongConsumer onRequest,
+                                     Function1<Long, Unit> onRequest,
                                      Function0 onCancel) {
             this.actual = actual;
             this.onSubscribe = onSubscribe;

@@ -39,7 +39,6 @@ import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
@@ -54,6 +53,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -835,9 +835,9 @@ public class FlowableReplayTest {
     public void testBackpressure() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long t) {
+                    public Unit invoke(Long t) {
                         requested.addAndGet(t);
                         return Unit.INSTANCE;
                     }
@@ -867,9 +867,9 @@ public class FlowableReplayTest {
     public void testBackpressureBounded() {
         final AtomicLong requested = new AtomicLong();
         Flowable<Integer> source = Flowable.range(1, 1000)
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long t) {
+                    public Unit invoke(Long t) {
                         requested.addAndGet(t);
                         return Unit.INSTANCE;
                     }
@@ -1151,9 +1151,9 @@ public class FlowableReplayTest {
         final List<Long> requests = new ArrayList<Long>();
 
         Flowable<Integer> out = source
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long t) {
+                    public Unit invoke(Long t) {
                         requests.add(t);
                         return Unit.INSTANCE;
                     }

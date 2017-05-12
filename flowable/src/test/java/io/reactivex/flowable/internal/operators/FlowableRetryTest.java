@@ -46,6 +46,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -984,7 +985,7 @@ public class FlowableRetryTest {
     @Test
     public void retryPredicate() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+                .retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable v) {
                 return true;
@@ -998,7 +999,7 @@ public class FlowableRetryTest {
     @Test
     public void retryLongPredicateInvalid() {
         try {
-            Flowable.just(1).retry(-99, new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+            Flowable.just(1).retry(-99, new Function1<Throwable, Boolean>() {
                 @Override
                 public Boolean invoke(Throwable e) {
                     return true;

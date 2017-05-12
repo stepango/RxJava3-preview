@@ -14,6 +14,7 @@
 package io.reactivex.common.internal.utils;
 
 import io.reactivex.common.functions.BiPredicate;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A linked-array-list implementation that only supports appending and consumption.
@@ -67,7 +68,7 @@ public abstract class AbstractAppendOnlyLinkedArrayList<T> {
      *
      * @param <T> the value type
      */
-    public interface NonThrowingPredicate<T> extends kotlin.jvm.functions.Function1<T, Boolean> {
+    public interface NonThrowingPredicate<T> extends Function1<T, Boolean> {
         @Override
         Boolean invoke(T t);
     }

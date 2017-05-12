@@ -47,6 +47,7 @@ import io.reactivex.flowable.subscribers.SafeSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -576,7 +577,7 @@ public class RelaxedSubscriberTest {
 
         final List<Integer> list = new ArrayList<Integer>();
 
-        Disposable d = pp.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Disposable d = pp.forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 list.add(v);
@@ -597,7 +598,7 @@ public class RelaxedSubscriberTest {
 
     @Test
     public void doubleSubscribe() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -625,7 +626,7 @@ public class RelaxedSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 ts.onNext(v);
@@ -657,7 +658,7 @@ public class RelaxedSubscriberTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 throw new TestException();
@@ -686,7 +687,7 @@ public class RelaxedSubscriberTest {
 
     @Test
     public void onErrorThrows() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -721,7 +722,7 @@ public class RelaxedSubscriberTest {
 
     @Test
     public void onCompleteThrows() {
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;

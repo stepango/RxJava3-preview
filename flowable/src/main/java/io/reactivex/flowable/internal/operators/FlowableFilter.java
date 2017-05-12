@@ -21,11 +21,12 @@ import io.reactivex.common.annotations.Nullable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscribers.BasicFuseableConditionalSubscriber;
 import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public FlowableFilter(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public FlowableFilter(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -42,9 +43,9 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
 
     static final class FilterSubscriber<T> extends BasicFuseableSubscriber<T, T>
     implements ConditionalSubscriber<T> {
-        final kotlin.jvm.functions.Function1<? super T, Boolean> filter;
+        final Function1<? super T, Boolean> filter;
 
-        FilterSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> filter) {
+        FilterSubscriber(Subscriber<? super T> actual, Function1<? super T, Boolean> filter) {
             super(actual);
             this.filter = filter;
         }
@@ -87,7 +88,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public T poll() throws Throwable {
             FusedQueueSubscription<T> qs = this.qs;
-            kotlin.jvm.functions.Function1<? super T, Boolean> f = filter;
+            Function1<? super T, Boolean> f = filter;
 
             for (;;) {
                 T t = qs.poll();
@@ -109,9 +110,9 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
     }
 
     static final class FilterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
-        final kotlin.jvm.functions.Function1<? super T, Boolean> filter;
+        final Function1<? super T, Boolean> filter;
 
-        FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> filter) {
+        FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Function1<? super T, Boolean> filter) {
             super(actual);
             this.filter = filter;
         }
@@ -152,7 +153,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public T poll() throws Throwable {
             FusedQueueSubscription<T> qs = this.qs;
-            kotlin.jvm.functions.Function1<? super T, Boolean> f = filter;
+            Function1<? super T, Boolean> f = filter;
 
             for (;;) {
                 T t = qs.poll();

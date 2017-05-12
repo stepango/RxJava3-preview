@@ -23,6 +23,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,7 +36,7 @@ public class FlowableSkipWhileTest {
 
     Subscriber<Integer> w = TestHelper.mockSubscriber();
 
-    private static final kotlin.jvm.functions.Function1<Integer, Boolean> LESS_THAN_FIVE = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+    private static final Function1<Integer, Boolean> LESS_THAN_FIVE = new Function1<Integer, Boolean>() {
         @Override
         public Boolean invoke(Integer v) {
             if (v == 42) {
@@ -45,7 +46,7 @@ public class FlowableSkipWhileTest {
         }
     };
 
-    private static final kotlin.jvm.functions.Function1<Integer, Boolean> INDEX_LESS_THAN_THREE = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+    private static final Function1<Integer, Boolean> INDEX_LESS_THAN_THREE = new Function1<Integer, Boolean>() {
         int index;
         @Override
         public Boolean invoke(Integer value) {

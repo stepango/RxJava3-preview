@@ -37,7 +37,6 @@ import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -47,6 +46,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -640,9 +640,9 @@ public class FlowableSwitchTest {
                             @Override
                             public Flowable<Long> apply(Long t) {
                                 return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L))
-                                        .doOnRequest(new LongConsumer() {
+                                        .doOnRequest(new Function1<Long, Unit>() {
                                             @Override
-                                            public Unit invoke(long v) {
+                                            public Unit invoke(Long v) {
                                                 requests.add(v);
                                                 return Unit.INSTANCE;
                                             }

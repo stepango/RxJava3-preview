@@ -18,11 +18,12 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Boolean> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public ObservableAny(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public ObservableAny(ObservableSource<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -35,13 +36,13 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
     static final class AnyObserver<T> implements Observer<T>, Disposable {
 
         final Observer<? super Boolean> actual;
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         Disposable s;
 
         boolean done;
 
-        AnyObserver(Observer<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        AnyObserver(Observer<? super Boolean> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

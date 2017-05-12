@@ -22,6 +22,7 @@ import java.util.List;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,7 +39,7 @@ public class FlowableForEachTest {
                 list.add(v);
             }
         })
-                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v < 3;
@@ -59,7 +60,7 @@ public class FlowableForEachTest {
                 list.add(v);
             }
         })
-                .forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;

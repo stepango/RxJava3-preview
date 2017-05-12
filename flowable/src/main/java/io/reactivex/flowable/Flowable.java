@@ -54,7 +54,6 @@ import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
@@ -70,7 +69,9 @@ import io.reactivex.flowable.internal.subscribers.LambdaSubscriber;
 import io.reactivex.flowable.internal.subscribers.StrictSubscriber;
 import io.reactivex.flowable.subscribers.SafeSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * The Flowable class that implements the Reactive-Streams Pattern and offers factory methods,
@@ -5170,7 +5171,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> all(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Flowable<Boolean> all(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableAll<T>(this, predicate));
     }
@@ -5230,7 +5231,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> any(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Flowable<Boolean> any(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableAny<T>(this, predicate));
     }
@@ -7958,7 +7959,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnLifecycle(final Consumer<? super Subscription> onSubscribe,
-                                           final LongConsumer onRequest, final Function0 onCancel) {
+                                           final Function1<Long, Unit> onRequest, final Function0 onCancel) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onRequest, "onRequest is null");
         ObjectHelper.requireNonNull(onCancel, "onCancel is null");
@@ -8015,7 +8016,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnRequest(LongConsumer onRequest) {
+    public final Flowable<T> doOnRequest(Function1<Long, Unit> onRequest) {
         return doOnLifecycle(Functions.emptyConsumer(), onRequest, Functions.EMPTY_ACTION);
     }
 
@@ -8192,7 +8193,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> filter(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Flowable<T> filter(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableFilter<T>(this, predicate));
     }
@@ -8947,7 +8948,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param onNext
-     *            {@link kotlin.jvm.functions.Function1} to execute for each item.
+     *            {@link Function1} to execute for each item.
      * @return
      *            a {@link Disposable} that allows cancelling an asynchronous sequence
      * @throws NullPointerException
@@ -8957,7 +8958,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable forEachWhile(kotlin.jvm.functions.Function1<? super T, Boolean> onNext) {
+    public final Disposable forEachWhile(Function1<? super T, Boolean> onNext) {
         return forEachWhile(onNext, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
     }
 
@@ -8973,7 +8974,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param onNext
-     *            {@link kotlin.jvm.functions.Function1} to execute for each item.
+     *            {@link Function1} to execute for each item.
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @return
@@ -8986,7 +8987,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable forEachWhile(kotlin.jvm.functions.Function1<? super T, Boolean> onNext, Consumer<? super Throwable> onError) {
+    public final Disposable forEachWhile(Function1<? super T, Boolean> onNext, Consumer<? super Throwable> onError) {
         return forEachWhile(onNext, onError, Functions.EMPTY_ACTION);
     }
 
@@ -9002,7 +9003,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param onNext
-     *            {@link kotlin.jvm.functions.Function1} to execute for each item.
+     *            {@link Function1} to execute for each item.
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @param onComplete
@@ -9018,7 +9019,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable forEachWhile(final kotlin.jvm.functions.Function1<? super T, Boolean> onNext, final Consumer<? super Throwable> onError,
+    public final Disposable forEachWhile(final Function1<? super T, Boolean> onNext, final Consumer<? super Throwable> onError,
                                          final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
@@ -11510,7 +11511,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> retry(long times, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Flowable<T> retry(long times, Function1<? super Throwable, Boolean> predicate) {
         if (times < 0) {
             throw new IllegalArgumentException("times >= 0 required but it was " + times);
         }
@@ -11535,7 +11536,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Flowable<T> retry(Function1<? super Throwable, Boolean> predicate) {
         return retry(Long.MAX_VALUE, predicate);
     }
 
@@ -12476,7 +12477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> skipWhile(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Flowable<T> skipWhile(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableSkipWhile<T>(this, predicate));
     }
@@ -13603,7 +13604,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
      * <p>
-     * The difference between this operator and {@link #takeWhile(kotlin.jvm.functions.Function1)} is that here, the condition is
+     * The difference between this operator and {@link #takeWhile(Function1)} is that here, the condition is
      * evaluated <em>after</em> the item is emitted.
      *
      * <dl>
@@ -13619,13 +13620,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that first emits items emitted by the source Publisher, checks the specified
      *         condition after each item, and then completes when the condition is satisfied.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
-     * @see Flowable#takeWhile(kotlin.jvm.functions.Function1)
+     * @see Flowable#takeWhile(Function1)
      * @since 1.1.0
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> takeUntil(kotlin.jvm.functions.Function1<? super T, Boolean> stopPredicate) {
+    public final Flowable<T> takeUntil(Function1<? super T, Boolean> stopPredicate) {
         ObjectHelper.requireNonNull(stopPredicate, "stopPredicate is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableTakeUntilPredicate<T>(this, stopPredicate));
     }
@@ -13677,12 +13678,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items from the source Publisher so long as each item satisfies the
      *         condition defined by {@code predicate}, then completes
      * @see <a href="http://reactivex.io/documentation/operators/takewhile.html">ReactiveX operators documentation: TakeWhile</a>
-     * @see Flowable#takeUntil(kotlin.jvm.functions.Function1)
+     * @see Flowable#takeUntil(Function1)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> takeWhile(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Flowable<T> takeWhile(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableTakeWhile<T>(this, predicate));
     }

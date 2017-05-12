@@ -44,7 +44,6 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.processors.AsyncProcessor;
 import io.reactivex.flowable.processors.BehaviorProcessor;
@@ -54,6 +53,7 @@ import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.fail;
 
@@ -1232,9 +1232,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void doOnLifecycleOnSubscribeNull() {
-        just1.doOnLifecycle(null, new LongConsumer() {
+        just1.doOnLifecycle(null, new Function1<Long, Unit>() {
             @Override
-            public Unit invoke(long v) {
+            public Unit invoke(Long v) {
                 return Unit.INSTANCE;
             }
         }, new Function0() {
@@ -1263,9 +1263,9 @@ public class FlowableNullTests {
         just1.doOnLifecycle(new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) { }
-        }, new LongConsumer() {
+        }, new Function1<Long, Unit>() {
             @Override
-            public Unit invoke(long v) {
+            public Unit invoke(Long v) {
                 return Unit.INSTANCE;
             }
         }, null);
@@ -1558,7 +1558,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnErrorNull() {
-        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        just1.forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -1568,7 +1568,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnCompleteNull() {
-        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        just1.forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -1958,7 +1958,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        just1.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
+        just1.retry((Function1<Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2253,7 +2253,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void takeUntilPredicateNull() {
-        just1.takeUntil((kotlin.jvm.functions.Function1<Integer, Boolean>) null);
+        just1.takeUntil((Function1<Integer, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2842,9 +2842,9 @@ public class FlowableNullTests {
             @Override
             public void accept(Subscription s) { }
         },
-        new LongConsumer() {
+                new Function1<Long, Unit>() {
             @Override
-            public Unit invoke(long v) {
+            public Unit invoke(Long v) {
                 return Unit.INSTANCE;
             }
         },

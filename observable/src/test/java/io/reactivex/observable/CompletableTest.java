@@ -55,6 +55,7 @@ import io.reactivex.observable.subjects.CompletableSubject;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -2071,7 +2072,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void onErrorCompleteFalse() {
-        Completable c = error.completable.onErrorComplete(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+        Completable c = error.completable.onErrorComplete(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable e) {
                 return e instanceof IllegalStateException;
@@ -2350,7 +2351,7 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void retryPredicateError() {
-        Completable c = error.completable.retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+        Completable c = error.completable.retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable e) {
                 return false;
@@ -2362,7 +2363,7 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        error.completable.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
+        error.completable.retry((Function1<Throwable, Boolean>) null);
     }
 
     @Test(timeout = 5000)
@@ -2377,7 +2378,7 @@ public class CompletableTest {
                 }
                 return Unit.INSTANCE;
             }
-        }).retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+        }).retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable e) {
                 return true;
@@ -4034,7 +4035,7 @@ public class CompletableTest {
     public void onErrorCompleteFunctionThrows() {
         TestObserver<String> ts = new TestObserver<String>();
 
-        error.completable.onErrorComplete(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+        error.completable.onErrorComplete(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable t) {
                 throw new TestException("Forced inner failure");

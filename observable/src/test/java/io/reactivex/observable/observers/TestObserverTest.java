@@ -40,6 +40,7 @@ import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.operators.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -132,7 +133,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
 
-        ts.assertNever(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertNever(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o == 1;
@@ -146,7 +147,7 @@ public class TestObserverTest {
 
         Observable.just(2, 3).subscribe(ts);
 
-        ts.assertNever(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertNever(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o == 1;
@@ -445,7 +446,7 @@ public class TestObserverTest {
 
         ts.assertError(Functions.<Throwable>alwaysTrue());
 
-        ts.assertError(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+        ts.assertError(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable t) {
                 return t.getMessage() != null && t.getMessage().contains("Forced");
@@ -1080,7 +1081,7 @@ public class TestObserverTest {
         TestObserver<Object> ts = new TestObserver<Object>();
         ts.onError(new RuntimeException());
         try {
-            ts.assertError(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+            ts.assertError(new Function1<Throwable, Boolean>() {
                 @Override
                 public Boolean invoke(Throwable throwable) {
                     throw new TestException();
@@ -1284,7 +1285,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("No values");
-        ts.assertValue(new kotlin.jvm.functions.Function1<Object, Boolean>() {
+        ts.assertValue(new Function1<Object, Boolean>() {
             @Override
             public Boolean invoke(final Object o) {
                 return false;
@@ -1298,7 +1299,7 @@ public class TestObserverTest {
 
         Observable.just(1).subscribe(ts);
 
-        ts.assertValue(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertValue(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o == 1;
@@ -1314,7 +1315,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Value not present");
-        ts.assertValue(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertValue(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o != 1;
@@ -1330,7 +1331,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Value present but other values as well");
-        ts.assertValue(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertValue(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o == 1;
@@ -1346,7 +1347,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("No values");
-        ts.assertValueAt(0, new kotlin.jvm.functions.Function1<Object, Boolean>() {
+        ts.assertValueAt(0, new Function1<Object, Boolean>() {
             @Override
             public Boolean invoke(final Object o) {
                 return false;
@@ -1360,7 +1361,7 @@ public class TestObserverTest {
 
         Observable.just(1, 2).subscribe(ts);
 
-        ts.assertValueAt(1, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertValueAt(1, new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o == 2;
@@ -1376,7 +1377,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Value not present");
-        ts.assertValueAt(2, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertValueAt(2, new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o != 3;
@@ -1392,7 +1393,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
-        ts.assertValueAt(2, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ts.assertValueAt(2, new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(final Integer o) {
                 return o == 1;

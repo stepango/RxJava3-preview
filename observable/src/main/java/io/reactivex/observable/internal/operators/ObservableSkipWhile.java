@@ -18,11 +18,12 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableSkipWhile<T> extends AbstractObservableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public ObservableSkipWhile(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public ObservableSkipWhile(ObservableSource<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -34,11 +35,11 @@ public final class ObservableSkipWhile<T> extends AbstractObservableWithUpstream
 
     static final class SkipWhileObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
         Disposable s;
         boolean notSkipping;
 
-        SkipWhileObserver(Observer<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        SkipWhileObserver(Observer<? super T> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

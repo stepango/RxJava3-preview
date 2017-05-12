@@ -24,13 +24,14 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionArbiter;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+    final Function1<? super Throwable, Boolean> predicate;
     final long count;
     public FlowableRetryPredicate(Flowable<T> source,
                                   long count,
-                                  kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+                                  Function1<? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
         this.count = count;
@@ -53,10 +54,10 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
         final Subscriber<? super T> actual;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
-        final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+        final Function1<? super Throwable, Boolean> predicate;
         long remaining;
         RepeatSubscriber(Subscriber<? super T> actual, long count,
-                         kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
+                         Function1<? super Throwable, Boolean> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;

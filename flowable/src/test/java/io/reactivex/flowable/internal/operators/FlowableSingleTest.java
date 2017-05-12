@@ -29,11 +29,11 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -90,9 +90,9 @@ public class FlowableSingleTest {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.just(1)
         //
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long n) {
+                    public Unit invoke(Long n) {
                         requests.add(n);
                         return Unit.INSTANCE;
                     }
@@ -132,9 +132,9 @@ public class FlowableSingleTest {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.just(1)
         //
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long n) {
+                    public Unit invoke(Long n) {
                         requests.add(n);
                         return Unit.INSTANCE;
                     }
@@ -173,9 +173,9 @@ public class FlowableSingleTest {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.just(1)
         //
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long n) {
+                    public Unit invoke(Long n) {
                         requests.add(n);
                         return Unit.INSTANCE;
                     }
@@ -214,7 +214,7 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -236,7 +236,7 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateAndTooManyElementsFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -258,7 +258,7 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateAndEmptyFlowable() {
         Flowable<Integer> observable = Flowable.just(1)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -318,7 +318,7 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -338,7 +338,7 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElementsFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -358,7 +358,7 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndEmptyFlowable() {
         Flowable<Integer> observable = Flowable.just(1)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -411,9 +411,9 @@ public class FlowableSingleTest {
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsToEmitItem() {
         final AtomicLong request = new AtomicLong();
-        Flowable.just(1).doOnRequest(new LongConsumer() {
+        Flowable.just(1).doOnRequest(new Function1<Long, Unit>() {
             @Override
-            public Unit invoke(long n) {
+            public Unit invoke(Long n) {
                 request.addAndGet(n);
                 return Unit.INSTANCE;
             }
@@ -426,9 +426,9 @@ public class FlowableSingleTest {
     public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty() {
         final AtomicLong request = new AtomicLong();
         try {
-            Flowable.empty().doOnRequest(new LongConsumer() {
+            Flowable.empty().doOnRequest(new Function1<Long, Unit>() {
                 @Override
-                public Unit invoke(long n) {
+                public Unit invoke(Long n) {
                     request.addAndGet(n);
                     return Unit.INSTANCE;
                 }
@@ -443,9 +443,9 @@ public class FlowableSingleTest {
     public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne() {
         final AtomicLong request = new AtomicLong();
         try {
-            Flowable.just(1, 2).doOnRequest(new LongConsumer() {
+            Flowable.just(1, 2).doOnRequest(new Function1<Long, Unit>() {
                 @Override
-                public Unit invoke(long n) {
+                public Unit invoke(Long n) {
                     request.addAndGet(n);
                     return Unit.INSTANCE;
                 }

@@ -21,11 +21,12 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolean> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public FlowableAny(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public FlowableAny(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -39,13 +40,13 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
 
         private static final long serialVersionUID = -2311252482644620661L;
 
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         Subscription s;
 
         boolean done;
 
-        AnySubscriber(Subscriber<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        AnySubscriber(Subscriber<? super Boolean> actual, Function1<? super T, Boolean> predicate) {
             super(actual);
             this.predicate = predicate;
         }

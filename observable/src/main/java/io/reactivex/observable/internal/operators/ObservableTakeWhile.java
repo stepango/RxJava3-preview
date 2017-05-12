@@ -19,11 +19,12 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public ObservableTakeWhile(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public ObservableTakeWhile(ObservableSource<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -35,13 +36,13 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
 
     static final class TakeWhileObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         Disposable s;
 
         boolean done;
 
-        TakeWhileObserver(Observer<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        TakeWhileObserver(Observer<? super T> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

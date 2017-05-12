@@ -27,6 +27,7 @@ import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -37,7 +38,7 @@ public class ObservableFilterTest {
     @Test
     public void testFilter() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> observable = w.filter(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Observable<String> observable = w.filter(new Function1<String, Boolean>() {
 
             @Override
             public Boolean invoke(String t1) {
@@ -102,7 +103,7 @@ public class ObservableFilterTest {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
 
         Observable.range(1, 5)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -121,7 +122,7 @@ public class ObservableFilterTest {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -140,7 +141,7 @@ public class ObservableFilterTest {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
 
         Observable.range(1, 5)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -155,7 +156,7 @@ public class ObservableFilterTest {
     @Test
     public void filterThrows() {
         Observable.range(1, 5)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 throw new TestException();

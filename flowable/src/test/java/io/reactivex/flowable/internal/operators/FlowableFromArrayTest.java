@@ -24,6 +24,7 @@ import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableFromArrayTest {
 
@@ -144,7 +145,7 @@ public class FlowableFromArrayTest {
     @Test
     public void conditionalFiltered() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -174,7 +175,7 @@ public class FlowableFromArrayTest {
     @Test
     public void conditionalSlowPathSkipCancel() {
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5 })
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v < 2;

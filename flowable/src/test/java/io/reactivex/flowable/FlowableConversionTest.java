@@ -28,6 +28,7 @@ import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.internal.operators.FlowableFilter;
 import io.reactivex.flowable.internal.operators.FlowableMap;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableConversionTest {
 
@@ -76,7 +77,7 @@ public class FlowableConversionTest {
             }
         }
 
-        public final CylonDetectorObservable<T> beep(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        public final CylonDetectorObservable<T> beep(Function1<? super T, Boolean> predicate) {
             return new CylonDetectorObservable<T>(new FlowableFilter<T>(Flowable.fromPublisher(onSubscribe), predicate));
         }
 

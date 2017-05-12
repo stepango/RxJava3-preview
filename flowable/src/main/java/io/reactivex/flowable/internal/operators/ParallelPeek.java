@@ -21,12 +21,13 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.Consumer;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Execute a Consumer in each 'rail' for the current element passing through.
@@ -43,7 +44,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
     final Function0 onComplete;
     final Function0 onAfterTerminated;
     final Consumer<? super Subscription> onSubscribe;
-    final LongConsumer onRequest;
+    final Function1<Long, Unit> onRequest;
     final Function0 onCancel;
 
     public ParallelPeek(ParallelFlowable<T> source,
@@ -53,7 +54,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                         Function0 onComplete,
                         Function0 onAfterTerminated,
                         Consumer<? super Subscription> onSubscribe,
-                        LongConsumer onRequest,
+                        Function1<Long, Unit> onRequest,
                         Function0 onCancel
     ) {
         this.source = source;

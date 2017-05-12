@@ -39,6 +39,7 @@ import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.subscribers.ResourceSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -372,7 +373,7 @@ public class FlowableBackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation())
                 .skip(10000)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer i) {
                         return i > 11000;
@@ -659,7 +660,7 @@ public class FlowableBackpressureTests {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        firehose(c).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        firehose(c).takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 100000;

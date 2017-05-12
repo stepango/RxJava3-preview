@@ -25,13 +25,14 @@ import io.reactivex.flowable.internal.operators.FlowableAny;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseToFlowable<Boolean> {
     final Flowable<T> source;
 
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public FlowableAnySingle(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public FlowableAnySingle(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -50,13 +51,13 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
 
         final SingleObserver<? super Boolean> actual;
 
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         Subscription s;
 
         boolean done;
 
-        AnySubscriber(SingleObserver<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        AnySubscriber(SingleObserver<? super Boolean> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

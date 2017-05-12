@@ -94,6 +94,7 @@ import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * The base utility class that hosts factory methods and
@@ -581,7 +582,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<Boolean> any(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public static <T> Single<Boolean> any(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new FlowableAnySingle<T>(source, predicate));
@@ -589,7 +590,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Single<Boolean> all(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public static <T> Single<Boolean> all(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new FlowableAllSingle<T>(source, predicate));

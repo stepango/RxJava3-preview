@@ -27,6 +27,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.Subject;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +41,7 @@ public class ObservableTakeWhileTest {
     @Test
     public void testTakeWhile1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Integer> take = w.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable<Integer> take = w.takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer input) {
                 return input < 3;
@@ -59,7 +60,7 @@ public class ObservableTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         Subject<Integer> s = PublishSubject.create();
-        Observable<Integer> take = s.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable<Integer> take = s.takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer input) {
                 return input < 3;
@@ -88,7 +89,7 @@ public class ObservableTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> take = w.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Observable<String> take = w.takeWhile(new Function1<String, Boolean>() {
             int index;
 
             @Override
@@ -117,7 +118,7 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        source.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        source.takeWhile(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return false;
@@ -132,7 +133,7 @@ public class ObservableTakeWhileTest {
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(source)
-                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+                .takeWhile(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 throw testException;
@@ -159,7 +160,7 @@ public class ObservableTakeWhileTest {
 
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(w)
-                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+                .takeWhile(new Function1<String, Boolean>() {
             int index;
 
             @Override
@@ -224,7 +225,7 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testNoUnsubscribeDownstream() {
-        Observable<Integer> source = Observable.range(1, 1000).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 2;
@@ -244,7 +245,7 @@ public class ObservableTakeWhileTest {
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just("abc").takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Observable.just("abc").takeWhile(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String t1) {
                 throw new TestException();

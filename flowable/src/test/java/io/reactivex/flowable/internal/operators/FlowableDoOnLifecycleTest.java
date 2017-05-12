@@ -25,13 +25,13 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -107,9 +107,9 @@ public class FlowableDoOnLifecycleTest {
         try {
             Flowable.just(1)
             .doOnLifecycle(Functions.emptyConsumer(),
-                    new LongConsumer() {
+                    new Function1<Long, Unit>() {
                         @Override
-                        public Unit invoke(long v) {
+                        public Unit invoke(Long v) {
                             throw new TestException();
                         }
                     },

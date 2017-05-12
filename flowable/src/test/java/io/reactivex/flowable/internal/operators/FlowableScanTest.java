@@ -45,6 +45,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -144,7 +145,7 @@ public class FlowableScanTest {
                 return t1 + t2;
             }
 
-        }).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        }).filter(new Function1<Integer, Boolean>() {
 
             @Override
             public Boolean invoke(Integer t1) {

@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -37,6 +36,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -583,9 +583,9 @@ public class FlowableMergeDelayErrorTest {
         Flowable<Integer> source = Flowable.mergeDelayError(Flowable.just(
                 Flowable.just(1).hide(),
                 Flowable.<Integer>error(new TestException()))
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long t1) {
+                    public Unit invoke(Long t1) {
                         requests.add(t1);
                         return Unit.INSTANCE;
                     }

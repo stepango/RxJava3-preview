@@ -20,11 +20,12 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableSkipWhile<T> extends AbstractFlowableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public FlowableSkipWhile(Flowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public FlowableSkipWhile(Flowable<T> source, Function1<? super T, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -36,11 +37,11 @@ public final class FlowableSkipWhile<T> extends AbstractFlowableWithUpstream<T, 
 
     static final class SkipWhileSubscriber<T> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
         Subscription s;
         boolean notSkipping;
 
-        SkipWhileSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        SkipWhileSubscriber(Subscriber<? super T> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

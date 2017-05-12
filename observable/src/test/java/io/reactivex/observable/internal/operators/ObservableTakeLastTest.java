@@ -28,6 +28,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -155,7 +156,7 @@ public class ObservableTakeLastTest {
         assertNull(Observable
                 .empty()
                 .count()
-                .filter(new kotlin.jvm.functions.Function1<Long, Boolean>() {
+                .filter(new Function1<Long, Boolean>() {
                     @Override
                     public Boolean invoke(Long v) {
                         return false;

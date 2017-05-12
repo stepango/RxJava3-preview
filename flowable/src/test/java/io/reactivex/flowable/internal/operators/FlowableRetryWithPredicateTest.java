@@ -36,7 +36,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -45,6 +44,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -386,9 +386,9 @@ public class FlowableRetryWithPredicateTest {
         Flowable<Integer> source = Flowable
                 .just(1)
                 .concatWith(Flowable.<Integer>error(new TestException()))
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long t) {
+                    public Unit invoke(Long t) {
                         requests.add(t);
                         return Unit.INSTANCE;
                     }
@@ -413,7 +413,7 @@ public class FlowableRetryWithPredicateTest {
     public void predicateThrows() {
 
         TestSubscriber<Object> to = Flowable.error(new TestException("Outer"))
-                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+                .retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable e) {
                 throw new TestException("Inner");

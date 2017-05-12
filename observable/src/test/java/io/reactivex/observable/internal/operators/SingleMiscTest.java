@@ -31,6 +31,7 @@ import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.SingleTransformer;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -230,7 +231,7 @@ public class SingleMiscTest {
                 return 1;
             }
         })
-                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+                .retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable e) {
                 return true;

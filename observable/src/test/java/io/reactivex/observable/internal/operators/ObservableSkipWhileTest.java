@@ -24,6 +24,7 @@ import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -36,7 +37,7 @@ public class ObservableSkipWhileTest {
 
     Observer<Integer> w = TestHelper.mockObserver();
 
-    private static final kotlin.jvm.functions.Function1<Integer, Boolean> LESS_THAN_FIVE = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+    private static final Function1<Integer, Boolean> LESS_THAN_FIVE = new Function1<Integer, Boolean>() {
         @Override
         public Boolean invoke(Integer v) {
             if (v == 42) {
@@ -46,7 +47,7 @@ public class ObservableSkipWhileTest {
         }
     };
 
-    private static final kotlin.jvm.functions.Function1<Integer, Boolean> INDEX_LESS_THAN_THREE = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+    private static final Function1<Integer, Boolean> INDEX_LESS_THAN_THREE = new Function1<Integer, Boolean>() {
         int index;
         @Override
         public Boolean invoke(Integer value) {

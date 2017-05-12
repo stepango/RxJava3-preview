@@ -31,6 +31,7 @@ import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -46,7 +47,7 @@ public class ObservableAllTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -66,7 +67,7 @@ public class ObservableAllTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -86,7 +87,7 @@ public class ObservableAllTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -107,7 +108,7 @@ public class ObservableAllTest {
 
         Observer <Boolean> observer = TestHelper.mockObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -123,7 +124,7 @@ public class ObservableAllTest {
     @Test
     public void testFollowingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> allOdd = o.all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Observable<Boolean> allOdd = o.all(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer i) {
                 return i % 2 == 1;
@@ -135,7 +136,7 @@ public class ObservableAllTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1)
-                .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .all(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer t1) {
                     return false;
@@ -158,7 +159,7 @@ public class ObservableAllTest {
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Observable.just("Boo!").all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String v) {
                 throw ex;
@@ -181,7 +182,7 @@ public class ObservableAllTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -200,7 +201,7 @@ public class ObservableAllTest {
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -219,7 +220,7 @@ public class ObservableAllTest {
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -239,7 +240,7 @@ public class ObservableAllTest {
 
         SingleObserver <Boolean> observer = TestHelper.mockSingleObserver();
 
-        obs.all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        obs.all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -255,7 +256,7 @@ public class ObservableAllTest {
     @Test
     public void testFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Single<Boolean> allOdd = o.all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Single<Boolean> allOdd = o.all(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer i) {
                 return i % 2 == 1;
@@ -267,7 +268,7 @@ public class ObservableAllTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1)
-                .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .all(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer t1) {
                     return false;
@@ -290,7 +291,7 @@ public class ObservableAllTest {
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        Observable.just("Boo!").all(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Observable.just("Boo!").all(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String v) {
                 throw ex;
@@ -328,7 +329,7 @@ public class ObservableAllTest {
                     observer.onComplete();
                 }
             }
-                    .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .all(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();
@@ -359,7 +360,7 @@ public class ObservableAllTest {
                     observer.onComplete();
                 }
             }
-                    .all(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .all(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();

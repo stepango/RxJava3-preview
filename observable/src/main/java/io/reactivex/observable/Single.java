@@ -102,6 +102,7 @@ import io.reactivex.observable.internal.operators.SingleZipArray;
 import io.reactivex.observable.internal.operators.SingleZipIterable;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -1923,7 +1924,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> filter(kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public final Maybe<T> filter(Function1<? super T, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeFilterSingle<T>(this, predicate));
     }
@@ -2453,7 +2454,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> retry(kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public final Single<T> retry(Function1<? super Throwable, Boolean> predicate) {
         return toSingle(toObservable().retry(predicate));
     }
 

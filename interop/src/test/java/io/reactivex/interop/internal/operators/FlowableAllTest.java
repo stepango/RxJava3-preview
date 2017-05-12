@@ -26,6 +26,7 @@ import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 import static io.reactivex.interop.RxJava3Interop.all;
 import static io.reactivex.interop.RxJava3Interop.flatMapPublisher;
@@ -43,7 +44,7 @@ public class FlowableAllTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        all(obs, new kotlin.jvm.functions.Function1<String, Boolean>() {
+        all(obs, new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -62,7 +63,7 @@ public class FlowableAllTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        all(obs, new kotlin.jvm.functions.Function1<String, Boolean>() {
+        all(obs, new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -81,7 +82,7 @@ public class FlowableAllTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        all(obs, new kotlin.jvm.functions.Function1<String, Boolean>() {
+        all(obs, new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -101,7 +102,7 @@ public class FlowableAllTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        all(obs, new kotlin.jvm.functions.Function1<String, Boolean>() {
+        all(obs, new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return s.length() == 3;
@@ -117,7 +118,7 @@ public class FlowableAllTest {
     @Test
     public void testFollowingFirst() {
         Flowable<Integer> o = Flowable.fromArray(1, 3, 5, 6);
-        Single<Boolean> allOdd = all(o, new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Single<Boolean> allOdd = all(o, new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer i) {
                 return i % 2 == 1;
@@ -129,7 +130,7 @@ public class FlowableAllTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source =
-                flatMapPublisher(all(Flowable.just(1), new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                flatMapPublisher(all(Flowable.just(1), new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer t1) {
                     return false;
@@ -148,7 +149,7 @@ public class FlowableAllTest {
     @Ignore("No backpressure in Single")
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
-        all(Flowable.empty(), new kotlin.jvm.functions.Function1<Object, Boolean>() {
+        all(Flowable.empty(), new Function1<Object, Boolean>() {
             @Override
             public Boolean invoke(Object t1) {
                 return false;
@@ -164,7 +165,7 @@ public class FlowableAllTest {
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
 
-        all(Flowable.empty(), new kotlin.jvm.functions.Function1<Object, Boolean>() {
+        all(Flowable.empty(), new Function1<Object, Boolean>() {
             @Override
             public Boolean invoke(Object t) {
                 return false;
@@ -184,7 +185,7 @@ public class FlowableAllTest {
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
-        all(Flowable.just("Boo!"), new kotlin.jvm.functions.Function1<String, Boolean>() {
+        all(Flowable.just("Boo!"), new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String v) {
                 throw ex;

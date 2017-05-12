@@ -20,11 +20,11 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -148,9 +148,9 @@ public class FlowableSkipTest {
         final AtomicLong requests = new AtomicLong(0);
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
-                .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                     @Override
-                    public Unit invoke(long n) {
+                    public Unit invoke(Long n) {
                         requests.addAndGet(n);
                         return Unit.INSTANCE;
                     }

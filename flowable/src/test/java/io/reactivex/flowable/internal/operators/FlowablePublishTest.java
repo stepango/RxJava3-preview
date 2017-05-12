@@ -47,6 +47,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -173,7 +174,7 @@ public class FlowablePublishTest {
 
             @Override
             public Flowable<Integer> apply(Flowable<Integer> xs) {
-                return xs.takeUntil(xs.skipWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                return xs.takeUntil(xs.skipWhile(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer i) {
@@ -197,7 +198,7 @@ public class FlowablePublishTest {
         Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ConnectableFlowable<Integer> xsp = xs.publish();
-        xsp.takeUntil(xsp.skipWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        xsp.takeUntil(xsp.skipWhile(new Function1<Integer, Boolean>() {
 
             @Override
             public Boolean invoke(Integer i) {

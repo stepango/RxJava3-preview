@@ -29,6 +29,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -474,7 +475,7 @@ public class FlowableRangeLongTest {
         };
 
         Flowable.rangeLong(1L, 5L)
-                .filter(new kotlin.jvm.functions.Function1<Long, Boolean>() {
+                .filter(new Function1<Long, Boolean>() {
             @Override
             public Boolean invoke(Long v) {
                 return v % 2 == 0;
@@ -535,7 +536,7 @@ public class FlowableRangeLongTest {
         };
 
         Flowable.rangeLong(1L, 5L)
-                .filter(new kotlin.jvm.functions.Function1<Long, Boolean>() {
+                .filter(new Function1<Long, Boolean>() {
             @Override
             public Boolean invoke(Long v) {
                 return v % 2 == 0;

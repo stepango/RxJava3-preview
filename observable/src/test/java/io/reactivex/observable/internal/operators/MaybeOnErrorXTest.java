@@ -24,6 +24,7 @@ import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeOnErrorXTest {
 
@@ -84,7 +85,7 @@ public class MaybeOnErrorXTest {
     @Test
     public void onErrorCompletePredicateThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-                .onErrorComplete(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+                .onErrorComplete(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable v) {
                 throw new RuntimeException();

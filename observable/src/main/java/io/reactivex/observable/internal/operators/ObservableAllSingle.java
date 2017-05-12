@@ -23,13 +23,14 @@ import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.extensions.FuseToObservable;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableAllSingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
     final ObservableSource<T> source;
 
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public ObservableAllSingle(ObservableSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public ObservableAllSingle(ObservableSource<T> source, Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -46,13 +47,13 @@ public final class ObservableAllSingle<T> extends Single<Boolean> implements Fus
 
     static final class AllObserver<T> implements Observer<T>, Disposable {
         final SingleObserver<? super Boolean> actual;
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         Disposable s;
 
         boolean done;
 
-        AllObserver(SingleObserver<? super Boolean> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        AllObserver(SingleObserver<? super Boolean> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

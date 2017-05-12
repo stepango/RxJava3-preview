@@ -32,13 +32,13 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -400,9 +400,9 @@ public class FlowableTakeTest {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.interval(100, TimeUnit.MILLISECONDS)
             //
-            .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
                 @Override
-                public Unit invoke(long n) {
+                public Unit invoke(Long n) {
                     System.out.println(n);
                     requests.addAndGet(n);
                     return Unit.INSTANCE;

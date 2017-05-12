@@ -20,6 +20,7 @@ import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +41,7 @@ public class CompletableRepeatWhenTest {
             @Override
             public Observable<Object> apply(Observable<Object> f) throws Exception {
                 final int[] j = { 3 };
-                return f.takeWhile(new kotlin.jvm.functions.Function1<Object, Boolean>() {
+                return f.takeWhile(new Function1<Object, Boolean>() {
                     @Override
                     public Boolean invoke(Object v) {
                         return j[0]-- != 0;

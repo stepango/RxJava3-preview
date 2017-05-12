@@ -38,7 +38,6 @@ import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -47,6 +46,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -677,9 +677,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testMaxConcurrent5() {
         final List<Long> requests = new ArrayList<Long>();
-        Flowable.range(1, 100).doOnRequest(new LongConsumer() {
+        Flowable.range(1, 100).doOnRequest(new Function1<Long, Unit>() {
             @Override
-            public Unit invoke(long reqCount) {
+            public Unit invoke(Long reqCount) {
                 requests.add(reqCount);
                 return Unit.INSTANCE;
             }

@@ -44,6 +44,7 @@ import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -891,7 +892,7 @@ public class ObservableRetryTest {
     @Test
     public void retryPredicate() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-                .retry(new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+                .retry(new Function1<Throwable, Boolean>() {
             @Override
             public Boolean invoke(Throwable v) {
                 return true;
@@ -905,7 +906,7 @@ public class ObservableRetryTest {
     @Test
     public void retryUntil() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-                .retryUntil(new Function0() {
+                .retryUntil(new Function0<Boolean>() {
             @Override
             public Boolean invoke() {
                 return false;
@@ -919,7 +920,7 @@ public class ObservableRetryTest {
     @Test
     public void retryLongPredicateInvalid() {
         try {
-            Observable.just(1).retry(-99, new kotlin.jvm.functions.Function1<Throwable, Boolean>() {
+            Observable.just(1).retry(-99, new Function1<Throwable, Boolean>() {
                 @Override
                 public Boolean invoke(Throwable e) {
                     return true;

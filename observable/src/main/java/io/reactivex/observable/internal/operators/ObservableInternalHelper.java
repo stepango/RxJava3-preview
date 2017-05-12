@@ -33,6 +33,7 @@ import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.SingleSource;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Helper utility class to support Observable with inner classes.
@@ -251,7 +252,7 @@ public final class ObservableInternalHelper {
         return new ReplayFunction<T, R>(selector, scheduler);
     }
 
-    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, kotlin.jvm.functions.Function1<Notification<Object>, Boolean> {
+    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Function1<Notification<Object>, Boolean> {
         INSTANCE;
 
         @Override

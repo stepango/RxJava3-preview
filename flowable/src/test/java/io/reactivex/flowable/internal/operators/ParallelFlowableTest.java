@@ -40,7 +40,6 @@ import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ListAddBiConsumer;
 import io.reactivex.common.internal.utils.MergerBiFunction;
@@ -52,6 +51,7 @@ import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -811,7 +811,7 @@ public class ParallelFlowableTest {
         Flowable.range(1, 20)
         .parallel()
         .runOn(Schedulers.computation())
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -838,7 +838,7 @@ public class ParallelFlowableTest {
         })
         .parallel()
         .runOn(Schedulers.computation())
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 if (v == 10) {
@@ -1074,9 +1074,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .doOnRequest(new LongConsumer() {
+                .doOnRequest(new Function1<Long, Unit>() {
             @Override
-            public Unit invoke(long s) {
+            public Unit invoke(Long s) {
                 count[0]++;
                 return Unit.INSTANCE;
             }

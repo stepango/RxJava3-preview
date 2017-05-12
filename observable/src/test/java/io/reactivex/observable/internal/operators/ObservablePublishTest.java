@@ -42,6 +42,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -168,7 +169,7 @@ public class ObservablePublishTest {
 
             @Override
             public Observable<Integer> apply(Observable<Integer> xs) {
-                return xs.takeUntil(xs.skipWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                return xs.takeUntil(xs.skipWhile(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer i) {
@@ -192,7 +193,7 @@ public class ObservablePublishTest {
         Observable<Integer> xs = Observable.range(0, Observable.bufferSize() * 2);
         TestObserver<Integer> ts = new TestObserver<Integer>();
         ConnectableObservable<Integer> xsp = xs.publish();
-        xsp.takeUntil(xsp.skipWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        xsp.takeUntil(xsp.skipWhile(new Function1<Integer, Boolean>() {
 
             @Override
             public Boolean invoke(Integer i) {

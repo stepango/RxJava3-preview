@@ -37,6 +37,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -135,7 +136,7 @@ public class ObservableScanTest {
                 return t1 + t2;
             }
 
-        }).filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        }).filter(new Function1<Integer, Boolean>() {
 
             @Override
             public Boolean invoke(Integer t1) {

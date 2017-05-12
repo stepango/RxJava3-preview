@@ -25,6 +25,7 @@ import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFailureHandling;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Filters each 'rail' of the source ParallelFlowable with a predicate function.
@@ -35,11 +36,11 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
 
     final ParallelFlowable<T> source;
 
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
     final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
-    public ParallelFilterTry(ParallelFlowable<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate,
+    public ParallelFilterTry(ParallelFlowable<T> source, Function1<? super T, Boolean> predicate,
                              BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         this.source = source;
         this.predicate = predicate;
@@ -74,7 +75,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
     }
 
     abstract static class BaseFilterSubscriber<T> implements ConditionalSubscriber<T>, Subscription {
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
@@ -82,7 +83,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
 
         boolean done;
 
-        BaseFilterSubscriber(kotlin.jvm.functions.Function1<? super T, Boolean> predicate, BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        BaseFilterSubscriber(Function1<? super T, Boolean> predicate, BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.predicate = predicate;
             this.errorHandler = errorHandler;
         }
@@ -109,7 +110,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
 
         final Subscriber<? super T> actual;
 
-        ParallelFilterSubscriber(Subscriber<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate, BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ParallelFilterSubscriber(Subscriber<? super T> actual, Function1<? super T, Boolean> predicate, BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             super(predicate, errorHandler);
             this.actual = actual;
         }
@@ -197,7 +198,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
         final ConditionalSubscriber<? super T> actual;
 
         ParallelFilterConditionalSubscriber(ConditionalSubscriber<? super T> actual,
-                                            kotlin.jvm.functions.Function1<? super T, Boolean> predicate,
+                                            Function1<? super T, Boolean> predicate,
                                             BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             super(predicate, errorHandler);
             this.actual = actual;

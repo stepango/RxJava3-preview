@@ -38,6 +38,7 @@ import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertTrue;
 
@@ -753,7 +754,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        error.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
+        error.retry((Function1<Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

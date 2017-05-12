@@ -19,14 +19,15 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.CompletableSource;
+import kotlin.jvm.functions.Function1;
 
 public final class CompletableOnErrorComplete extends Completable {
 
     final CompletableSource source;
 
-    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+    final Function1<? super Throwable, Boolean> predicate;
 
-    public CompletableOnErrorComplete(CompletableSource source, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+    public CompletableOnErrorComplete(CompletableSource source, Function1<? super Throwable, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }

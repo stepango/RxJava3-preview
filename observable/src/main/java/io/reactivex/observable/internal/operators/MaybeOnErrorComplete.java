@@ -19,6 +19,7 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Emits an onComplete if the source emits an onError and the predicate returns true for
@@ -28,10 +29,10 @@ import io.reactivex.observable.MaybeSource;
  */
 public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+    final Function1<? super Throwable, Boolean> predicate;
 
     public MaybeOnErrorComplete(MaybeSource<T> source,
-                                kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+                                Function1<? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -45,11 +46,11 @@ public final class MaybeOnErrorComplete<T> extends AbstractMaybeWithUpstream<T, 
 
         final MaybeObserver<? super T> actual;
 
-        final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+        final Function1<? super Throwable, Boolean> predicate;
 
         Disposable d;
 
-        OnErrorCompleteMaybeObserver(MaybeObserver<? super T> actual, kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+        OnErrorCompleteMaybeObserver(MaybeObserver<? super T> actual, Function1<? super Throwable, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

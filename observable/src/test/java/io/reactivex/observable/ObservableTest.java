@@ -40,6 +40,7 @@ import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
 import io.reactivex.observable.subjects.Subject;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -60,7 +61,7 @@ public class ObservableTest {
     SingleObserver<Number> wo;
     MaybeObserver<Number> wm;
 
-    private static final kotlin.jvm.functions.Function1<Integer, Boolean> IS_EVEN = new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+    private static final Function1<Integer, Boolean> IS_EVEN = new Function1<Integer, Boolean>() {
         @Override
         public Boolean invoke(Integer v) {
             return v % 2 == 0;
@@ -1084,7 +1085,7 @@ public class ObservableTest {
         for (int i = 0;i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
-                    .takeWhile(new kotlin.jvm.functions.Function1<Boolean, Boolean>() {
+                    .takeWhile(new Function1<Boolean, Boolean>() {
                         @Override
                         public Boolean invoke(Boolean v) {
                             return v;

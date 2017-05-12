@@ -28,6 +28,7 @@ import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 import static io.reactivex.interop.RxJava3Interop.last;
 import static io.reactivex.interop.RxJava3Interop.lastElement;
@@ -107,7 +108,7 @@ public class FlowableLastTest {
     @Test
     public void testLastWithPredicate() {
         Maybe<Integer> observable = lastElement(Flowable.just(1, 2, 3, 4, 5, 6)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -129,7 +130,7 @@ public class FlowableLastTest {
     public void testLastWithPredicateAndOneElement() {
         Maybe<Integer> observable = lastElement(Flowable.just(1, 2)
             .filter(
-                    new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -151,7 +152,7 @@ public class FlowableLastTest {
     public void testLastWithPredicateAndEmpty() {
         Maybe<Integer> observable = lastElement(Flowable.just(1)
             .filter(
-                    new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -212,7 +213,7 @@ public class FlowableLastTest {
     @Test
     public void testLastOrDefaultWithPredicate() {
         Single<Integer> observable = last(Flowable.just(1, 2, 3, 4, 5, 6)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -233,7 +234,7 @@ public class FlowableLastTest {
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
         Single<Integer> observable = last(Flowable.just(1, 2)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -255,7 +256,7 @@ public class FlowableLastTest {
     public void testLastOrDefaultWithPredicateAndEmpty() {
         Single<Integer> observable = last(Flowable.just(1)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {

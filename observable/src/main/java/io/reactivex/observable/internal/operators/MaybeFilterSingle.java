@@ -20,6 +20,7 @@ import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Filters the upstream SingleSource via a predicate, returning the success item or completing if
@@ -30,9 +31,9 @@ import io.reactivex.observable.SingleSource;
 public final class MaybeFilterSingle<T> extends Maybe<T> {
     final SingleSource<T> source;
 
-    final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+    final Function1<? super T, Boolean> predicate;
 
-    public MaybeFilterSingle(SingleSource<T> source, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+    public MaybeFilterSingle(SingleSource<T> source, Function1<? super T, Boolean> predicate) {
         this.source = source;
         this.predicate = predicate;
     }
@@ -46,11 +47,11 @@ public final class MaybeFilterSingle<T> extends Maybe<T> {
 
         final MaybeObserver<? super T> actual;
 
-        final kotlin.jvm.functions.Function1<? super T, Boolean> predicate;
+        final Function1<? super T, Boolean> predicate;
 
         Disposable d;
 
-        FilterMaybeObserver(MaybeObserver<? super T> actual, kotlin.jvm.functions.Function1<? super T, Boolean> predicate) {
+        FilterMaybeObserver(MaybeObserver<? super T> actual, Function1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

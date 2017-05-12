@@ -28,6 +28,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +42,7 @@ public class FlowableTakeWhileTest {
     @Test
     public void testTakeWhile1() {
         Flowable<Integer> w = Flowable.just(1, 2, 3);
-        Flowable<Integer> take = w.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Integer> take = w.takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer input) {
                 return input < 3;
@@ -60,7 +61,7 @@ public class FlowableTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         FlowableProcessor<Integer> s = PublishProcessor.create();
-        Flowable<Integer> take = s.takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Integer> take = s.takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer input) {
                 return input < 3;
@@ -89,7 +90,7 @@ public class FlowableTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> take = w.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Flowable<String> take = w.takeWhile(new Function1<String, Boolean>() {
             int index;
 
             @Override
@@ -118,7 +119,7 @@ public class FlowableTakeWhileTest {
             }
         });
 
-        source.takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        source.takeWhile(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 return false;
@@ -133,7 +134,7 @@ public class FlowableTakeWhileTest {
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(source)
-                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+                .takeWhile(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String s) {
                 throw testException;
@@ -160,7 +161,7 @@ public class FlowableTakeWhileTest {
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(w)
-                .takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+                .takeWhile(new Function1<String, Boolean>() {
             int index;
 
             @Override
@@ -225,7 +226,7 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testBackpressure() {
-        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 100;
@@ -246,7 +247,7 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testNoUnsubscribeDownstream() {
-        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer t1) {
                 return t1 < 2;
@@ -265,7 +266,7 @@ public class FlowableTakeWhileTest {
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.just("abc").takeWhile(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Flowable.just("abc").takeWhile(new Function1<String, Boolean>() {
             @Override
             public Boolean invoke(String t1) {
                 throw new TestException();

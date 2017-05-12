@@ -23,11 +23,11 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.Consumer;
-import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -81,9 +81,9 @@ public class ParallelPeekTest {
         try {
             Flowable.range(1, 5)
             .parallel()
-            .doOnRequest(new LongConsumer() {
+                    .doOnRequest(new Function1<Long, Unit>() {
                 @Override
-                public Unit invoke(long n) {
+                public Unit invoke(Long n) {
                     throw new TestException();
                 }
             })

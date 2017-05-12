@@ -38,6 +38,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -48,7 +49,7 @@ public class FlowableFilterTest {
     @Test
     public void testFilter() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> Flowable = w.filter(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Flowable<String> Flowable = w.filter(new Function1<String, Boolean>() {
 
             @Override
             public Boolean invoke(String t1) {
@@ -75,7 +76,7 @@ public class FlowableFilterTest {
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> o = w.filter(new kotlin.jvm.functions.Function1<String, Boolean>() {
+        Flowable<String> o = w.filter(new Function1<String, Boolean>() {
 
             @Override
             public Boolean invoke(String t1) {
@@ -122,7 +123,7 @@ public class FlowableFilterTest {
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {
         Flowable<Integer> w = Flowable.range(1, Flowable.bufferSize() * 2);
-        Flowable<Integer> o = w.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        Flowable<Integer> o = w.filter(new Function1<Integer, Boolean>() {
 
             @Override
             public Boolean invoke(Integer t1) {
@@ -194,7 +195,7 @@ public class FlowableFilterTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        ps.filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        ps.filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 throw new TestException();
@@ -365,13 +366,13 @@ public class FlowableFilterTest {
                     cs.onComplete();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     return true;
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();
@@ -407,7 +408,7 @@ public class FlowableFilterTest {
                     throw new TestException();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     return true;
@@ -477,7 +478,7 @@ public class FlowableFilterTest {
                     s.onComplete();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();
@@ -507,7 +508,7 @@ public class FlowableFilterTest {
                     s.onComplete();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();
@@ -539,7 +540,7 @@ public class FlowableFilterTest {
                     cs.onComplete();
                 }
             })
-                    .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                    .filter(new Function1<Integer, Boolean>() {
                 @Override
                 public Boolean invoke(Integer v) {
                     throw new TestException();
@@ -575,7 +576,7 @@ public class FlowableFilterTest {
         TestSubscriber<Integer> to = SubscriberFusion.newTest(FusedQueueSubscription.ANY);
 
         Flowable.range(1, 5)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -594,7 +595,7 @@ public class FlowableFilterTest {
         UnicastProcessor<Integer> us = UnicastProcessor.create();
 
         us
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -613,7 +614,7 @@ public class FlowableFilterTest {
         TestSubscriber<Integer> to = SubscriberFusion.newTest(FusedQueueSubscription.ANY | FusedQueueSubscription.BOUNDARY);
 
         Flowable.range(1, 5)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return v % 2 == 0;
@@ -628,7 +629,7 @@ public class FlowableFilterTest {
     @Test
     public void filterThrows() {
         Flowable.range(1, 5)
-                .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                .filter(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 throw new TestException();

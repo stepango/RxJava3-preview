@@ -33,6 +33,7 @@ import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 import static io.reactivex.interop.RxJava3Interop.reduce;
 import static io.reactivex.interop.RxJava3Interop.single;
@@ -90,7 +91,7 @@ public class FlowableSingleTest {
     public void testSingleWithPredicate() {
         Maybe<Integer> observable = singleElement(Flowable.just(1, 2)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -111,7 +112,7 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateAndTooManyElements() {
         Maybe<Integer> observable = singleElement(Flowable.just(1, 2, 3, 4)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -133,7 +134,7 @@ public class FlowableSingleTest {
     public void testSingleWithPredicateAndEmpty() {
         Maybe<Integer> observable = singleElement(Flowable.just(1)
                 .filter(
-                        new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        new Function1<Integer, Boolean>() {
 
                     @Override
                     public Boolean invoke(Integer t1) {
@@ -192,7 +193,7 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicate() {
         Single<Integer> observable = single(Flowable.just(1, 2)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -211,7 +212,7 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElements() {
         Single<Integer> observable = single(Flowable.just(1, 2, 3, 4)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;
@@ -231,7 +232,7 @@ public class FlowableSingleTest {
     @Test
     public void testSingleOrDefaultWithPredicateAndEmpty() {
         Single<Integer> observable = single(Flowable.just(1)
-                        .filter(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+                        .filter(new Function1<Integer, Boolean>() {
                     @Override
                     public Boolean invoke(Integer t1) {
                         return t1 % 2 == 0;

@@ -41,6 +41,7 @@ import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions.
@@ -1600,7 +1601,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnErrorNull() {
-        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        just1.forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -1610,7 +1611,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void forEachWhileOnCompleteNull() {
-        just1.forEachWhile(new kotlin.jvm.functions.Function1<Integer, Boolean>() {
+        just1.forEachWhile(new Function1<Integer, Boolean>() {
             @Override
             public Boolean invoke(Integer v) {
                 return true;
@@ -1982,7 +1983,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryPredicateNull() {
-        just1.retry((kotlin.jvm.functions.Function1<Throwable, Boolean>) null);
+        just1.retry((Function1<Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -2287,7 +2288,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void takeUntilPredicateNull() {
-        just1.takeUntil((kotlin.jvm.functions.Function1<Integer, Boolean>) null);
+        just1.takeUntil((Function1<Integer, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

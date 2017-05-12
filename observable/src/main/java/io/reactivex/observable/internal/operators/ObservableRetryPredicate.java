@@ -22,13 +22,14 @@ import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableRetryPredicate<T> extends AbstractObservableWithUpstream<T, T> {
-    final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+    final Function1<? super Throwable, Boolean> predicate;
     final long count;
     public ObservableRetryPredicate(Observable<T> source,
                                     long count,
-                                    kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate) {
+                                    Function1<? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
         this.count = count;
@@ -50,10 +51,10 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         final Observer<? super T> actual;
         final SequentialDisposable sa;
         final ObservableSource<? extends T> source;
-        final kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate;
+        final Function1<? super Throwable, Boolean> predicate;
         long remaining;
         RepeatObserver(Observer<? super T> actual, long count,
-                       kotlin.jvm.functions.Function1<? super Throwable, Boolean> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
+                       Function1<? super Throwable, Boolean> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;

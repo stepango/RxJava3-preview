@@ -46,6 +46,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -578,7 +579,7 @@ public class ObservableGroupByTest {
                         Observable<Event> eventStream = eventGroupedObservable;
                         if (eventGroupedObservable.getKey() >= 2) {
                             // filter these
-                            eventStream = eventGroupedObservable.filter(new kotlin.jvm.functions.Function1<Event, Boolean>() {
+                            eventStream = eventGroupedObservable.filter(new Function1<Event, Boolean>() {
                                 @Override
                                 public Boolean invoke(Event t1) {
                                     return false;

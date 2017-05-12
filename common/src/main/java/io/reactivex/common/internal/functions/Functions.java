@@ -40,9 +40,9 @@ import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
 import io.reactivex.common.functions.Function8;
 import io.reactivex.common.functions.Function9;
-import io.reactivex.common.functions.LongConsumer;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility methods to convert the BiFunction, Function3..Function9 instances to Function of Object array.
@@ -135,24 +135,24 @@ public final class Functions {
      */
     public static final Consumer<Throwable> ON_ERROR_MISSING = new OnErrorMissingConsumer();
 
-    public static final LongConsumer EMPTY_LONG_CONSUMER = new EmptyLongConsumer();
+    public static final Function1 EMPTY_LONG_CONSUMER = new EmptyLongConsumer();
 
-    static final kotlin.jvm.functions.Function1<Object, Boolean> ALWAYS_TRUE = new TruePredicate();
+    static final Function1<Object, Boolean> ALWAYS_TRUE = new TruePredicate();
 
-    static final kotlin.jvm.functions.Function1<Object, Boolean> ALWAYS_FALSE = new FalsePredicate();
+    static final Function1<Object, Boolean> ALWAYS_FALSE = new FalsePredicate();
 
     static final Callable<Object> NULL_SUPPLIER = new NullCallable();
 
     static final Comparator<Object> NATURAL_COMPARATOR = new NaturalObjectComparator();
 
     @SuppressWarnings("unchecked")
-    public static <T> kotlin.jvm.functions.Function1<T, Boolean> alwaysTrue() {
-        return (kotlin.jvm.functions.Function1<T, Boolean>) ALWAYS_TRUE;
+    public static <T> Function1<T, Boolean> alwaysTrue() {
+        return (Function1<T, Boolean>) ALWAYS_TRUE;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> kotlin.jvm.functions.Function1<T, Boolean> alwaysFalse() {
-        return (kotlin.jvm.functions.Function1<T, Boolean>) ALWAYS_FALSE;
+    public static <T> Function1<T, Boolean> alwaysFalse() {
+        return (Function1<T, Boolean>) ALWAYS_FALSE;
     }
 
     @SuppressWarnings("unchecked")
@@ -277,7 +277,7 @@ public final class Functions {
         return new ArrayListCapacityCallable<T>(capacity);
     }
 
-    static final class EqualsPredicate<T> implements kotlin.jvm.functions.Function1<T, Boolean> {
+    static final class EqualsPredicate<T> implements Function1<T, Boolean> {
         final T value;
 
         EqualsPredicate(T value) {
@@ -290,7 +290,7 @@ public final class Functions {
         }
     }
 
-    public static <T> kotlin.jvm.functions.Function1<T, Boolean> equalsWith(T value) {
+    public static <T> Function1<T, Boolean> equalsWith(T value) {
         return new EqualsPredicate<T>(value);
     }
 
@@ -380,7 +380,7 @@ public final class Functions {
         return new ActionConsumer<T>(action);
     }
 
-    static final class ClassFilter<T, U> implements kotlin.jvm.functions.Function1<T, Boolean> {
+    static final class ClassFilter<T, U> implements Function1<T, Boolean> {
         final Class<U> clazz;
 
         ClassFilter(Class<U> clazz) {
@@ -393,11 +393,11 @@ public final class Functions {
         }
     }
 
-    public static <T, U> kotlin.jvm.functions.Function1<T, Boolean> isInstanceOf(Class<U> clazz) {
+    public static <T, U> Function1<T, Boolean> isInstanceOf(Class<U> clazz) {
         return new ClassFilter<T, U>(clazz);
     }
 
-    static final class BooleanSupplierPredicateReverse<T> implements kotlin.jvm.functions.Function1<T, Boolean> {
+    static final class BooleanSupplierPredicateReverse<T> implements Function1<T, Boolean> {
         final Function0<Boolean> supplier;
 
         BooleanSupplierPredicateReverse(Function0<Boolean> supplier) {
@@ -410,7 +410,7 @@ public final class Functions {
         }
     }
 
-    public static <T> kotlin.jvm.functions.Function1<T, Boolean> predicateReverseFor(Function0<Boolean> supplier) {
+    public static <T> Function1<T, Boolean> predicateReverseFor(Function0<Boolean> supplier) {
         return new BooleanSupplierPredicateReverse<T>(supplier);
     }
 
@@ -736,21 +736,21 @@ public final class Functions {
         }
     }
 
-    static final class EmptyLongConsumer implements LongConsumer {
+    static final class EmptyLongConsumer implements Function1<Long, Unit> {
         @Override
-        public Unit invoke(long v) {
+        public Unit invoke(Long v) {
             return Unit.INSTANCE;
         }
     }
 
-    static final class TruePredicate implements kotlin.jvm.functions.Function1<Object, Boolean> {
+    static final class TruePredicate implements Function1<Object, Boolean> {
         @Override
         public Boolean invoke(Object o) {
             return true;
         }
     }
 
-    static final class FalsePredicate implements kotlin.jvm.functions.Function1<Object, Boolean> {
+    static final class FalsePredicate implements Function1<Object, Boolean> {
         @Override
         public Boolean invoke(Object o) {
             return false;
