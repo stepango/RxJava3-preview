@@ -13,20 +13,24 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Test;
-import org.reactivestreams.Subscriber;
-
 import io.reactivex.common.functions.LongConsumer;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableSkipTest {
 
@@ -146,8 +150,9 @@ public class FlowableSkipTest {
         Flowable.interval(100, TimeUnit.MILLISECONDS)
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         requests.addAndGet(n);
+                        return Unit.INSTANCE;
                     }
                 }).skip(4).subscribe(ts);
         Thread.sleep(100);

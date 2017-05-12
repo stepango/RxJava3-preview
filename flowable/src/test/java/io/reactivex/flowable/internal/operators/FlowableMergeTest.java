@@ -1255,8 +1255,9 @@ public class FlowableMergeTest {
                                     .doOnRequest(new LongConsumer() {
 
                                         @Override
-                                        public void accept(long n) {
+                                        public Unit invoke(long n) {
                                             messages.add(">>>>>>>> A requested[" + number + "]: " + n);
+                                            return Unit.INSTANCE;
                                         }
 
                                     })
@@ -1269,8 +1270,9 @@ public class FlowableMergeTest {
                                     .doOnRequest(new LongConsumer() {
 
                                         @Override
-                                        public void accept(long n) {
+                                        public Unit invoke(long n) {
                                             messages.add(">>>>>>>> B requested[" + number + "]: " + n);
+                                            return Unit.INSTANCE;
                                         }
 
                                     });

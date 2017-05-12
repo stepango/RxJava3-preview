@@ -1076,8 +1076,9 @@ public class ParallelFlowableTest {
         .parallel(2)
         .doOnRequest(new LongConsumer() {
             @Override
-            public void accept(long s) throws Exception {
+            public Unit invoke(long s) {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .sequential()

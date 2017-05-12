@@ -44,6 +44,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -387,8 +388,9 @@ public class FlowableRetryWithPredicateTest {
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long t) {
+                    public Unit invoke(long t) {
                         requests.add(t);
+                        return Unit.INSTANCE;
                     }
                 });
 

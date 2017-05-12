@@ -738,7 +738,9 @@ public final class Functions {
 
     static final class EmptyLongConsumer implements LongConsumer {
         @Override
-        public void accept(long v) { }
+        public Unit invoke(long v) {
+            return Unit.INSTANCE;
+        }
     }
 
     static final class TruePredicate implements kotlin.jvm.functions.Function1<Object, Boolean> {

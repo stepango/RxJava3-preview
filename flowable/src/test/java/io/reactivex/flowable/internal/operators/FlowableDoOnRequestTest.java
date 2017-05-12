@@ -47,8 +47,9 @@ public class FlowableDoOnRequestTest {
                 //
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         // do nothing
+                        return Unit.INSTANCE;
                     }
                 })
                 //
@@ -63,8 +64,9 @@ public class FlowableDoOnRequestTest {
         //
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         requests.add(n);
+                        return Unit.INSTANCE;
                     }
                 })
                 //

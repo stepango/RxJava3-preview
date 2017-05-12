@@ -26,6 +26,7 @@ import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertFalse;
@@ -82,7 +83,7 @@ public class ParallelPeekTest {
             .parallel()
             .doOnRequest(new LongConsumer() {
                 @Override
-                public void accept(long n) throws Exception {
+                public Unit invoke(long n) {
                     throw new TestException();
                 }
             })

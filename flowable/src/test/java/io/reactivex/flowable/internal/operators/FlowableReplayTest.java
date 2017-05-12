@@ -837,8 +837,9 @@ public class FlowableReplayTest {
         Flowable<Integer> source = Flowable.range(1, 1000)
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long t) {
+                    public Unit invoke(long t) {
                         requested.addAndGet(t);
+                        return Unit.INSTANCE;
                     }
                 });
         ConnectableFlowable<Integer> co = source.replay();
@@ -868,8 +869,9 @@ public class FlowableReplayTest {
         Flowable<Integer> source = Flowable.range(1, 1000)
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long t) {
+                    public Unit invoke(long t) {
                         requested.addAndGet(t);
+                        return Unit.INSTANCE;
                     }
                 });
         ConnectableFlowable<Integer> co = source.replay(50);
@@ -1151,8 +1153,9 @@ public class FlowableReplayTest {
         Flowable<Integer> out = source
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long t) {
+                    public Unit invoke(long t) {
                         requests.add(t);
+                        return Unit.INSTANCE;
                     }
                 }).replay().autoConnect();
 

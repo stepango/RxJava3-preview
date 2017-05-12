@@ -13,24 +13,43 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class FlowableConcatMapEagerTest {
 
@@ -660,8 +679,9 @@ public class FlowableConcatMapEagerTest {
         final List<Long> requests = new ArrayList<Long>();
         Flowable.range(1, 100).doOnRequest(new LongConsumer() {
             @Override
-            public void accept(long reqCount) {
+            public Unit invoke(long reqCount) {
                 requests.add(reqCount);
+                return Unit.INSTANCE;
             }
         }).concatMapEager(toJust, 5, Flowable.bufferSize()).subscribe(ts);
 

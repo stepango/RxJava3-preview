@@ -33,6 +33,7 @@ import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -91,8 +92,9 @@ public class FlowableSingleTest {
         //
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         requests.add(n);
+                        return Unit.INSTANCE;
                     }
                 })
                 //
@@ -132,8 +134,9 @@ public class FlowableSingleTest {
         //
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         requests.add(n);
+                        return Unit.INSTANCE;
                     }
                 })
                 //
@@ -172,8 +175,9 @@ public class FlowableSingleTest {
         //
                 .doOnRequest(new LongConsumer() {
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         requests.add(n);
+                        return Unit.INSTANCE;
                     }
                 })
                 //
@@ -409,8 +413,9 @@ public class FlowableSingleTest {
         final AtomicLong request = new AtomicLong();
         Flowable.just(1).doOnRequest(new LongConsumer() {
             @Override
-            public void accept(long n) {
+            public Unit invoke(long n) {
                 request.addAndGet(n);
+                return Unit.INSTANCE;
             }
         }).blockingSingle();
         // FIXME single now triggers fast-path
@@ -423,8 +428,9 @@ public class FlowableSingleTest {
         try {
             Flowable.empty().doOnRequest(new LongConsumer() {
                 @Override
-                public void accept(long n) {
+                public Unit invoke(long n) {
                     request.addAndGet(n);
+                    return Unit.INSTANCE;
                 }
             }).blockingSingle();
         } catch (NoSuchElementException e) {
@@ -439,8 +445,9 @@ public class FlowableSingleTest {
         try {
             Flowable.just(1, 2).doOnRequest(new LongConsumer() {
                 @Override
-                public void accept(long n) {
+                public Unit invoke(long n) {
                     request.addAndGet(n);
+                    return Unit.INSTANCE;
                 }
             }).blockingSingle();
         } catch (IllegalArgumentException e) {

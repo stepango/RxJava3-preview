@@ -12,6 +12,8 @@
  */
 package io.reactivex.common.functions;
 
+import kotlin.Unit;
+
 /**
  * A functional interface (callback) that consumes a primitive long value.
  */
@@ -21,5 +23,5 @@ public interface LongConsumer {
      * @param t the primitive long value
      * @throws Exception on error
      */
-    void accept(long t) throws Exception;
+    Unit invoke(long t);
 }

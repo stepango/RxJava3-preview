@@ -13,25 +13,45 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.Arrays;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class FlowableTakeTest {
 
@@ -382,9 +402,10 @@ public class FlowableTakeTest {
             //
             .doOnRequest(new LongConsumer() {
                 @Override
-                public void accept(long n) {
+                public Unit invoke(long n) {
                     System.out.println(n);
                     requests.addAndGet(n);
+                    return Unit.INSTANCE;
             }})
             //
             .take(2)

@@ -103,7 +103,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
         @Override
         public void request(long n) {
             try {
-                onRequest.accept(n);
+                onRequest.invoke(n);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(e);

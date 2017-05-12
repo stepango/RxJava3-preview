@@ -1234,7 +1234,9 @@ public class FlowableNullTests {
     public void doOnLifecycleOnSubscribeNull() {
         just1.doOnLifecycle(null, new LongConsumer() {
             @Override
-            public void accept(long v) { }
+            public Unit invoke(long v) {
+                return Unit.INSTANCE;
+            }
         }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
@@ -1263,7 +1265,9 @@ public class FlowableNullTests {
             public void accept(Subscription s) { }
         }, new LongConsumer() {
             @Override
-            public void accept(long v) { }
+            public Unit invoke(long v) {
+                return Unit.INSTANCE;
+            }
         }, null);
     }
 
@@ -2840,7 +2844,9 @@ public class FlowableNullTests {
         },
         new LongConsumer() {
             @Override
-            public void accept(long v) throws Exception { }
+            public Unit invoke(long v) {
+                return Unit.INSTANCE;
+            }
         },
         null);
     }

@@ -13,27 +13,51 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.LongConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableSwitchTest {
 
@@ -618,8 +642,9 @@ public class FlowableSwitchTest {
                                 return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L))
                                         .doOnRequest(new LongConsumer() {
                                             @Override
-                                            public void accept(long v) {
+                                            public Unit invoke(long v) {
                                                 requests.add(v);
+                                                return Unit.INSTANCE;
                                             }
                                         });
                             }

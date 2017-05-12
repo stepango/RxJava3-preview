@@ -796,8 +796,9 @@ public class FlowableObserveOnTest {
                 .doOnRequest(new LongConsumer() {
 
                     @Override
-                    public void accept(long n) {
+                    public Unit invoke(long n) {
                         requests.add(n);
+                        return Unit.INSTANCE;
                     }
                 })
                 .observeOn(Schedulers.io())
@@ -913,8 +914,9 @@ public class FlowableObserveOnTest {
         Flowable.range(1, 100)
         .doOnRequest(new LongConsumer() {
             @Override
-            public void accept(long v) {
+            public Unit invoke(long v) {
                 requests.add(v);
+                return Unit.INSTANCE;
             }
         })
         .observeOn(test, false, 16).subscribe(ts);
@@ -960,8 +962,9 @@ public class FlowableObserveOnTest {
         Flowable.range(1, 50)
         .doOnRequest(new LongConsumer() {
             @Override
-            public void accept(long r) {
+            public Unit invoke(long r) {
                 requests.add(r);
+                return Unit.INSTANCE;
             }
         })
        .rebatchRequests(20)

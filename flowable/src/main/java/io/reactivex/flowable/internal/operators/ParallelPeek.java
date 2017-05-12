@@ -108,7 +108,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
         @Override
         public void request(long n) {
             try {
-                parent.onRequest.accept(n);
+                parent.onRequest.invoke(n);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);

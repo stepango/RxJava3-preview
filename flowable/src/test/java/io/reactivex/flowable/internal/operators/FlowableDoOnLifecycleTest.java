@@ -109,7 +109,7 @@ public class FlowableDoOnLifecycleTest {
             .doOnLifecycle(Functions.emptyConsumer(),
                     new LongConsumer() {
                         @Override
-                        public void accept(long v) throws Exception {
+                        public Unit invoke(long v) {
                             throw new TestException();
                         }
                     },
