@@ -18,9 +18,10 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 @Test
 public class CollectTckTest extends BaseTck<List<Integer>> {
@@ -28,10 +29,11 @@ public class CollectTckTest extends BaseTck<List<Integer>> {
     @Override
     public Publisher<List<Integer>> createPublisher(final long elements) {
         return
-                Flowable.range(1, 1000).collect(Functions.<Integer>createArrayList(128), new BiConsumer<List<Integer>, Integer>() {
+                Flowable.range(1, 1000).collect(Functions.<Integer>createArrayList(128), new Function2<List<Integer>, Integer, kotlin.Unit>() {
                     @Override
-                    public void invoke(List<Integer> a, Integer b) throws Exception {
+                    public Unit invoke(List<Integer> a, Integer b) {
                         a.add(b);
+                        return Unit.INSTANCE;
                     }
                 })
             ;

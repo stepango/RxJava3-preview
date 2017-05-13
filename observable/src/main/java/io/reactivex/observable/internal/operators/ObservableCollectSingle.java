@@ -16,7 +16,6 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.Observable;
@@ -27,16 +26,17 @@ import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.extensions.FuseToObservable;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function2;
 
 public final class ObservableCollectSingle<T, U> extends Single<U> implements FuseToObservable<U> {
 
     final ObservableSource<T> source;
 
     final Callable<? extends U> initialSupplier;
-    final BiConsumer<? super U, ? super T> collector;
+    final Function2<? super U, ? super T, kotlin.Unit> collector;
 
     public ObservableCollectSingle(ObservableSource<T> source,
-            Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+                                   Callable<? extends U> initialSupplier, Function2<? super U, ? super T, kotlin.Unit> collector) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -62,14 +62,14 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
 
     static final class CollectObserver<T, U> implements Observer<T>, Disposable {
         final SingleObserver<? super U> actual;
-        final BiConsumer<? super U, ? super T> collector;
+        final Function2<? super U, ? super T, kotlin.Unit> collector;
         final U u;
 
         Disposable s;
 
         boolean done;
 
-        CollectObserver(SingleObserver<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectObserver(SingleObserver<? super U> actual, U u, Function2<? super U, ? super T, kotlin.Unit> collector) {
             this.actual = actual;
             this.collector = collector;
             this.u = u;

@@ -28,7 +28,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
@@ -103,6 +102,7 @@ import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -1863,7 +1863,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnEvent(final BiConsumer<? super T, ? super Throwable> onEvent) {
+    public final Single<T> doOnEvent(final Function2<? super T, ? super Throwable, Unit> onEvent) {
         ObjectHelper.requireNonNull(onEvent, "onEvent is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoOnEvent<T>(this, onEvent));
     }
@@ -2517,7 +2517,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final BiConsumer<? super T, ? super Throwable> onCallback) {
+    public final Disposable subscribe(final Function2<? super T, ? super Throwable, Unit> onCallback) {
         ObjectHelper.requireNonNull(onCallback, "onCallback is null");
 
         BiConsumerSingleObserver<T> s = new BiConsumerSingleObserver<T>(onCallback);

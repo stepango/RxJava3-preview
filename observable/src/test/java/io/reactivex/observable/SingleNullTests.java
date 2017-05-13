@@ -32,13 +32,13 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertTrue;
 
@@ -774,7 +774,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void subscribeBiConsumerNull() {
-        just1.subscribe((BiConsumer<Integer, Throwable>)null);
+        just1.subscribe((Function2<Integer, Throwable, Unit>) null);
     }
 
     @Test(expected = NullPointerException.class)

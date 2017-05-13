@@ -22,10 +22,11 @@ import java.util.concurrent.Callable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -40,10 +41,11 @@ public class ParallelCollectTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> a, Integer b) throws Exception {
+            public Unit invoke(List<Integer> a, Integer b) {
                 a.add(b);
+                return Unit.INSTANCE;
             }
         }));
     }
@@ -58,10 +60,11 @@ public class ParallelCollectTest {
             public List<Integer> call() throws Exception {
                 throw new TestException();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> a, Integer b) throws Exception {
+            public Unit invoke(List<Integer> a, Integer b) {
                 a.add(b);
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -79,13 +82,14 @@ public class ParallelCollectTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> a, Integer b) throws Exception {
+            public Unit invoke(List<Integer> a, Integer b) {
                 if (b == 3) {
                     throw new TestException();
                 }
                 a.add(b);
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -104,10 +108,11 @@ public class ParallelCollectTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> a, Integer b) throws Exception {
+            public Unit invoke(List<Integer> a, Integer b) {
                 a.add(b);
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -130,10 +135,11 @@ public class ParallelCollectTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> a, Integer b) throws Exception {
+            public Unit invoke(List<Integer> a, Integer b) {
                 a.add(b);
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -152,10 +158,11 @@ public class ParallelCollectTest {
                 public List<Object> call() throws Exception {
                     return new ArrayList<Object>();
                 }
-            }, new BiConsumer<List<Object>, Object>() {
+            }, new Function2<List<Object>, Object, Unit>() {
                 @Override
-                public void invoke(List<Object> a, Object b) throws Exception {
+                public Unit invoke(List<Object> a, Object b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()

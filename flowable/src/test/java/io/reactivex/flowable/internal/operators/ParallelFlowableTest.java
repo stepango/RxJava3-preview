@@ -35,7 +35,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -50,6 +49,7 @@ import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -306,10 +306,11 @@ public class ParallelFlowableTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, 10)
         .parallel()
-        .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> a, Integer b) throws Exception {
+            public Unit invoke(List<Integer> a, Integer b) {
                 a.add(b);
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -400,10 +401,11 @@ public class ParallelFlowableTest {
             Flowable.range(1, 100000)
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
@@ -448,10 +450,11 @@ public class ParallelFlowableTest {
             Flowable.range(1, 100000).hide()
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
@@ -498,10 +501,11 @@ public class ParallelFlowableTest {
             .observeOn(s)
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
@@ -547,10 +551,11 @@ public class ParallelFlowableTest {
             .observeOn(s)
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
@@ -597,10 +602,11 @@ public class ParallelFlowableTest {
             .observeOn(s)
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
@@ -647,10 +653,11 @@ public class ParallelFlowableTest {
             .observeOn(s)
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
@@ -703,10 +710,11 @@ public class ParallelFlowableTest {
             .observeOn(s)
             .parallel(3)
             .runOn(s)
-            .collect(as, new BiConsumer<List<Integer>, Integer>() {
+                    .collect(as, new Function2<List<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(List<Integer> a, Integer b) throws Exception {
+                public Unit invoke(List<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             })
                     .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {

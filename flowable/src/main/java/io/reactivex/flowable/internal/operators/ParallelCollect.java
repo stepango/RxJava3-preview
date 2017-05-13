@@ -20,12 +20,12 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscribers.DeferredScalarSubscriber;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Reduce the sequence of values in each 'rail' to a single value.
@@ -39,10 +39,10 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
     final Callable<? extends C> initialCollection;
 
-    final BiConsumer<? super C, ? super T> collector;
+    final Function2<? super C, ? super T, kotlin.Unit> collector;
 
     public ParallelCollect(ParallelFlowable<? extends T> source,
-            Callable<? extends C> initialCollection, BiConsumer<? super C, ? super T> collector) {
+                           Callable<? extends C> initialCollection, Function2<? super C, ? super T, kotlin.Unit> collector) {
         this.source = source;
         this.initialCollection = initialCollection;
         this.collector = collector;
@@ -92,14 +92,14 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
         private static final long serialVersionUID = -4767392946044436228L;
 
-        final BiConsumer<? super C, ? super T> collector;
+        final Function2<? super C, ? super T, kotlin.Unit> collector;
 
         C collection;
 
         boolean done;
 
         ParallelCollectSubscriber(Subscriber<? super C> subscriber,
-                C initialValue, BiConsumer<? super C, ? super T> collector) {
+                                  C initialValue, Function2<? super C, ? super T, kotlin.Unit> collector) {
             super(subscriber);
             this.collection = initialValue;
             this.collector = collector;

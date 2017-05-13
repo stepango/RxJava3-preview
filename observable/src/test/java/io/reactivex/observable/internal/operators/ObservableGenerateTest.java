@@ -22,12 +22,12 @@ import io.reactivex.common.Emitter;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,10 +40,11 @@ public class ObservableGenerateTest {
             public Object call() throws Exception {
                 return 10;
             }
-        }, new BiConsumer<Object, Emitter<Object>>() {
+        }, new Function2<Object, Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void invoke(Object s, Emitter<Object> e) throws Exception {
+            public Unit invoke(Object s, Emitter<Object> e) {
                 e.onNext(s);
+                return Unit.INSTANCE;
             }
         }, new Function1<Object, kotlin.Unit>() {
             @Override
@@ -63,10 +64,11 @@ public class ObservableGenerateTest {
             public Object call() throws Exception {
                 throw new TestException();
             }
-        }, new BiConsumer<Object, Emitter<Object>>() {
+        }, new Function2<Object, Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void invoke(Object s, Emitter<Object> e) throws Exception {
+            public Unit invoke(Object s, Emitter<Object> e) {
                 e.onNext(s);
+                return Unit.INSTANCE;
             }
         }, Functions.emptyConsumer())
         .test()
@@ -80,9 +82,9 @@ public class ObservableGenerateTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new BiConsumer<Object, Emitter<Object>>() {
+        }, new Function2<Object, Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void invoke(Object s, Emitter<Object> e) throws Exception {
+            public Unit invoke(Object s, Emitter<Object> e) {
                 throw new TestException();
             }
         }, Functions.emptyConsumer())
@@ -99,10 +101,11 @@ public class ObservableGenerateTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new BiConsumer<Object, Emitter<Object>>() {
+            }, new Function2<Object, Emitter<Object>, kotlin.Unit>() {
                 @Override
-                public void invoke(Object s, Emitter<Object> e) throws Exception {
+                public Unit invoke(Object s, Emitter<Object> e) {
                     e.onComplete();
+                    return Unit.INSTANCE;
                 }
             }, new Function1<Object, kotlin.Unit>() {
                 @Override
@@ -126,10 +129,11 @@ public class ObservableGenerateTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new BiConsumer<Object, Emitter<Object>>() {
+        }, new Function2<Object, Emitter<Object>, kotlin.Unit>() {
                 @Override
-                public void invoke(Object s, Emitter<Object> e) throws Exception {
+                public Unit invoke(Object s, Emitter<Object> e) {
                     e.onComplete();
+                    return Unit.INSTANCE;
                 }
             }, Functions.emptyConsumer()));
     }
@@ -138,14 +142,15 @@ public class ObservableGenerateTest {
     public void nullError() {
         final int[] call = { 0 };
         Observable.generate(Functions.justCallable(1),
-        new BiConsumer<Integer, Emitter<Object>>() {
+                new Function2<Integer, Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void invoke(Integer s, Emitter<Object> e) throws Exception {
+            public Unit invoke(Integer s, Emitter<Object> e) {
                 try {
                     e.onError(null);
                 } catch (NullPointerException ex) {
                     call[0]++;
                 }
+                return Unit.INSTANCE;
             }
         }, Functions.emptyConsumer())
         .test()

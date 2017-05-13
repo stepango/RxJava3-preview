@@ -20,7 +20,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.RxJavaFlowablePlugins;
@@ -30,15 +29,16 @@ import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function2;
 
 public final class FlowableCollectSingle<T, U> extends Single<U> implements FuseToFlowable<U> {
 
     final Flowable<T> source;
 
     final Callable<? extends U> initialSupplier;
-    final BiConsumer<? super U, ? super T> collector;
+    final Function2<? super U, ? super T, kotlin.Unit> collector;
 
-    public FlowableCollectSingle(Flowable<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+    public FlowableCollectSingle(Flowable<T> source, Callable<? extends U> initialSupplier, Function2<? super U, ? super T, kotlin.Unit> collector) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -66,7 +66,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
 
         final SingleObserver<? super U> actual;
 
-        final BiConsumer<? super U, ? super T> collector;
+        final Function2<? super U, ? super T, kotlin.Unit> collector;
 
         final U u;
 
@@ -74,7 +74,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
 
         boolean done;
 
-        CollectSubscriber(SingleObserver<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectSubscriber(SingleObserver<? super U> actual, U u, Function2<? super U, ? super T, kotlin.Unit> collector) {
             this.actual = actual;
             this.collector = collector;
             this.u = u;

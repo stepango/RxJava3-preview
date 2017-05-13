@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.functions.BiConsumer;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 public final class TestingHelper {
 
@@ -50,11 +50,11 @@ public final class TestingHelper {
         };
     }
 
-    public static BiConsumer<Object, Object> biConsumerThrows(final RuntimeException e) {
-        return new BiConsumer<Object, Object>() {
+    public static Function2<Object, Object, Unit> biConsumerThrows(final RuntimeException e) {
+        return new Function2<Object, Object, Unit>() {
 
             @Override
-            public void invoke(Object t1, Object t2) {
+            public Unit invoke(Object t1, Object t2) {
                 throw e;
             }
         };

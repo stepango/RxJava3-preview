@@ -24,9 +24,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 import static io.reactivex.common.internal.utils.TestingHelper.addToList;
 import static io.reactivex.common.internal.utils.TestingHelper.biConsumerThrows;
@@ -44,10 +45,11 @@ public final class FlowableCollectTest {
             public List<Integer> call() {
                 return new ArrayList<Integer>();
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(List<Integer> list, Integer v) {
+            public Unit invoke(List<Integer> list, Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -77,14 +79,15 @@ public final class FlowableCollectTest {
                         return new StringBuilder();
                     }
                 },
-                new BiConsumer<StringBuilder, Integer>() {
+                    new Function2<StringBuilder, Integer, kotlin.Unit>() {
                     @Override
-                    public void invoke(StringBuilder sb, Integer v) {
+                    public Unit invoke(StringBuilder sb, Integer v) {
                     if (sb.length() > 0) {
                         sb.append("-");
                     }
                     sb.append(v);
-                }
+                        return Unit.INSTANCE;
+                    }
             }).blockingLast().toString();
 
         assertEquals("1-2-3", value);
@@ -100,11 +103,12 @@ public final class FlowableCollectTest {
             public List<Integer> call() throws Exception {
                 throw e;
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
 
             @Override
-            public void invoke(List<Integer> list, Integer t) {
+            public Unit invoke(List<Integer> list, Integer t) {
                 list.add(t);
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -148,18 +152,19 @@ public final class FlowableCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndOnNextEmissionsFlowable() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
+        Function2<Object, Integer, kotlin.Unit> throwOnFirstOnly = new Function2<Object, Integer, kotlin.Unit>() {
 
             boolean once = true;
 
             @Override
-            public void invoke(Object o, Integer t) {
+            public Unit invoke(Object o, Integer t) {
                 if (once) {
                     once = false;
                     throw e;
                 } else {
                     added.set(true);
                 }
+                return Unit.INSTANCE;
             }
         };
         Burst.items(1, 2).create() //
@@ -176,10 +181,11 @@ public final class FlowableCollectTest {
     @Test
     public void collectIntoFlowable() {
         Flowable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+                .collectInto(new HashSet<Integer>(), new Function2<HashSet<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(HashSet<Integer> s, Integer v) throws Exception {
+            public Unit invoke(HashSet<Integer> s, Integer v) {
                 s.add(v);
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -195,11 +201,12 @@ public final class FlowableCollectTest {
             public List<Integer> call() throws Exception {
                 throw e;
             }
-        }, new BiConsumer<List<Integer>, Integer>() {
+        }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
 
             @Override
-            public void invoke(List<Integer> list, Integer t) {
+            public Unit invoke(List<Integer> list, Integer t) {
                 list.add(t);
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -243,18 +250,19 @@ public final class FlowableCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndOnNextEmissions() {
         final RuntimeException e = new RuntimeException();
         final AtomicBoolean added = new AtomicBoolean();
-        BiConsumer<Object, Integer> throwOnFirstOnly = new BiConsumer<Object, Integer>() {
+        Function2<Object, Integer, kotlin.Unit> throwOnFirstOnly = new Function2<Object, Integer, kotlin.Unit>() {
 
             boolean once = true;
 
             @Override
-            public void invoke(Object o, Integer t) {
+            public Unit invoke(Object o, Integer t) {
                 if (once) {
                     once = false;
                     throw e;
                 } else {
                     added.set(true);
                 }
+                return Unit.INSTANCE;
             }
         };
         Burst.items(1, 2).create() //
@@ -271,10 +279,11 @@ public final class FlowableCollectTest {
     @Test
     public void collectInto() {
         Flowable.just(1, 1, 1, 1, 2)
-        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+                .collectInto(new HashSet<Integer>(), new Function2<HashSet<Integer>, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(HashSet<Integer> s, Integer v) throws Exception {
+            public Unit invoke(HashSet<Integer> s, Integer v) {
                 s.add(v);
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -284,18 +293,20 @@ public final class FlowableCollectTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1, 2)
-            .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+                .collect(Functions.justCallable(new ArrayList<Integer>()), new Function2<ArrayList<Integer>, Integer, kotlin.Unit>() {
                 @Override
-                public void invoke(ArrayList<Integer> a, Integer b) throws Exception {
+                public Unit invoke(ArrayList<Integer> a, Integer b) {
                     a.add(b);
+                    return Unit.INSTANCE;
                 }
             }));
 
         TestHelper.checkDisposed(Flowable.just(1, 2)
-                .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+                .collect(Functions.justCallable(new ArrayList<Integer>()), new Function2<ArrayList<Integer>, Integer, kotlin.Unit>() {
                     @Override
-                    public void invoke(ArrayList<Integer> a, Integer b) throws Exception {
+                    public Unit invoke(ArrayList<Integer> a, Integer b) {
                         a.add(b);
+                        return Unit.INSTANCE;
                     }
                 }));
     }
@@ -306,10 +317,11 @@ public final class FlowableCollectTest {
             @Override
             public Flowable<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
                 return f.collect(Functions.justCallable(new ArrayList<Integer>()),
-                        new BiConsumer<ArrayList<Integer>, Integer>() {
+                        new Function2<ArrayList<Integer>, Integer, kotlin.Unit>() {
                             @Override
-                            public void invoke(ArrayList<Integer> a, Integer b) throws Exception {
+                            public Unit invoke(ArrayList<Integer> a, Integer b) {
                                 a.add(b);
+                                return Unit.INSTANCE;
                             }
                         });
             }

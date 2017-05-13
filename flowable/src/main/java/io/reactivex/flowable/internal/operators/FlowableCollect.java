@@ -20,19 +20,19 @@ import java.util.concurrent.Callable;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function2;
 
 public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
 
     final Callable<? extends U> initialSupplier;
-    final BiConsumer<? super U, ? super T> collector;
+    final Function2<? super U, ? super T, kotlin.Unit> collector;
 
-    public FlowableCollect(Flowable<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+    public FlowableCollect(Flowable<T> source, Callable<? extends U> initialSupplier, Function2<? super U, ? super T, kotlin.Unit> collector) {
         super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -55,7 +55,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
 
         private static final long serialVersionUID = -3589550218733891694L;
 
-        final BiConsumer<? super U, ? super T> collector;
+        final Function2<? super U, ? super T, kotlin.Unit> collector;
 
         final U u;
 
@@ -63,7 +63,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
 
         boolean done;
 
-        CollectSubscriber(Subscriber<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectSubscriber(Subscriber<? super U> actual, U u, Function2<? super U, ? super T, kotlin.Unit> collector) {
             super(actual);
             this.collector = collector;
             this.u = u;

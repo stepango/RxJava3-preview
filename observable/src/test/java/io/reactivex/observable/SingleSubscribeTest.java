@@ -23,11 +23,11 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,11 +56,12 @@ public class SingleSubscribeTest {
     public void biconsumer() {
         final Object[] value = { null, null };
 
-        Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
+        Single.just(1).subscribe(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 value[0] = v;
                 value[1] = e;
+                return Unit.INSTANCE;
             }
         });
 
@@ -74,11 +75,12 @@ public class SingleSubscribeTest {
 
         TestException ex = new TestException();
 
-        Single.error(ex).subscribe(new BiConsumer<Object, Throwable>() {
+        Single.error(ex).subscribe(new Function2<Object, Throwable, Unit>() {
             @Override
-            public void invoke(Object v, Throwable e) throws Exception {
+            public Unit invoke(Object v, Throwable e) {
                 value[0] = v;
                 value[1] = e;
+                return Unit.INSTANCE;
             }
         });
 
@@ -106,10 +108,11 @@ public class SingleSubscribeTest {
     public void biConsumerDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        Disposable d = ps.single(-99).subscribe(new BiConsumer<Object, Object>() {
+        Disposable d = ps.single(-99).subscribe(new Function2<Object, Object, Unit>() {
             @Override
-            public void invoke(Object t1, Object t2) throws Exception {
+            public Unit invoke(Object t1, Object t2) {
 
+                return Unit.INSTANCE;
             }
         });
 
@@ -183,9 +186,9 @@ public class SingleSubscribeTest {
         List<Throwable> list = TestCommonHelper.trackPluginErrors();
 
         try {
-            Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
+            Single.just(1).subscribe(new Function2<Integer, Throwable, kotlin.Unit>() {
                 @Override
-                public void invoke(Integer t, Throwable e) throws Exception {
+                public Unit invoke(Integer t, Throwable e) {
                     throw new TestException();
                 }
             });
@@ -202,9 +205,9 @@ public class SingleSubscribeTest {
 
         try {
             Single.<Integer>error(new TestException("Outer failure")).subscribe(
-            new BiConsumer<Integer, Throwable>() {
+                    new Function2<Integer, Throwable, kotlin.Unit>() {
                 @Override
-                public void invoke(Integer a, Throwable t) throws Exception {
+                public Unit invoke(Integer a, Throwable t) {
                     throw new TestException("Inner failure");
                 }
             });
@@ -242,11 +245,12 @@ public class SingleSubscribeTest {
         final Object[] result = { null, null };
 
         Disposable d = Single.just(1)
-        .subscribe(new BiConsumer<Integer, Throwable>() {
+                .subscribe(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer t1, Throwable t2) throws Exception {
+            public Unit invoke(Integer t1, Throwable t2) {
                 result[0] = t1;
                 result[1] = t2;
+                return Unit.INSTANCE;
             }
         });
 
@@ -260,11 +264,12 @@ public class SingleSubscribeTest {
         final Object[] result = { null, null };
 
         Disposable d = Single.<Integer>error(new IOException())
-        .subscribe(new BiConsumer<Integer, Throwable>() {
+                .subscribe(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer t1, Throwable t2) throws Exception {
+            public Unit invoke(Integer t1, Throwable t2) {
                 result[0] = t1;
                 result[1] = t2;
+                return Unit.INSTANCE;
             }
         });
 

@@ -41,7 +41,6 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
@@ -71,6 +70,7 @@ import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * The Flowable class that implements the Reactive-Streams Pattern and offers factory methods,
@@ -2173,7 +2173,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator),
                 Functions.emptyConsumer());
@@ -2203,7 +2203,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator,
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator,
                                               Function1<? super S, Unit> disposeState) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), disposeState);
@@ -6564,7 +6564,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> collect(Callable<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Flowable<U> collect(Callable<? extends U> initialItemSupplier, Function2<? super U, ? super T, kotlin.Unit> collector) {
         ObjectHelper.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableCollect<T, U>(this, initialItemSupplier, collector));
@@ -6598,7 +6598,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> collectInto(final U initialItem, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Flowable<U> collectInto(final U initialItem, Function2<? super U, ? super T, kotlin.Unit> collector) {
         ObjectHelper.requireNonNull(initialItem, "initialItem is null");
         return collect(Functions.justCallable(initialItem), collector);
     }

@@ -28,7 +28,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -57,6 +56,7 @@ import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Abstract base class for Parallel publishers that take an array of Subscribers.
@@ -755,7 +755,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final <C> ParallelFlowable<C> collect(@NonNull Callable<? extends C> collectionSupplier, @NonNull BiConsumer<? super C, ? super T> collector) {
+    public final <C> ParallelFlowable<C> collect(@NonNull Callable<? extends C> collectionSupplier, @NonNull Function2<? super C, ? super T, kotlin.Unit> collector) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelCollect<T, C>(this, collectionSupplier, collector));

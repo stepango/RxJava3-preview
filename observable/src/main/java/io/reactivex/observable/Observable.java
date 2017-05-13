@@ -36,7 +36,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
@@ -65,6 +64,7 @@ import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * The Observable class that is designed similar to the Reactive-Streams Pattern, minus the backpressure,
@@ -1896,7 +1896,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
         return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), Functions.emptyConsumer());
     }
@@ -1925,7 +1925,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Observable<T> generate(
             final Callable<S> initialState,
-            final BiConsumer<S, Emitter<T>> generator,
+            final Function2<S, Emitter<T>, kotlin.Unit> generator,
             Function1<? super S, kotlin.Unit> disposeState) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
         return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), disposeState);
@@ -5881,7 +5881,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Single<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collect(Callable<? extends U> initialValueSupplier, Function2<? super U, ? super T, kotlin.Unit> collector) {
         ObjectHelper.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableCollectSingle<T, U>(this, initialValueSupplier, collector));
@@ -5911,7 +5911,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Single<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collectInto(final U initialValue, Function2<? super U, ? super T, kotlin.Unit> collector) {
         ObjectHelper.requireNonNull(initialValue, "initialValue is null");
         return collect(Functions.justCallable(initialValue), collector);
     }

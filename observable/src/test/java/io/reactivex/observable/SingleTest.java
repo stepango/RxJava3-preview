@@ -33,11 +33,12 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.disposables.SerialDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.internal.operators.SingleInternalHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -474,12 +475,13 @@ public class SingleTest {
     public void doOnEventComplete() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Single.just(1).doOnEvent(new BiConsumer<Integer, Throwable>() {
+        Single.just(1).doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(final Integer integer, final Throwable throwable) throws Exception {
+            public Unit invoke(final Integer integer, final Throwable throwable) {
                 if (integer != null) {
                     atomicInteger.incrementAndGet();
                 }
+                return Unit.INSTANCE;
             }
         }).subscribe();
 
@@ -490,12 +492,13 @@ public class SingleTest {
     public void doOnEventError() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Single.error(new RuntimeException()).doOnEvent(new BiConsumer<Object, Throwable>() {
+        Single.error(new RuntimeException()).doOnEvent(new Function2<Object, Throwable, Unit>() {
             @Override
-            public void invoke(final Object o, final Throwable throwable) throws Exception {
+            public Unit invoke(final Object o, final Throwable throwable) {
                 if (throwable != null) {
                     atomicInteger.incrementAndGet();
                 }
+                return Unit.INSTANCE;
             }
         }).subscribe();
 

@@ -19,9 +19,10 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.SingleObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 public final class BiConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
@@ -29,9 +30,9 @@ implements SingleObserver<T>, Disposable {
 
 
     private static final long serialVersionUID = 4943102778943297569L;
-    final BiConsumer<? super T, ? super Throwable> onCallback;
+    final Function2<? super T, ? super Throwable, Unit> onCallback;
 
-    public BiConsumerSingleObserver(BiConsumer<? super T, ? super Throwable> onCallback) {
+    public BiConsumerSingleObserver(Function2<? super T, ? super Throwable, Unit> onCallback) {
         this.onCallback = onCallback;
     }
 

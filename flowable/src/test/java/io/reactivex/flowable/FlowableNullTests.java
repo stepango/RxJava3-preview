@@ -39,7 +39,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
@@ -53,6 +52,7 @@ import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.fail;
 
@@ -382,10 +382,11 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateStateConsumerInitialStateNull() {
-        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
+        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
             @Override
-            public void invoke(Integer s, Emitter<Integer> o) {
+            public Unit invoke(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
+                return Unit.INSTANCE;
             }
         };
         Flowable.generate(null, generator);
@@ -408,15 +409,16 @@ public class FlowableNullTests {
             public Integer call() {
                 return 1;
             }
-        }, (BiConsumer<Integer, Emitter<Object>>)null);
+        }, (Function2<Integer, Emitter<Object>, kotlin.Unit>) null);
     }
 
     @Test
     public void generateConsumerStateNullAllowed() {
-        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
+        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
             @Override
-            public void invoke(Integer s, Emitter<Integer> o) {
+            public Unit invoke(Integer s, Emitter<Integer> o) {
                 o.onComplete();
+                return Unit.INSTANCE;
             }
         };
         Flowable.generate(new Callable<Integer>() {
@@ -444,10 +446,11 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateConsumerDisposeNull() {
-        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
+        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
             @Override
-            public void invoke(Integer s, Emitter<Integer> o) {
+            public Unit invoke(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
+                return Unit.INSTANCE;
             }
         };
         Flowable.generate(new Callable<Integer>() {
@@ -933,9 +936,10 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectInitialSupplierNull() {
-        just1.collect((Callable<Integer>)null, new BiConsumer<Integer, Integer>() {
+        just1.collect((Callable<Integer>) null, new Function2<Integer, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(Integer a, Integer b) {
+            public Unit invoke(Integer a, Integer b) {
+                return Unit.INSTANCE;
             }
         });
     }
@@ -947,9 +951,10 @@ public class FlowableNullTests {
             public Object call() {
                 return null;
             }
-        }, new BiConsumer<Object, Integer>() {
+        }, new Function2<Object, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(Object a, Integer b) {
+            public Unit invoke(Object a, Integer b) {
+                return Unit.INSTANCE;
             }
         }).blockingLast();
     }
@@ -966,9 +971,10 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void collectIntoInitialNull() {
-        just1.collectInto(null, new BiConsumer<Object, Integer>() {
+        just1.collectInto(null, new Function2<Object, Integer, kotlin.Unit>() {
             @Override
-            public void invoke(Object a, Integer b) {
+            public Unit invoke(Object a, Integer b) {
+                return Unit.INSTANCE;
             }
         });
     }

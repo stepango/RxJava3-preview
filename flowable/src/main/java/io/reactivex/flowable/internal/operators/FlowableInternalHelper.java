@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.Emitter;
 import io.reactivex.common.Scheduler;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -31,6 +30,7 @@ import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -61,9 +61,9 @@ public final class FlowableInternalHelper {
     }
 
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final BiConsumer<S, Emitter<T>> consumer;
+        final Function2<S, Emitter<T>, kotlin.Unit> consumer;
 
-        SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
+        SimpleBiGenerator(Function2<S, Emitter<T>, kotlin.Unit> consumer) {
             this.consumer = consumer;
         }
 
@@ -74,7 +74,7 @@ public final class FlowableInternalHelper {
         }
     }
 
-    public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
+    public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(Function2<S, Emitter<T>, kotlin.Unit> consumer) {
         return new SimpleBiGenerator<T, S>(consumer);
     }
 

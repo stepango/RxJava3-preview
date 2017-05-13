@@ -42,7 +42,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
@@ -64,6 +63,7 @@ import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -2249,11 +2249,12 @@ public class MaybeTest {
         final List<Object> list = new ArrayList<Object>();
 
         assertTrue(Maybe.just(1)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 list.add(v);
                 list.add(e);
+                return Unit.INSTANCE;
             }
         })
         .subscribe().isDisposed());
@@ -2268,11 +2269,12 @@ public class MaybeTest {
         TestException ex = new TestException();
 
         assertTrue(Maybe.<Integer>error(ex)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 list.add(v);
                 list.add(e);
+                return Unit.INSTANCE;
             }
         })
         .subscribe().isDisposed());
@@ -2285,11 +2287,12 @@ public class MaybeTest {
         final List<Object> list = new ArrayList<Object>();
 
         assertTrue(Maybe.<Integer>empty()
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 list.add(v);
                 list.add(e);
+                return Unit.INSTANCE;
             }
         })
         .subscribe().isDisposed());
@@ -2305,9 +2308,9 @@ public class MaybeTest {
     @Test
     public void doOnEventSuccessThrows() {
         Maybe.just(1)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 throw new TestException();
             }
         })
@@ -2318,9 +2321,9 @@ public class MaybeTest {
     @Test
     public void doOnEventErrorThrows() {
         TestObserver<Integer> ts = Maybe.<Integer>error(new TestException("Outer"))
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 throw new TestException("Inner");
             }
         })
@@ -2337,9 +2340,9 @@ public class MaybeTest {
     @Test
     public void doOnEventCompleteThrows() {
         Maybe.<Integer>empty()
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 throw new TestException();
             }
         })

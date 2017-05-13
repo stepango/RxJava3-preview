@@ -32,7 +32,6 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
@@ -95,6 +94,7 @@ import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * The base utility class that hosts factory methods and
@@ -573,7 +573,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, C> Single<C> collect(Flowable<T> source, Callable<C> collectionSupplier, BiConsumer<? super C, ? super T> collector) {
+    public static <T, C> Single<C> collect(Flowable<T> source, Callable<C> collectionSupplier, Function2<? super C, ? super T, kotlin.Unit> collector) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");

@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Burst;
@@ -46,6 +45,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -289,11 +289,12 @@ public class FlowableScanTest {
                         return new ArrayList<Integer>();
                     }
 
-                }, new BiConsumer<List<Integer>, Integer>() {
+                }, new Function2<List<Integer>, Integer, kotlin.Unit>() {
 
                     @Override
-                    public void invoke(List<Integer> list, Integer t2) {
+                    public Unit invoke(List<Integer> list, Integer t2) {
                         list.add(t2);
+                        return Unit.INSTANCE;
                     }
 
                 }).takeLast(1);

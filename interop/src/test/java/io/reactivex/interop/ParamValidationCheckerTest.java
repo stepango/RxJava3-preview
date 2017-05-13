@@ -39,7 +39,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
@@ -89,8 +88,10 @@ import io.reactivex.observable.SingleOnSubscribe;
 import io.reactivex.observable.SingleOperator;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.SingleTransformer;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Check that static and instance methods validate their parameters against
@@ -919,7 +920,7 @@ public class ParamValidationCheckerTest {
 
     @SuppressWarnings("rawtypes")
     static final class AllFunctionals
-    implements BiFunction, BiConsumer,
+            implements BiFunction, Function2,
             Function1, BiPredicate, Function0,
     Function3, Function4, Function5, Function6, Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
@@ -973,7 +974,8 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public void invoke(Object t1, Object t2) throws Exception {
+        public Unit invoke(Object t1, Object t2) {
+            return Unit.INSTANCE;
         }
 
         @Override

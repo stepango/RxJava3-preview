@@ -16,19 +16,19 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function2;
 
 public final class ObservableCollect<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Callable<? extends U> initialSupplier;
-    final BiConsumer<? super U, ? super T> collector;
+    final Function2<? super U, ? super T, kotlin.Unit> collector;
 
     public ObservableCollect(ObservableSource<T> source,
-            Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+                             Callable<? extends U> initialSupplier, Function2<? super U, ? super T, kotlin.Unit> collector) {
         super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -50,14 +50,14 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
 
     static final class CollectObserver<T, U> implements Observer<T>, Disposable {
         final Observer<? super U> actual;
-        final BiConsumer<? super U, ? super T> collector;
+        final Function2<? super U, ? super T, kotlin.Unit> collector;
         final U u;
 
         Disposable s;
 
         boolean done;
 
-        CollectObserver(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectObserver(Observer<? super U> actual, U u, Function2<? super U, ? super T, kotlin.Unit> collector) {
             this.actual = actual;
             this.collector = collector;
             this.u = u;

@@ -16,10 +16,11 @@ package io.reactivex.observable.internal.operators;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Calls a BiConsumer with the success, error values of the upstream Maybe or with two nulls if
@@ -29,9 +30,9 @@ import io.reactivex.observable.MaybeSource;
  */
 public final class MaybeDoOnEvent<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final BiConsumer<? super T, ? super Throwable> onEvent;
+    final Function2<? super T, ? super Throwable, Unit> onEvent;
 
-    public MaybeDoOnEvent(MaybeSource<T> source, BiConsumer<? super T, ? super Throwable> onEvent) {
+    public MaybeDoOnEvent(MaybeSource<T> source, Function2<? super T, ? super Throwable, Unit> onEvent) {
         super(source);
         this.onEvent = onEvent;
     }
@@ -44,11 +45,11 @@ public final class MaybeDoOnEvent<T> extends AbstractMaybeWithUpstream<T, T> {
     static final class DoOnEventMaybeObserver<T> implements MaybeObserver<T>, Disposable {
         final MaybeObserver<? super T> actual;
 
-        final BiConsumer<? super T, ? super Throwable> onEvent;
+        final Function2<? super T, ? super Throwable, Unit> onEvent;
 
         Disposable d;
 
-        DoOnEventMaybeObserver(MaybeObserver<? super T> actual, BiConsumer<? super T, ? super Throwable> onEvent) {
+        DoOnEventMaybeObserver(MaybeObserver<? super T> actual, Function2<? super T, ? super Throwable, Unit> onEvent) {
             this.actual = actual;
             this.onEvent = onEvent;
         }

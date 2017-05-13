@@ -16,17 +16,18 @@ package io.reactivex.observable.internal.operators;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 public final class SingleDoOnEvent<T> extends Single<T> {
     final SingleSource<T> source;
 
-    final BiConsumer<? super T, ? super Throwable> onEvent;
+    final Function2<? super T, ? super Throwable, Unit> onEvent;
 
-    public SingleDoOnEvent(SingleSource<T> source, BiConsumer<? super T, ? super Throwable> onEvent) {
+    public SingleDoOnEvent(SingleSource<T> source, Function2<? super T, ? super Throwable, Unit> onEvent) {
         this.source = source;
         this.onEvent = onEvent;
     }

@@ -23,7 +23,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Single;
@@ -35,6 +34,7 @@ import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -210,9 +210,9 @@ public class SingleDoOnTest {
     @Test
     public void doOnEventThrowsSuccess() {
         Single.just(1)
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 throw new TestException();
             }
         })
@@ -223,9 +223,9 @@ public class SingleDoOnTest {
     @Test
     public void doOnEventThrowsError() {
         TestObserver<Integer> to = Single.<Integer>error(new TestException("Main"))
-        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+                .doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 throw new TestException("Inner");
             }
         })

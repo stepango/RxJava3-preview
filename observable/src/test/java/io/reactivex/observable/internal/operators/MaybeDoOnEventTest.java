@@ -22,7 +22,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
@@ -31,6 +30,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertTrue;
 
@@ -38,10 +38,11 @@ public class MaybeDoOnEventTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().singleElement().doOnEvent(new BiConsumer<Integer, Throwable>() {
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().singleElement().doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 // irrelevant
+                return Unit.INSTANCE;
             }
         }));
     }
@@ -51,10 +52,11 @@ public class MaybeDoOnEventTest {
         TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m.doOnEvent(new BiConsumer<Integer, Throwable>() {
+                return m.doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
                     @Override
-                    public void invoke(Integer v, Throwable e) throws Exception {
+                    public Unit invoke(Integer v, Throwable e) {
                         // irrelevant
+                        return Unit.INSTANCE;
                     }
                 });
             }

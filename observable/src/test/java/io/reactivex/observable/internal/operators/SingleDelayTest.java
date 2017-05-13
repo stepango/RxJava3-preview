@@ -26,7 +26,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -35,6 +34,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -45,10 +45,11 @@ public class SingleDelayTest {
         final AtomicInteger value = new AtomicInteger();
 
         Single.just(1).delay(200, TimeUnit.MILLISECONDS)
-        .subscribe(new BiConsumer<Integer, Throwable>() {
+                .subscribe(new Function2<Integer, Throwable, kotlin.Unit>() {
             @Override
-            public void invoke(Integer v, Throwable e) throws Exception {
+            public Unit invoke(Integer v, Throwable e) {
                 value.set(v);
+                return Unit.INSTANCE;
             }
         });
 
