@@ -13,28 +13,37 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SingleDoAfterSuccessTest {
 
     final List<Integer> values = new ArrayList<Integer>();
 
-    final Consumer<Integer> afterSuccess = new Consumer<Integer>() {
+    final Function1<Integer, kotlin.Unit> afterSuccess = new Function1<Integer, kotlin.Unit>() {
         @Override
-        public void accept(Integer e) throws Exception {
+        public Unit invoke(Integer e) {
             values.add(-e);
+            return Unit.INSTANCE;
         }
     };
 
@@ -98,9 +107,9 @@ public class SingleDoAfterSuccessTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Single.just(1)
-            .doAfterSuccess(new Consumer<Integer>() {
+                    .doAfterSuccess(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer e) throws Exception {
+                public Unit invoke(Integer e) {
                     throw new TestException();
                 }
             })

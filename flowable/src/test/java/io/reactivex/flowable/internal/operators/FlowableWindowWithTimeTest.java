@@ -31,7 +31,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -43,6 +42,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -150,10 +150,10 @@ public class FlowableWindowWithTimeTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> Consumer<Flowable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return new Consumer<Flowable<T>>() {
+    private <T> Function1<Flowable<T>, Unit> observeWindow(final List<T> list, final List<List<T>> lists) {
+        return new Function1<Flowable<T>, Unit>() {
             @Override
-            public void accept(Flowable<T> stringFlowable) {
+            public Unit invoke(Flowable<T> stringFlowable) {
                 stringFlowable.subscribe(new DefaultSubscriber<T>() {
                     @Override
                     public void onComplete() {
@@ -171,6 +171,7 @@ public class FlowableWindowWithTimeTest {
                         list.add(args);
                     }
                 });
+                return Unit.INSTANCE;
             }
         };
     }
@@ -227,10 +228,11 @@ public class FlowableWindowWithTimeTest {
                         ;
             }
         })
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer pv) {
+            public Unit invoke(Integer pv) {
                 System.out.println(pv);
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);

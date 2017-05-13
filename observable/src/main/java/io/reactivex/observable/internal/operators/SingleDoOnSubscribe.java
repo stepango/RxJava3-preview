@@ -13,11 +13,14 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Calls a callback when the upstream calls onSubscribe with a disposable.
@@ -28,9 +31,9 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
 
     final SingleSource<T> source;
 
-    final Consumer<? super Disposable> onSubscribe;
+    final Function1<? super Disposable, kotlin.Unit> onSubscribe;
 
-    public SingleDoOnSubscribe(SingleSource<T> source, Consumer<? super Disposable> onSubscribe) {
+    public SingleDoOnSubscribe(SingleSource<T> source, Function1<? super Disposable, kotlin.Unit> onSubscribe) {
         this.source = source;
         this.onSubscribe = onSubscribe;
     }
@@ -44,11 +47,11 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        final Consumer<? super Disposable> onSubscribe;
+        final Function1<? super Disposable, kotlin.Unit> onSubscribe;
 
         boolean done;
 
-        DoOnSubscribeSingleObserver(SingleObserver<? super T> actual, Consumer<? super Disposable> onSubscribe) {
+        DoOnSubscribeSingleObserver(SingleObserver<? super T> actual, Function1<? super Disposable, kotlin.Unit> onSubscribe) {
             this.actual = actual;
             this.onSubscribe = onSubscribe;
         }
@@ -56,7 +59,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
         @Override
         public void onSubscribe(Disposable d) {
             try {
-                onSubscribe.accept(d);
+                onSubscribe.invoke(d);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 done = true;

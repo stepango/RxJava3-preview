@@ -26,7 +26,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -36,6 +35,7 @@ import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -472,16 +472,18 @@ public class FlowableDoFinallyTest implements Function0 {
             }
         })
         .subscribe(
-                new Consumer<Object>() {
+                new Function1<Object, kotlin.Unit>() {
                     @Override
-                    public void accept(Object v) throws Exception {
+                    public Unit invoke(Object v) {
                         list.add("onNext");
+                        return Unit.INSTANCE;
                     }
                 },
-                new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
                     @Override
-                    public void accept(Throwable e) throws Exception {
+                    public Unit invoke(Throwable e) {
                         list.add("onError");
+                        return Unit.INSTANCE;
                     }
                 },
                 new Function0() {
@@ -515,16 +517,18 @@ public class FlowableDoFinallyTest implements Function0 {
             }
         })
         .subscribe(
-                new Consumer<Object>() {
+                new Function1<Object, kotlin.Unit>() {
                     @Override
-                    public void accept(Object v) throws Exception {
+                    public Unit invoke(Object v) {
                         list.add("onNext");
+                        return Unit.INSTANCE;
                     }
                 },
-                new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
                     @Override
-                    public void accept(Throwable e) throws Exception {
+                    public Unit invoke(Throwable e) {
                         list.add("onError");
+                        return Unit.INSTANCE;
                     }
                 },
                 new Function0() {

@@ -22,7 +22,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Maybe;
@@ -33,6 +32,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -69,10 +69,11 @@ public class MaybePeekTest {
                     observer.onError(new TestException("Second"));
                 }
             }
-            .doOnError(new Consumer<Throwable>() {
+                    .doOnError(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable e) throws Exception {
+                public Unit invoke(Throwable e) {
                     err[0] = e;
+                    return Unit.INSTANCE;
                 }
             })
             .test();
@@ -117,9 +118,9 @@ public class MaybePeekTest {
     @Test
     public void doOnErrorThrows() {
         TestObserver<Object> to = Maybe.error(new TestException("Main"))
-        .doOnError(new Consumer<Object>() {
+                .doOnError(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object t) throws Exception {
+            public Unit invoke(Object t) {
                 throw new TestException("Inner");
             }
         })

@@ -36,7 +36,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.subscribers.ForEachWhileSubscriber;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -632,10 +631,11 @@ public class RelaxedSubscriberTest {
                 ts.onNext(v);
                 return true;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 ts.onError(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -663,10 +663,11 @@ public class RelaxedSubscriberTest {
             public Boolean invoke(Integer v) {
                 throw new TestException();
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 ts.onError(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -692,9 +693,9 @@ public class RelaxedSubscriberTest {
             public Boolean invoke(Integer v) {
                 return true;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 throw new TestException("Inner");
             }
         }, new Function0() {
@@ -727,9 +728,10 @@ public class RelaxedSubscriberTest {
             public Boolean invoke(Integer v) {
                 return true;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -755,15 +757,17 @@ public class RelaxedSubscriberTest {
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
+        Flowable.<Integer>error(new TestException()).subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 
@@ -801,15 +805,17 @@ public class RelaxedSubscriberTest {
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable.just(1).subscribe(new Consumer<Integer>() {
+        Flowable.just(1).subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 

@@ -17,10 +17,12 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.annotations.NonNull;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ConnectConsumer;
-import io.reactivex.flowable.internal.operators.*;
+import io.reactivex.flowable.internal.operators.FlowableAutoConnect;
+import io.reactivex.flowable.internal.operators.FlowableRefCount;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Flowable}, except that it does not begin
@@ -46,13 +48,13 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *          allowing the caller to synchronously disconnect a synchronous source
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
-    public abstract void connect(@NonNull Consumer<? super Disposable> connection);
+    public abstract void connect(@NonNull Function1<? super Disposable, Unit> connection);
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.
      * <p>
-     * To disconnect from a synchronous source, use the {@link #connect(io.reactivex.common.functions.Consumer)} method.
+     * To disconnect from a synchronous source, use the {@link #connect(Function1)} method.
      *
      * @return the subscription representing the connection
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
@@ -116,7 +118,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *         specified callback with the Subscription associated with the established connection
      */
     @NonNull
-    public Flowable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
+    public Flowable<T> autoConnect(int numberOfSubscribers, @NonNull Function1<? super Disposable, Unit> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaFlowablePlugins.onAssembly(this);

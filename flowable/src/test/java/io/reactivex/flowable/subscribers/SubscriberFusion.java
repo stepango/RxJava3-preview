@@ -14,8 +14,10 @@
 package io.reactivex.flowable.subscribers;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility methods that return functional interfaces to support assertions regarding fusion
@@ -59,11 +61,11 @@ public enum SubscriberFusion {
      * @return the new Consumer instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Consumer<TestSubscriber<T>> assertFuseable() {
-        return (Consumer)AssertFuseable.INSTANCE;
+    public static <T> Function1<TestSubscriber<T>, Unit> assertFuseable() {
+        return (Function1) AssertFuseable.INSTANCE;
     }
 
-    static final class AssertFusionConsumer<T> implements Consumer<TestSubscriber<T>> {
+    static final class AssertFusionConsumer<T> implements Function1<TestSubscriber<T>, Unit> {
         private final int mode;
 
         AssertFusionConsumer(int mode) {
@@ -71,8 +73,9 @@ public enum SubscriberFusion {
         }
 
         @Override
-        public void accept(TestSubscriber<T> ts) throws Exception {
+        public Unit invoke(TestSubscriber<T> ts) {
             ts.assertFusionMode(mode);
+            return Unit.INSTANCE;
         }
     }
 
@@ -99,11 +102,12 @@ public enum SubscriberFusion {
         }
     }
 
-    enum AssertFuseable implements Consumer<TestSubscriber<Object>> {
+    enum AssertFuseable implements Function1<TestSubscriber<Object>, Unit> {
         INSTANCE;
         @Override
-        public void accept(TestSubscriber<Object> ts) throws Exception {
+        public Unit invoke(TestSubscriber<Object> ts) {
             ts.assertFuseable();
+            return Unit.INSTANCE;
         }
     }
 
@@ -121,15 +125,16 @@ public enum SubscriberFusion {
      * @return the new Consumer instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Consumer<TestSubscriber<T>> assertNotFuseable() {
-        return (Consumer)AssertNotFuseable.INSTANCE;
+    public static <T> Function1<TestSubscriber<T>, Unit> assertNotFuseable() {
+        return (Function1) AssertNotFuseable.INSTANCE;
     }
 
-    enum AssertNotFuseable implements Consumer<TestSubscriber<Object>> {
+    enum AssertNotFuseable implements Function1<TestSubscriber<Object>, Unit> {
         INSTANCE;
         @Override
-        public void accept(TestSubscriber<Object> ts) throws Exception {
+        public Unit invoke(TestSubscriber<Object> ts) {
             ts.assertNotFuseable();
+            return Unit.INSTANCE;
         }
     }
 
@@ -148,7 +153,7 @@ public enum SubscriberFusion {
      * @param mode the expected established fusion mode, see {@link FusedQueueSubscription} constants.
      * @return the new Consumer instance
      */
-    public static <T> Consumer<TestSubscriber<T>> assertFusionMode(final int mode) {
+    public static <T> Function1<TestSubscriber<T>, Unit> assertFusionMode(final int mode) {
         return new AssertFusionConsumer<T>(mode);
     }
 

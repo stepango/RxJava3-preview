@@ -13,19 +13,34 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.extensions.*;
+import io.reactivex.observable.extensions.QueueDisposable;
+import io.reactivex.observable.extensions.SimpleQueue;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.CompletableSubject;
+import io.reactivex.observable.subjects.MaybeSubject;
+import io.reactivex.observable.subjects.Subject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 /**
  * Common methods for helping with tests from 1.x mostly.
@@ -126,10 +141,10 @@ public enum TestHelper {
      * @param value the value not expected
      * @return the consumer
      */
-    public static <T> Consumer<TestObserver<T>> observerSingleNot(final T value) {
-        return new Consumer<TestObserver<T>>() {
+    public static <T> Function1<TestObserver<T>, Unit> observerSingleNot(final T value) {
+        return new Function1<TestObserver<T>, Unit>() {
             @Override
-            public void accept(TestObserver<T> ts) throws Exception {
+            public Unit invoke(TestObserver<T> ts) {
                 ts
                 .assertSubscribed()
                 .assertValueCount(1)
@@ -138,6 +153,7 @@ public enum TestHelper {
 
                 T v = ts.values().get(0);
                 assertNotEquals(value, v);
+                return Unit.INSTANCE;
             }
         };
     }

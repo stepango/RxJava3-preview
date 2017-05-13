@@ -36,7 +36,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -49,6 +48,7 @@ import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -173,19 +173,21 @@ public class FlowableGroupByTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.blockingForEach(new Consumer<GroupedFlowable<K, V>>() {
+        observable.blockingForEach(new Function1<GroupedFlowable<K, V>, Unit>() {
 
             @Override
-            public void accept(final GroupedFlowable<K, V> o) {
+            public Unit invoke(final GroupedFlowable<K, V> o) {
                 result.put(o.getKey(), new ConcurrentLinkedQueue<V>());
-                o.subscribe(new Consumer<V>() {
+                o.subscribe(new Function1<V, kotlin.Unit>() {
 
                     @Override
-                    public void accept(V v) {
+                    public Unit invoke(V v) {
                         result.get(o.getKey()).add(v);
+                        return Unit.INSTANCE;
                     }
 
                 });
+                return Unit.INSTANCE;
             }
         });
 
@@ -398,12 +400,13 @@ public class FlowableGroupByTest {
 
                     }
                 })
-                .take(30).subscribe(new Consumer<String>() {
+                .take(30).subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -451,12 +454,13 @@ public class FlowableGroupByTest {
 
                     }
                 })
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -600,12 +604,13 @@ public class FlowableGroupByTest {
 
                     }
                 })
-                .take(30).subscribe(new Consumer<String>() {
+                .take(30).subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -681,11 +686,12 @@ public class FlowableGroupByTest {
                 }
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -757,29 +763,32 @@ public class FlowableGroupByTest {
                             return "last group: " + t1;
                         }
 
-                    }).doOnEach(new Consumer<Notification<String>>() {
+                    }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
                         @Override
-                        public void accept(Notification<String> t1) {
+                        public Unit invoke(Notification<String> t1) {
                             System.err.println("subscribeOn notification => " + t1);
+                            return Unit.INSTANCE;
                         }
 
                     });
                 }
             }
 
-        }).doOnEach(new Consumer<Notification<String>>() {
+        }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<String> t1) {
+            public Unit invoke(Notification<String> t1) {
                 System.err.println("outer notification => " + t1);
+                return Unit.INSTANCE;
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -854,11 +863,12 @@ public class FlowableGroupByTest {
                 }
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -904,18 +914,20 @@ public class FlowableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Notification<String>>() {
+        }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<String> t1) {
+            public Unit invoke(Notification<String> t1) {
                 System.out.println("notification => " + t1);
+                return Unit.INSTANCE;
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -960,11 +972,12 @@ public class FlowableGroupByTest {
                 });
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -1008,7 +1021,7 @@ public class FlowableGroupByTest {
             }
 
         });
-    };
+    }
 
     @Test
     public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
@@ -1240,10 +1253,11 @@ public class FlowableGroupByTest {
 
         Flowable<GroupedFlowable<Integer, Integer>> m = source.groupBy(identity, dbl);
 
-        m.subscribe(new Consumer<GroupedFlowable<Integer, Integer>>() {
+        m.subscribe(new Function1<GroupedFlowable<Integer, Integer>, kotlin.Unit>() {
             @Override
-            public void accept(GroupedFlowable<Integer, Integer> t1) {
+            public Unit invoke(GroupedFlowable<Integer, Integer> t1) {
                 inner.set(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -1319,11 +1333,12 @@ public class FlowableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Notification<String>>() {
+        }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<String> t1) {
+            public Unit invoke(Notification<String> t1) {
                 System.out.println("NEXT: " + t1);
+                return Unit.INSTANCE;
             }
 
         }).subscribe(ts);
@@ -1337,10 +1352,11 @@ public class FlowableGroupByTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Flowable.range(1, 4000)
-            .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer v) {
+                public Unit invoke(Integer v) {
                     System.out.println("testgroupByBackpressure2 >> " + v);
+                    return Unit.INSTANCE;
                 }
             })
             .groupBy(IS_EVEN2).flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
@@ -1389,18 +1405,20 @@ public class FlowableGroupByTest {
             public String apply(String value) {
                 return null;
             }
-        }).subscribe(new Consumer<GroupedFlowable<String, String>>() {
+        }).subscribe(new Function1<GroupedFlowable<String, String>, Unit>() {
 
             @Override
-            public void accept(GroupedFlowable<String, String> groupedFlowable) {
+            public Unit invoke(GroupedFlowable<String, String> groupedFlowable) {
                 key[0] = groupedFlowable.getKey();
-                groupedFlowable.subscribe(new Consumer<String>() {
+                groupedFlowable.subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         values.add(s);
+                        return Unit.INSTANCE;
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
         assertEquals(null, key[0]);
@@ -1565,10 +1583,11 @@ public class FlowableGroupByTest {
                         return v;
                     }
                 })
-                .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+                .doOnNext(new Function1<GroupedFlowable<Integer, Integer>, kotlin.Unit>() {
                     @Override
-                    public void accept(GroupedFlowable<Integer, Integer> g) {
+                    public Unit invoke(GroupedFlowable<Integer, Integer> g) {
                         g.subscribe();
+                        return Unit.INSTANCE;
                     }
                 }) // this will request Long.MAX_VALUE
                 .subscribe(ts)
@@ -1592,10 +1611,11 @@ public class FlowableGroupByTest {
                 return 1;
             }
         })
-        .doOnNext(new Consumer<GroupedFlowable<Object, Integer>>() {
+                .doOnNext(new Function1<GroupedFlowable<Object, Integer>, Unit>() {
             @Override
-            public void accept(GroupedFlowable<Object, Integer> g) {
+            public Unit invoke(GroupedFlowable<Object, Integer> g) {
                 g.subscribe(ts2);
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts1);
@@ -1642,10 +1662,11 @@ public class FlowableGroupByTest {
                 return v + 1;
             }
         })
-        .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+                .doOnNext(new Function1<GroupedFlowable<Integer, Integer>, kotlin.Unit>() {
             @Override
-            public void accept(GroupedFlowable<Integer, Integer> g) {
+            public Unit invoke(GroupedFlowable<Integer, Integer> g) {
                 g.subscribe(ts1);
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts2);
@@ -1698,10 +1719,11 @@ public class FlowableGroupByTest {
 
         Flowable.just(1)
         .groupBy(Functions.justFunction(1))
-        .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+                .doOnNext(new Function1<GroupedFlowable<Integer, Integer>, kotlin.Unit>() {
             @Override
-            public void accept(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Unit invoke(GroupedFlowable<Integer, Integer> g) {
                 TestHelper.checkDisposed(g);
+                return Unit.INSTANCE;
             }
         })
         .test();

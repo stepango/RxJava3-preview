@@ -14,12 +14,17 @@ package io.reactivex.observable.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.TestConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.extensions.QueueDisposable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * An Observer that records events and allows making assertions about them.
@@ -265,9 +270,9 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
      * @param check the check consumer to run
      * @return this
      */
-    public final TestObserver<T> assertOf(Consumer<? super TestObserver<T>> check) {
+    public final TestObserver<T> assertOf(Function1<? super TestObserver<T>, Unit> check) {
         try {
-            check.accept(this);
+            check.invoke(this);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

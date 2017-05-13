@@ -45,7 +45,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -589,10 +588,11 @@ public class MaybeTest {
         final String[] name = { null };
 
         Maybe.error(new TestException()).observeOn(Schedulers.single())
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 name[0] = Thread.currentThread().getName();
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -720,10 +720,11 @@ public class MaybeTest {
     public void doOnSuccess() {
         final Integer[] value = { null };
 
-        Maybe.just(1).doOnSuccess(new Consumer<Integer>() {
+        Maybe.just(1).doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 value[0] = v;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -736,10 +737,11 @@ public class MaybeTest {
     public void doOnSuccessEmpty() {
         final Integer[] value = { null };
 
-        Maybe.<Integer>empty().doOnSuccess(new Consumer<Integer>() {
+        Maybe.<Integer>empty().doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 value[0] = v;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -750,9 +752,9 @@ public class MaybeTest {
 
     @Test
     public void doOnSuccessThrows() {
-        Maybe.just(1).doOnSuccess(new Consumer<Integer>() {
+        Maybe.just(1).doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -765,10 +767,11 @@ public class MaybeTest {
     public void doOnSubscribe() {
         final Disposable[] value = { null };
 
-        Maybe.just(1).doOnSubscribe(new Consumer<Disposable>() {
+        Maybe.just(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable v) throws Exception {
+            public Unit invoke(Disposable v) {
                 value[0] = v;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -779,9 +782,9 @@ public class MaybeTest {
 
     @Test
     public void doOnSubscribeThrows() {
-        Maybe.just(1).doOnSubscribe(new Consumer<Disposable>() {
+        Maybe.just(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable v) throws Exception {
+            public Unit invoke(Disposable v) {
                 throw new TestException();
             }
         })
@@ -863,12 +866,19 @@ public class MaybeTest {
 
         Maybe.just(1)
         .observeOn(Schedulers.single())
-        .doOnSuccess(new Consumer<Integer>() {
+                .doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
-                if (!cdl.await(5, TimeUnit.SECONDS)) {
-                    throw new TimeoutException();
+            public Unit invoke(Integer v) {
+                try {
+                    if (!cdl.await(5, TimeUnit.SECONDS)) {
+                        throw new TimeoutException();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (TimeoutException e) {
+                    throw new RuntimeException(e);
                 }
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -878,7 +888,7 @@ public class MaybeTest {
         ts.cancel();
 
         ts.awaitDone(5, TimeUnit.SECONDS)
-        .assertFailure(InterruptedException.class);
+                .assertFailure(RuntimeException.class);
     }
 
     @Test
@@ -886,10 +896,11 @@ public class MaybeTest {
         final int[] call = { 0 };
 
         Maybe.just(1)
-        .doOnSuccess(new Consumer<Integer>() {
+                .doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doAfterTerminate(new Function0() {
@@ -912,10 +923,11 @@ public class MaybeTest {
         final int[] call = { 0 };
 
         Maybe.error(new TestException())
-        .doOnError(new Consumer<Object>() {
+                .doOnError(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doAfterTerminate(new Function0() {
@@ -2145,10 +2157,11 @@ public class MaybeTest {
     public void subscribeToOnSuccess() {
         final List<Integer> values = new ArrayList<Integer>();
 
-        Consumer<Integer> onSuccess = new Consumer<Integer>() {
+        Function1<Integer, kotlin.Unit> onSuccess = new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 values.add(e);
+                return Unit.INSTANCE;
             }
         };
 
@@ -2165,10 +2178,11 @@ public class MaybeTest {
     public void subscribeToOnError() {
         final List<Throwable> values = new ArrayList<Throwable>();
 
-        Consumer<Throwable> onError = new Consumer<Throwable>() {
+        Function1<Throwable, kotlin.Unit> onError = new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 values.add(e);
+                return Unit.INSTANCE;
             }
         };
 
@@ -2237,7 +2251,7 @@ public class MaybeTest {
         assertTrue(Maybe.just(1)
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 list.add(v);
                 list.add(e);
             }
@@ -2256,7 +2270,7 @@ public class MaybeTest {
         assertTrue(Maybe.<Integer>error(ex)
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 list.add(v);
                 list.add(e);
             }
@@ -2273,7 +2287,7 @@ public class MaybeTest {
         assertTrue(Maybe.<Integer>empty()
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 list.add(v);
                 list.add(e);
             }
@@ -2293,7 +2307,7 @@ public class MaybeTest {
         Maybe.just(1)
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 throw new TestException();
             }
         })
@@ -2306,7 +2320,7 @@ public class MaybeTest {
         TestObserver<Integer> ts = Maybe.<Integer>error(new TestException("Outer"))
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
@@ -2325,7 +2339,7 @@ public class MaybeTest {
         Maybe.<Integer>empty()
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 throw new TestException();
             }
         })
@@ -2686,10 +2700,11 @@ public class MaybeTest {
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);
             }
-        }, new Consumer<Integer>() {
+        }, new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer d) throws Exception {
+            public Unit invoke(Integer d) {
                 disposeCount.set(d);
+                return Unit.INSTANCE;
             }
         })
         .map(new Function<Integer, Object>() {
@@ -2711,10 +2726,11 @@ public class MaybeTest {
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 return Maybe.just(v);
             }
-        }, new Consumer<Integer>() {
+        }, new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer d) throws Exception {
+            public Unit invoke(Integer d) {
                 disposeCount.set(d);
+                return Unit.INSTANCE;
             }
         }, false)
         .map(new Function<Integer, Object>() {
@@ -3051,7 +3067,7 @@ public class MaybeTest {
 
         Maybe.just(1).repeat(5).test().assertResult(1, 1, 1, 1, 1);
 
-        Maybe.just(1).repeatUntil(new Function0() {
+        Maybe.just(1).repeatUntil(new Function0<Boolean>() {
             @Override
             public Boolean invoke() {
                 return false;

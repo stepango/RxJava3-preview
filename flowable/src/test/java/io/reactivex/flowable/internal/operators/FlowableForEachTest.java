@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -33,10 +33,11 @@ public class FlowableForEachTest {
         final List<Object> list = new ArrayList<Object>();
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         })
                 .forEachWhile(new Function1<Integer, Boolean>() {
@@ -54,10 +55,11 @@ public class FlowableForEachTest {
         final List<Object> list = new ArrayList<Object>();
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         })
                 .forEachWhile(new Function1<Integer, Boolean>() {
@@ -65,10 +67,11 @@ public class FlowableForEachTest {
             public Boolean invoke(Integer v) {
                 return true;
             }
-        }, new Consumer<Throwable>() {
+                }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 

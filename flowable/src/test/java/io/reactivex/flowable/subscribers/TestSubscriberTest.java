@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -36,7 +36,6 @@ import io.reactivex.common.TestConsumer;
 import io.reactivex.common.TestConsumer.TestWaitStrategy;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -230,7 +229,7 @@ public class TestSubscriberTest {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Flowable.just(1)
-        //
+                //
                 .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
@@ -376,7 +375,7 @@ public class TestSubscriberTest {
             if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
-            CompositeException ce = (CompositeException)e;
+            CompositeException ce = (CompositeException) e;
             if (ce.size() != 2) {
                 ce.printStackTrace();
             }
@@ -400,7 +399,7 @@ public class TestSubscriberTest {
             if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
-            CompositeException ce = (CompositeException)e;
+            CompositeException ce = (CompositeException) e;
             assertEquals(2, ce.size());
             // expected
             return;
@@ -421,7 +420,7 @@ public class TestSubscriberTest {
             if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
-            CompositeException ce = (CompositeException)e;
+            CompositeException ce = (CompositeException) e;
             assertEquals(2, ce.size());
             // expected
             return;
@@ -442,7 +441,7 @@ public class TestSubscriberTest {
             if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
-            CompositeException ce = (CompositeException)e;
+            CompositeException ce = (CompositeException) e;
             assertEquals(2, ce.size());
             // expected
             return;
@@ -482,8 +481,7 @@ public class TestSubscriberTest {
         ts.onError(new RuntimeException());
         try {
             ts.assertError(TestException.class);
-        }
-        catch (AssertionError ex) {
+        } catch (AssertionError ex) {
             // expected
             return;
         }
@@ -698,7 +696,7 @@ public class TestSubscriberTest {
             if (!(e instanceof CompositeException)) {
                 fail("Multiple Error present but the reported error doesn't have a composite cause!");
             }
-            CompositeException ce = (CompositeException)e;
+            CompositeException ce = (CompositeException) e;
             assertEquals(2, ce.size());
         }
     }
@@ -1056,18 +1054,20 @@ public class TestSubscriberTest {
     public void assertOf() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        ts.assertOf(new Consumer<TestSubscriber<Integer>>() {
+        ts.assertOf(new Function1<TestSubscriber<Integer>, Unit>() {
             @Override
-            public void accept(TestSubscriber<Integer> f) throws Exception {
+            public Unit invoke(TestSubscriber<Integer> f) {
                 f.assertNotSubscribed();
+                return Unit.INSTANCE;
             }
         });
 
         try {
-            ts.assertOf(new Consumer<TestSubscriber<Integer>>() {
+            ts.assertOf(new Function1<TestSubscriber<Integer>, Unit>() {
                 @Override
-                public void accept(TestSubscriber<Integer> f) throws Exception {
+                public Unit invoke(TestSubscriber<Integer> f) {
                     f.assertSubscribed();
+                    return Unit.INSTANCE;
                 }
             });
             throw new RuntimeException("Should have thrown");
@@ -1076,9 +1076,9 @@ public class TestSubscriberTest {
         }
 
         try {
-            ts.assertOf(new Consumer<TestSubscriber<Integer>>() {
+            ts.assertOf(new Function1<TestSubscriber<Integer>, Unit>() {
                 @Override
-                public void accept(TestSubscriber<Integer> f) throws Exception {
+                public Unit invoke(TestSubscriber<Integer> f) {
                     throw new IllegalArgumentException();
                 }
             });
@@ -1314,7 +1314,7 @@ public class TestSubscriberTest {
 
         ts.onNext(null);
 
-        ts.assertFailure(NullPointerException.class, (Integer)null);
+        ts.assertFailure(NullPointerException.class, (Integer) null);
     }
 
     @Test
@@ -1640,16 +1640,18 @@ public class TestSubscriberTest {
         ts.setInitialFusionMode(FusedQueueSubscription.SYNC);
 
         Flowable.range(1, 5)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
-        })
-        .subscribe(ts);
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer v) throws Exception {
+                        throw new TestException();
+                    }
+                })
+                .subscribe(ts);
 
         ts.assertSubscribed()
-        .assertFuseable()
-        .assertFusionMode(FusedQueueSubscription.SYNC)
-        .assertFailure(TestException.class);
+                .assertFuseable()
+                .assertFusionMode(FusedQueueSubscription.SYNC)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1660,18 +1662,20 @@ public class TestSubscriberTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
-        })
-        .subscribe(ts);
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer v) throws Exception {
+                        throw new TestException();
+                    }
+                })
+                .subscribe(ts);
 
         up.onNext(1);
 
         ts.assertSubscribed()
-        .assertFuseable()
-        .assertFusionMode(FusedQueueSubscription.ASYNC)
-        .assertFailure(TestException.class);
+                .assertFuseable()
+                .assertFusionMode(FusedQueueSubscription.ASYNC)
+                .assertFailure(TestException.class);
     }
 
     @Test
@@ -1801,13 +1805,13 @@ public class TestSubscriberTest {
     @Test
     public void requestMore() {
         Flowable.range(1, 5)
-        .test(0)
-        .requestMore(1)
-        .assertValue(1)
-        .requestMore(2)
-        .assertValues(1, 2, 3)
-        .requestMore(3)
-        .assertResult(1, 2, 3, 4, 5);
+                .test(0)
+                .requestMore(1)
+                .assertValue(1)
+                .requestMore(2)
+                .assertValues(1, 2, 3)
+                .requestMore(3)
+                .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -1815,9 +1819,9 @@ public class TestSubscriberTest {
         try {
             for (int i = 1; i < 3; i++) {
                 Flowable.just(i)
-                .test()
-                .withTag("testing with item=" + i)
-                .assertResult(1)
+                        .test()
+                        .withTag("testing with item=" + i)
+                        .assertResult(1)
                 ;
             }
             fail("Should have thrown!");
@@ -1831,7 +1835,7 @@ public class TestSubscriberTest {
         Thread.interrupted(); // clear flag
 
         TestSubscriber<Object> ts = Flowable.never()
-        .test();
+                .test();
         assertFalse(ts.await(1, TimeUnit.MILLISECONDS));
 
         try {
@@ -1846,9 +1850,9 @@ public class TestSubscriberTest {
     public void timeoutIndicated2() throws InterruptedException {
         try {
             Flowable.never()
-            .test()
-            .awaitDone(1, TimeUnit.MILLISECONDS)
-            .assertResult(1);
+                    .test()
+                    .awaitDone(1, TimeUnit.MILLISECONDS)
+                    .assertResult(1);
 
             fail("Should have thrown!");
         } catch (AssertionError ex) {
@@ -1860,7 +1864,7 @@ public class TestSubscriberTest {
     @Test
     public void timeoutIndicated3() throws InterruptedException {
         TestSubscriber<Object> ts = Flowable.never()
-        .test();
+                .test();
         assertFalse(ts.awaitTerminalEvent(1, TimeUnit.MILLISECONDS));
 
         try {
@@ -1892,36 +1896,36 @@ public class TestSubscriberTest {
     @Test
     public void awaitCount() {
         Flowable.range(1, 10).delay(100, TimeUnit.MILLISECONDS)
-        .test(5)
-        .awaitCount(5)
-        .assertValues(1, 2, 3, 4, 5)
-        .requestMore(5)
-        .awaitDone(5, TimeUnit.SECONDS)
-        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+                .test(5)
+                .awaitCount(5)
+                .assertValues(1, 2, 3, 4, 5)
+                .requestMore(5)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
     @Test
     public void awaitCountLess() {
         Flowable.range(1, 4)
-        .test()
-        .awaitCount(5)
-        .assertResult(1, 2, 3, 4);
+                .test()
+                .awaitCount(5)
+                .assertResult(1, 2, 3, 4);
     }
 
     @Test
     public void awaitCountLess2() {
         Flowable.range(1, 4)
-        .test()
-        .awaitCount(5, TestWaitStrategy.YIELD)
-        .assertResult(1, 2, 3, 4);
+                .test()
+                .awaitCount(5, TestWaitStrategy.YIELD)
+                .assertResult(1, 2, 3, 4);
     }
 
     @Test
     public void awaitCountLess3() {
         Flowable.range(1, 4).delay(50, TimeUnit.MILLISECONDS)
-        .test()
-        .awaitCount(5, TestWaitStrategy.SLEEP_1MS)
-        .assertResult(1, 2, 3, 4);
+                .test()
+                .awaitCount(5, TestWaitStrategy.SLEEP_1MS)
+                .assertResult(1, 2, 3, 4);
     }
 
     @Test
@@ -1937,8 +1941,8 @@ public class TestSubscriberTest {
     @Test
     public void awaitCountTimeout() {
         TestSubscriber<Object> ts = Flowable.never()
-        .test()
-        .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50);
+                .test()
+                .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50);
 
         assertTrue(ts.isTimeout());
         ts.clearTimeout();
@@ -1948,18 +1952,18 @@ public class TestSubscriberTest {
     @Test
     public void assertTimeout() {
         Flowable.never()
-        .test()
-        .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
-        .assertTimeout();
+                .test()
+                .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+                .assertTimeout();
     }
 
     @Test
     public void assertTimeout2() {
         try {
             Flowable.empty()
-            .test()
-            .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
-            .assertTimeout();
+                    .test()
+                    .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+                    .assertTimeout();
             fail("Should have thrown!");
         } catch (AssertionError ex) {
             assertTrue(ex.toString(), ex.getMessage().contains("No timeout?!"));
@@ -1969,18 +1973,18 @@ public class TestSubscriberTest {
     @Test
     public void assertNoTimeout() {
         Flowable.just(1)
-        .test()
-        .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
-        .assertNoTimeout();
+                .test()
+                .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+                .assertNoTimeout();
     }
 
     @Test
     public void assertNoTimeout2() {
         try {
             Flowable.never()
-            .test()
-            .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
-            .assertNoTimeout();
+                    .test()
+                    .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+                    .assertNoTimeout();
             fail("Should have thrown!");
         } catch (AssertionError ex) {
             assertTrue(ex.toString(), ex.getMessage().contains("Timeout?!"));
@@ -1991,13 +1995,13 @@ public class TestSubscriberTest {
     public void assertNeverPredicateThrows() {
         try {
             Flowable.just(1)
-            .test()
+                    .test()
                     .assertNever(new Function1<Integer, Boolean>() {
-                @Override
-                public Boolean invoke(Integer t) {
-                    throw new IllegalArgumentException();
-                }
-            });
+                        @Override
+                        public Boolean invoke(Integer t) {
+                            throw new IllegalArgumentException();
+                        }
+                    });
             fail("Should have thrown!");
         } catch (IllegalArgumentException ex) {
             // expected
@@ -2008,13 +2012,13 @@ public class TestSubscriberTest {
     public void assertValueAtPredicateThrows() {
         try {
             Flowable.just(1)
-            .test()
+                    .test()
                     .assertValueAt(0, new Function1<Integer, Boolean>() {
-                @Override
-                public Boolean invoke(Integer t) {
-                    throw new IllegalArgumentException();
-                }
-            });
+                        @Override
+                        public Boolean invoke(Integer t) {
+                            throw new IllegalArgumentException();
+                        }
+                    });
             fail("Should have thrown!");
         } catch (IllegalArgumentException ex) {
             // expected

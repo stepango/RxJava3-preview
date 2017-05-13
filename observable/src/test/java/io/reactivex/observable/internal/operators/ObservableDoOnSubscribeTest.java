@@ -13,27 +13,36 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableDoOnSubscribeTest {
 
     @Test
     public void testDoOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
+        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                     count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -46,15 +55,17 @@ public class ObservableDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
+        Observable<Integer> o = Observable.just(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                     count.incrementAndGet();
+                return Unit.INSTANCE;
             }
-        }).take(1).doOnSubscribe(new Consumer<Disposable>() {
+        }).take(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                     count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -77,16 +88,18 @@ public class ObservableDoOnSubscribeTest {
                 sref.set(s);
             }
 
-        }).doOnSubscribe(new Consumer<Disposable>() {
+        }).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                     countBefore.incrementAndGet();
+                return Unit.INSTANCE;
             }
         }).publish().refCount()
-        .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                     countAfter.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -119,9 +132,9 @@ public class ObservableDoOnSubscribeTest {
                     s.onComplete();
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
+                    .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException("First");
                 }
             })

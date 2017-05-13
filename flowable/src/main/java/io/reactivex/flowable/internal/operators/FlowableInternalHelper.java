@@ -24,13 +24,13 @@ import io.reactivex.common.Emitter;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -43,20 +43,20 @@ public final class FlowableInternalHelper {
     }
 
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final Consumer<Emitter<T>> consumer;
+        final Function1<Emitter<T>, kotlin.Unit> consumer;
 
-        SimpleGenerator(Consumer<Emitter<T>> consumer) {
+        SimpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
             this.consumer = consumer;
         }
 
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
-            consumer.accept(t2);
+            consumer.invoke(t2);
             return t1;
         }
     }
 
-    public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
+    public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
         return new SimpleGenerator<T, S>(consumer);
     }
 
@@ -69,7 +69,7 @@ public final class FlowableInternalHelper {
 
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
-            consumer.accept(t1, t2);
+            consumer.invoke(t1, t2);
             return t1;
         }
     }
@@ -95,7 +95,7 @@ public final class FlowableInternalHelper {
         return new ItemDelayFunction<T, U>(itemDelay);
     }
 
-    static final class SubscriberOnNext<T> implements Consumer<T> {
+    static final class SubscriberOnNext<T> implements Function1<T, kotlin.Unit> {
         final Subscriber<T> subscriber;
 
         SubscriberOnNext(Subscriber<T> subscriber) {
@@ -103,12 +103,13 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void accept(T v) throws Exception {
+        public Unit invoke(T v) {
             subscriber.onNext(v);
+            return Unit.INSTANCE;
         }
     }
 
-    static final class SubscriberOnError<T> implements Consumer<Throwable> {
+    static final class SubscriberOnError<T> implements Function1<Throwable, kotlin.Unit> {
         final Subscriber<T> subscriber;
 
         SubscriberOnError(Subscriber<T> subscriber) {
@@ -116,8 +117,9 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public void accept(Throwable v) throws Exception {
+        public Unit invoke(Throwable v) {
             subscriber.onError(v);
+            return Unit.INSTANCE;
         }
     }
 
@@ -135,11 +137,11 @@ public final class FlowableInternalHelper {
         }
     }
 
-    public static <T> Consumer<T> subscriberOnNext(Subscriber<T> subscriber) {
+    public static <T> Function1<T, kotlin.Unit> subscriberOnNext(Subscriber<T> subscriber) {
         return new SubscriberOnNext<T>(subscriber);
     }
 
-    public static <T> Consumer<Throwable> subscriberOnError(Subscriber<T> subscriber) {
+    public static <T> Function1<Throwable, kotlin.Unit> subscriberOnError(Subscriber<T> subscriber) {
         return new SubscriberOnError<T>(subscriber);
     }
 
@@ -223,11 +225,12 @@ public final class FlowableInternalHelper {
         return new ReplayFunction<T, R>(selector, scheduler);
     }
 
-    public enum RequestMax implements Consumer<Subscription> {
+    public enum RequestMax implements Function1<Subscription, kotlin.Unit> {
         INSTANCE;
         @Override
-        public void accept(Subscription t) throws Exception {
+        public Unit invoke(Subscription t) {
             t.request(Long.MAX_VALUE);
+            return Unit.INSTANCE;
         }
     }
 

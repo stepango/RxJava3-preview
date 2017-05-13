@@ -12,16 +12,21 @@
  */
 package io.reactivex.flowable.subscribers;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.TestConsumer;
 import io.reactivex.common.annotations.Experimental;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A subscriber that records events and allows making assertions about them.
@@ -397,9 +402,9 @@ implements RelaxedSubscriber<T>, Subscription, Disposable {
      * @param check the check consumer to run
      * @return this
      */
-    public final TestSubscriber<T> assertOf(Consumer<? super TestSubscriber<T>> check) {
+    public final TestSubscriber<T> assertOf(Function1<? super TestSubscriber<T>, Unit> check) {
         try {
-            check.accept(this);
+            check.invoke(this);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

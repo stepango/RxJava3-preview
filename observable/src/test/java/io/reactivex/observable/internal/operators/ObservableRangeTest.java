@@ -13,19 +13,30 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableRangeTest {
 
@@ -49,10 +60,11 @@ public class ObservableRangeTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable.range(1, 1000).doOnNext(new Consumer<Integer>() {
+        Observable.range(1, 1000).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         })
         .take(3).subscribe(observer);

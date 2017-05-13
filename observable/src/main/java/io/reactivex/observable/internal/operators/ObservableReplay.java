@@ -13,21 +13,32 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ConnectableObservable;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.extensions.HasUpstreamObservableSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.utils.NotificationLite;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableReplay<T> extends ConnectableObservable<T> implements HasUpstreamObservableSource<T>, Disposable {
     /** The source observable. */
@@ -174,7 +185,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
         boolean doConnect;
         ReplayObserver<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
@@ -215,7 +226,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          */
 
         try {
-            connection.accept(ps);
+            connection.invoke(ps);
         } catch (Throwable ex) {
             if (doConnect) {
                 ps.shouldConnect.compareAndSet(true, false);
@@ -909,7 +920,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    static final class DisposeConsumer<R> implements Consumer<Disposable> {
+    static final class DisposeConsumer<R> implements Function1<Disposable, kotlin.Unit> {
         private final ObserverResourceWrapper<R> srw;
 
         DisposeConsumer(ObserverResourceWrapper<R> srw) {
@@ -917,8 +928,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
 
         @Override
-        public void accept(Disposable r) {
+        public Unit invoke(Disposable r) {
             srw.setResource(r);
+            return Unit.INSTANCE;
         }
     }
 
@@ -1051,7 +1063,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
             co.connect(connection);
         }
 

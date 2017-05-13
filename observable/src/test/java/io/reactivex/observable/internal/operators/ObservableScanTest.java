@@ -28,7 +28,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -37,6 +36,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -201,7 +201,7 @@ public class ObservableScanTest {
                 }, new BiConsumer<List<Integer>, Integer>() {
 
                     @Override
-                    public void accept(List<Integer> list, Integer t2) {
+                    public void invoke(List<Integer> list, Integer t2) {
                         list.add(t2);
                     }
 
@@ -323,10 +323,11 @@ public class ObservableScanTest {
         final RuntimeException err = new RuntimeException();
         final RuntimeException err2 = new RuntimeException();
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
-        final Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
+        final Function1<Throwable, kotlin.Unit> errorConsumer = new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t) throws Exception {
+            public Unit invoke(Throwable t) {
                 list.add(t);
+                return Unit.INSTANCE;
             }};
         try {
             RxJavaCommonPlugins.setErrorHandler(errorConsumer);

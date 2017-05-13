@@ -27,14 +27,15 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -93,22 +94,24 @@ public class ObservableCacheTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                     assertEquals("one", v);
                     System.out.println("v: " + v);
                     latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                     assertEquals("one", v);
                     System.out.println("v: " + v);
                     latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -254,10 +257,11 @@ public class ObservableCacheTest {
         final AtomicInteger count = new AtomicInteger();
 
         Observable<Integer> source = Observable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .cache();

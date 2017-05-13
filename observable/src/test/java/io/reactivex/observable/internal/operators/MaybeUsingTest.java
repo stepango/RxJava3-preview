@@ -13,19 +13,31 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeUsingTest {
 
@@ -42,10 +54,10 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.just(1);
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
-
+            public Unit invoke(Object d) {
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -65,10 +77,10 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.error(new TestException());
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
-
+            public Unit invoke(Object d) {
+                return Unit.INSTANCE;
             }
         }, true)
         .test()
@@ -88,10 +100,11 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.empty();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
 
+                return Unit.INSTANCE;
             }
         }, true)
         .test()
@@ -111,10 +124,11 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.error(new TestException());
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
 
+                return Unit.INSTANCE;
             }
         }, false)
         .test()
@@ -134,10 +148,11 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.empty();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
 
+                return Unit.INSTANCE;
             }
         }, false)
         .test()
@@ -157,10 +172,11 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 throw new TestException();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
 
+                return Unit.INSTANCE;
             }
         }, true)
         .test()
@@ -180,10 +196,11 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 throw new TestException();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
 
+                return Unit.INSTANCE;
             }
         }, false)
         .test()
@@ -202,9 +219,9 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 throw new TestException("Main");
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
                 throw new TestException("Disposer");
             }
         }, true)
@@ -231,9 +248,9 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     throw new TestException("Main");
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
                     throw new TestException("Disposer");
                 }
             }, false)
@@ -260,10 +277,11 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.never();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         }, false)
         .test();
@@ -287,9 +305,9 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     return Maybe.never();
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
                     throw new TestException();
                 }
             }, false)
@@ -315,10 +333,11 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     return Maybe.never();
                 }
-            }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
 
+                    return Unit.INSTANCE;
                 }
             }, false));
     }
@@ -335,9 +354,9 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.just(1);
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
                 throw new TestException("Disposer");
             }
         }, true)
@@ -358,9 +377,9 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.empty();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
                 throw new TestException("Disposer");
             }
         }, true)
@@ -380,9 +399,9 @@ public class MaybeUsingTest {
             public MaybeSource<Integer> apply(Object v) throws Exception {
                 return Maybe.error(new TestException("Main"));
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
+            public Unit invoke(Object d) {
                 throw new TestException("Disposer");
             }
         }, true)
@@ -424,10 +443,11 @@ public class MaybeUsingTest {
                         }
                     });
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
 
+                    return Unit.INSTANCE;
                 }
             }, false).test();
             TestCommonHelper.assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
@@ -452,9 +472,10 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     return ps.lastElement();
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
+                    return Unit.INSTANCE;
                 }
             }, true)
             .test();
@@ -495,9 +516,10 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     return ps.firstElement();
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
+                    return Unit.INSTANCE;
                 }
             }, true)
             .test();
@@ -538,10 +560,11 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     return ps.firstElement();
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
 
+                    return Unit.INSTANCE;
                 }
             }, true)
             .test();

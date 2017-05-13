@@ -23,7 +23,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -41,9 +40,9 @@ public class FlowableDoOnLifecycleTest {
     @Test
     public void onSubscribeCrashed() {
         Flowable.just(1)
-        .doOnLifecycle(new Consumer<Subscription>() {
+                .doOnLifecycle(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 throw new TestException();
             }
         }, Functions.EMPTY_LONG_CONSUMER, Functions.EMPTY_ACTION)
@@ -59,10 +58,11 @@ public class FlowableDoOnLifecycleTest {
             @Override
             public Publisher<Object> apply(Flowable<Object> o) throws Exception {
                 return o
-                .doOnLifecycle(new Consumer<Subscription>() {
+                        .doOnLifecycle(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) throws Exception {
+                    public Unit invoke(Subscription s) {
                         calls[0]++;
+                        return Unit.INSTANCE;
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Function0() {
                     @Override
@@ -83,10 +83,11 @@ public class FlowableDoOnLifecycleTest {
         final int[] calls = { 0, 0 };
 
         TestHelper.checkDisposed(Flowable.just(1)
-                .doOnLifecycle(new Consumer<Subscription>() {
+                .doOnLifecycle(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) throws Exception {
+                    public Unit invoke(Subscription s) {
                         calls[0]++;
+                        return Unit.INSTANCE;
                     }
                 }, Functions.EMPTY_LONG_CONSUMER, new Function0() {
                     @Override
@@ -160,9 +161,9 @@ public class FlowableDoOnLifecycleTest {
                     s.onComplete();
                 }
             }
-            .doOnSubscribe(new Consumer<Subscription>() {
+                    .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                 @Override
-                public void accept(Subscription s) throws Exception {
+                public Unit invoke(Subscription s) {
                     throw new TestException("First");
                 }
             })

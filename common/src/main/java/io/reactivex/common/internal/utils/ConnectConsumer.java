@@ -14,16 +14,18 @@
 package io.reactivex.common.internal.utils;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Store the Disposable received from the connection.
  */
-public final class ConnectConsumer implements Consumer<Disposable> {
+public final class ConnectConsumer implements Function1<Disposable, Unit> {
     public Disposable disposable;
 
     @Override
-    public void accept(Disposable t) throws Exception {
+    public Unit invoke(Disposable t) {
         this.disposable = t;
+        return Unit.INSTANCE;
     }
 }

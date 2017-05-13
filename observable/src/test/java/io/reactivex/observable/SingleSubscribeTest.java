@@ -13,18 +13,27 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SingleSubscribeTest {
 
@@ -32,10 +41,11 @@ public class SingleSubscribeTest {
     public void consumer() {
         final Integer[] value = { null };
 
-        Single.just(1).subscribe(new Consumer<Integer>() {
+        Single.just(1).subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 value[0] = v;
+                return Unit.INSTANCE;
             }
         });
 
@@ -48,7 +58,7 @@ public class SingleSubscribeTest {
 
         Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 value[0] = v;
                 value[1] = e;
             }
@@ -66,7 +76,7 @@ public class SingleSubscribeTest {
 
         Single.error(ex).subscribe(new BiConsumer<Object, Throwable>() {
             @Override
-            public void accept(Object v, Throwable e) throws Exception {
+            public void invoke(Object v, Throwable e) throws Exception {
                 value[0] = v;
                 value[1] = e;
             }
@@ -98,7 +108,7 @@ public class SingleSubscribeTest {
 
         Disposable d = ps.single(-99).subscribe(new BiConsumer<Object, Object>() {
             @Override
-            public void accept(Object t1, Object t2) throws Exception {
+            public void invoke(Object t1, Object t2) throws Exception {
 
             }
         });
@@ -132,9 +142,9 @@ public class SingleSubscribeTest {
         List<Throwable> list = TestCommonHelper.trackPluginErrors();
 
         try {
-            Single.just(1).subscribe(new Consumer<Integer>() {
+            Single.just(1).subscribe(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer t) throws Exception {
+                public Unit invoke(Integer t) {
                     throw new TestException();
                 }
             });
@@ -152,9 +162,9 @@ public class SingleSubscribeTest {
         try {
             Single.<Integer>error(new TestException("Outer failure")).subscribe(
             Functions.<Integer>emptyConsumer(),
-            new Consumer<Throwable>() {
+                    new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) throws Exception {
+                public Unit invoke(Throwable t) {
                     throw new TestException("Inner failure");
                 }
             });
@@ -175,7 +185,7 @@ public class SingleSubscribeTest {
         try {
             Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
                 @Override
-                public void accept(Integer t, Throwable e) throws Exception {
+                public void invoke(Integer t, Throwable e) throws Exception {
                     throw new TestException();
                 }
             });
@@ -194,7 +204,7 @@ public class SingleSubscribeTest {
             Single.<Integer>error(new TestException("Outer failure")).subscribe(
             new BiConsumer<Integer, Throwable>() {
                 @Override
-                public void accept(Integer a, Throwable t) throws Exception {
+                public void invoke(Integer a, Throwable t) throws Exception {
                     throw new TestException("Inner failure");
                 }
             });
@@ -234,7 +244,7 @@ public class SingleSubscribeTest {
         Disposable d = Single.just(1)
         .subscribe(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer t1, Throwable t2) throws Exception {
+            public void invoke(Integer t1, Throwable t2) throws Exception {
                 result[0] = t1;
                 result[1] = t2;
             }
@@ -252,7 +262,7 @@ public class SingleSubscribeTest {
         Disposable d = Single.<Integer>error(new IOException())
         .subscribe(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer t1, Throwable t2) throws Exception {
+            public void invoke(Integer t1, Throwable t2) throws Exception {
                 result[0] = t1;
                 result[1] = t2;
             }

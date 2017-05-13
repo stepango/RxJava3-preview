@@ -13,17 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableOperator;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.observers.DefaultObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class ObservableSwitchIfEmptyTest {
@@ -33,10 +40,11 @@ public class ObservableSwitchIfEmptyTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Observable<Integer> o = Observable.just(4)
                 .switchIfEmpty(Observable.just(2)
-                .doOnSubscribe(new Consumer<Disposable>() {
+                        .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public Unit invoke(Disposable s) {
                         subscribed.set(true);
+                        return Unit.INSTANCE;
                     }
                 }));
 

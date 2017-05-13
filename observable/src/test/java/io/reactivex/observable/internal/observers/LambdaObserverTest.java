@@ -25,12 +25,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,16 +42,18 @@ public class LambdaObserverTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaObserver<Object> o = new LambdaObserver<Object>(new Consumer<Object>() {
+        LambdaObserver<Object> o = new LambdaObserver<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 received.add(v);
+                return Unit.INSTANCE;
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -59,9 +61,9 @@ public class LambdaObserverTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Disposable>() {
+        }, new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
                 throw new TestException();
             }
         });
@@ -80,16 +82,17 @@ public class LambdaObserverTest {
     public void onNextThrows() {
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaObserver<Object> o = new LambdaObserver<Object>(new Consumer<Object>() {
+        LambdaObserver<Object> o = new LambdaObserver<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 throw new TestException();
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -97,9 +100,10 @@ public class LambdaObserverTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Disposable>() {
+        }, new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
+                return Unit.INSTANCE;
             }
         });
 
@@ -120,15 +124,16 @@ public class LambdaObserverTest {
         try {
             final List<Object> received = new ArrayList<Object>();
 
-            LambdaObserver<Object> o = new LambdaObserver<Object>(new Consumer<Object>() {
+            LambdaObserver<Object> o = new LambdaObserver<Object>(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object v) throws Exception {
+                public Unit invoke(Object v) {
                     received.add(v);
+                    return Unit.INSTANCE;
                 }
             },
-            new Consumer<Throwable>() {
+                    new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable e) throws Exception {
+                public Unit invoke(Throwable e) {
                     throw new TestException("Inner");
                 }
             }, new Function0() {
@@ -137,9 +142,10 @@ public class LambdaObserverTest {
                     received.add(100);
                     return Unit.INSTANCE;
                 }
-            }, new Consumer<Disposable>() {
+            }, new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -167,25 +173,28 @@ public class LambdaObserverTest {
         try {
             final List<Object> received = new ArrayList<Object>();
 
-            LambdaObserver<Object> o = new LambdaObserver<Object>(new Consumer<Object>() {
+            LambdaObserver<Object> o = new LambdaObserver<Object>(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object v) throws Exception {
+                public Unit invoke(Object v) {
                     received.add(v);
+                    return Unit.INSTANCE;
                 }
             },
-            new Consumer<Throwable>() {
+                    new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable e) throws Exception {
+                public Unit invoke(Throwable e) {
                     received.add(e);
+                    return Unit.INSTANCE;
                 }
             }, new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
                 }
-            }, new Consumer<Disposable>() {
+            }, new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -223,16 +232,18 @@ public class LambdaObserverTest {
 
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaObserver<Object> o = new LambdaObserver<Object>(new Consumer<Object>() {
+        LambdaObserver<Object> o = new LambdaObserver<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 received.add(v);
+                return Unit.INSTANCE;
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -240,9 +251,10 @@ public class LambdaObserverTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Disposable>() {
+        }, new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
+                return Unit.INSTANCE;
             }
         });
 
@@ -267,16 +279,18 @@ public class LambdaObserverTest {
 
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaObserver<Object> o = new LambdaObserver<Object>(new Consumer<Object>() {
+        LambdaObserver<Object> o = new LambdaObserver<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 received.add(v);
+                return Unit.INSTANCE;
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -284,9 +298,10 @@ public class LambdaObserverTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Disposable>() {
+        }, new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
+                return Unit.INSTANCE;
             }
         });
 
@@ -301,15 +316,16 @@ public class LambdaObserverTest {
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        ps.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 errors.add(e);
+                return Unit.INSTANCE;
             }
         });
 
@@ -330,23 +346,25 @@ public class LambdaObserverTest {
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        ps.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
+                return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 errors.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Disposable>() {
+        }, new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
                 throw new TestException();
             }
         });

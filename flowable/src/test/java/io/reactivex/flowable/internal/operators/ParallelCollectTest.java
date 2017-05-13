@@ -13,19 +13,22 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ParallelCollectTest {
 
@@ -39,7 +42,7 @@ public class ParallelCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         }));
@@ -57,7 +60,7 @@ public class ParallelCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         })
@@ -78,7 +81,7 @@ public class ParallelCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 if (b == 3) {
                     throw new TestException();
                 }
@@ -103,7 +106,7 @@ public class ParallelCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         })
@@ -129,7 +132,7 @@ public class ParallelCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         })
@@ -151,7 +154,7 @@ public class ParallelCollectTest {
                 }
             }, new BiConsumer<List<Object>, Object>() {
                 @Override
-                public void accept(List<Object> a, Object b) throws Exception {
+                public void invoke(List<Object> a, Object b) throws Exception {
                     a.add(b);
                 }
             })

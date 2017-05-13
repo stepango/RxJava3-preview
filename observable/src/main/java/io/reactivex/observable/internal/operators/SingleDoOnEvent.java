@@ -14,9 +14,12 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 
 public final class SingleDoOnEvent<T> extends Single<T> {
     final SingleSource<T> source;
@@ -49,7 +52,7 @@ public final class SingleDoOnEvent<T> extends Single<T> {
         @Override
         public void onSuccess(T value) {
             try {
-                onEvent.accept(value, null);
+                onEvent.invoke(value, null);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.onError(ex);
@@ -62,7 +65,7 @@ public final class SingleDoOnEvent<T> extends Single<T> {
         @Override
         public void onError(Throwable e) {
             try {
-                onEvent.accept(null, e);
+                onEvent.invoke(null, e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);

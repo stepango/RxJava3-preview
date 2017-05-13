@@ -13,17 +13,23 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
 import io.reactivex.common.disposables.CompositeDisposable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Returns an observable sequence that stays connected to the source as long as
@@ -158,8 +164,8 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
 
     }
 
-    private Consumer<Disposable> onSubscribe(final Subscriber<? super T> subscriber,
-            final AtomicBoolean writeLocked) {
+    private Function1<Disposable, kotlin.Unit> onSubscribe(final Subscriber<? super T> subscriber,
+                                                           final AtomicBoolean writeLocked) {
         return new DisposeConsumer(subscriber, writeLocked);
     }
 
@@ -177,7 +183,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         return Disposables.fromRunnable(new DisposeTask(current));
     }
 
-    final class DisposeConsumer implements Consumer<Disposable> {
+    final class DisposeConsumer implements Function1<Disposable, kotlin.Unit> {
         private final Subscriber<? super T> subscriber;
         private final AtomicBoolean writeLocked;
 
@@ -187,7 +193,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         }
 
         @Override
-        public void accept(Disposable subscription) {
+        public Unit invoke(Disposable subscription) {
             try {
                 baseDisposable.add(subscription);
                 // ready to subscribe to source so do it
@@ -197,6 +203,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
                 lock.unlock();
                 writeLocked.set(false);
             }
+            return Unit.INSTANCE;
         }
     }
 

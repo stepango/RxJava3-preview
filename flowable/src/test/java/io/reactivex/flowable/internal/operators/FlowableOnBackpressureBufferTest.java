@@ -25,7 +25,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
@@ -33,6 +32,7 @@ import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -186,10 +186,11 @@ public class FlowableOnBackpressureBufferTest {
          TestSubscriber<Long> ts = TestSubscriber.create(0);
          infinite
            .subscribeOn(Schedulers.computation())
-           .doOnError(new Consumer<Throwable>() {
+                 .doOnError(new Function1<Throwable, kotlin.Unit>() {
                  @Override
-                 public void accept(Throwable t) {
+                 public Unit invoke(Throwable t) {
                      errorOccurred.set(true);
+                     return Unit.INSTANCE;
                  }
              })
            .onBackpressureBuffer(1, THROWS_NON_FATAL)

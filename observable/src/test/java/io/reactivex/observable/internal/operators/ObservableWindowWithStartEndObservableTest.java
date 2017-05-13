@@ -13,22 +13,36 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import io.reactivex.observable.subjects.BehaviorSubject;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.Subject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObservableWindowWithStartEndObservableTest {
 
@@ -168,10 +182,10 @@ public class ObservableWindowWithStartEndObservableTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private Consumer<Observable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return new Consumer<Observable<String>>() {
+    private Function1<Observable<String>, Unit> observeWindow(final List<String> list, final List<List<String>> lists) {
+        return new Function1<Observable<String>, Unit>() {
             @Override
-            public void accept(Observable<String> stringObservable) {
+            public Unit invoke(Observable<String> stringObservable) {
                 stringObservable.subscribe(new DefaultObserver<String>() {
                     @Override
                     public void onComplete() {
@@ -189,6 +203,7 @@ public class ObservableWindowWithStartEndObservableTest {
                         list.add(args);
                     }
                 });
+                return Unit.INSTANCE;
             }
         };
     }

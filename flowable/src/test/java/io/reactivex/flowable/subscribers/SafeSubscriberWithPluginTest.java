@@ -13,16 +13,20 @@
 
 package io.reactivex.flowable.subscribers;
 
-import static org.junit.Assert.fail;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Subscription;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.Subscription;
-
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.fail;
 
 public class SafeSubscriberWithPluginTest {
     private final class SubscriptionCancelThrows implements Subscription {
@@ -85,9 +89,9 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginException() {
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 throw new RuntimeException();
             }
         });
@@ -106,13 +110,14 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhileOnErrorUnsubscribeThrows() {
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             int calls;
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 if (++calls == 2) {
                     throw new RuntimeException();
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -126,13 +131,14 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhileOnErrorThrowsNotImplAndUnsubscribeThrows() {
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             int calls;
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 if (++calls == 2) {
                     throw new RuntimeException();
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -151,13 +157,14 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhileOnErrorThrows() {
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             int calls;
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 if (++calls == 2) {
                     throw new RuntimeException();
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -174,13 +181,14 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhileOnErrorThrowsAndUnsubscribeThrows() {
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             int calls;
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 if (++calls == 2) {
                     throw new RuntimeException();
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -198,13 +206,14 @@ public class SafeSubscriberWithPluginTest {
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhenUnsubscribing2() {
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             int calls;
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 if (++calls == 3) {
                     throw new RuntimeException();
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -224,10 +233,11 @@ public class SafeSubscriberWithPluginTest {
     @Ignore("Subscribers can't throw")
     public void testPluginErrorHandlerReceivesExceptionWhenUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 calls.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -265,10 +275,11 @@ public class SafeSubscriberWithPluginTest {
     @Ignore("Subscribers can't throw")
     public void testPluginErrorHandlerReceivesExceptionFromFailingUnsubscribeAfterCompletionThrows() {
         final AtomicInteger calls = new AtomicInteger();
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                     calls.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 

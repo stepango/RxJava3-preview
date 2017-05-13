@@ -28,7 +28,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -41,6 +40,7 @@ import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.Subject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -147,10 +147,10 @@ public class ObservableWindowWithTimeTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> Consumer<Observable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
-        return new Consumer<Observable<T>>() {
+    private <T> Function1<Observable<T>, Unit> observeWindow(final List<T> list, final List<List<T>> lists) {
+        return new Function1<Observable<T>, Unit>() {
             @Override
-            public void accept(Observable<T> stringObservable) {
+            public Unit invoke(Observable<T> stringObservable) {
                 stringObservable.subscribe(new DefaultObserver<T>() {
                     @Override
                     public void onComplete() {
@@ -168,6 +168,7 @@ public class ObservableWindowWithTimeTest {
                         list.add(args);
                     }
                 });
+                return Unit.INSTANCE;
             }
         };
     }
@@ -224,10 +225,11 @@ public class ObservableWindowWithTimeTest {
                         ;
             }
         })
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer pv) {
+            public Unit invoke(Integer pv) {
                 System.out.println(pv);
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);

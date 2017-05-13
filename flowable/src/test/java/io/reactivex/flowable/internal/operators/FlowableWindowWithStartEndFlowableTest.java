@@ -13,22 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.processors.BehaviorProcessor;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FlowableWindowWithStartEndFlowableTest {
 
@@ -168,10 +182,10 @@ public class FlowableWindowWithStartEndFlowableTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private Consumer<Flowable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return new Consumer<Flowable<String>>() {
+    private Function1<Flowable<String>, Unit> observeWindow(final List<String> list, final List<List<String>> lists) {
+        return new Function1<Flowable<String>, Unit>() {
             @Override
-            public void accept(Flowable<String> stringFlowable) {
+            public Unit invoke(Flowable<String> stringFlowable) {
                 stringFlowable.subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onComplete() {
@@ -189,6 +203,7 @@ public class FlowableWindowWithStartEndFlowableTest {
                         list.add(args);
                     }
                 });
+                return Unit.INSTANCE;
             }
         };
     }

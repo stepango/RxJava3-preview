@@ -13,12 +13,14 @@
 
 package io.reactivex.observable;
 
-import java.util.HashMap;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.*;
+import java.util.HashMap;
+
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.observable.ObservableEventStream.Event;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableScanTests {
 
@@ -34,10 +36,11 @@ public class ObservableScanTests {
             }
         })
         .take(10)
-        .blockingForEach(new Consumer<HashMap<String, String>>() {
+                .blockingForEach(new Function1<HashMap<String, String>, kotlin.Unit>() {
             @Override
-            public void accept(HashMap<String, String> pv) {
+            public Unit invoke(HashMap<String, String> pv) {
                 System.out.println(pv);
+                return Unit.INSTANCE;
             }
         });
 

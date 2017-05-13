@@ -13,17 +13,25 @@
 
 package io.reactivex.interop.schedulers;
 
-import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.IoScheduler;
 import io.reactivex.flowable.Flowable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -49,11 +57,12 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.subscribeOn(Schedulers.io()).blockingForEach(new Consumer<String>() {
+        o.subscribeOn(Schedulers.io()).blockingForEach(new Function1<String, Unit>() {
 
             @Override
-            public void accept(String t) {
+            public Unit invoke(String t) {
                 System.out.println("t: " + t);
+                return Unit.INSTANCE;
             }
         });
     }

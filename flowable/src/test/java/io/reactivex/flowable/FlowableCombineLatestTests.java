@@ -15,14 +15,23 @@
  */
 package io.reactivex.flowable;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.flowable.FlowableCovarianceTest.CoolRating;
+import io.reactivex.flowable.FlowableCovarianceTest.ExtendedResult;
+import io.reactivex.flowable.FlowableCovarianceTest.HorrorMovie;
+import io.reactivex.flowable.FlowableCovarianceTest.Media;
+import io.reactivex.flowable.FlowableCovarianceTest.Movie;
+import io.reactivex.flowable.FlowableCovarianceTest.Rating;
+import io.reactivex.flowable.FlowableCovarianceTest.Result;
+import io.reactivex.flowable.processors.BehaviorProcessor;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
 import static io.reactivex.flowable.Flowable.combineLatest;
 import static org.junit.Assert.assertNull;
-
-import org.junit.*;
-
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.FlowableCovarianceTest.*;
-import io.reactivex.flowable.processors.BehaviorProcessor;
 
 public class FlowableCombineLatestTests {
     /**
@@ -49,17 +58,19 @@ public class FlowableCombineLatestTests {
         }
     };
 
-    Consumer<Result> action = new Consumer<Result>() {
+    Function1<Result, kotlin.Unit> action = new Function1<Result, kotlin.Unit>() {
         @Override
-        public void accept(Result t1) {
+        public Unit invoke(Result t1) {
             System.out.println("Result: " + t1);
+            return Unit.INSTANCE;
         }
     };
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
+    Function1<ExtendedResult, kotlin.Unit> extendedAction = new Function1<ExtendedResult, kotlin.Unit>() {
         @Override
-        public void accept(ExtendedResult t1) {
+        public Unit invoke(ExtendedResult t1) {
             System.out.println("Result: " + t1);
+            return Unit.INSTANCE;
         }
     };
 
@@ -76,10 +87,11 @@ public class FlowableCombineLatestTests {
                         return bool1 == null ? null : bool2;
                     }
                 });
-        combined.subscribe(new Consumer<Boolean>() {
+        combined.subscribe(new Function1<Boolean, kotlin.Unit>() {
             @Override
-            public void accept(Boolean aBoolean) {
+            public Unit invoke(Boolean aBoolean) {
                 assertNull(aBoolean);
+                return Unit.INSTANCE;
             }
         });
     }

@@ -14,15 +14,19 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class CompletableDoOnEvent extends Completable {
     final CompletableSource source;
-    final Consumer<? super Throwable> onEvent;
+    final Function1<? super Throwable, Unit> onEvent;
 
-    public CompletableDoOnEvent(final CompletableSource source, final Consumer<? super Throwable> onEvent) {
+    public CompletableDoOnEvent(final CompletableSource source, final Function1<? super Throwable, Unit> onEvent) {
         this.source = source;
         this.onEvent = onEvent;
     }
@@ -42,7 +46,7 @@ public final class CompletableDoOnEvent extends Completable {
         @Override
         public void onComplete() {
             try {
-                onEvent.accept(null);
+                onEvent.invoke(null);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 observer.onError(e);
@@ -55,7 +59,7 @@ public final class CompletableDoOnEvent extends Completable {
         @Override
         public void onError(Throwable e) {
             try {
-                onEvent.accept(e);
+                onEvent.invoke(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);

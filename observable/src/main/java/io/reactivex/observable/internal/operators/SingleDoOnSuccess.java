@@ -15,16 +15,19 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleDoOnSuccess<T> extends Single<T> {
 
     final SingleSource<T> source;
 
-    final Consumer<? super T> onSuccess;
+    final Function1<? super T, Unit> onSuccess;
 
-    public SingleDoOnSuccess(SingleSource<T> source, Consumer<? super T> onSuccess) {
+    public SingleDoOnSuccess(SingleSource<T> source, Function1<? super T, Unit> onSuccess) {
         this.source = source;
         this.onSuccess = onSuccess;
     }
@@ -50,7 +53,7 @@ public final class SingleDoOnSuccess<T> extends Single<T> {
         @Override
         public void onSuccess(T value) {
             try {
-                onSuccess.accept(value);
+                onSuccess.invoke(value);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.onError(ex);

@@ -12,20 +12,23 @@
  */
 package io.reactivex.interop.internal.operators;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.Callable;
+
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
 import io.reactivex.flowable.extensions.FuseToFlowable;
 import io.reactivex.flowable.internal.operators.FlowableCollect;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 
 public final class FlowableCollectSingle<T, U> extends Single<U> implements FuseToFlowable<U> {
@@ -92,7 +95,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
                 return;
             }
             try {
-                collector.accept(u, t);
+                collector.invoke(u, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

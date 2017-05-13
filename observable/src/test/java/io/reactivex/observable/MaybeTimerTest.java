@@ -13,15 +13,16 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Test;
-
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 public class MaybeTimerTest {
     @Test
@@ -29,10 +30,11 @@ public class MaybeTimerTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final AtomicLong atomicLong = new AtomicLong();
-        Maybe.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Consumer<Long>() {
+        Maybe.timer(2, TimeUnit.SECONDS, testScheduler).subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(final Long value) throws Exception {
+            public Unit invoke(final Long value) {
                 atomicLong.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 

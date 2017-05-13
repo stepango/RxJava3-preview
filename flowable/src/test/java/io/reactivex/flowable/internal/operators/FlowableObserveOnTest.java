@@ -42,7 +42,6 @@ import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
@@ -130,26 +129,28 @@ public class FlowableObserveOnTest {
         final CountDownLatch completedLatch = new CountDownLatch(1);
 
         // assert subscribe is on main thread
-        obs = obs.doOnNext(new Consumer<String>() {
+        obs = obs.doOnNext(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 String threadName = Thread.currentThread().getName();
                 System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
                 assertEquals(parentThreadName, threadName);
+                return Unit.INSTANCE;
             }
 
         });
 
         // assert observe is on new thread
-        obs.observeOn(Schedulers.newThread()).doOnNext(new Consumer<String>() {
+        obs.observeOn(Schedulers.newThread()).doOnNext(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String t1) {
+            public Unit invoke(String t1) {
                 String threadName = Thread.currentThread().getName();
                 boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
                 System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
                 assertTrue(correctThreadName);
+                return Unit.INSTANCE;
             }
 
         }).doAfterTerminate(new Function0() {
@@ -253,14 +254,15 @@ public class FlowableObserveOnTest {
             }
 
         }).observeOn(Schedulers.newThread())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
                 // FIXME toBlocking methods run on the current thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                return Unit.INSTANCE;
             }
 
         });
@@ -283,14 +285,15 @@ public class FlowableObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
                 // FIXME toBlocking methods run on the caller's thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                return Unit.INSTANCE;
             }
 
         });
@@ -325,15 +328,16 @@ public class FlowableObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
                 // FIXME toBlocking now runs its methods on the caller thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                return Unit.INSTANCE;
             }
 
         });
@@ -709,24 +713,26 @@ public class FlowableObserveOnTest {
     @Test
     public void testErrorPropagatesWhenNoOutstandingRequests() {
         Flowable<Long> timer = Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
-                .doOnEach(new Consumer<Notification<Long>>() {
+                .doOnEach(new Function1<Notification<Long>, kotlin.Unit>() {
 
                     @Override
-                    public void accept(Notification<Long> n) {
+                    public Unit invoke(Notification<Long> n) {
 //                        System.out.println("BEFORE " + n);
+                        return Unit.INSTANCE;
                     }
 
                 })
                 .observeOn(Schedulers.newThread())
-                .doOnEach(new Consumer<Notification<Long>>() {
+                .doOnEach(new Function1<Notification<Long>, kotlin.Unit>() {
 
                     @Override
-                    public void accept(Notification<Long> n) {
+                    public Unit invoke(Notification<Long> n) {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                         }
 //                        System.out.println("AFTER " + n);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -991,12 +997,17 @@ public class FlowableObserveOnTest {
     public void delayError() {
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
         .observeOn(Schedulers.computation(), true)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (v == 1) {
-                    Thread.sleep(100);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+                return Unit.INSTANCE;
             }
         })
         .test()

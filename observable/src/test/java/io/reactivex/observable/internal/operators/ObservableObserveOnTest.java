@@ -32,7 +32,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observable.Observable;
@@ -49,6 +48,7 @@ import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.UnicastSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -121,26 +121,28 @@ public class ObservableObserveOnTest {
         final CountDownLatch completedLatch = new CountDownLatch(1);
 
         // assert subscribe is on main thread
-        obs = obs.doOnNext(new Consumer<String>() {
+        obs = obs.doOnNext(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 String threadName = Thread.currentThread().getName();
                 System.out.println("Source ThreadName: " + threadName + "  Expected => " + parentThreadName);
                 assertEquals(parentThreadName, threadName);
+                return Unit.INSTANCE;
             }
 
         });
 
         // assert observe is on new thread
-        obs.observeOn(Schedulers.newThread()).doOnNext(new Consumer<String>() {
+        obs.observeOn(Schedulers.newThread()).doOnNext(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String t1) {
+            public Unit invoke(String t1) {
                 String threadName = Thread.currentThread().getName();
                 boolean correctThreadName = threadName.startsWith("RxNewThreadScheduler");
                 System.out.println("ObserveOn ThreadName: " + threadName + "  Correct => " + correctThreadName);
                 assertTrue(correctThreadName);
+                return Unit.INSTANCE;
             }
 
         }).doAfterTerminate(new Function0() {
@@ -246,14 +248,15 @@ public class ObservableObserveOnTest {
             }
 
         }).observeOn(Schedulers.newThread())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
                 // FIXME toBlocking methods run on the current thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                return Unit.INSTANCE;
             }
 
         });
@@ -276,14 +279,15 @@ public class ObservableObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
                 // FIXME toBlocking methods run on the caller's thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                return Unit.INSTANCE;
             }
 
         });
@@ -318,15 +322,16 @@ public class ObservableObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
 //                assertTrue(name.startsWith("RxComputationThreadPool"));
                 // FIXME toBlocking now runs its methods on the caller thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
+                return Unit.INSTANCE;
             }
 
         });
@@ -475,12 +480,17 @@ public class ObservableObserveOnTest {
     public void delayError() {
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
         .observeOn(Schedulers.computation(), true)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (v == 1) {
-                    Thread.sleep(100);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        //do nothing
+                    }
                 }
+                return Unit.INSTANCE;
             }
         })
         .test()

@@ -19,18 +19,19 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.CompletableObserver;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class CallbackCompletableObserver
-extends AtomicReference<Disposable> implements CompletableObserver, Disposable, Consumer<Throwable> {
+        extends AtomicReference<Disposable> implements CompletableObserver, Disposable, Function1<Throwable, Unit> {
 
 
     private static final long serialVersionUID = -4361286194466301354L;
 
-    final Consumer<? super Throwable> onError;
+    final Function1<? super Throwable, Unit> onError;
     final Function0 onComplete;
 
     public CallbackCompletableObserver(Function0 onComplete) {
@@ -38,14 +39,15 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
         this.onComplete = onComplete;
     }
 
-    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Function0 onComplete) {
+    public CallbackCompletableObserver(Function1<? super Throwable, Unit> onError, Function0 onComplete) {
         this.onError = onError;
         this.onComplete = onComplete;
     }
 
     @Override
-    public void accept(Throwable e) {
+    public Unit invoke(Throwable e) {
         RxJavaCommonPlugins.onError(new OnErrorNotImplementedException(e));
+        return Unit.INSTANCE;
     }
 
     @Override
@@ -62,7 +64,7 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
     @Override
     public void onError(Throwable e) {
         try {
-            onError.accept(e);
+            onError.invoke(e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(ex);

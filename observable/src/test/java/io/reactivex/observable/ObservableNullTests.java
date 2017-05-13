@@ -37,10 +37,10 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 /**
@@ -444,10 +444,11 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateConsumerEmitsNull() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
+        Observable.generate(new Function1<Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void accept(Emitter<Object> s) {
+            public Unit invoke(Emitter<Object> s) {
                 s.onNext(null);
+                return Unit.INSTANCE;
             }
         }).blockingLast();
     }
@@ -456,7 +457,7 @@ public class ObservableNullTests {
     public void generateStateConsumerInitialStateNull() {
         BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Emitter<Integer> o) {
+            public void invoke(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
             }
         };
@@ -485,7 +486,7 @@ public class ObservableNullTests {
     public void generateConsumerStateNullAllowed() {
         BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Emitter<Integer> o) {
+            public void invoke(Integer s, Emitter<Integer> o) {
                 o.onComplete();
             }
         };
@@ -514,7 +515,7 @@ public class ObservableNullTests {
     public void generateConsumerDisposeNull() {
         BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Emitter<Integer> o) {
+            public void invoke(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
             }
         };
@@ -696,9 +697,11 @@ public class ObservableNullTests {
             public Observable<Integer> apply(Object d) {
                 return just1;
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) { }
+            public Unit invoke(Object d) {
+                return Unit.INSTANCE;
+            }
         });
     }
 
@@ -709,9 +712,11 @@ public class ObservableNullTests {
             public Object call() {
                 return 1;
             }
-        }, null, new Consumer<Object>() {
+        }, null, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) { }
+            public Unit invoke(Object d) {
+                return Unit.INSTANCE;
+            }
         });
     }
 
@@ -727,9 +732,11 @@ public class ObservableNullTests {
             public Observable<Object> apply(Object d) {
                 return null;
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) { }
+            public Unit invoke(Object d) {
+                return Unit.INSTANCE;
+            }
         }).blockingLast();
     }
 
@@ -1010,7 +1017,8 @@ public class ObservableNullTests {
     public void collectInitialSupplierNull() {
         just1.collect((Callable<Integer>)null, new BiConsumer<Integer, Integer>() {
             @Override
-            public void accept(Integer a, Integer b) { }
+            public void invoke(Integer a, Integer b) {
+            }
         });
     }
 
@@ -1023,7 +1031,8 @@ public class ObservableNullTests {
             }
         }, new BiConsumer<Object, Integer>() {
             @Override
-            public void accept(Object a, Integer b) { }
+            public void invoke(Object a, Integer b) {
+            }
         }).blockingGet();
     }
 
@@ -1041,7 +1050,8 @@ public class ObservableNullTests {
     public void collectIntoInitialNull() {
         just1.collectInto(null, new BiConsumer<Object, Integer>() {
             @Override
-            public void accept(Object a, Integer b) { }
+            public void invoke(Object a, Integer b) {
+            }
         });
     }
 
@@ -1293,7 +1303,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void doOnEachSupplierNull() {
-        just1.doOnEach((Consumer<Notification<Integer>>)null);
+        just1.doOnEach((Function1<Notification<Integer>, kotlin.Unit>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1313,9 +1323,11 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void doOnLifecycleOnDisposeNull() {
-        just1.doOnLifecycle(new Consumer<Disposable>() {
+        just1.doOnLifecycle(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) { }
+            public Unit invoke(Disposable s) {
+                return Unit.INSTANCE;
+            }
         }, null);
     }
 
@@ -1616,9 +1628,11 @@ public class ObservableNullTests {
             public Boolean invoke(Integer v) {
                 return true;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) { }
+            public Unit invoke(Throwable e) {
+                return Unit.INSTANCE;
+            }
         }, null);
     }
 
@@ -2193,36 +2207,46 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnNextNull() {
-        just1.subscribe((Consumer<Integer>)null);
+        just1.subscribe((Function1<Integer, kotlin.Unit>) null);
     }
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnErrorNull() {
-        just1.subscribe(new Consumer<Integer>() {
+        just1.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) { }
+            public Unit invoke(Integer e) {
+                return Unit.INSTANCE;
+            }
         }, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnCompleteNull() {
-        just1.subscribe(new Consumer<Integer>() {
+        just1.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) { }
-        }, new Consumer<Throwable>() {
+            public Unit invoke(Integer e) {
+                return Unit.INSTANCE;
+            }
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) { }
+            public Unit invoke(Throwable e) {
+                return Unit.INSTANCE;
+            }
         }, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnSubscribeNull() {
-        just1.subscribe(new Consumer<Integer>() {
+        just1.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) { }
-        }, new Consumer<Throwable>() {
+            public Unit invoke(Integer e) {
+                return Unit.INSTANCE;
+            }
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) { }
+            public Unit invoke(Throwable e) {
+                return Unit.INSTANCE;
+            }
         }, Functions.EMPTY_ACTION, null);
     }
 

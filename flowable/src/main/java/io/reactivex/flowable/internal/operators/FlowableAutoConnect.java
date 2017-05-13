@@ -13,13 +13,14 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.reactivestreams.Subscriber;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Wraps a ConnectableObservable and calls its connect() method once
@@ -30,12 +31,12 @@ import io.reactivex.flowable.*;
 public final class FlowableAutoConnect<T> extends Flowable<T> {
     final ConnectableFlowable<? extends T> source;
     final int numberOfSubscribers;
-    final Consumer<? super Disposable> connection;
+    final Function1<? super Disposable, kotlin.Unit> connection;
     final AtomicInteger clients;
 
     public FlowableAutoConnect(ConnectableFlowable<? extends T> source,
-            int numberOfSubscribers,
-            Consumer<? super Disposable> connection) {
+                               int numberOfSubscribers,
+                               Function1<? super Disposable, kotlin.Unit> connection) {
         this.source = source;
         this.numberOfSubscribers = numberOfSubscribers;
         this.connection = connection;

@@ -13,22 +13,37 @@
 
 package io.reactivex.observable.subjects;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class AsyncSubjectTest {
 
@@ -197,10 +212,10 @@ public class AsyncSubjectTest {
             final AsyncSubject<String> subject = AsyncSubject.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
-            subject.subscribe(new Consumer<String>() {
+            subject.subscribe(new Function1<String, Unit>() {
 
                 @Override
-                public void accept(String t1) {
+                public Unit invoke(String t1) {
                     try {
                         // simulate a slow observer
                         Thread.sleep(50);
@@ -208,6 +223,7 @@ public class AsyncSubjectTest {
                         e.printStackTrace();
                     }
                     value1.set(t1);
+                    return Unit.INSTANCE;
                 }
 
             });

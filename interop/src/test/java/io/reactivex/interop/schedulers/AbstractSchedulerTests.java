@@ -13,26 +13,40 @@
 
 package io.reactivex.interop.schedulers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.TrampolineScheduler;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.AsyncSubscription;
+import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.interop.RxJava3Interop;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -356,12 +370,13 @@ public abstract class AbstractSchedulerTests {
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
-        obs.blockingForEach(new Consumer<Integer>() {
+        obs.blockingForEach(new Function1<Integer, Unit>() {
 
             @Override
-            public void accept(Integer v) {
+            public Unit invoke(Integer v) {
                 System.out.println("Value: " + v);
                 lastValue.set(v);
+                return Unit.INSTANCE;
             }
         });
 

@@ -30,7 +30,6 @@ import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
@@ -536,7 +535,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext) {
+    public final ParallelFlowable<T> doOnNext(@NonNull Function1<? super T, Unit> onNext) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 onNext,
@@ -564,7 +563,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @Experimental
     @NonNull
-    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull ParallelFailureHandling errorHandler) {
+    public final ParallelFlowable<T> doOnNext(@NonNull Function1<? super T, Unit> onNext, @NonNull ParallelFailureHandling errorHandler) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));
@@ -584,7 +583,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @Experimental
     @NonNull
-    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final ParallelFlowable<T> doOnNext(@NonNull Function1<? super T, Unit> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));
@@ -599,7 +598,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doAfterNext(@NonNull Consumer<? super T> onAfterNext) {
+    public final ParallelFlowable<T> doAfterNext(@NonNull Function1<? super T, Unit> onAfterNext) {
         ObjectHelper.requireNonNull(onAfterNext, "onAfterNext is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 Functions.emptyConsumer(),
@@ -621,7 +620,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doOnError(@NonNull Consumer<Throwable> onError) {
+    public final ParallelFlowable<T> doOnError(@NonNull Function1<Throwable, kotlin.Unit> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 Functions.emptyConsumer(),
@@ -687,7 +686,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final ParallelFlowable<T> doOnSubscribe(@NonNull Consumer<? super Subscription> onSubscribe) {
+    public final ParallelFlowable<T> doOnSubscribe(@NonNull Function1<? super Subscription, kotlin.Unit> onSubscribe) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelPeek<T>(this,
                 Functions.emptyConsumer(),

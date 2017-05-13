@@ -13,28 +13,33 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableUsing<T, D> extends Flowable<T> {
     final Callable<? extends D> resourceSupplier;
     final Function<? super D, ? extends Publisher<? extends T>> sourceSupplier;
-    final Consumer<? super D> disposer;
+    final Function1<? super D, kotlin.Unit> disposer;
     final boolean eager;
 
     public FlowableUsing(Callable<? extends D> resourceSupplier,
-            Function<? super D, ? extends Publisher<? extends T>> sourceSupplier,
-            Consumer<? super D> disposer,
-            boolean eager) {
+                         Function<? super D, ? extends Publisher<? extends T>> sourceSupplier,
+                         Function1<? super D, kotlin.Unit> disposer,
+                         boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.sourceSupplier = sourceSupplier;
         this.disposer = disposer;
@@ -59,7 +64,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             try {
-                disposer.accept(resource);
+                disposer.invoke(resource);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(new CompositeException(e, ex), s);
@@ -80,12 +85,12 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         final Subscriber<? super T> actual;
         final D resource;
-        final Consumer<? super D> disposer;
+        final Function1<? super D, kotlin.Unit> disposer;
         final boolean eager;
 
         Subscription s;
 
-        UsingSubscriber(Subscriber<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingSubscriber(Subscriber<? super T> actual, D resource, Function1<? super D, kotlin.Unit> disposer, boolean eager) {
             this.actual = actual;
             this.resource = resource;
             this.disposer = disposer;
@@ -111,7 +116,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                 Throwable innerError = null;
                 if (compareAndSet(false, true)) {
                     try {
-                        disposer.accept(resource);
+                        disposer.invoke(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
                         innerError = e;
@@ -136,7 +141,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
             if (eager) {
                 if (compareAndSet(false, true)) {
                     try {
-                        disposer.accept(resource);
+                        disposer.invoke(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
                         actual.onError(e);
@@ -167,7 +172,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         void disposeAfter() {
             if (compareAndSet(false, true)) {
                 try {
-                    disposer.accept(resource);
+                    disposer.invoke(resource);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     // can't call actual.onError unless it is serialized, which is expensive

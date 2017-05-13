@@ -30,13 +30,13 @@ import java.util.concurrent.Callable;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.operators.FlowableRange;
 import io.reactivex.flowable.internal.operators.ParallelFromPublisher;
 import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -189,7 +189,7 @@ public class RxJavaFlowablePluginsTest {
         RxJavaFlowablePlugins.lockdown();
         try {
             assertTrue(RxJavaFlowablePlugins.isLockdown());
-            Consumer a1 = Functions.emptyConsumer();
+            Function1 a1 = Functions.emptyConsumer();
             Callable f0 = new Callable() {
                 @Override
                 public Object call() {
@@ -235,8 +235,7 @@ public class RxJavaFlowablePluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Function.class)) {
                             m.invoke(null, f1);
-                        } else
-                        if (paramType.isAssignableFrom(Consumer.class)) {
+                        } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, a1);
                         } else if (paramType.isAssignableFrom(Function0.class)) {
                             m.invoke(null, bs);
@@ -838,7 +837,7 @@ public class RxJavaFlowablePluginsTest {
                     return new ConnectableFlowable() {
 
                         @Override
-                        public void connect(Consumer connection) {
+                        public void connect(Function1 connection) {
 
                         }
 

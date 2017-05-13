@@ -13,27 +13,46 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 public class FlowableAmbTest {
 
@@ -243,10 +262,11 @@ public class FlowableAmbTest {
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Subscription> incrementer = new Consumer<Subscription>() {
+        Function1<Subscription, kotlin.Unit> incrementer = new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         };
 
@@ -291,14 +311,15 @@ public class FlowableAmbTest {
         // then second Flowable does not get subscribed to before first
         // subscription completes hence first Flowable emits result through
         // amb
-        int result = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        int result = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         //
                     }
+                return Unit.INSTANCE;
             }
         }).ambWith(Flowable.just(2)).blockingSingle();
         assertEquals(1, result);

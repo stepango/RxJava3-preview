@@ -13,19 +13,27 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.ExecutionException;
+
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Notification;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableMaterializeTest {
 
@@ -103,9 +111,9 @@ public class ObservableMaterializeTest {
     public void testWithCompletionCausingError() {
         TestObserver<Notification<Integer>> ts = new TestObserver<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
-        Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
+        Observable.<Integer>empty().materialize().doOnNext(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object t) {
+            public Unit invoke(Object t) {
                 throw ex;
             }
         }).subscribe(ts);

@@ -30,7 +30,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -114,12 +113,13 @@ public class FlowableDoOnEachTest {
     @Test
     public void testDoOnEachWithErrorInCallback() {
         Flowable<String> base = Flowable.just("one", "two", "fail", "three");
-        Flowable<String> doOnEach = base.doOnNext(new Consumer<String>() {
+        Flowable<String> doOnEach = base.doOnNext(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -147,10 +147,11 @@ public class FlowableDoOnEachTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnNext(new Function1<List<Boolean>, kotlin.Unit>() {
                         @Override
-                        public void accept(List<Boolean> booleans) {
+                        public Unit invoke(List<Boolean> booleans) {
                             count.incrementAndGet();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();
@@ -173,10 +174,11 @@ public class FlowableDoOnEachTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnNext(new Function1<List<Boolean>, kotlin.Unit>() {
                         @Override
-                        public void accept(List<Boolean> booleans) {
+                        public Unit invoke(List<Boolean> booleans) {
                             count.incrementAndGet();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();
@@ -220,9 +222,9 @@ public class FlowableDoOnEachTest {
         TestSubscriber<Object> ts = TestSubscriber.create();
 
         Flowable.error(new TestException())
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 throw new TestException();
             }
         }).subscribe(ts);
@@ -254,9 +256,9 @@ public class FlowableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doOnNext(new Consumer<Object>() {
+                    .doOnNext(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object e) throws Exception {
+                public Unit invoke(Object e) {
                     throw new TestException();
                 }
             })
@@ -357,9 +359,9 @@ public class FlowableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doOnNext(new Consumer<Object>() {
+                    .doOnNext(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object e) throws Exception {
+                public Unit invoke(Object e) {
                     throw new TestException();
                 }
             })
@@ -389,9 +391,9 @@ public class FlowableDoOnEachTest {
                     cs.onComplete();
                 }
             })
-            .doOnNext(new Consumer<Object>() {
+                    .doOnNext(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object e) throws Exception {
+                public Unit invoke(Object e) {
                     throw new TestException();
                 }
             })
@@ -501,9 +503,9 @@ public class FlowableDoOnEachTest {
     @Test
     public void onErrorOnErrorCrashConditional() {
         TestSubscriber<Object> ts = Flowable.error(new TestException("Outer"))
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 throw new TestException("Inner");
             }
         })
@@ -524,10 +526,11 @@ public class FlowableDoOnEachTest {
         final int[] call = { 0, 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -554,9 +557,9 @@ public class FlowableDoOnEachTest {
         final int[] call = { 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -583,10 +586,11 @@ public class FlowableDoOnEachTest {
         final int[] call = { 0, 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -614,9 +618,9 @@ public class FlowableDoOnEachTest {
         final int[] call = { 0 };
 
         Flowable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -646,10 +650,11 @@ public class FlowableDoOnEachTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -680,10 +685,11 @@ public class FlowableDoOnEachTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -715,10 +721,11 @@ public class FlowableDoOnEachTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up.hide()
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {

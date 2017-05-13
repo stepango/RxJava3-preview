@@ -31,7 +31,6 @@ import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -115,7 +114,7 @@ public final class Functions {
 
     public static final Function0 EMPTY_ACTION = new EmptyAction();
 
-    static final Consumer<Object> EMPTY_CONSUMER = new EmptyConsumer();
+    static final Function1<Object, Unit> EMPTY_CONSUMER = new EmptyConsumer();
 
     /**
      * Returns an empty consumer that does nothing.
@@ -123,19 +122,19 @@ public final class Functions {
      * @return an empty consumer that does nothing.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Consumer<T> emptyConsumer() {
-        return (Consumer<T>)EMPTY_CONSUMER;
+    public static <T> Function1<T, Unit> emptyConsumer() {
+        return (Function1<T, Unit>) EMPTY_CONSUMER;
     }
 
-    public static final Consumer<Throwable> ERROR_CONSUMER = new ErrorConsumer();
+    public static final Function1<Throwable, Unit> ERROR_CONSUMER = new ErrorConsumer();
 
     /**
      * Wraps the consumed Throwable into an OnErrorNotImplementedException and
      * signals it to the plugin error handler.
      */
-    public static final Consumer<Throwable> ON_ERROR_MISSING = new OnErrorMissingConsumer();
+    public static final Function1<Throwable, Unit> ON_ERROR_MISSING = new OnErrorMissingConsumer();
 
-    public static final Function1 EMPTY_LONG_CONSUMER = new EmptyLongConsumer();
+    public static final Function1<Long, Unit> EMPTY_LONG_CONSUMER = new EmptyLongConsumer();
 
     static final Function1<Object, Boolean> ALWAYS_TRUE = new TruePredicate();
 
@@ -307,43 +306,45 @@ public final class Functions {
         return (Callable)HashSetCallable.INSTANCE;
     }
 
-    static final class NotificationOnNext<T> implements Consumer<T> {
-        final Consumer<? super Notification<T>> onNotification;
+    static final class NotificationOnNext<T> implements Function1<T, Unit> {
+        final Function1<? super Notification<T>, Unit> onNotification;
 
-        NotificationOnNext(Consumer<? super Notification<T>> onNotification) {
+        NotificationOnNext(Function1<? super Notification<T>, Unit> onNotification) {
             this.onNotification = onNotification;
         }
 
         @Override
-        public void accept(T v) throws Exception {
-            onNotification.accept(Notification.createOnNext(v));
+        public Unit invoke(T v) {
+            onNotification.invoke(Notification.createOnNext(v));
+            return Unit.INSTANCE;
         }
     }
 
-    static final class NotificationOnError<T> implements Consumer<Throwable> {
-        final Consumer<? super Notification<T>> onNotification;
+    static final class NotificationOnError<T> implements Function1<Throwable, Unit> {
+        final Function1<? super Notification<T>, Unit> onNotification;
 
-        NotificationOnError(Consumer<? super Notification<T>> onNotification) {
+        NotificationOnError(Function1<? super Notification<T>, Unit> onNotification) {
             this.onNotification = onNotification;
         }
 
         @Override
-        public void accept(Throwable v) throws Exception {
-            onNotification.accept(Notification.<T>createOnError(v));
+        public Unit invoke(Throwable v) {
+            onNotification.invoke(Notification.<T>createOnError(v));
+            return Unit.INSTANCE;
         }
     }
 
     static final class NotificationOnComplete<T> implements Function0 {
-        final Consumer<? super Notification<T>> onNotification;
+        final Function1<? super Notification<T>, Unit> onNotification;
 
-        NotificationOnComplete(Consumer<? super Notification<T>> onNotification) {
+        NotificationOnComplete(Function1<? super Notification<T>, Unit> onNotification) {
             this.onNotification = onNotification;
         }
 
         @Override
         public kotlin.Unit invoke() {
             try {
-                onNotification.accept(Notification.<T>createOnComplete());
+                onNotification.invoke(Notification.<T>createOnComplete());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -351,19 +352,19 @@ public final class Functions {
         }
     }
 
-    public static <T> Consumer<T> notificationOnNext(Consumer<? super Notification<T>> onNotification) {
+    public static <T> Function1<T, Unit> notificationOnNext(Function1<? super Notification<T>, Unit> onNotification) {
         return new NotificationOnNext<T>(onNotification);
     }
 
-    public static <T> Consumer<Throwable> notificationOnError(Consumer<? super Notification<T>> onNotification) {
+    public static <T> Function1<Throwable, Unit> notificationOnError(Function1<? super Notification<T>, Unit> onNotification) {
         return new NotificationOnError<T>(onNotification);
     }
 
-    public static <T> Function0 notificationOnComplete(Consumer<? super Notification<T>> onNotification) {
+    public static <T> Function0 notificationOnComplete(Function1<? super Notification<T>, Unit> onNotification) {
         return new NotificationOnComplete<T>(onNotification);
     }
 
-    static final class ActionConsumer<T> implements Consumer<T> {
+    static final class ActionConsumer<T> implements Function1<T, Unit> {
         final Function0 action;
 
         ActionConsumer(Function0 action) {
@@ -371,12 +372,13 @@ public final class Functions {
         }
 
         @Override
-        public void accept(T t) throws Exception {
+        public Unit invoke(T t) {
             action.invoke();
+            return Unit.INSTANCE;
         }
     }
 
-    public static <T> Consumer<T> actionConsumer(Function0 action) {
+    public static <T> Function1<T, Unit> actionConsumer(Function0 action) {
         return new ActionConsumer<T>(action);
     }
 
@@ -442,7 +444,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(Map<K, T> m, T t) throws Exception {
+        public void invoke(Map<K, T> m, T t) throws Exception {
             K key = keySelector.apply(t);
             m.put(key, t);
         }
@@ -463,7 +465,7 @@ public final class Functions {
         }
 
         @Override
-        public void accept(Map<K, V> m, T t) throws Exception {
+        public void invoke(Map<K, V> m, T t) throws Exception {
             K key = keySelector.apply(t);
             V value = valueSelector.apply(t);
             m.put(key, value);
@@ -488,7 +490,7 @@ public final class Functions {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void accept(Map<K, Collection<V>> m, T t) throws Exception {
+        public void invoke(Map<K, Collection<V>> m, T t) throws Exception {
             K key = keySelector.apply(t);
 
             Collection<V> coll = m.get(key);
@@ -712,9 +714,11 @@ public final class Functions {
         }
     }
 
-    static final class EmptyConsumer implements Consumer<Object> {
+    static final class EmptyConsumer implements Function1<Object, Unit> {
         @Override
-        public void accept(Object v) { }
+        public Unit invoke(Object v) {
+            return Unit.INSTANCE;
+        }
 
         @Override
         public String toString() {
@@ -722,17 +726,19 @@ public final class Functions {
         }
     }
 
-    static final class ErrorConsumer implements Consumer<Throwable> {
+    static final class ErrorConsumer implements Function1<Throwable, Unit> {
         @Override
-        public void accept(Throwable error) {
+        public Unit invoke(Throwable error) {
             RxJavaCommonPlugins.onError(error);
+            return Unit.INSTANCE;
         }
     }
 
-    static final class OnErrorMissingConsumer implements Consumer<Throwable> {
+    static final class OnErrorMissingConsumer implements Function1<Throwable, Unit> {
         @Override
-        public void accept(Throwable error) {
+        public Unit invoke(Throwable error) {
             RxJavaCommonPlugins.onError(new OnErrorNotImplementedException(error));
+            return Unit.INSTANCE;
         }
     }
 

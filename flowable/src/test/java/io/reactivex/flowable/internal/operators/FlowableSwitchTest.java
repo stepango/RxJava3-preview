@@ -35,7 +35,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -698,10 +697,11 @@ public class FlowableSwitchTest {
     public void switchOnNextPrefetch() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -715,10 +715,11 @@ public class FlowableSwitchTest {
     public void switchOnNextDelayError() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -732,10 +733,11 @@ public class FlowableSwitchTest {
     public void switchOnNextDelayErrorPrefetch() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         });
 

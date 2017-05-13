@@ -36,13 +36,13 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -527,11 +527,12 @@ public class FlowableTests {
 
         // subscribe once
         final CountDownLatch latch = new CountDownLatch(1);
-        connectable.subscribe(new Consumer<String>() {
+        connectable.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String value) {
+            public Unit invoke(String value) {
                 assertEquals("last", value);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -571,20 +572,22 @@ public class FlowableTests {
             final CountDownLatch latch = new CountDownLatch(2);
 
             // subscribe once
-            o.subscribe(new Consumer<String>() {
+            o.subscribe(new Function1<String, kotlin.Unit>() {
                 @Override
-                public void accept(String v) {
+                public Unit invoke(String v) {
                     assertEquals("one", v);
                     latch.countDown();
+                    return Unit.INSTANCE;
                 }
             });
 
             // subscribe again
-            o.subscribe(new Consumer<String>() {
+            o.subscribe(new Function1<String, kotlin.Unit>() {
                 @Override
-                public void accept(String v) {
+                public Unit invoke(String v) {
                     assertEquals("one", v);
                     latch.countDown();
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -619,20 +622,22 @@ public class FlowableTests {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -664,20 +669,22 @@ public class FlowableTests {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1070,10 +1077,11 @@ public class FlowableTests {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnNext(new Function1<List<Boolean>, kotlin.Unit>() {
                         @Override
-                        public void accept(List<Boolean> booleans) {
+                        public Unit invoke(List<Boolean> booleans) {
                             count.incrementAndGet();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();

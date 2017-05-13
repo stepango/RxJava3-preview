@@ -34,7 +34,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -53,6 +52,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -775,13 +775,14 @@ public class ObservableCombineLatestTest {
         final int SIZE = 2000;
         Observable<Long> timer = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
-                .doOnEach(new Consumer<Notification<Long>>() {
+                .doOnEach(new Function1<Notification<Long>, kotlin.Unit>() {
                     @Override
-                    public void accept(Notification<Long> n) {
+                    public Unit invoke(Notification<Long> n) {
                             //                        System.out.println(n);
                             if (count.incrementAndGet() >= SIZE) {
                                 latch.countDown();
                             }
+                        return Unit.INSTANCE;
                     }
                 }).take(SIZE);
 
@@ -909,10 +910,11 @@ public class ObservableCombineLatestTest {
 
         Observable.combineLatest(
                 Observable.just(1)
-                .doOnNext(new Consumer<Integer>() {
+                        .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer v) throws Exception {
+                    public Unit invoke(Integer v) {
                         to.cancel();
+                        return Unit.INSTANCE;
                     }
                 }),
                 Observable.never(),
@@ -1055,10 +1057,11 @@ public class ObservableCombineLatestTest {
 
             Observable.combineLatest(Observable.empty(),
                     Observable.error(new TestException())
-                    .doOnSubscribe(new Consumer<Disposable>() {
+                            .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                         @Override
-                        public void accept(Disposable d) throws Exception {
+                        public Unit invoke(Disposable d) {
                             count[0]++;
+                            return Unit.INSTANCE;
                         }
                     }),
                     new BiFunction<Object, Object, Object>() {
@@ -1088,10 +1091,11 @@ public class ObservableCombineLatestTest {
             Observable.combineLatestDelayError(
                     Arrays.asList(Observable.empty(),
                         Observable.error(new TestException())
-                        .doOnSubscribe(new Consumer<Disposable>() {
+                                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                             @Override
-                            public void accept(Disposable d) throws Exception {
+                            public Unit invoke(Disposable d) {
                                 count[0]++;
+                                return Unit.INSTANCE;
                             }
                         })
                     ),
@@ -1138,10 +1142,11 @@ public class ObservableCombineLatestTest {
             Observable.combineLatestDelayError(
                     Arrays.asList(
                             emptyObservable
-                                    .doOnEach(new Consumer<Notification<Integer>>() {
+                                    .doOnEach(new Function1<Notification<Integer>, kotlin.Unit>() {
                                         @Override
-                                        public void accept(Notification<Integer> integerNotification) throws Exception {
+                                        public Unit invoke(Notification<Integer> integerNotification) {
                                             System.out.println("emptyObservable: " + integerNotification);
+                                            return Unit.INSTANCE;
                                         }
                                     })
                                     .doFinally(new Function0() {
@@ -1152,10 +1157,11 @@ public class ObservableCombineLatestTest {
                                         }
                                     }),
                             errorObservable
-                                    .doOnEach(new Consumer<Notification<Object>>() {
+                                    .doOnEach(new Function1<Notification<Object>, kotlin.Unit>() {
                                         @Override
-                                        public void accept(Notification<Object> integerNotification) throws Exception {
+                                        public Unit invoke(Notification<Object> integerNotification) {
                                             System.out.println("errorObservable: " + integerNotification);
+                                            return Unit.INSTANCE;
                                         }
                                     })
                                     .doFinally(new Function0() {
@@ -1172,10 +1178,11 @@ public class ObservableCombineLatestTest {
                         }
                     }
             )
-                    .doOnEach(new Consumer<Notification<Object>>() {
+                    .doOnEach(new Function1<Notification<Object>, kotlin.Unit>() {
                         @Override
-                        public void accept(Notification<Object> integerNotification) throws Exception {
+                        public Unit invoke(Notification<Object> integerNotification) {
                             System.out.println("combineLatestDelayError: " + integerNotification);
+                            return Unit.INSTANCE;
                         }
                     })
                     .doFinally(new Function0() {

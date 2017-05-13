@@ -15,8 +15,10 @@ package io.reactivex.observable.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.SingleObserver;
@@ -37,7 +39,7 @@ implements SingleObserver<T>, Disposable {
     public void onError(Throwable e) {
         try {
             lazySet(DisposableHelper.DISPOSED);
-            onCallback.accept(null, e);
+            onCallback.invoke(null, e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(new CompositeException(e, ex));
@@ -53,7 +55,7 @@ implements SingleObserver<T>, Disposable {
     public void onSuccess(T value) {
         try {
             lazySet(DisposableHelper.DISPOSED);
-            onCallback.accept(value, null);
+            onCallback.invoke(value, null);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(ex);

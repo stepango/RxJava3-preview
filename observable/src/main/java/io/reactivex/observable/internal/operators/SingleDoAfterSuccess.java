@@ -13,12 +13,16 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
@@ -30,9 +34,9 @@ public final class SingleDoAfterSuccess<T> extends Single<T> {
 
     final SingleSource<T> source;
 
-    final Consumer<? super T> onAfterSuccess;
+    final Function1<? super T, Unit> onAfterSuccess;
 
-    public SingleDoAfterSuccess(SingleSource<T> source, Consumer<? super T> onAfterSuccess) {
+    public SingleDoAfterSuccess(SingleSource<T> source, Function1<? super T, Unit> onAfterSuccess) {
         this.source = source;
         this.onAfterSuccess = onAfterSuccess;
     }
@@ -46,11 +50,11 @@ public final class SingleDoAfterSuccess<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        final Consumer<? super T> onAfterSuccess;
+        final Function1<? super T, Unit> onAfterSuccess;
 
         Disposable d;
 
-        DoAfterObserver(SingleObserver<? super T> actual, Consumer<? super T> onAfterSuccess) {
+        DoAfterObserver(SingleObserver<? super T> actual, Function1<? super T, Unit> onAfterSuccess) {
             this.actual = actual;
             this.onAfterSuccess = onAfterSuccess;
         }
@@ -69,7 +73,7 @@ public final class SingleDoAfterSuccess<T> extends Single<T> {
             actual.onSuccess(t);
 
             try {
-                onAfterSuccess.accept(t);
+                onAfterSuccess.invoke(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
              // remember, onSuccess is a terminal event and we can't call onError

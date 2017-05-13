@@ -30,7 +30,6 @@ import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -109,6 +108,7 @@ import io.reactivex.observable.internal.operators.MaybeZipIterable;
 import io.reactivex.observable.internal.operators.ObservableConcatMap;
 import io.reactivex.observable.internal.operators.ObservableFlatMap;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
@@ -1410,8 +1410,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Maybe<T> using(Callable<? extends D> resourceSupplier,
-            Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
-                    Consumer<? super D> resourceDisposer) {
+                                        Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
+                                        Function1<? super D, kotlin.Unit> resourceDisposer) {
         return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
     }
 
@@ -1445,8 +1445,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Maybe<T> using(Callable<? extends D> resourceSupplier,
-            Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
-                    Consumer<? super D> resourceDisposer, boolean eager) {
+                                        Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
+                                        Function1<? super D, kotlin.Unit> resourceDisposer, boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(sourceSupplier, "sourceSupplier is null");
         ObjectHelper.requireNonNull(resourceDisposer, "disposer is null");
@@ -2367,7 +2367,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Maybe<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
+    public final Maybe<T> doAfterSuccess(Function1<? super T, Unit> onAfterSuccess) {
         ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeDoAfterSuccess<T>(this, onAfterSuccess));
     }
@@ -2488,7 +2488,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> doOnError(Consumer<? super Throwable> onError) {
+    public final Maybe<T> doOnError(Function1<? super Throwable, Unit> onError) {
         return RxJavaObservablePlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
                 Functions.emptyConsumer(), // onSuccess
@@ -2532,7 +2532,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
+    public final Maybe<T> doOnSubscribe(Function1<? super Disposable, kotlin.Unit> onSubscribe) {
         return RxJavaObservablePlugins.onAssembly(new MaybePeek<T>(this,
                 ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null"),
                 Functions.emptyConsumer(), // onSuccess
@@ -2555,7 +2555,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> doOnSuccess(Consumer<? super T> onSuccess) {
+    public final Maybe<T> doOnSuccess(Function1<? super T, Unit> onSuccess) {
         return RxJavaObservablePlugins.onAssembly(new MaybePeek<T>(this,
                 Functions.emptyConsumer(), // onSubscribe
                 ObjectHelper.requireNonNull(onSuccess, "onSubscribe is null"),
@@ -3541,7 +3541,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(Consumer<? super T> onSuccess) {
+    public final Disposable subscribe(Function1<? super T, Unit> onSuccess) {
         return subscribe(onSuccess, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
     }
 
@@ -3567,7 +3567,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError) {
+    public final Disposable subscribe(Function1<? super T, Unit> onSuccess, Function1<? super Throwable, Unit> onError) {
         return subscribe(onSuccess, onError, Functions.EMPTY_ACTION);
     }
 
@@ -3597,7 +3597,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError,
+    public final Disposable subscribe(Function1<? super T, Unit> onSuccess, Function1<? super Throwable, Unit> onError,
                                       Function0 onComplete) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
         ObjectHelper.requireNonNull(onError, "onError is null");

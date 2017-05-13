@@ -15,10 +15,13 @@
  */
 package io.reactivex.common.internal.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class TestingHelper {
 
@@ -26,12 +29,13 @@ public final class TestingHelper {
         // prevent instantiation
     }
 
-    public static <T> Consumer<T> addToList(final List<T> list) {
-        return new Consumer<T>() {
+    public static <T> Function1<T, kotlin.Unit> addToList(final List<T> list) {
+        return new Function1<T, kotlin.Unit>() {
 
             @Override
-            public void accept(T t) {
+            public Unit invoke(T t) {
                 list.add(t);
+                return Unit.INSTANCE;
             }
         };
     }
@@ -50,7 +54,7 @@ public final class TestingHelper {
         return new BiConsumer<Object, Object>() {
 
             @Override
-            public void accept(Object t1, Object t2) {
+            public void invoke(Object t1, Object t2) {
                 throw e;
             }
         };

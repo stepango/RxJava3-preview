@@ -16,14 +16,21 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test super/extends of generics.
@@ -71,20 +78,22 @@ public class ObservableCovarianceTest {
                 return v.getClass();
             }
         })
-        .doOnNext(new Consumer<GroupedObservable<Object, Movie>>() {
+                .doOnNext(new Function1<GroupedObservable<Object, Movie>, Unit>() {
             @Override
-            public void accept(GroupedObservable<Object, Movie> g) {
+            public Unit invoke(GroupedObservable<Object, Movie> g) {
                 System.out.println(g.getKey());
+                return Unit.INSTANCE;
             }
         })
         .flatMap(new Function<GroupedObservable<Object, Movie>, Observable<String>>() {
             @Override
             public Observable<String> apply(GroupedObservable<Object, Movie> g) {
                 return g
-                .doOnNext(new Consumer<Movie>() {
+                        .doOnNext(new Function1<Movie, Unit>() {
                     @Override
-                    public void accept(Movie pv) {
+                    public Unit invoke(Movie pv) {
                         System.out.println(pv);
+                        return Unit.INSTANCE;
                     }
                 })
                 .compose(new ObservableTransformer<Movie, Movie>() {

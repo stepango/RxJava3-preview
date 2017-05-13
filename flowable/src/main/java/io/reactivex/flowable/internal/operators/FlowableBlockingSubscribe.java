@@ -19,7 +19,6 @@ import org.reactivestreams.Subscriber;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.BlockingHelper;
@@ -29,7 +28,9 @@ import io.reactivex.flowable.internal.subscribers.BlockingSubscriber;
 import io.reactivex.flowable.internal.subscribers.LambdaSubscriber;
 import io.reactivex.flowable.internal.utils.MaxRequestSubscription;
 import io.reactivex.flowable.internal.utils.NotificationLite;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility methods to consume a Publisher in a blocking manner with callbacks or Subscriber.
@@ -110,8 +111,8 @@ public final class FlowableBlockingSubscribe {
      * @param onComplete the callback action for the completion event.
      * @param <T> the value type
      */
-    public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
-                                     final Consumer<? super Throwable> onError, final Function0 onComplete) {
+    public static <T> void subscribe(Publisher<? extends T> o, final Function1<? super T, Unit> onNext,
+                                     final Function1<? super Throwable, Unit> onError, final Function0 onComplete) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");

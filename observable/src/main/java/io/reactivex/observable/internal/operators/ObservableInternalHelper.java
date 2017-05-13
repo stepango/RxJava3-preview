@@ -21,7 +21,6 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
@@ -45,20 +44,20 @@ public final class ObservableInternalHelper {
     }
 
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
-        final Consumer<Emitter<T>> consumer;
+        final Function1<Emitter<T>, kotlin.Unit> consumer;
 
-        SimpleGenerator(Consumer<Emitter<T>> consumer) {
+        SimpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
             this.consumer = consumer;
         }
 
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
-            consumer.accept(t2);
+            consumer.invoke(t2);
             return t1;
         }
     }
 
-    public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
+    public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
         return new SimpleGenerator<T, S>(consumer);
     }
 
@@ -71,7 +70,7 @@ public final class ObservableInternalHelper {
 
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
-            consumer.accept(t1, t2);
+            consumer.invoke(t1, t2);
             return t1;
         }
     }
@@ -98,7 +97,7 @@ public final class ObservableInternalHelper {
     }
 
 
-    static final class ObserverOnNext<T> implements Consumer<T> {
+    static final class ObserverOnNext<T> implements Function1<T, kotlin.Unit> {
         final Observer<T> observer;
 
         ObserverOnNext(Observer<T> observer) {
@@ -106,12 +105,13 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void accept(T v) throws Exception {
+        public Unit invoke(T v) {
             observer.onNext(v);
+            return Unit.INSTANCE;
         }
     }
 
-    static final class ObserverOnError<T> implements Consumer<Throwable> {
+    static final class ObserverOnError<T> implements Function1<Throwable, kotlin.Unit> {
         final Observer<T> observer;
 
         ObserverOnError(Observer<T> observer) {
@@ -119,8 +119,9 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public void accept(Throwable v) throws Exception {
+        public Unit invoke(Throwable v) {
             observer.onError(v);
+            return Unit.INSTANCE;
         }
     }
 
@@ -138,11 +139,11 @@ public final class ObservableInternalHelper {
         }
     }
 
-    public static <T> Consumer<T> observerOnNext(Observer<T> observer) {
+    public static <T> Function1<T, kotlin.Unit> observerOnNext(Observer<T> observer) {
         return new ObserverOnNext<T>(observer);
     }
 
-    public static <T> Consumer<Throwable> observerOnError(Observer<T> observer) {
+    public static <T> Function1<Throwable, kotlin.Unit> observerOnError(Observer<T> observer) {
         return new ObserverOnError<T>(observer);
     }
 

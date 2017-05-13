@@ -13,17 +13,26 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertTrue;
 
 public class MaybeDoOnEventTest {
 
@@ -31,7 +40,7 @@ public class MaybeDoOnEventTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.<Integer>create().singleElement().doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 // irrelevant
             }
         }));
@@ -44,7 +53,7 @@ public class MaybeDoOnEventTest {
             public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
                 return m.doOnEvent(new BiConsumer<Integer, Throwable>() {
                     @Override
-                    public void accept(Integer v, Throwable e) throws Exception {
+                    public void invoke(Integer v, Throwable e) throws Exception {
                         // irrelevant
                     }
                 });
@@ -67,9 +76,9 @@ public class MaybeDoOnEventTest {
                     s.onSuccess(1);
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
+                    .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException("First");
                 }
             })

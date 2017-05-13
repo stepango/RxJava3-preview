@@ -27,7 +27,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -113,12 +112,13 @@ public class ObservableDoOnEachTest {
     @Test
     public void testDoOnEachWithErrorInCallback() {
         Observable<String> base = Observable.just("one", "two", "fail", "three");
-        Observable<String> doOnEach = base.doOnNext(new Consumer<String>() {
+        Observable<String> doOnEach = base.doOnNext(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
+                return Unit.INSTANCE;
             }
         });
 
@@ -146,10 +146,11 @@ public class ObservableDoOnEachTest {
                         }
                     })
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
+                    .doOnSuccess(new Function1<List<Boolean>, kotlin.Unit>() {
                         @Override
-                        public void accept(List<Boolean> booleans) {
+                        public Unit invoke(List<Boolean> booleans) {
                             count.incrementAndGet();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();
@@ -172,10 +173,11 @@ public class ObservableDoOnEachTest {
                         }
                     })
                     .toList()
-                    .doOnSuccess(new Consumer<List<Boolean>>() {
+                    .doOnSuccess(new Function1<List<Boolean>, kotlin.Unit>() {
                         @Override
-                        public void accept(List<Boolean> booleans) {
+                        public Unit invoke(List<Boolean> booleans) {
                             count.incrementAndGet();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();
@@ -219,9 +221,9 @@ public class ObservableDoOnEachTest {
         TestObserver<Object> ts = TestObserver.create();
 
         Observable.error(new TestException())
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 throw new TestException();
             }
         }).subscribe(ts);
@@ -253,9 +255,9 @@ public class ObservableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doOnNext(new Consumer<Object>() {
+                    .doOnNext(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object e) throws Exception {
+                public Unit invoke(Object e) {
                     throw new TestException();
                 }
             })
@@ -356,9 +358,9 @@ public class ObservableDoOnEachTest {
                     s.onComplete();
                 }
             })
-            .doOnNext(new Consumer<Object>() {
+                    .doOnNext(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object e) throws Exception {
+                public Unit invoke(Object e) {
                     throw new TestException();
                 }
             })
@@ -468,9 +470,9 @@ public class ObservableDoOnEachTest {
     @Test
     public void onErrorOnErrorCrashConditional() {
         TestObserver<Object> ts = Observable.error(new TestException("Outer"))
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 throw new TestException("Inner");
             }
         })
@@ -492,10 +494,11 @@ public class ObservableDoOnEachTest {
         final int[] call = { 0, 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -523,9 +526,9 @@ public class ObservableDoOnEachTest {
         final int[] call = { 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -553,10 +556,11 @@ public class ObservableDoOnEachTest {
         final int[] call = { 0, 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -585,9 +589,9 @@ public class ObservableDoOnEachTest {
         final int[] call = { 0 };
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -618,10 +622,11 @@ public class ObservableDoOnEachTest {
         UnicastSubject<Integer> up = UnicastSubject.create();
 
         up
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -653,10 +658,11 @@ public class ObservableDoOnEachTest {
         UnicastSubject<Integer> up = UnicastSubject.create();
 
         up
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {
@@ -689,10 +695,11 @@ public class ObservableDoOnEachTest {
         UnicastSubject<Integer> up = UnicastSubject.create();
 
         up.hide()
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
                 .doOnComplete(new Function0() {

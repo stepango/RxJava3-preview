@@ -15,12 +15,14 @@ package io.reactivex.flowable.internal.utils;
 
 import org.reactivestreams.Subscription;
 
-import io.reactivex.common.functions.Consumer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
-public final class MaxRequestSubscription implements Consumer<Subscription> {
-    public static final Consumer<Subscription> REQUEST_MAX = new MaxRequestSubscription();
+public final class MaxRequestSubscription implements Function1<Subscription, kotlin.Unit> {
+    public static final Function1<Subscription, kotlin.Unit> REQUEST_MAX = new MaxRequestSubscription();
     @Override
-    public void accept(Subscription t) throws Exception {
+    public Unit invoke(Subscription t) {
         t.request(Long.MAX_VALUE);
+        return Unit.INSTANCE;
     }
 }

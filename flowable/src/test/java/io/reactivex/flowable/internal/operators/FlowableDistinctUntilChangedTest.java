@@ -29,7 +29,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -39,6 +38,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -235,10 +235,11 @@ public class FlowableDistinctUntilChangedTest {
         Flowable<String> src = Flowable.just("a", "b", "null", "c");
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
         src
-          .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) {
+                public Unit invoke(Throwable t) {
                     errorOccurred.set(true);
+                    return Unit.INSTANCE;
                 }
             })
           .distinctUntilChanged(THROWS_NON_FATAL)

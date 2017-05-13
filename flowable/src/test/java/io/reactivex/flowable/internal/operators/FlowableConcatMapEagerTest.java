@@ -36,7 +36,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -320,10 +319,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness2() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -345,10 +345,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness3() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -370,10 +371,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness4() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -395,10 +397,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness5() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -420,10 +423,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness6() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -445,10 +449,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness7() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -470,10 +475,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness8() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -495,10 +501,11 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void testEagerness9() {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> source = Flowable.just(1).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -616,12 +623,13 @@ public class FlowableConcatMapEagerTest {
                 return Flowable.just(t);
             }
         })
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 if (once.compareAndSet(false, true)) {
                     subject.onNext(2);
                 }
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -643,10 +651,11 @@ public class FlowableConcatMapEagerTest {
             @Override
             public Flowable<Integer> apply(Integer t) {
                 return Flowable.range(1, Flowable.bufferSize() * 2)
-                        .doOnNext(new Consumer<Integer>() {
+                        .doOnNext(new Function1<Integer, kotlin.Unit>() {
                             @Override
-                            public void accept(Integer t) {
+                            public Unit invoke(Integer t) {
                                 count.getAndIncrement();
+                                return Unit.INSTANCE;
                             }
                         }).hide();
             }

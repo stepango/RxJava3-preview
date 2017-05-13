@@ -22,7 +22,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
@@ -44,9 +43,9 @@ public class ParallelPeekTest {
     public void onSubscribeCrash() {
         Flowable.range(1, 5)
         .parallel()
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 throw new TestException();
             }
         })

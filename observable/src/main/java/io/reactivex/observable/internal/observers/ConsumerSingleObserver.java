@@ -15,11 +15,14 @@ package io.reactivex.observable.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.SingleObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class ConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
@@ -28,11 +31,11 @@ implements SingleObserver<T>, Disposable {
 
     private static final long serialVersionUID = -7012088219455310787L;
 
-    final Consumer<? super T> onSuccess;
+    final Function1<? super T, Unit> onSuccess;
 
-    final Consumer<? super Throwable> onError;
+    final Function1<? super Throwable, Unit> onError;
 
-    public ConsumerSingleObserver(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError) {
+    public ConsumerSingleObserver(Function1<? super T, Unit> onSuccess, Function1<? super Throwable, Unit> onError) {
         this.onSuccess = onSuccess;
         this.onError = onError;
     }
@@ -41,7 +44,7 @@ implements SingleObserver<T>, Disposable {
     public void onError(Throwable e) {
         lazySet(DisposableHelper.DISPOSED);
         try {
-            onError.accept(e);
+            onError.invoke(e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(new CompositeException(e, ex));
@@ -57,7 +60,7 @@ implements SingleObserver<T>, Disposable {
     public void onSuccess(T value) {
         lazySet(DisposableHelper.DISPOSED);
         try {
-            onSuccess.accept(value);
+            onSuccess.invoke(value);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(ex);

@@ -32,7 +32,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -42,6 +41,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertNull;
@@ -179,11 +179,12 @@ public class FlowableMapTest {
                 }
                 return s;
             }
-        }).doOnError(new Consumer<Throwable>() {
+        }).doOnError(new Function1<Throwable, kotlin.Unit>() {
 
             @Override
-            public void accept(Throwable t1) {
+            public Unit invoke(Throwable t1) {
                 t1.printStackTrace();
+                return Unit.INSTANCE;
             }
 
         });

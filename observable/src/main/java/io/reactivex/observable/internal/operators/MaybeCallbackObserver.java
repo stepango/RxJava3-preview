@@ -19,10 +19,11 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * MaybeObserver that delegates the onSuccess, onError and onComplete method calls to callbacks.
@@ -36,13 +37,13 @@ implements MaybeObserver<T>, Disposable {
 
     private static final long serialVersionUID = -6076952298809384986L;
 
-    final Consumer<? super T> onSuccess;
+    final Function1<? super T, Unit> onSuccess;
 
-    final Consumer<? super Throwable> onError;
+    final Function1<? super Throwable, Unit> onError;
 
     final Function0 onComplete;
 
-    public MaybeCallbackObserver(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError,
+    public MaybeCallbackObserver(Function1<? super T, Unit> onSuccess, Function1<? super Throwable, Unit> onError,
                                  Function0 onComplete) {
         super();
         this.onSuccess = onSuccess;
@@ -69,7 +70,7 @@ implements MaybeObserver<T>, Disposable {
     public void onSuccess(T value) {
         lazySet(DisposableHelper.DISPOSED);
         try {
-            onSuccess.accept(value);
+            onSuccess.invoke(value);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(ex);
@@ -80,7 +81,7 @@ implements MaybeObserver<T>, Disposable {
     public void onError(Throwable e) {
         lazySet(DisposableHelper.DISPOSED);
         try {
-            onError.accept(e);
+            onError.invoke(e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(new CompositeException(e, ex));

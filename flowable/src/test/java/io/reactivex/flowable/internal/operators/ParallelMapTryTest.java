@@ -13,24 +13,32 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.List;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.subscribers.TestSubscriber;
+import java.util.List;
 
-public class ParallelMapTryTest implements Consumer<Object> {
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.internal.functions.Functions;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFailureHandling;
+import io.reactivex.flowable.TestHelper;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
 
     volatile int calls;
 
     @Override
-    public void accept(Object t) throws Exception {
+    public Unit invoke(Object t) {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test

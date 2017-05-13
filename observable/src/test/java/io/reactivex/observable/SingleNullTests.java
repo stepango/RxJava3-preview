@@ -35,9 +35,9 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertTrue;
@@ -779,7 +779,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void subscribeConsumerNull() {
-        just1.subscribe((Consumer<Integer>)null);
+        just1.subscribe((Function1<Integer, kotlin.Unit>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -789,17 +789,21 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnSuccessNull() {
-        just1.subscribe(null, new Consumer<Throwable>() {
+        just1.subscribe(null, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) { }
+            public Unit invoke(Throwable e) {
+                return Unit.INSTANCE;
+            }
         });
     }
 
     @Test(expected = NullPointerException.class)
     public void subscribeOnErrorNull() {
-        just1.subscribe(new Consumer<Integer>() {
+        just1.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) { }
+            public Unit invoke(Integer v) {
+                return Unit.INSTANCE;
+            }
         }, null);
     }
 

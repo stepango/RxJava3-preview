@@ -13,16 +13,29 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.FlowableCovarianceTest.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
+
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.FlowableCovarianceTest.CoolRating;
+import io.reactivex.flowable.FlowableCovarianceTest.ExtendedResult;
+import io.reactivex.flowable.FlowableCovarianceTest.HorrorMovie;
+import io.reactivex.flowable.FlowableCovarianceTest.Media;
+import io.reactivex.flowable.FlowableCovarianceTest.Movie;
+import io.reactivex.flowable.FlowableCovarianceTest.Rating;
+import io.reactivex.flowable.FlowableCovarianceTest.Result;
 import io.reactivex.flowable.FlowableEventStream.Event;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public class FlowableZipTests {
 
@@ -52,12 +65,13 @@ public class FlowableZipTests {
                     }
                 })
                 .take(10)
-                .blockingForEach(new Consumer<HashMap<String, String>>() {
+                .blockingForEach(new Function1<HashMap<String, String>, kotlin.Unit>() {
                     @Override
-                    public void accept(HashMap<String, String> v) {
+                    public Unit invoke(HashMap<String, String> v) {
                         synchronized (v) {
                             System.out.println(v);
                         }
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -113,17 +127,19 @@ public class FlowableZipTests {
         }
     };
 
-    Consumer<Result> action = new Consumer<Result>() {
+    Function1<Result, kotlin.Unit> action = new Function1<Result, kotlin.Unit>() {
         @Override
-        public void accept(Result t1) {
+        public Unit invoke(Result t1) {
             System.out.println("Result: " + t1);
+            return Unit.INSTANCE;
         }
     };
 
-    Consumer<ExtendedResult> extendedAction = new Consumer<ExtendedResult>() {
+    Function1<ExtendedResult, kotlin.Unit> extendedAction = new Function1<ExtendedResult, kotlin.Unit>() {
         @Override
-        public void accept(ExtendedResult t1) {
+        public Unit invoke(ExtendedResult t1) {
             System.out.println("Result: " + t1);
+            return Unit.INSTANCE;
         }
     };
 

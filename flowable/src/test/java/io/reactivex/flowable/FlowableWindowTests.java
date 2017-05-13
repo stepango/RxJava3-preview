@@ -13,13 +13,17 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.common.functions.Function;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class FlowableWindowTests {
 
@@ -37,10 +41,11 @@ public class FlowableWindowTests {
                 }
             })
         )
-        .blockingForEach(new Consumer<List<Integer>>() {
+                .blockingForEach(new Function1<List<Integer>, kotlin.Unit>() {
             @Override
-            public void accept(List<Integer> xs) {
+            public Unit invoke(List<Integer> xs) {
                 lists.add(xs);
+                return Unit.INSTANCE;
             }
         });
 

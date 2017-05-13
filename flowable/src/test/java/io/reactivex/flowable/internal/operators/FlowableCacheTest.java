@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,14 +28,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -65,9 +66,10 @@ public class FlowableCacheTest {
         assertEquals(1000, onNextEvents.size());
 
         for (int i = 0; i < 1000; i++) {
-            assertEquals((Integer)i, onNextEvents.get(i));
+            assertEquals((Integer) i, onNextEvents.get(i));
         }
     }
+
     @Test
     public void testColdReplayBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
@@ -88,7 +90,7 @@ public class FlowableCacheTest {
         assertEquals(10, onNextEvents.size());
 
         for (int i = 0; i < 10; i++) {
-            assertEquals((Integer)i, onNextEvents.get(i));
+            assertEquals((Integer) i, onNextEvents.get(i));
         }
 
         ts.dispose();
@@ -120,22 +122,24 @@ public class FlowableCacheTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
+            public Unit invoke(String v) {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
-                    assertEquals("one", v);
-                    System.out.println("v: " + v);
-                    latch.countDown();
+            public Unit invoke(String v) {
+                assertEquals("one", v);
+                System.out.println("v: " + v);
+                latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -193,6 +197,7 @@ public class FlowableCacheTest {
             assertEquals(10000, ts2.values().size());
         }
     }
+
     @Test
     public void testAsyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
@@ -211,7 +216,7 @@ public class FlowableCacheTest {
 
         List<Long> expected = new ArrayList<Long>();
         for (int i = 0; i < 10; i++) {
-            expected.add((long)(i - 10));
+            expected.add((long) (i - 10));
         }
         int j = 0;
         for (TestSubscriber<Long> ts : list) {
@@ -220,7 +225,7 @@ public class FlowableCacheTest {
             ts.assertComplete();
 
             for (int i = j * 10; i < j * 10 + 10; i++) {
-                expected.set(i - j * 10, (long)i);
+                expected.set(i - j * 10, (long) i);
             }
 
             ts.assertValueSequence(expected);
@@ -281,13 +286,14 @@ public class FlowableCacheTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable<Integer> source = Flowable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t) {
-                count.getAndIncrement();
-            }
-        })
-        .cache();
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
+                    @Override
+                    public Unit invoke(Integer t) {
+                        count.getAndIncrement();
+                        return Unit.INSTANCE;
+                    }
+                })
+                .cache();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
@@ -325,7 +331,7 @@ public class FlowableCacheTest {
         o.test();
 
         o.test(0L, true)
-        .assertEmpty();
+                .assertEmpty();
     }
 
     @Test
@@ -359,15 +365,15 @@ public class FlowableCacheTest {
             TestCommonHelper.race(r1, r2, Schedulers.single());
 
             to
-            .awaitDone(5, TimeUnit.SECONDS)
-            .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
+                    .awaitDone(5, TimeUnit.SECONDS)
+                    .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
         }
     }
 
     @Test
     public void observers() {
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        FlowableCache<Integer> cache = (FlowableCache<Integer>)Flowable.range(1, 5).concatWith(ps).cache();
+        FlowableCache<Integer> cache = (FlowableCache<Integer>) Flowable.range(1, 5).concatWith(ps).cache();
 
         assertFalse(cache.hasSubscribers());
 
@@ -387,8 +393,8 @@ public class FlowableCacheTest {
     @Test
     public void disposeOnArrival() {
         Flowable.range(1, 5).cache()
-        .test(0L, true)
-        .assertEmpty();
+                .test(0L, true)
+                .assertEmpty();
     }
 
     @Test
@@ -409,29 +415,29 @@ public class FlowableCacheTest {
     @Test
     public void take1() {
         Flowable<Integer> cache = Flowable.just(1, 2)
-        .cache();
+                .cache();
 
         cache.test();
 
         cache
-        .take(1)
-        .test()
-        .assertResult(1);
+                .take(1)
+                .test()
+                .assertResult(1);
     }
 
     @Test
     public void empty() {
         Flowable.empty()
-        .cache()
-        .test(0L)
-        .assertResult();
+                .cache()
+                .test(0L)
+                .assertResult();
     }
 
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .cache()
-        .test(0L)
-        .assertFailure(TestException.class);
+                .cache()
+                .test(0L)
+                .assertFailure(TestException.class);
     }
 }

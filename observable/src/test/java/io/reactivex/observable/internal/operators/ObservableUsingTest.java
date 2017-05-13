@@ -28,7 +28,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -38,6 +37,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -55,20 +55,22 @@ public class ObservableUsingTest {
         void dispose();
     }
 
-    private static class DisposeAction implements Consumer<Resource> {
+    private static class DisposeAction implements Function1<Resource, kotlin.Unit> {
 
         @Override
-        public void accept(Resource r) {
+        public Unit invoke(Resource r) {
             r.dispose();
+            return Unit.INSTANCE;
         }
 
     }
 
-    private final Consumer<Disposable> disposeSubscription = new Consumer<Disposable>() {
+    private final Function1<Disposable, kotlin.Unit> disposeSubscription = new Function1<Disposable, kotlin.Unit>() {
 
         @Override
-        public void accept(Disposable s) {
+        public Unit invoke(Disposable s) {
             s.dispose();
+            return Unit.INSTANCE;
         }
 
     };
@@ -351,7 +353,7 @@ public class ObservableUsingTest {
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Consumer<Throwable> onError = createOnErrorAction(events);
+        final Function1<Throwable, kotlin.Unit> onError = createOnErrorAction(events);
         final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
@@ -379,7 +381,7 @@ public class ObservableUsingTest {
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         final Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Consumer<Throwable> onError = createOnErrorAction(events);
+        final Function1<Throwable, kotlin.Unit> onError = createOnErrorAction(events);
         final Function0 unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
@@ -412,11 +414,12 @@ public class ObservableUsingTest {
         };
     }
 
-    private static Consumer<Throwable> createOnErrorAction(final List<String> events) {
-        return new Consumer<Throwable>() {
+    private static Function1<Throwable, kotlin.Unit> createOnErrorAction(final List<String> events) {
+        return new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t) {
+            public Unit invoke(Throwable t) {
                 events.add("error");
+                return Unit.INSTANCE;
             }
         };
     }
@@ -482,9 +485,9 @@ public class ObservableUsingTest {
             public ObservableSource<Object> apply(Object v) throws Exception {
                 throw new TestException("First");
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object e) throws Exception {
+            public Unit invoke(Object e) {
                 throw new TestException("Second");
             }
         })
@@ -509,9 +512,9 @@ public class ObservableUsingTest {
             public ObservableSource<Object> apply(Object v) throws Exception {
                 return Observable.error(new TestException("First"));
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object e) throws Exception {
+            public Unit invoke(Object e) {
                 throw new TestException("Second");
             }
         })
@@ -536,9 +539,9 @@ public class ObservableUsingTest {
             public ObservableSource<Object> apply(Object v) throws Exception {
                 return Observable.empty();
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object e) throws Exception {
+            public Unit invoke(Object e) {
                 throw new TestException("Second");
             }
         })
@@ -560,9 +563,9 @@ public class ObservableUsingTest {
                 public ObservableSource<Object> apply(Object v) throws Exception {
                     return Observable.empty();
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object e) throws Exception {
+                public Unit invoke(Object e) {
                     throw new TestException("Second");
                 }
             }, false)

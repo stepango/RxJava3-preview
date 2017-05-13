@@ -22,8 +22,8 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
@@ -36,14 +36,14 @@ implements RelaxedSubscriber<T>, Disposable {
 
     final Function1<? super T, Boolean> onNext;
 
-    final Consumer<? super Throwable> onError;
+    final Function1<? super Throwable, Unit> onError;
 
     final Function0 onComplete;
 
     boolean done;
 
     public ForEachWhileSubscriber(Function1<? super T, Boolean> onNext,
-                                  Consumer<? super Throwable> onError, Function0 onComplete) {
+                                  Function1<? super Throwable, Unit> onError, Function0 onComplete) {
         this.onNext = onNext;
         this.onError = onError;
         this.onComplete = onComplete;
@@ -86,7 +86,7 @@ implements RelaxedSubscriber<T>, Disposable {
         }
         done = true;
         try {
-            onError.accept(t);
+            onError.invoke(t);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaCommonPlugins.onError(new CompositeException(t, ex));

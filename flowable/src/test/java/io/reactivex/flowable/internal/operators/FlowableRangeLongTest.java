@@ -22,13 +22,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -62,10 +62,11 @@ public class FlowableRangeLongTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.rangeLong(1, 1000).doOnNext(new Consumer<Long>() {
+        Flowable.rangeLong(1, 1000).doOnNext(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         })
         .take(3).subscribe(observer);

@@ -13,26 +13,43 @@
 
 package io.reactivex.flowable;
 
-import static io.reactivex.common.TestCommonHelper.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
-import java.util.List;
-import java.util.concurrent.*;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.reactivestreams.*;
+import org.reactivestreams.Processor;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.common.TestCommonHelper.assertUndeliverable;
+import static io.reactivex.common.TestCommonHelper.compositeList;
+import static io.reactivex.common.TestCommonHelper.trackPluginErrors;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 /**
  * Common methods for helping with tests from 1.x mostly.
@@ -156,10 +173,10 @@ public enum TestHelper {
      * @param value the value not expected
      * @return the consumer
      */
-    public static <T> Consumer<TestSubscriber<T>> subscriberSingleNot(final T value) {
-        return new Consumer<TestSubscriber<T>>() {
+    public static <T> Function1<TestSubscriber<T>, Unit> subscriberSingleNot(final T value) {
+        return new Function1<TestSubscriber<T>, Unit>() {
             @Override
-            public void accept(TestSubscriber<T> ts) throws Exception {
+            public Unit invoke(TestSubscriber<T> ts) {
                 ts
                 .assertSubscribed()
                 .assertValueCount(1)
@@ -168,6 +185,7 @@ public enum TestHelper {
 
                 T v = ts.values().get(0);
                 assertNotEquals(value, v);
+                return Unit.INSTANCE;
             }
         };
     }

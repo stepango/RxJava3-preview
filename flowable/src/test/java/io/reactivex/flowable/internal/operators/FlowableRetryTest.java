@@ -36,7 +36,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.GroupedFlowable;
@@ -45,6 +44,7 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
@@ -171,10 +171,11 @@ public class FlowableRetryTest {
                 }).startWith(1).cast(Object.class);
             }
         })
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 e.printStackTrace();
+                return Unit.INSTANCE;
             }
         })
         .subscribe(subscriber);
@@ -374,12 +375,12 @@ public class FlowableRetryTest {
     public void testRetrySubscribesAgainAfterError() throws Exception {
 
         // record emitted values with this action
-        Consumer<Integer> record = mock(Consumer.class);
+        Function1<Integer, kotlin.Unit> record = mock(Function1.class);
         InOrder inOrder = inOrder(record);
 
         // always throw an exception with this action
-        Consumer<Integer> throwException = mock(Consumer.class);
-        doThrow(new RuntimeException()).when(throwException).accept(Mockito.anyInt());
+        Function1<Integer, kotlin.Unit> throwException = mock(Function1.class);
+        doThrow(new RuntimeException()).when(throwException).invoke(Mockito.anyInt());
 
         // create a retrying observable based on a PublishProcessor
         PublishProcessor<Integer> subject = PublishProcessor.create();
@@ -396,13 +397,13 @@ public class FlowableRetryTest {
         inOrder.verifyNoMoreInteractions();
 
         subject.onNext(1);
-        inOrder.verify(record).accept(1);
+        inOrder.verify(record).invoke(1);
 
         subject.onNext(2);
-        inOrder.verify(record).accept(2);
+        inOrder.verify(record).invoke(2);
 
         subject.onNext(3);
-        inOrder.verify(record).accept(3);
+        inOrder.verify(record).invoke(3);
 
         inOrder.verifyNoMoreInteractions();
     }
@@ -472,10 +473,11 @@ public class FlowableRetryTest {
     public void testUnsubscribeFromRetry() {
         PublishProcessor<Integer> subject = PublishProcessor.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry().subscribe(new Consumer<Integer>() {
+        Disposable sub = subject.retry().subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer n) {
+            public Unit invoke(Integer n) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
         subject.onNext(1);

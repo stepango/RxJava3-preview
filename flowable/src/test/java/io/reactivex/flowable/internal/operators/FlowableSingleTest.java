@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -514,9 +513,11 @@ public class FlowableSingleTest {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
         try {
-            RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
-                @Override public void accept(final Throwable throwable) throws Exception {
+            RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
+                @Override
+                public Unit invoke(final Throwable throwable) {
                     error.set(throwable);
+                    return Unit.INSTANCE;
                 }
             });
 

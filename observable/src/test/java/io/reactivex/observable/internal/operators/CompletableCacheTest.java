@@ -18,7 +18,6 @@ import org.junit.Test;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
@@ -26,22 +25,24 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class CompletableCacheTest implements Consumer<Object>, Function0 {
+public class CompletableCacheTest implements Function1<Object, Unit>, Function0<Unit> {
 
     volatile int count;
 
     @Override
-    public void accept(Object t) throws Exception {
+    public Unit invoke(Object t) {
         count++;
+        return Unit.INSTANCE;
     }
 
     @Override
-    public kotlin.Unit invoke() {
+    public Unit invoke() {
         count++;
         return Unit.INSTANCE;
     }

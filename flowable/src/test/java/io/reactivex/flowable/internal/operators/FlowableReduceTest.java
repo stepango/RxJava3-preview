@@ -13,23 +13,34 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableReduceTest {
     Subscriber<Object> observer;
@@ -300,11 +311,13 @@ public class FlowableReduceTest {
                         return l + "_" + r;
                     }
                 })
-                .doOnNext(new Consumer<String>() {
+                        .doOnNext(new Function1<String, kotlin.Unit>() {
                     @Override
-                    public void accept(String s) throws Exception {
+                    public Unit invoke(String s) {
                         count.incrementAndGet();
-                        System.out.println("Completed with " + s);}
+                        System.out.println("Completed with " + s);
+                        return Unit.INSTANCE;
+                    }
                 })
                 ;
             }
@@ -338,11 +351,13 @@ public class FlowableReduceTest {
                     }
                 })
 
-                .doOnNext(new Consumer<String>() {
+                        .doOnNext(new Function1<String, kotlin.Unit>() {
                     @Override
-                    public void accept(String s) throws Exception {
+                    public Unit invoke(String s) {
                         count.incrementAndGet();
-                        System.out.println("Completed with " + s);}
+                        System.out.println("Completed with " + s);
+                        return Unit.INSTANCE;
+                    }
                 })
                 ;
             }

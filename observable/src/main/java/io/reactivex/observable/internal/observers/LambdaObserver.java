@@ -19,22 +19,23 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Observer;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
 
     private static final long serialVersionUID = -7251123623727029452L;
-    final Consumer<? super T> onNext;
-    final Consumer<? super Throwable> onError;
+    final Function1<? super T, Unit> onNext;
+    final Function1<? super Throwable, Unit> onError;
     final Function0 onComplete;
-    final Consumer<? super Disposable> onSubscribe;
+    final Function1<? super Disposable, kotlin.Unit> onSubscribe;
 
-    public LambdaObserver(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
+    public LambdaObserver(Function1<? super T, Unit> onNext, Function1<? super Throwable, Unit> onError,
                           Function0 onComplete,
-                          Consumer<? super Disposable> onSubscribe) {
+                          Function1<? super Disposable, kotlin.Unit> onSubscribe) {
         super();
         this.onNext = onNext;
         this.onError = onError;
@@ -46,7 +47,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
     public void onSubscribe(Disposable s) {
         if (DisposableHelper.setOnce(this, s)) {
             try {
-                onSubscribe.accept(this);
+                onSubscribe.invoke(this);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.dispose();
@@ -59,7 +60,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
     public void onNext(T t) {
         if (!isDisposed()) {
             try {
-                onNext.accept(t);
+                onNext.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 get().dispose();
@@ -73,7 +74,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
         if (!isDisposed()) {
             lazySet(DisposableHelper.DISPOSED);
             try {
-                onError.accept(t);
+                onError.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 RxJavaCommonPlugins.onError(new CompositeException(t, e));

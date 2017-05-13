@@ -13,23 +13,39 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
 import io.reactivex.flowable.internal.subscribers.SubscriberResourceWrapper;
-import io.reactivex.flowable.internal.subscriptions.*;
-import io.reactivex.flowable.internal.utils.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import io.reactivex.flowable.internal.utils.NotificationLite;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T>, Disposable {
     /** The source observable. */
@@ -172,7 +188,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
         boolean doConnect;
         ReplaySubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
@@ -220,7 +236,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * themselves.
          */
         try {
-            connection.accept(ps);
+            connection.invoke(ps);
         } catch (Throwable ex) {
             if (doConnect) {
                 ps.shouldConnect.compareAndSet(true, false);
@@ -1135,7 +1151,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             co.connect(new DisposableConsumer(srw));
         }
 
-        final class DisposableConsumer implements Consumer<Disposable> {
+        final class DisposableConsumer implements Function1<Disposable, kotlin.Unit> {
             private final SubscriberResourceWrapper<R> srw;
 
             DisposableConsumer(SubscriberResourceWrapper<R> srw) {
@@ -1143,8 +1159,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             }
 
             @Override
-            public void accept(Disposable r) {
+            public Unit invoke(Disposable r) {
                 srw.setResource(r);
+                return Unit.INSTANCE;
             }
         }
     }
@@ -1159,7 +1176,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         @Override
-        public void connect(Consumer<? super Disposable> connection) {
+        public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
             co.connect(connection);
         }
 

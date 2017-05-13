@@ -31,7 +31,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.ConnectableObservable;
@@ -43,6 +42,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,25 +61,28 @@ public class ObservableRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Long> r = Observable.interval(0, 25, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public Unit invoke(Disposable s) {
                         subscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
-                .doOnNext(new Consumer<Long>() {
+                .doOnNext(new Function1<Long, kotlin.Unit>() {
                     @Override
-                    public void accept(Long l) {
+                    public Unit invoke(Long l) {
                         nextCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Long>() {
+        Disposable s1 = r.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long l) {
+            public Unit invoke(Long l) {
                 receivedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -108,25 +111,28 @@ public class ObservableRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public Unit invoke(Disposable s) {
                         subscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer l) {
+                    public Unit invoke(Integer l) {
                         nextCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Integer>() {
+        Disposable s1 = r.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer l) {
+            public Unit invoke(Integer l) {
                 receivedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -154,21 +160,23 @@ public class ObservableRefCountTest {
     public void testRefCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer l) {
+                    public Unit invoke(Integer l) {
                             System.out.println("onNext --------> " + l);
                             nextCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .take(4)
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        r.subscribe(new Consumer<Integer>() {
+        r.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer l) {
+            public Unit invoke(Integer l) {
                 receivedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -183,12 +191,13 @@ public class ObservableRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         Observable<Long> r = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public Unit invoke(Disposable s) {
                             System.out.println("******************************* Subscribe received");
                             // when we are subscribed
                             subscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnDispose(new Function0() {
@@ -229,12 +238,13 @@ public class ObservableRefCountTest {
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
 
         Observable<Long> o = synchronousInterval()
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public Unit invoke(Disposable s) {
                             System.out.println("******************************* Subscribe received");
                             // when we are subscribed
                             subscribeLatch.countDown();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnDispose(new Function0() {
@@ -285,11 +295,12 @@ public class ObservableRefCountTest {
                         return Unit.INSTANCE;
                     }
                 })
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public Unit invoke(Disposable s) {
                             System.out.println("******************************* SUBSCRIBE received");
                             subUnsubCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -383,10 +394,11 @@ public class ObservableRefCountTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<Long>();
-        Disposable s1 = interval.subscribe(new Consumer<Long>() {
+        Disposable s1 = interval.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 list1.add(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -398,10 +410,11 @@ public class ObservableRefCountTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<Long>();
-        Disposable s2 = interval.subscribe(new Consumer<Long>() {
+        Disposable s2 = interval.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 list2.add(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -443,10 +456,11 @@ public class ObservableRefCountTest {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<Long>();
-        interval.subscribe(new Consumer<Long>() {
+        interval.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 list3.add(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -533,11 +547,12 @@ public class ObservableRefCountTest {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
                 Observable.interval(200,TimeUnit.MILLISECONDS)
-                        .doOnSubscribe(new Consumer<Disposable>() {
+                        .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                             @Override
-                            public void accept(Disposable s) {
+                            public Unit invoke(Disposable s) {
                                             System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                    }
+                                return Unit.INSTANCE;
+                            }
                         }
                          )
                         .flatMap(new Function<Long, Observable<String>>() {
@@ -561,32 +576,36 @@ public class ObservableRefCountTest {
                         .refCount();
 
         interval
-                .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
                     @Override
-                    public void accept(Throwable t1) {
+                    public Unit invoke(Throwable t1) {
                             System.out.println("Observer 1 onError: " + t1);
+                        return Unit.INSTANCE;
                     }
                 })
                 .retry(5)
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Function1<String, kotlin.Unit>() {
                     @Override
-                    public void accept(String t1) {
+                    public Unit invoke(String t1) {
                             System.out.println("Observer 1: " + t1);
+                        return Unit.INSTANCE;
                     }
                 });
         Thread.sleep(100);
         interval
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t1) {
+            public Unit invoke(Throwable t1) {
                     System.out.println("Observer 2 onError: " + t1);
+                return Unit.INSTANCE;
             }
         })
         .retry(5)
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Function1<String, kotlin.Unit>() {
                     @Override
-                    public void accept(String t1) {
+                    public Unit invoke(String t1) {
                             System.out.println("Observer 2: " + t1);
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -627,7 +646,7 @@ public class ObservableRefCountTest {
         final int[] calls = { 0 };
         Observable<Integer> o = new ConnectableObservable<Integer>() {
             @Override
-            public void connect(Consumer<? super Disposable> connection) {
+            public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
                 calls[0]++;
             }
 

@@ -13,22 +13,29 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableWindowWithSizeTest {
 
@@ -41,10 +48,11 @@ public class ObservableWindowWithSizeTest {
                 return xs.toList().toObservable();
             }
         }))
-                .blockingForEach(new Consumer<List<T>>() {
+                .blockingForEach(new Function1<List<T>, kotlin.Unit>() {
                     @Override
-                    public void accept(List<T> xs) {
+                    public Unit invoke(List<T> xs) {
                         lists.add(xs);
+                        return Unit.INSTANCE;
                     }
                 });
         return lists;
@@ -106,11 +114,12 @@ public class ObservableWindowWithSizeTest {
     public void testWindowUnsubscribeNonOverlapping() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
+        Observable.merge(Observable.range(1, 10000).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
 
         }).window(5).take(2)).subscribe(ts);
@@ -126,10 +135,10 @@ public class ObservableWindowWithSizeTest {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
 
                     @Override
-                    public void accept(Integer t1) {
+                    public Unit invoke(Integer t1) {
                         if (count.incrementAndGet() == 500000) {
                             // give it a small break halfway through
                             try {
@@ -138,6 +147,7 @@ public class ObservableWindowWithSizeTest {
                                 // ignored
                             }
                         }
+                        return Unit.INSTANCE;
                     }
 
                 })
@@ -156,11 +166,12 @@ public class ObservableWindowWithSizeTest {
     public void testWindowUnsubscribeOverlapping() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(Observable.range(1, 10000).doOnNext(new Consumer<Integer>() {
+        Observable.merge(Observable.range(1, 10000).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
 
         }).window(5, 4).take(2)).subscribe(ts);
@@ -176,11 +187,12 @@ public class ObservableWindowWithSizeTest {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Observable.merge(Observable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
 
                     @Override
-                    public void accept(Integer t1) {
+                    public Unit invoke(Integer t1) {
                         count.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
 
                 })
@@ -316,10 +328,11 @@ public class ObservableWindowWithSizeTest {
         final TestObserver[] to = { null };
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .window(2)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+                .doOnNext(new Function1<Observable<Integer>, Unit>() {
             @Override
-            public void accept(Observable<Integer> w) throws Exception {
+            public Unit invoke(Observable<Integer> w) {
                 to[0] = w.test();
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -335,10 +348,11 @@ public class ObservableWindowWithSizeTest {
         final TestObserver[] to = { null };
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .window(2, 3)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+                .doOnNext(new Function1<Observable<Integer>, Unit>() {
             @Override
-            public void accept(Observable<Integer> w) throws Exception {
+            public Unit invoke(Observable<Integer> w) {
                 to[0] = w.test();
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -354,10 +368,11 @@ public class ObservableWindowWithSizeTest {
         final TestObserver[] to = { null };
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .window(3, 2)
-        .doOnNext(new Consumer<Observable<Integer>>() {
+                .doOnNext(new Function1<Observable<Integer>, Unit>() {
             @Override
-            public void accept(Observable<Integer> w) throws Exception {
+            public Unit invoke(Observable<Integer> w) {
                 to[0] = w.test();
+                return Unit.INSTANCE;
             }
         })
         .test()

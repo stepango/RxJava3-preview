@@ -33,12 +33,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.subscribers.ResourceSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -569,16 +569,18 @@ public class FlowableBackpressureTests {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             firehose(emitCount)
-            .onBackpressureDrop(new Consumer<Integer>() {
+                    .onBackpressureDrop(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer v) {
+                public Unit invoke(Integer v) {
                     dropCount.incrementAndGet();
+                    return Unit.INSTANCE;
                 }
             })
-            .doOnNext(new Consumer<Integer>() {
+                    .doOnNext(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer v) {
+                public Unit invoke(Integer v) {
                     passCount.incrementAndGet();
+                    return Unit.INSTANCE;
                 }
             })
             .observeOn(Schedulers.computation())
@@ -630,10 +632,11 @@ public class FlowableBackpressureTests {
             int NUM = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            firehose(c).onBackpressureDrop(new Consumer<Integer>() {
+            firehose(c).onBackpressureDrop(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer j) {
+                public Unit invoke(Integer j) {
                     dropCount.incrementAndGet();
+                    return Unit.INSTANCE;
                 }
             })
             .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);

@@ -13,16 +13,18 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertNotEquals;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Completable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertNotEquals;
 
 public class CompletableDelayTest {
 
@@ -42,11 +44,12 @@ public class CompletableDelayTest {
 
         Completable.error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
-                .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, Unit>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
+                    public Unit invoke(Throwable throwable) {
                         thread.set(Thread.currentThread());
                         latch.countDown();
+                        return Unit.INSTANCE;
                     }
                 })
                 .onErrorComplete()

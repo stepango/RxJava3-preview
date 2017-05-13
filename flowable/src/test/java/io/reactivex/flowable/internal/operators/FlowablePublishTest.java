@@ -31,7 +31,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
@@ -82,22 +81,24 @@ public class FlowablePublishTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -161,11 +162,12 @@ public class FlowablePublishTest {
     @Test
     public void testTakeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
-        Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> xs = Flowable.range(0, Flowable.bufferSize() * 2).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 emitted.incrementAndGet();
+                return Unit.INSTANCE;
             }
 
         });
@@ -215,10 +217,11 @@ public class FlowablePublishTest {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final Flowable<Integer> source = Flowable.range(1, 100)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer t1) {
+                    public Unit invoke(Integer t1) {
                         sourceEmission.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnCancel(new Function0() {
@@ -228,7 +231,6 @@ public class FlowablePublishTest {
                         return Unit.INSTANCE;
                     }
                 }).share();
-        ;
 
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
@@ -542,9 +544,9 @@ public class FlowablePublishTest {
     public void connectThrows() {
         ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
         try {
-            co.connect(new Consumer<Disposable>() {
+            co.connect(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException();
                 }
             });

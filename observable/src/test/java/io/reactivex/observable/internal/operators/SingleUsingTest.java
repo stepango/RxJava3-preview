@@ -13,20 +13,30 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SingleUsingTest {
 
@@ -44,16 +54,17 @@ public class SingleUsingTest {
         }
     };
 
-    Consumer<Disposable> disposer = new Consumer<Disposable>() {
+    Function1<Disposable, kotlin.Unit> disposer = new Function1<Disposable, kotlin.Unit>() {
         @Override
-        public void accept(Disposable d) throws Exception {
+        public Unit invoke(Disposable d) {
             d.dispose();
+            return Unit.INSTANCE;
         }
     };
 
-    Consumer<Disposable> disposerThrows = new Consumer<Disposable>() {
+    Function1<Disposable, kotlin.Unit> disposerThrows = new Function1<Disposable, kotlin.Unit>() {
         @Override
-        public void accept(Disposable d) throws Exception {
+        public Unit invoke(Disposable d) {
             throw new TestException("Disposer");
         }
     };

@@ -13,26 +13,40 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.*;
-import org.mockito.InOrder;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
 
 public class ObservableAmbTest {
 
@@ -162,10 +176,11 @@ public class ObservableAmbTest {
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
-        Consumer<Disposable> incrementer = new Consumer<Disposable>() {
+        Function1<Disposable, kotlin.Unit> incrementer = new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         };
 
@@ -189,14 +204,15 @@ public class ObservableAmbTest {
         // then second Observable does not get subscribed to before first
         // subscription completes hence first Observable emits result through
         // amb
-        int result = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        int result = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         //
                     }
+                return Unit.INSTANCE;
             }
         }).ambWith(Observable.just(2)).blockingSingle();
         assertEquals(1, result);

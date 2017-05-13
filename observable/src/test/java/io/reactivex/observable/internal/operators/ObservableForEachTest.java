@@ -25,12 +25,12 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
@@ -45,10 +45,11 @@ public class ObservableForEachTest {
         final List<Object> list = new ArrayList<Object>();
 
         Observable.range(1, 5)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         })
                 .forEachWhile(new Function1<Integer, Boolean>() {
@@ -66,10 +67,11 @@ public class ObservableForEachTest {
         final List<Object> list = new ArrayList<Object>();
 
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         })
                 .forEachWhile(new Function1<Integer, Boolean>() {
@@ -77,10 +79,11 @@ public class ObservableForEachTest {
             public Boolean invoke(Integer v) {
                 return true;
             }
-        }, new Consumer<Throwable>() {
+                }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 
@@ -134,9 +137,9 @@ public class ObservableForEachTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Observable.<Integer>error(new TestException("Outer"))
-            .forEachWhile(Functions.alwaysTrue(), new Consumer<Throwable>() {
+                    .forEachWhile(Functions.alwaysTrue(), new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable v) throws Exception {
+                public Unit invoke(Throwable v) {
                     throw new TestException("Inner");
                 }
             });

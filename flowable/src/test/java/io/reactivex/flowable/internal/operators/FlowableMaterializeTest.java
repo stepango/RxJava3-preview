@@ -13,19 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.Notification;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableMaterializeTest {
 
@@ -176,9 +186,9 @@ public class FlowableMaterializeTest {
     public void testWithCompletionCausingError() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
-        Flowable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
+        Flowable.<Integer>empty().materialize().doOnNext(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object t) {
+            public Unit invoke(Object t) {
                 throw ex;
             }
         }).subscribe(ts);

@@ -40,11 +40,12 @@ import io.reactivex.common.exceptions.ProtocolViolationException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -199,7 +200,7 @@ public class RxJavaCommonPluginsTest {
         RxJavaCommonPlugins.lockdown();
         try {
             assertTrue(RxJavaCommonPlugins.isLockdown());
-            Consumer a1 = Functions.emptyConsumer();
+            Function1 a1 = Functions.emptyConsumer();
             Callable f0 = new Callable() {
                 @Override
                 public Object call() {
@@ -245,8 +246,7 @@ public class RxJavaCommonPluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Function.class)) {
                             m.invoke(null, f1);
-                        } else
-                        if (paramType.isAssignableFrom(Consumer.class)) {
+                        } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, a1);
                         } else if (paramType.isAssignableFrom(Function0.class)) {
                             m.invoke(null, bs);
@@ -715,10 +715,11 @@ public class RxJavaCommonPluginsTest {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
 
-            RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+            RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) {
+                public Unit invoke(Throwable t) {
                     list.add(t);
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -792,9 +793,9 @@ public class RxJavaCommonPluginsTest {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
 
-            RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+            RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) {
+                public Unit invoke(Throwable t) {
                     throw new TestException("Forced failure 2");
                 }
             });
@@ -827,9 +828,9 @@ public class RxJavaCommonPluginsTest {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
 
-            RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+            RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) {
+                public Unit invoke(Throwable t) {
                     throw new TestException("Forced failure 2");
                 }
             });
@@ -870,15 +871,15 @@ public class RxJavaCommonPluginsTest {
     @SuppressWarnings("rawtypes")
     public void onErrorWithSuper() throws Exception {
         try {
-            Consumer<? super Throwable> errorHandler = new Consumer<Throwable>() {
+            Function1<? super Throwable, Unit> errorHandler = new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) {
+                public Unit invoke(Throwable t) {
                     throw new TestException("Forced failure 2");
                 }
             };
             RxJavaCommonPlugins.setErrorHandler(errorHandler);
 
-            Consumer<? super Throwable> errorHandler1 = RxJavaCommonPlugins.getErrorHandler();
+            Function1<? super Throwable, Unit> errorHandler1 = RxJavaCommonPlugins.getErrorHandler();
             assertSame(errorHandler, errorHandler1);
 
             Function<? super Scheduler, ? extends Scheduler> scheduler2scheduler = new Function<Scheduler, Scheduler>() {
@@ -1254,10 +1255,11 @@ public class RxJavaCommonPluginsTest {
         try {
             final AtomicReference<Throwable> t = new AtomicReference<Throwable>();
 
-            RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+            RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(final Throwable throwable) throws Exception {
+                public Unit invoke(final Throwable throwable) {
                     t.set(throwable);
+                    return Unit.INSTANCE;
                 }
             });
 

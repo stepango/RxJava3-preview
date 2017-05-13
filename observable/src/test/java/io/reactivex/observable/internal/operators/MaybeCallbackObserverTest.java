@@ -23,9 +23,10 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -54,9 +55,9 @@ public class MaybeCallbackObserverTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<Object>(
-                    new Consumer<Object>() {
+                    new Function1<Object, kotlin.Unit>() {
                         @Override
-                        public void accept(Object v) throws Exception {
+                        public Unit invoke(Object v) {
                             throw new TestException();
                         }
                     },
@@ -79,9 +80,9 @@ public class MaybeCallbackObserverTest {
         try {
             MaybeCallbackObserver<Object> mo = new MaybeCallbackObserver<Object>(
                     Functions.emptyConsumer(),
-                    new Consumer<Object>() {
+                    new Function1<Object, kotlin.Unit>() {
                         @Override
-                        public void accept(Object v) throws Exception {
+                        public Unit invoke(Object v) {
                             throw new TestException("Inner");
                         }
                     },

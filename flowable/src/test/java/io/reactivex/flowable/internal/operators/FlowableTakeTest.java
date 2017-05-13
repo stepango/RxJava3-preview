@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -209,11 +208,12 @@ public class FlowableTakeTest {
     @Test(timeout = 2000)
     public void testUnsubscribeFromSynchronousInfiniteFlowable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
+        INFINITE_OBSERVABLE.take(10).subscribe(new Function1<Long, kotlin.Unit>() {
 
             @Override
-            public void accept(Long l) {
+            public Unit invoke(Long l) {
                 count.set(l);
+                return Unit.INSTANCE;
             }
 
         });
@@ -236,12 +236,13 @@ public class FlowableTakeTest {
                 }
             }
 
-        }).take(100).take(1).blockingForEach(new Consumer<Integer>() {
+        }).take(100).take(1).blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 System.out.println("Receive: " + t1);
 
+                return Unit.INSTANCE;
             }
 
         });
@@ -374,10 +375,10 @@ public class FlowableTakeTest {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable.just(1).subscribeOn(Schedulers.computation()).take(1)
-        .subscribe(new Consumer<Integer>() {
+                .subscribe(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 try {
                     Thread.sleep(100);
                 } catch (Exception e) {
@@ -386,6 +387,7 @@ public class FlowableTakeTest {
                 } finally {
                     latch.countDown();
                 }
+                return Unit.INSTANCE;
             }
 
         });
@@ -445,10 +447,11 @@ public class FlowableTakeTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.take(1).doOnNext(new Consumer<Integer>() {
+        source.take(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) {
+            public Unit invoke(Integer v) {
                 source.onNext(2);
+                return Unit.INSTANCE;
             }
         }).subscribe(ts);
 

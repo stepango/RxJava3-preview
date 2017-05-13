@@ -19,13 +19,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.observers.DisposableCompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static io.reactivex.interop.RxJava3Interop.ignoreElements;
 import static org.junit.Assert.assertEquals;
@@ -49,10 +49,11 @@ public class FlowableIgnoreElementsTest {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         Object count = ignoreElements(Flowable.range(1, num)
-                .doOnNext(new Consumer<Integer>() {
+                        .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer t) {
+                    public Unit invoke(Integer t) {
                         upstreamCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 )
@@ -108,10 +109,11 @@ public class FlowableIgnoreElementsTest {
         int num = 10;
         ignoreElements(Flowable.range(1, num)
         //
-                .doOnNext(new Consumer<Integer>() {
+                        .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer t) {
+                    public Unit invoke(Integer t) {
                         upstreamCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 //

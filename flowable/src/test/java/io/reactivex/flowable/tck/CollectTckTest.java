@@ -13,10 +13,10 @@
 
 package io.reactivex.flowable.tck;
 
-import java.util.List;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.Functions;
@@ -30,7 +30,7 @@ public class CollectTckTest extends BaseTck<List<Integer>> {
         return
                 Flowable.range(1, 1000).collect(Functions.<Integer>createArrayList(128), new BiConsumer<List<Integer>, Integer>() {
                     @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
+                    public void invoke(List<Integer> a, Integer b) throws Exception {
                         a.add(b);
                     }
                 })

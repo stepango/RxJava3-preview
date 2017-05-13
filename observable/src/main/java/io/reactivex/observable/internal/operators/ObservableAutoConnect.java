@@ -16,8 +16,10 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ConnectableObservable;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Wraps a ConnectableObservable and calls its connect() method once
@@ -28,12 +30,12 @@ import io.reactivex.observable.*;
 public final class ObservableAutoConnect<T> extends Observable<T> {
     final ConnectableObservable<? extends T> source;
     final int numberOfObservers;
-    final Consumer<? super Disposable> connection;
+    final Function1<? super Disposable, kotlin.Unit> connection;
     final AtomicInteger clients;
 
     public ObservableAutoConnect(ConnectableObservable<? extends T> source,
-            int numberOfObservers,
-            Consumer<? super Disposable> connection) {
+                                 int numberOfObservers,
+                                 Function1<? super Disposable, kotlin.Unit> connection) {
         this.source = source;
         this.numberOfObservers = numberOfObservers;
         this.connection = connection;

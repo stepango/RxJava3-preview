@@ -13,20 +13,21 @@
 
 package io.reactivex.observable.internal.operators;
 
-
-
-
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableBufferUntilSubscriberTest {
 
@@ -65,12 +66,13 @@ public class ObservableBufferUntilSubscriberTest {
                         }
                     })
                     .toList()
-                    .doOnSuccess(new Consumer<List<Object>>() {
+                    .doOnSuccess(new Function1<List<Object>, Unit>() {
                         @Override
-                        public void accept(List<Object> integers) {
+                        public Unit invoke(List<Object> integers) {
                                 counter.incrementAndGet();
                                 latch.countDown();
                                 innerLatch.countDown();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();

@@ -13,10 +13,13 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.annotations.*;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.Nullable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BasicFuseableObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
@@ -26,9 +29,9 @@ import io.reactivex.observable.internal.observers.BasicFuseableObserver;
 @Experimental
 public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstream<T, T> {
 
-    final Consumer<? super T> onAfterNext;
+    final Function1<? super T, Unit> onAfterNext;
 
-    public ObservableDoAfterNext(ObservableSource<T> source, Consumer<? super T> onAfterNext) {
+    public ObservableDoAfterNext(ObservableSource<T> source, Function1<? super T, Unit> onAfterNext) {
         super(source);
         this.onAfterNext = onAfterNext;
     }
@@ -40,9 +43,9 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
 
     static final class DoAfterObserver<T> extends BasicFuseableObserver<T, T> {
 
-        final Consumer<? super T> onAfterNext;
+        final Function1<? super T, Unit> onAfterNext;
 
-        DoAfterObserver(Observer<? super T> actual, Consumer<? super T> onAfterNext) {
+        DoAfterObserver(Observer<? super T> actual, Function1<? super T, Unit> onAfterNext) {
             super(actual);
             this.onAfterNext = onAfterNext;
         }
@@ -53,7 +56,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
 
             if (sourceMode == NONE) {
                 try {
-                    onAfterNext.accept(t);
+                    onAfterNext.invoke(t);
                 } catch (Throwable ex) {
                     fail(ex);
                 }
@@ -70,7 +73,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
         public T poll() throws Exception {
             T v = qs.poll();
             if (v != null) {
-                onAfterNext.accept(v);
+                onAfterNext.invoke(v);
             }
             return v;
         }

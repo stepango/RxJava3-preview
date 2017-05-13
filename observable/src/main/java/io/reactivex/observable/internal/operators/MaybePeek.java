@@ -17,12 +17,13 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Peeks into the lifecycle of a Maybe and MaybeObserver.
@@ -31,11 +32,11 @@ import kotlin.jvm.functions.Function0;
  */
 public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Consumer<? super Disposable> onSubscribeCall;
+    final Function1<? super Disposable, kotlin.Unit> onSubscribeCall;
 
-    final Consumer<? super T> onSuccessCall;
+    final Function1<? super T, Unit> onSuccessCall;
 
-    final Consumer<? super Throwable> onErrorCall;
+    final Function1<? super Throwable, Unit> onErrorCall;
 
     final Function0 onCompleteCall;
 
@@ -43,8 +44,8 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
     final Function0 onDisposeCall;
 
-    public MaybePeek(MaybeSource<T> source, Consumer<? super Disposable> onSubscribeCall,
-                     Consumer<? super T> onSuccessCall, Consumer<? super Throwable> onErrorCall, Function0 onCompleteCall,
+    public MaybePeek(MaybeSource<T> source, Function1<? super Disposable, kotlin.Unit> onSubscribeCall,
+                     Function1<? super T, Unit> onSuccessCall, Function1<? super Throwable, Unit> onErrorCall, Function0 onCompleteCall,
                      Function0 onAfterTerminate, Function0 onDispose) {
         super(source);
         this.onSubscribeCall = onSubscribeCall;
@@ -94,7 +95,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 try {
-                    parent.onSubscribeCall.accept(d);
+                    parent.onSubscribeCall.invoke(d);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     d.dispose();
@@ -115,7 +116,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 return;
             }
             try {
-                parent.onSuccessCall.accept(value);
+                parent.onSuccessCall.invoke(value);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onErrorInner(ex);
@@ -140,7 +141,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
         void onErrorInner(Throwable e) {
             try {
-                parent.onErrorCall.accept(e);
+                parent.onErrorCall.invoke(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);

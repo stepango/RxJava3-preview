@@ -30,7 +30,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -38,6 +37,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,10 +61,11 @@ public class FlowableBlockingTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Consumer<Integer>() {
+                .blockingSubscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -77,10 +78,11 @@ public class FlowableBlockingTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Consumer<Integer>() {
+                .blockingSubscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         }, Functions.emptyConsumer());
 
@@ -93,10 +95,11 @@ public class FlowableBlockingTest {
 
         TestException ex = new TestException();
 
-        Consumer<Object> cons = new Consumer<Object>() {
+        Function1<Object, kotlin.Unit> cons = new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         };
 
@@ -111,10 +114,11 @@ public class FlowableBlockingTest {
     public void blockingSubscribeConsumerConsumerAction() {
         final List<Object> list = new ArrayList<Object>();
 
-        Consumer<Object> cons = new Consumer<Object>() {
+        Function1<Object, kotlin.Unit> cons = new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         };
 
@@ -202,9 +206,9 @@ public class FlowableBlockingTest {
     @Test(expected = TestException.class)
     public void blockingForEachThrows() {
         Flowable.just(1)
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         });

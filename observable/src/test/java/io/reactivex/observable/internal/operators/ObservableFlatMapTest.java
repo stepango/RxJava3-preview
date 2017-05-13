@@ -33,7 +33,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -44,6 +43,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -324,13 +324,14 @@ public class ObservableFlatMapTest {
     }
 
     private static <T> Observable<T> composer(Observable<T> source, final AtomicInteger subscriptionCount, final int m) {
-        return source.doOnSubscribe(new Consumer<Disposable>() {
+        return source.doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                     int n = subscriptionCount.getAndIncrement();
                     if (n >= m) {
                         Assert.fail("Too many subscriptions! " + (n + 1));
                     }
+                return Unit.INSTANCE;
             }
         }).doOnComplete(new Function0() {
             @Override

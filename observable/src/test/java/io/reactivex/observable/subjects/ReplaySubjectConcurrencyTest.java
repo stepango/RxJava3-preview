@@ -13,20 +13,31 @@
 
 package io.reactivex.observable.subjects;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
+import org.junit.Test;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 public class ReplaySubjectConcurrencyTest {
 
@@ -233,10 +244,10 @@ public class ReplaySubjectConcurrencyTest {
             final ReplaySubject<String> subject = ReplaySubject.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
-            subject.subscribe(new Consumer<String>() {
+            subject.subscribe(new Function1<String, kotlin.Unit>() {
 
                 @Override
-                public void accept(String t1) {
+                public Unit invoke(String t1) {
                     try {
                         // simulate a slow observer
                         Thread.sleep(50);
@@ -244,6 +255,7 @@ public class ReplaySubjectConcurrencyTest {
                         e.printStackTrace();
                     }
                     value1.set(t1);
+                    return Unit.INSTANCE;
                 }
 
             });

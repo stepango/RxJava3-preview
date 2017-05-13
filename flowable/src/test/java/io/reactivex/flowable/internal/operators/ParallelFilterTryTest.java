@@ -22,21 +22,22 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.ParallelFailureHandling;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-public class ParallelFilterTryTest implements Consumer<Object> {
+public class ParallelFilterTryTest implements Function1<Object, kotlin.Unit> {
 
     volatile int calls;
 
     @Override
-    public void accept(Object t) throws Exception {
+    public Unit invoke(Object t) {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test

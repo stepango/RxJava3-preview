@@ -16,21 +16,22 @@ package io.reactivex.observable.internal.observers;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class DisposableLambdaObserver<T> implements Observer<T>, Disposable {
     final Observer<? super T> actual;
-    final Consumer<? super Disposable> onSubscribe;
+    final Function1<? super Disposable, Unit> onSubscribe;
     final Function0 onDispose;
 
     Disposable s;
 
     public DisposableLambdaObserver(Observer<? super T> actual,
-                                    Consumer<? super Disposable> onSubscribe,
+                                    Function1<? super Disposable, Unit> onSubscribe,
                                     Function0 onDispose) {
         this.actual = actual;
         this.onSubscribe = onSubscribe;
@@ -41,7 +42,7 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
     public void onSubscribe(Disposable s) {
         // this way, multiple calls to onSubscribe can show up in tests that use doOnSubscribe to validate behavior
         try {
-            onSubscribe.accept(s);
+            onSubscribe.invoke(s);
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             s.dispose();

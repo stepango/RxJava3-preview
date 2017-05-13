@@ -13,17 +13,26 @@
 
 package io.reactivex.common;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * Common methods for helping with tests from 1.x mostly.
@@ -58,10 +67,11 @@ public enum TestCommonHelper {
     public static List<Throwable> trackPluginErrors() {
         final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
 
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t) {
+            public Unit invoke(Throwable t) {
                 list.add(t);
+                return Unit.INSTANCE;
             }
         });
 

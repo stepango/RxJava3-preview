@@ -14,11 +14,13 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 
 public final class ObservableCollect<T, U> extends AbstractObservableWithUpstream<T, U> {
@@ -87,7 +89,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
                 return;
             }
             try {
-                collector.accept(u, t);
+                collector.invoke(u, t);
             } catch (Throwable e) {
                 s.dispose();
                 onError(e);

@@ -13,24 +13,35 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class FlowableZipIterableTest {
     BiFunction<String, String, String> concat2Strings;
@@ -334,10 +345,11 @@ public class FlowableZipIterableTest {
 
     }
 
-    Consumer<String> printer = new Consumer<String>() {
+    Function1<String, kotlin.Unit> printer = new Function1<String, kotlin.Unit>() {
         @Override
-        public void accept(String pv) {
+        public Unit invoke(String pv) {
             System.out.println(pv);
+            return Unit.INSTANCE;
         }
     };
 

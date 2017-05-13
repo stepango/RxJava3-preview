@@ -13,19 +13,26 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.*;
-
-import org.junit.Test;
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class FlowableOnBackpressureDropTest {
 
@@ -152,9 +159,9 @@ public class FlowableOnBackpressureDropTest {
         });
     }
 
-    private static final Consumer<Long> THROW_NON_FATAL = new Consumer<Long>() {
+    private static final Function1<Long, kotlin.Unit> THROW_NON_FATAL = new Function1<Long, kotlin.Unit>() {
         @Override
-        public void accept(Long n) {
+        public Unit invoke(Long n) {
             throw new RuntimeException();
         }
     };
@@ -168,10 +175,11 @@ public class FlowableOnBackpressureDropTest {
         range(2)
           // if haven't caught exception in onBackpressureDrop operator then would incorrectly
           // be picked up by this call to doOnError
-          .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable t) {
+                public Unit invoke(Throwable t) {
                     errorOccurred.set(true);
+                    return Unit.INSTANCE;
                 }
             })
           .onBackpressureDrop(THROW_NON_FATAL)

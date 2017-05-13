@@ -13,28 +13,35 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableDoAfterNextTest {
 
     final List<Integer> values = new ArrayList<Integer>();
 
-    final Consumer<Integer> afterNext = new Consumer<Integer>() {
+    final Function1<Integer, kotlin.Unit> afterNext = new Function1<Integer, kotlin.Unit>() {
         @Override
-        public void accept(Integer e) throws Exception {
+        public Unit invoke(Integer e) {
             values.add(-e);
+            return Unit.INSTANCE;
         }
     };
 
@@ -233,9 +240,9 @@ public class FlowableDoAfterNextTest {
     @Test
     public void consumerThrows() {
         Flowable.just(1, 2)
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         })
@@ -246,9 +253,9 @@ public class FlowableDoAfterNextTest {
     @Test
     public void consumerThrowsConditional() {
         Flowable.just(1, 2)
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         })
@@ -260,9 +267,9 @@ public class FlowableDoAfterNextTest {
     @Test
     public void consumerThrowsConditional2() {
         Flowable.just(1, 2).hide()
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         })

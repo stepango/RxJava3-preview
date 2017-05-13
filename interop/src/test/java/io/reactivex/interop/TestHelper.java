@@ -13,36 +13,74 @@
 
 package io.reactivex.interop;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.reactivestreams.*;
+import org.reactivestreams.Processor;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.exceptions.UndeliverableException;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
-import io.reactivex.interop.internal.operators.*;
-import io.reactivex.observable.*;
+import io.reactivex.interop.internal.operators.CompletableToFlowable;
+import io.reactivex.interop.internal.operators.MaybeToFlowable;
+import io.reactivex.interop.internal.operators.SingleToFlowable;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.extensions.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.extensions.QueueDisposable;
+import io.reactivex.observable.extensions.SimpleQueue;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.CompletableSubject;
+import io.reactivex.observable.subjects.MaybeSubject;
+import io.reactivex.observable.subjects.Subject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 /**
  * Common methods for helping with tests from 1.x mostly.
@@ -135,10 +173,11 @@ public enum TestHelper {
     public static List<Throwable> trackPluginErrors() {
         final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
 
-        RxJavaCommonPlugins.setErrorHandler(new Consumer<Throwable>() {
+        RxJavaCommonPlugins.setErrorHandler(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t) {
+            public Unit invoke(Throwable t) {
                 list.add(t);
+                return Unit.INSTANCE;
             }
         });
 
@@ -470,10 +509,10 @@ public enum TestHelper {
      * @param value the value not expected
      * @return the consumer
      */
-    public static <T> Consumer<TestSubscriber<T>> subscriberSingleNot(final T value) {
-        return new Consumer<TestSubscriber<T>>() {
+    public static <T> Function1<TestSubscriber<T>, Unit> subscriberSingleNot(final T value) {
+        return new Function1<TestSubscriber<T>, Unit>() {
             @Override
-            public void accept(TestSubscriber<T> ts) throws Exception {
+            public Unit invoke(TestSubscriber<T> ts) {
                 ts
                 .assertSubscribed()
                 .assertValueCount(1)
@@ -482,6 +521,7 @@ public enum TestHelper {
 
                 T v = ts.values().get(0);
                 assertNotEquals(value, v);
+                return Unit.INSTANCE;
             }
         };
     }
@@ -493,10 +533,10 @@ public enum TestHelper {
      * @param value the value not expected
      * @return the consumer
      */
-    public static <T> Consumer<TestObserver<T>> observerSingleNot(final T value) {
-        return new Consumer<TestObserver<T>>() {
+    public static <T> Function1<TestObserver<T>, Unit> observerSingleNot(final T value) {
+        return new Function1<TestObserver<T>, Unit>() {
             @Override
-            public void accept(TestObserver<T> ts) throws Exception {
+            public Unit invoke(TestObserver<T> ts) {
                 ts
                 .assertSubscribed()
                 .assertValueCount(1)
@@ -505,6 +545,7 @@ public enum TestHelper {
 
                 T v = ts.values().get(0);
                 assertNotEquals(value, v);
+                return Unit.INSTANCE;
             }
         };
     }

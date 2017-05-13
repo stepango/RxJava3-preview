@@ -24,7 +24,6 @@ import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ComputationScheduler;
@@ -32,14 +31,16 @@ import io.reactivex.common.internal.schedulers.IoScheduler;
 import io.reactivex.common.internal.schedulers.NewThreadScheduler;
 import io.reactivex.common.internal.schedulers.SingleScheduler;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
  */
 public final class RxJavaCommonPlugins {
     @Nullable
-    static volatile Consumer<? super Throwable> errorHandler;
+    static volatile Function1<? super Throwable, Unit> errorHandler;
 
     @Nullable
     static volatile Function<? super Runnable, ? extends Runnable> onScheduleHandler;
@@ -138,7 +139,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook consumer, may be null
      */
     @Nullable
-    public static Consumer<? super Throwable> getErrorHandler() {
+    public static Function1<? super Throwable, Unit> getErrorHandler() {
         return errorHandler;
     }
 
@@ -297,7 +298,7 @@ public final class RxJavaCommonPlugins {
      * @param error the error to report
      */
     public static void onError(@NonNull Throwable error) {
-        Consumer<? super Throwable> f = errorHandler;
+        Function1<? super Throwable, Unit> f = errorHandler;
 
         if (error == null) {
             error = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
@@ -309,7 +310,7 @@ public final class RxJavaCommonPlugins {
 
         if (f != null) {
             try {
-                f.accept(error);
+                f.invoke(error);
                 return;
             } catch (Throwable e) {
                 // Exceptions.throwIfFatal(e); TODO decide
@@ -462,7 +463,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setErrorHandler(@Nullable Consumer<? super Throwable> handler) {
+    public static void setErrorHandler(@Nullable Function1<? super Throwable, Unit> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }

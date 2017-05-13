@@ -13,15 +13,20 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ParallelFailureHandling;
+import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Calls a Consumer for each upstream value passing by
@@ -34,12 +39,12 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
     final ParallelFlowable<T> source;
 
-    final Consumer<? super T> onNext;
+    final Function1<? super T, Unit> onNext;
 
     final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
-    public ParallelDoOnNextTry(ParallelFlowable<T> source, Consumer<? super T> onNext,
-            BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public ParallelDoOnNextTry(ParallelFlowable<T> source, Function1<? super T, Unit> onNext,
+                               BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         this.source = source;
         this.onNext = onNext;
         this.errorHandler = errorHandler;
@@ -76,7 +81,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
         final Subscriber<? super T> actual;
 
-        final Consumer<? super T> onNext;
+        final Function1<? super T, Unit> onNext;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
@@ -84,8 +89,8 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
         boolean done;
 
-        ParallelDoOnNextSubscriber(Subscriber<? super T> actual, Consumer<? super T> onNext,
-                BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ParallelDoOnNextSubscriber(Subscriber<? super T> actual, Function1<? super T, Unit> onNext,
+                                   BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.actual = actual;
             this.onNext = onNext;
             this.errorHandler = errorHandler;
@@ -126,7 +131,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
             for (;;) {
                 try {
-                    onNext.accept(t);
+                    onNext.invoke(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
 
@@ -186,7 +191,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
         final ConditionalSubscriber<? super T> actual;
 
-        final Consumer<? super T> onNext;
+        final Function1<? super T, Unit> onNext;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
         Subscription s;
@@ -194,8 +199,8 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
         boolean done;
 
         ParallelDoOnNextConditionalSubscriber(ConditionalSubscriber<? super T> actual,
-                Consumer<? super T> onNext,
-                BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+                                              Function1<? super T, Unit> onNext,
+                                              BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.actual = actual;
             this.onNext = onNext;
             this.errorHandler = errorHandler;
@@ -236,7 +241,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
             for (;;) {
                 try {
-                    onNext.accept(t);
+                    onNext.invoke(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
 

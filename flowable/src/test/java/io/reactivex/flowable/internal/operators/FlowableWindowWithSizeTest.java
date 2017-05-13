@@ -13,24 +13,34 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableWindowWithSizeTest {
 
@@ -43,10 +53,11 @@ public class FlowableWindowWithSizeTest {
                 return xs.toList();
             }
         }))
-                .blockingForEach(new Consumer<List<T>>() {
+                .blockingForEach(new Function1<List<T>, kotlin.Unit>() {
                     @Override
-                    public void accept(List<T> xs) {
+                    public Unit invoke(List<T> xs) {
                         lists.add(xs);
+                        return Unit.INSTANCE;
                     }
                 });
         return lists;
@@ -108,11 +119,12 @@ public class FlowableWindowWithSizeTest {
     public void testWindowUnsubscribeNonOverlapping() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
+        Flowable.merge(Flowable.range(1, 10000).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
 
         }).window(5).take(2)).subscribe(ts);
@@ -128,11 +140,12 @@ public class FlowableWindowWithSizeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
 
                     @Override
-                    public void accept(Integer t1) {
+                    public Unit invoke(Integer t1) {
                         count.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
 
                 })
@@ -151,11 +164,12 @@ public class FlowableWindowWithSizeTest {
     public void testWindowUnsubscribeOverlapping() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(Flowable.range(1, 10000).doOnNext(new Consumer<Integer>() {
+        Flowable.merge(Flowable.range(1, 10000).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
 
         }).window(5, 4).take(2)).subscribe(ts);
@@ -171,11 +185,12 @@ public class FlowableWindowWithSizeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
         Flowable.merge(Flowable.range(1, 100000)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
 
                     @Override
-                    public void accept(Integer t1) {
+                    public Unit invoke(Integer t1) {
                         count.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
 
                 })
@@ -397,10 +412,11 @@ public class FlowableWindowWithSizeTest {
         final TestSubscriber[] to = { null };
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .window(2)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
+                .doOnNext(new Function1<Flowable<Integer>, kotlin.Unit>() {
             @Override
-            public void accept(Flowable<Integer> w) throws Exception {
+            public Unit invoke(Flowable<Integer> w) {
                 to[0] = w.test();
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -416,10 +432,11 @@ public class FlowableWindowWithSizeTest {
         final TestSubscriber[] to = { null };
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .window(2, 3)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
+                .doOnNext(new Function1<Flowable<Integer>, kotlin.Unit>() {
             @Override
-            public void accept(Flowable<Integer> w) throws Exception {
+            public Unit invoke(Flowable<Integer> w) {
                 to[0] = w.test();
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -435,10 +452,11 @@ public class FlowableWindowWithSizeTest {
         final TestSubscriber[] to = { null };
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .window(3, 2)
-        .doOnNext(new Consumer<Flowable<Integer>>() {
+                .doOnNext(new Function1<Flowable<Integer>, kotlin.Unit>() {
             @Override
-            public void accept(Flowable<Integer> w) throws Exception {
+            public Unit invoke(Flowable<Integer> w) {
                 to[0] = w.test();
+                return Unit.INSTANCE;
             }
         })
         .test()

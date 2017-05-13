@@ -13,23 +13,32 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.*;
-
-import org.junit.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableMapTest {
 
@@ -160,11 +169,12 @@ public class ObservableMapTest {
                 }
                 return s;
             }
-        }).doOnError(new Consumer<Throwable>() {
+        }).doOnError(new Function1<Throwable, kotlin.Unit>() {
 
             @Override
-            public void accept(Throwable t1) {
+            public Unit invoke(Throwable t1) {
                 t1.printStackTrace();
+                return Unit.INSTANCE;
             }
 
         });

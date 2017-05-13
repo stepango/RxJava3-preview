@@ -13,19 +13,29 @@
 
 package io.reactivex.interop.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.ResourceSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Base tests for schedulers that involve threads (concurrency).
@@ -371,13 +381,14 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
 
-        o1.subscribe(new Consumer<Integer>() {
+        o1.subscribe(new Function1<Integer, Unit>() {
 
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 System.out.println("Thread: " + Thread.currentThread().getName());
                 System.out.println("t: " + t);
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -394,10 +405,10 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(5);
         final CountDownLatch first = new CountDownLatch(1);
 
-        o1.subscribeOn(scheduler).subscribe(new Consumer<Integer>() {
+        o1.subscribeOn(scheduler).subscribe(new Function1<Integer, Unit>() {
 
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 try {
                     // we block the first one so we can assert this executes asynchronously with a count
                     first.await(1000, TimeUnit.SECONDS);
@@ -410,6 +421,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 System.out.println("t: " + t);
                 count.incrementAndGet();
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 

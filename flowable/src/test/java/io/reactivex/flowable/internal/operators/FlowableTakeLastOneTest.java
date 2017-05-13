@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -29,6 +28,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -100,11 +100,12 @@ public class FlowableTakeLastOneTest {
     public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Flowable.range(1,num).doOnNext(new Consumer<Integer>() {
+        long count = Flowable.range(1, num).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 upstreamCount.incrementAndGet();
+                return Unit.INSTANCE;
             }})
             .takeLast(0).count().blockingLast();
         assertEquals(num, upstreamCount.get());

@@ -15,19 +15,23 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableGenerate<T, S> extends Observable<T> {
     final Callable<S> stateSupplier;
     final BiFunction<S, Emitter<T>, S> generator;
-    final Consumer<? super S> disposeState;
+    final Function1<? super S, kotlin.Unit> disposeState;
 
     public ObservableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
-            Consumer<? super S> disposeState) {
+                              Function1<? super S, kotlin.Unit> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
         this.disposeState = disposeState;
@@ -55,7 +59,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
 
         final Observer<? super T> actual;
         final BiFunction<S, ? super Emitter<T>, S> generator;
-        final Consumer<? super S> disposeState;
+        final Function1<? super S, kotlin.Unit> disposeState;
 
         S state;
 
@@ -66,8 +70,8 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         boolean hasNext;
 
         GeneratorDisposable(Observer<? super T> actual,
-                BiFunction<S, ? super Emitter<T>, S> generator,
-                Consumer<? super S> disposeState, S initialState) {
+                            BiFunction<S, ? super Emitter<T>, S> generator,
+                            Function1<? super S, kotlin.Unit> disposeState, S initialState) {
             this.actual = actual;
             this.generator = generator;
             this.disposeState = disposeState;
@@ -118,7 +122,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
 
         private void dispose(S s) {
             try {
-                disposeState.accept(s);
+                disposeState.invoke(s);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);

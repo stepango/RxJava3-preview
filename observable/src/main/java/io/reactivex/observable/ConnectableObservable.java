@@ -16,10 +16,12 @@ package io.reactivex.observable;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.annotations.NonNull;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ConnectConsumer;
-import io.reactivex.observable.internal.operators.*;
+import io.reactivex.observable.internal.operators.ObservableAutoConnect;
+import io.reactivex.observable.internal.operators.ObservableRefCount;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin
@@ -45,13 +47,13 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *          allowing the caller to synchronously disconnect a synchronous source
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
-    public abstract void connect(@NonNull Consumer<? super Disposable> connection);
+    public abstract void connect(@NonNull Function1<? super Disposable, Unit> connection);
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
      * {@link Observable} to its {@link Observer}s.
      * <p>
-     * To disconnect from a synchronous source, use the {@link #connect(Consumer)} method.
+     * To disconnect from a synchronous source, use the {@link #connect(Function1)} method.
      *
      * @return the subscription representing the connection
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
@@ -115,7 +117,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *         specified callback with the Subscription associated with the established connection
      */
     @NonNull
-    public Observable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
+    public Observable<T> autoConnect(int numberOfSubscribers, @NonNull Function1<? super Disposable, Unit> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaObservablePlugins.onAssembly(this);

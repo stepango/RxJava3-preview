@@ -12,18 +12,29 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.reactivestreams.Subscription;
 
-import io.reactivex.common.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableDelaySubscriptionOtherTest {
     @Test
@@ -35,10 +46,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -68,10 +80,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -102,10 +115,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -135,10 +149,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -168,10 +183,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -202,10 +218,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Flowable.just(1, 2, 3, 4, 5)
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -291,10 +308,11 @@ public class FlowableDelaySubscriptionOtherTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                 subscribed.set(true);
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(delayUntil)

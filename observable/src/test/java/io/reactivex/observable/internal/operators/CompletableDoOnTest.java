@@ -25,12 +25,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,9 +39,9 @@ public class CompletableDoOnTest {
 
     @Test
     public void successAcceptThrows() {
-        Completable.complete().doOnEvent(new Consumer<Throwable>() {
+        Completable.complete().doOnEvent(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 throw new TestException();
             }
         })
@@ -51,9 +51,9 @@ public class CompletableDoOnTest {
 
     @Test
     public void errorAcceptThrows() {
-        TestObserver<Void> to = Completable.error(new TestException("Outer")).doOnEvent(new Consumer<Throwable>() {
+        TestObserver<Void> to = Completable.error(new TestException("Outer")).doOnEvent(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 throw new TestException("Inner");
             }
         })
@@ -101,9 +101,9 @@ public class CompletableDoOnTest {
                     s.onComplete();
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
+                    .doOnSubscribe(new Function1<Disposable, Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException("First");
                 }
             })

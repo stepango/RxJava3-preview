@@ -13,9 +13,11 @@
 
 package io.reactivex.observable.observers;
 
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.extensions.QueueDisposable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility methods that return functional interfaces to support assertions regarding fusion
@@ -59,11 +61,11 @@ public enum ObserverFusion {
      * @return the new Consumer instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Consumer<TestObserver<T>> assertFuseable() {
-        return (Consumer)AssertFuseable.INSTANCE;
+    public static <T> Function1<TestObserver<T>, Unit> assertFuseable() {
+        return (Function1) AssertFuseable.INSTANCE;
     }
 
-    static final class AssertFusionConsumer<T> implements Consumer<TestObserver<T>> {
+    static final class AssertFusionConsumer<T> implements Function1<TestObserver<T>, Unit> {
         private final int mode;
 
         AssertFusionConsumer(int mode) {
@@ -71,8 +73,9 @@ public enum ObserverFusion {
         }
 
         @Override
-        public void accept(TestObserver<T> ts) throws Exception {
+        public Unit invoke(TestObserver<T> ts) {
             ts.assertFusionMode(mode);
+            return Unit.INSTANCE;
         }
     }
 
@@ -97,11 +100,12 @@ public enum ObserverFusion {
         }
     }
 
-    enum AssertFuseable implements Consumer<TestObserver<Object>> {
+    enum AssertFuseable implements Function1<TestObserver<Object>, Unit> {
         INSTANCE;
         @Override
-        public void accept(TestObserver<Object> ts) throws Exception {
+        public Unit invoke(TestObserver<Object> ts) {
             ts.assertFuseable();
+            return Unit.INSTANCE;
         }
     }
 
@@ -119,15 +123,16 @@ public enum ObserverFusion {
      * @return the new Consumer instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Consumer<TestObserver<T>> assertNotFuseable() {
-        return (Consumer)AssertNotFuseable.INSTANCE;
+    public static <T> Function1<TestObserver<T>, Unit> assertNotFuseable() {
+        return (Function1) AssertNotFuseable.INSTANCE;
     }
 
-    enum AssertNotFuseable implements Consumer<TestObserver<Object>> {
+    enum AssertNotFuseable implements Function1<TestObserver<Object>, Unit> {
         INSTANCE;
         @Override
-        public void accept(TestObserver<Object> ts) throws Exception {
+        public Unit invoke(TestObserver<Object> ts) {
             ts.assertNotFuseable();
+            return Unit.INSTANCE;
         }
     }
 
@@ -146,7 +151,7 @@ public enum ObserverFusion {
      * @param mode the expected established fusion mode, see {@link QueueDisposable} constants.
      * @return the new Consumer instance
      */
-    public static <T> Consumer<TestObserver<T>> assertFusionMode(final int mode) {
+    public static <T> Function1<TestObserver<T>, Unit> assertFusionMode(final int mode) {
         return new AssertFusionConsumer<T>(mode);
     }
 

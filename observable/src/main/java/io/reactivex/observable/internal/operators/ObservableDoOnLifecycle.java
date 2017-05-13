@@ -13,17 +13,17 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.DisposableLambdaObserver;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpstream<T, T> {
-    private final Consumer<? super Disposable> onSubscribe;
+    private final Function1<? super Disposable, kotlin.Unit> onSubscribe;
     private final Function0 onDispose;
 
-    public ObservableDoOnLifecycle(Observable<T> upstream, Consumer<? super Disposable> onSubscribe,
+    public ObservableDoOnLifecycle(Observable<T> upstream, Function1<? super Disposable, kotlin.Unit> onSubscribe,
                                    Function0 onDispose) {
         super(upstream);
         this.onSubscribe = onSubscribe;

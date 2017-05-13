@@ -16,13 +16,18 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Creates a resource and a dependent Maybe for each incoming Observer and optionally
@@ -37,14 +42,14 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
     final Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier;
 
-    final Consumer<? super D> resourceDisposer;
+    final Function1<? super D, kotlin.Unit> resourceDisposer;
 
     final boolean eager;
 
     public MaybeUsing(Callable<? extends D> resourceSupplier,
-            Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
-            Consumer<? super D> resourceDisposer,
-            boolean eager) {
+                      Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
+                      Function1<? super D, kotlin.Unit> resourceDisposer,
+                      boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.sourceSupplier = sourceSupplier;
         this.resourceDisposer = resourceDisposer;
@@ -71,7 +76,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             Exceptions.throwIfFatal(ex);
             if (eager) {
                 try {
-                    resourceDisposer.accept(resource);
+                    resourceDisposer.invoke(resource);
                 } catch (Throwable exc) {
                     Exceptions.throwIfFatal(exc);
                     EmptyDisposable.error(new CompositeException(ex, exc), observer);
@@ -83,7 +88,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
             if (!eager) {
                 try {
-                    resourceDisposer.accept(resource);
+                    resourceDisposer.invoke(resource);
                 } catch (Throwable exc) {
                     Exceptions.throwIfFatal(exc);
                     RxJavaCommonPlugins.onError(exc);
@@ -104,13 +109,13 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
         final MaybeObserver<? super T> actual;
 
-        final Consumer<? super D> disposer;
+        final Function1<? super D, kotlin.Unit> disposer;
 
         final boolean eager;
 
         Disposable d;
 
-        UsingObserver(MaybeObserver<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingObserver(MaybeObserver<? super T> actual, D resource, Function1<? super D, kotlin.Unit> disposer, boolean eager) {
             super(resource);
             this.actual = actual;
             this.disposer = disposer;
@@ -129,7 +134,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             Object resource = getAndSet(this);
             if (resource != this) {
                 try {
-                    disposer.accept((D)resource);
+                    disposer.invoke((D) resource);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);
@@ -159,7 +164,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                 Object resource = getAndSet(this);
                 if (resource != this) {
                     try {
-                        disposer.accept((D)resource);
+                        disposer.invoke((D) resource);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         actual.onError(ex);
@@ -185,7 +190,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                 Object resource = getAndSet(this);
                 if (resource != this) {
                     try {
-                        disposer.accept((D)resource);
+                        disposer.invoke((D) resource);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         e = new CompositeException(e, ex);
@@ -210,7 +215,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                 Object resource = getAndSet(this);
                 if (resource != this) {
                     try {
-                        disposer.accept((D)resource);
+                        disposer.invoke((D) resource);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         actual.onError(ex);

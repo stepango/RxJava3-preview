@@ -29,7 +29,6 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -40,6 +39,7 @@ import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.operators.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -601,18 +601,21 @@ public class TestObserverTest {
     public void assertOf() {
         TestObserver<Integer> ts = TestObserver.create();
 
-        ts.assertOf(new Consumer<TestObserver<Integer>>() {
+        ts.assertOf(new Function1<TestObserver<Integer>, Unit>() {
             @Override
-            public void accept(TestObserver<Integer> f) throws Exception {
+            public Unit invoke(TestObserver<Integer> f) {
                 f.assertNotSubscribed();
+                return Unit.INSTANCE;
+
             }
         });
 
         try {
-            ts.assertOf(new Consumer<TestObserver<Integer>>() {
+            ts.assertOf(new Function1<TestObserver<Integer>, Unit>() {
                 @Override
-                public void accept(TestObserver<Integer> f) throws Exception {
+                public Unit invoke(TestObserver<Integer> f) {
                     f.assertSubscribed();
+                    return Unit.INSTANCE;
                 }
             });
             throw new RuntimeException("Should have thrown");
@@ -621,9 +624,9 @@ public class TestObserverTest {
         }
 
         try {
-            ts.assertOf(new Consumer<TestObserver<Integer>>() {
+            ts.assertOf(new Function1<TestObserver<Integer>, Unit>() {
                 @Override
-                public void accept(TestObserver<Integer> f) throws Exception {
+                public Unit invoke(TestObserver<Integer> f) {
                     throw new IllegalArgumentException();
                 }
             });

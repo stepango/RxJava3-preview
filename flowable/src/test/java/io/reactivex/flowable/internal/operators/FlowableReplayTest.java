@@ -37,7 +37,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
@@ -492,11 +491,12 @@ public class FlowableReplayTest {
     public void testSynchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) {
+            public Unit invoke(Integer v) {
                 effectCounter.incrementAndGet();
                 System.out.println("Sideeffect #" + v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -511,18 +511,20 @@ public class FlowableReplayTest {
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
-            result.subscribe(new Consumer<Integer>() {
+            result.subscribe(new Function1<Integer, kotlin.Unit>() {
 
                 @Override
-                public void accept(Integer t1) {
+                public Unit invoke(Integer t1) {
                     System.out.println(t1);
+                    return Unit.INSTANCE;
                 }
 
-            }, new Consumer<Throwable>() {
+                             }, new Function1<Throwable, kotlin.Unit>() {
 
                 @Override
-                public void accept(Throwable t1) {
+                public Unit invoke(Throwable t1) {
                     t1.printStackTrace();
+                    return Unit.INSTANCE;
                 }
             },
                     new Function0() {
@@ -544,7 +546,7 @@ public class FlowableReplayTest {
     @Test
     public void testIssue2191_UnsubscribeSource() throws Exception {
         // setup mocks
-        Consumer<Integer> sourceNext = mock(Consumer.class);
+        Function1<Integer, kotlin.Unit> sourceNext = mock(Function1.class);
         Function0 sourceCompleted = mock(Function0.class);
         Function0 sourceUnsubscribed = mock(Function0.class);
         Subscriber<Integer> spiedSubscriberBeforeConnect = TestHelper.mockSubscriber();
@@ -569,8 +571,8 @@ public class FlowableReplayTest {
         verify(spiedSubscriberAfterConnect, times(2)).onSubscribe((Subscription)any());
 
         // verify interactions
-        verify(sourceNext, times(1)).accept(1);
-        verify(sourceNext, times(1)).accept(2);
+        verify(sourceNext, times(1)).invoke(1);
+        verify(sourceNext, times(1)).invoke(2);
         verify(sourceCompleted, times(1)).invoke();
         verifyObserverMock(spiedSubscriberBeforeConnect, 2, 4);
         verifyObserverMock(spiedSubscriberAfterConnect, 2, 4);
@@ -594,7 +596,7 @@ public class FlowableReplayTest {
     @Test
     public void testIssue2191_SchedulerUnsubscribe() throws Exception {
         // setup mocks
-        Consumer<Integer> sourceNext = mock(Consumer.class);
+        Function1<Integer, kotlin.Unit> sourceNext = mock(Function1.class);
         Function0 sourceCompleted = mock(Function0.class);
         Function0 sourceUnsubscribed = mock(Function0.class);
         final Scheduler mockScheduler = mock(Scheduler.class);
@@ -622,9 +624,9 @@ public class FlowableReplayTest {
         verify(mockObserverAfterConnect, times(2)).onSubscribe((Subscription)any());
 
         // verify interactions
-        verify(sourceNext, times(1)).accept(1);
-        verify(sourceNext, times(1)).accept(2);
-        verify(sourceNext, times(1)).accept(3);
+        verify(sourceNext, times(1)).invoke(1);
+        verify(sourceNext, times(1)).invoke(2);
+        verify(sourceNext, times(1)).invoke(3);
         verify(sourceCompleted, times(1)).invoke();
         verify(mockScheduler, times(1)).createWorker();
         verify(spiedWorker, times(1)).schedule((Runnable)notNull());
@@ -656,9 +658,9 @@ public class FlowableReplayTest {
     @Test
     public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
         // setup mocks
-        Consumer<Integer> sourceNext = mock(Consumer.class);
+        Function1<Integer, kotlin.Unit> sourceNext = mock(Function1.class);
         Function0 sourceCompleted = mock(Function0.class);
-        Consumer<Throwable> sourceError = mock(Consumer.class);
+        Function1<Throwable, kotlin.Unit> sourceError = mock(Function1.class);
         Function0 sourceUnsubscribed = mock(Function0.class);
         final Scheduler mockScheduler = mock(Scheduler.class);
         final Disposable mockSubscription = mock(Disposable.class);
@@ -692,8 +694,8 @@ public class FlowableReplayTest {
         // verify interactions
         verify(mockScheduler, times(1)).createWorker();
         verify(spiedWorker, times(1)).schedule((Runnable)notNull());
-        verify(sourceNext, times(1)).accept(1);
-        verify(sourceError, times(1)).accept(illegalArgumentException);
+        verify(sourceNext, times(1)).invoke(1);
+        verify(sourceError, times(1)).invoke(illegalArgumentException);
         verifyObserver(mockObserverBeforeConnect, 2, 2, illegalArgumentException);
         verifyObserver(mockObserverAfterConnect, 2, 2, illegalArgumentException);
 
@@ -958,24 +960,26 @@ public class FlowableReplayTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 System.out.println("v: " + v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 System.out.println("v: " + v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1120,10 +1124,11 @@ public class FlowableReplayTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable<Integer> source = Flowable.range(1, 100)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .replay().autoConnect();
@@ -1440,9 +1445,9 @@ public class FlowableReplayTest {
         .replay();
 
         try {
-            co.connect(new Consumer<Disposable>() {
+            co.connect(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable t) throws Exception {
+                public Unit invoke(Disposable t) {
                     throw new TestException();
                 }
             });

@@ -26,7 +26,6 @@ import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
@@ -79,6 +78,7 @@ import io.reactivex.observable.internal.operators.MaybeFromCompletable;
 import io.reactivex.observable.internal.operators.ObservableDelaySubscriptionOther;
 import io.reactivex.observable.internal.operators.SingleDelayWithCompletable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
@@ -709,8 +709,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(Callable<R> resourceSupplier,
-            Function<? super R, ? extends CompletableSource> completableFunction,
-            Consumer<? super R> disposer) {
+                                        Function<? super R, ? extends CompletableSource> completableFunction,
+                                        Function1<? super R, Unit> disposer) {
         return using(resourceSupplier, completableFunction, disposer, true);
     }
 
@@ -739,7 +739,7 @@ public abstract class Completable implements CompletableSource {
     public static <R> Completable using(
             final Callable<R> resourceSupplier,
             final Function<? super R, ? extends CompletableSource> completableFunction,
-            final Consumer<? super R> disposer,
+            final Function1<? super R, Unit> disposer,
             final boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(completableFunction, "completableFunction is null");
@@ -1110,7 +1110,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnError(Consumer<? super Throwable> onError) {
+    public final Completable doOnError(Function1<? super Throwable, Unit> onError) {
         return doOnLifecycle(Functions.emptyConsumer(), onError,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
@@ -1129,7 +1129,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnEvent(final Consumer<? super Throwable> onEvent) {
+    public final Completable doOnEvent(final Function1<? super Throwable, Unit> onEvent) {
         ObjectHelper.requireNonNull(onEvent, "onEvent is null");
         return RxJavaObservablePlugins.onAssembly(new CompletableDoOnEvent(this, onEvent));
     }
@@ -1151,8 +1151,8 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     private Completable doOnLifecycle(
-            final Consumer<? super Disposable> onSubscribe,
-            final Consumer<? super Throwable> onError,
+            final Function1<? super Disposable, Unit> onSubscribe,
+            final Function1<? super Throwable, Unit> onError,
             final Function0 onComplete,
             final Function0 onTerminate,
             final Function0 onAfterTerminate,
@@ -1179,7 +1179,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
+    public final Completable doOnSubscribe(Function1<? super Disposable, Unit> onSubscribe) {
         return doOnLifecycle(onSubscribe, Functions.emptyConsumer(),
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
@@ -1662,7 +1662,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Function0 onComplete, final Consumer<? super Throwable> onError) {
+    public final Disposable subscribe(final Function0 onComplete, final Function1<? super Throwable, Unit> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 

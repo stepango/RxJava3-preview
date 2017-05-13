@@ -14,17 +14,21 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.observable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleDoOnError<T> extends Single<T> {
 
     final SingleSource<T> source;
 
-    final Consumer<? super Throwable> onError;
+    final Function1<? super Throwable, Unit> onError;
 
-    public SingleDoOnError(SingleSource<T> source, Consumer<? super Throwable> onError) {
+    public SingleDoOnError(SingleSource<T> source, Function1<? super Throwable, Unit> onError) {
         this.source = source;
         this.onError = onError;
     }
@@ -55,7 +59,7 @@ public final class SingleDoOnError<T> extends Single<T> {
         @Override
         public void onError(Throwable e) {
             try {
-                onError.accept(e);
+                onError.invoke(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);

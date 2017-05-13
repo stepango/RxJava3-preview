@@ -13,18 +13,26 @@
 
 package io.reactivex.flowable;
 
-import static io.reactivex.common.internal.utils.TestingHelper.*;
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
+
+import static io.reactivex.common.internal.utils.TestingHelper.addToList;
+import static io.reactivex.common.internal.utils.TestingHelper.biConsumerThrows;
+import static io.reactivex.common.internal.utils.TestingHelper.callableListCreator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public final class FlowableCollectTest {
 
@@ -38,7 +46,7 @@ public final class FlowableCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> list, Integer v) {
+            public void invoke(List<Integer> list, Integer v) {
                 list.add(v);
             }
         });
@@ -71,7 +79,7 @@ public final class FlowableCollectTest {
                 },
                 new BiConsumer<StringBuilder, Integer>() {
                     @Override
-                    public void accept(StringBuilder sb, Integer v) {
+                    public void invoke(StringBuilder sb, Integer v) {
                     if (sb.length() > 0) {
                         sb.append("-");
                     }
@@ -95,7 +103,7 @@ public final class FlowableCollectTest {
         }, new BiConsumer<List<Integer>, Integer>() {
 
             @Override
-            public void accept(List<Integer> list, Integer t) {
+            public void invoke(List<Integer> list, Integer t) {
                 list.add(t);
             }
         })
@@ -145,7 +153,7 @@ public final class FlowableCollectTest {
             boolean once = true;
 
             @Override
-            public void accept(Object o, Integer t) {
+            public void invoke(Object o, Integer t) {
                 if (once) {
                     once = false;
                     throw e;
@@ -170,7 +178,7 @@ public final class FlowableCollectTest {
         Flowable.just(1, 1, 1, 1, 2)
         .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
+            public void invoke(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         })
@@ -190,7 +198,7 @@ public final class FlowableCollectTest {
         }, new BiConsumer<List<Integer>, Integer>() {
 
             @Override
-            public void accept(List<Integer> list, Integer t) {
+            public void invoke(List<Integer> list, Integer t) {
                 list.add(t);
             }
         })
@@ -240,7 +248,7 @@ public final class FlowableCollectTest {
             boolean once = true;
 
             @Override
-            public void accept(Object o, Integer t) {
+            public void invoke(Object o, Integer t) {
                 if (once) {
                     once = false;
                     throw e;
@@ -265,7 +273,7 @@ public final class FlowableCollectTest {
         Flowable.just(1, 1, 1, 1, 2)
         .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
+            public void invoke(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         })
@@ -278,7 +286,7 @@ public final class FlowableCollectTest {
         TestHelper.checkDisposed(Flowable.just(1, 2)
             .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
                 @Override
-                public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                public void invoke(ArrayList<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             }));
@@ -286,7 +294,7 @@ public final class FlowableCollectTest {
         TestHelper.checkDisposed(Flowable.just(1, 2)
                 .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
                     @Override
-                    public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                    public void invoke(ArrayList<Integer> a, Integer b) throws Exception {
                         a.add(b);
                     }
                 }));
@@ -300,7 +308,7 @@ public final class FlowableCollectTest {
                 return f.collect(Functions.justCallable(new ArrayList<Integer>()),
                         new BiConsumer<ArrayList<Integer>, Integer>() {
                             @Override
-                            public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                            public void invoke(ArrayList<Integer> a, Integer b) throws Exception {
                                 a.add(b);
                             }
                         });

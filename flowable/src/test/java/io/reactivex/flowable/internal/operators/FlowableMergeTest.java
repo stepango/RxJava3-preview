@@ -42,7 +42,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -204,16 +203,17 @@ public class FlowableMergeTest {
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(source).take(6).blockingForEach(new Consumer<Long>() {
+        Flowable.merge(source).take(6).blockingForEach(new Function1<Long, kotlin.Unit>() {
 
             @Override
-            public void accept(Long v) {
+            public Unit invoke(Long v) {
                 System.out.println("Value: " + v);
                 int c = count.incrementAndGet();
                 if (c > 6) {
                     fail("Should be only 6");
                 }
 
+                return Unit.INSTANCE;
             }
         });
 
@@ -1334,27 +1334,29 @@ public class FlowableMergeTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
-    private static Consumer<Integer> printCount() {
-        return new Consumer<Integer>() {
+    private static Function1<Integer, kotlin.Unit> printCount() {
+        return new Function1<Integer, kotlin.Unit>() {
             long count;
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 count++;
                 System.out.println("count=" + count);
+                return Unit.INSTANCE;
             }
         };
     }
 
-    private static Consumer<Integer> pauseForMs(final long time) {
-        return new Consumer<Integer>() {
+    private static Function1<Integer, kotlin.Unit> pauseForMs(final long time) {
+        return new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer s) {
+            public Unit invoke(Integer s) {
                 try {
                     Thread.sleep(time);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+                return Unit.INSTANCE;
             }
         };
     }

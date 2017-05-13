@@ -13,29 +13,35 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableDoAfterNextTest {
 
     final List<Integer> values = new ArrayList<Integer>();
 
-    final Consumer<Integer> afterNext = new Consumer<Integer>() {
+    final Function1<Integer, kotlin.Unit> afterNext = new Function1<Integer, kotlin.Unit>() {
         @Override
-        public void accept(Integer e) throws Exception {
+        public Unit invoke(Integer e) {
             values.add(-e);
+            return Unit.INSTANCE;
         }
     };
 
@@ -234,9 +240,9 @@ public class ObservableDoAfterNextTest {
     @Test
     public void consumerThrows() {
         Observable.just(1, 2)
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         })
@@ -247,9 +253,9 @@ public class ObservableDoAfterNextTest {
     @Test
     public void consumerThrowsConditional() {
         Observable.just(1, 2)
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         })
@@ -261,9 +267,9 @@ public class ObservableDoAfterNextTest {
     @Test
     public void consumerThrowsConditional2() {
         Observable.just(1, 2).hide()
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         })

@@ -26,12 +26,12 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,16 +43,18 @@ public class LambdaSubscriberTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Consumer<Object>() {
+        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 received.add(v);
+                return Unit.INSTANCE;
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -60,9 +62,9 @@ public class LambdaSubscriberTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Subscription>() {
+        }, new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 throw new TestException();
             }
         });
@@ -81,16 +83,17 @@ public class LambdaSubscriberTest {
     public void onNextThrows() {
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Consumer<Object>() {
+        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 throw new TestException();
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -98,10 +101,11 @@ public class LambdaSubscriberTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Subscription>() {
+        }, new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 s.request(Long.MAX_VALUE);
+                return Unit.INSTANCE;
             }
         });
 
@@ -122,15 +126,16 @@ public class LambdaSubscriberTest {
         try {
             final List<Object> received = new ArrayList<Object>();
 
-            LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Consumer<Object>() {
+            LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object v) throws Exception {
+                public Unit invoke(Object v) {
                     received.add(v);
+                    return Unit.INSTANCE;
                 }
             },
-            new Consumer<Throwable>() {
+                    new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable e) throws Exception {
+                public Unit invoke(Throwable e) {
                     throw new TestException("Inner");
                 }
             }, new Function0() {
@@ -139,10 +144,11 @@ public class LambdaSubscriberTest {
                     received.add(100);
                     return Unit.INSTANCE;
                 }
-            }, new Consumer<Subscription>() {
+            }, new Function1<Subscription, kotlin.Unit>() {
                 @Override
-                public void accept(Subscription s) throws Exception {
+                public Unit invoke(Subscription s) {
                     s.request(Long.MAX_VALUE);
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -170,26 +176,29 @@ public class LambdaSubscriberTest {
         try {
             final List<Object> received = new ArrayList<Object>();
 
-            LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Consumer<Object>() {
+            LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object v) throws Exception {
+                public Unit invoke(Object v) {
                     received.add(v);
+                    return Unit.INSTANCE;
                 }
             },
-            new Consumer<Throwable>() {
+                    new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable e) throws Exception {
+                public Unit invoke(Throwable e) {
                     received.add(e);
+                    return Unit.INSTANCE;
                 }
             }, new Function0() {
                 @Override
                 public kotlin.Unit invoke() {
                     throw new TestException();
                 }
-            }, new Consumer<Subscription>() {
+            }, new Function1<Subscription, kotlin.Unit>() {
                 @Override
-                public void accept(Subscription s) throws Exception {
+                public Unit invoke(Subscription s) {
                     s.request(Long.MAX_VALUE);
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -227,16 +236,18 @@ public class LambdaSubscriberTest {
 
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Consumer<Object>() {
+        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 received.add(v);
+                return Unit.INSTANCE;
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -244,10 +255,11 @@ public class LambdaSubscriberTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Subscription>() {
+        }, new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 s.request(Long.MAX_VALUE);
+                return Unit.INSTANCE;
             }
         });
 
@@ -273,16 +285,18 @@ public class LambdaSubscriberTest {
 
         final List<Object> received = new ArrayList<Object>();
 
-        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Consumer<Object>() {
+        LambdaSubscriber<Object> o = new LambdaSubscriber<Object>(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 received.add(v);
+                return Unit.INSTANCE;
             }
         },
-        new Consumer<Throwable>() {
+                new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 received.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
@@ -290,10 +304,11 @@ public class LambdaSubscriberTest {
                 received.add(100);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Subscription>() {
+        }, new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 s.request(Long.MAX_VALUE);
+                return Unit.INSTANCE;
             }
         });
 
@@ -308,15 +323,16 @@ public class LambdaSubscriberTest {
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        ps.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 errors.add(e);
+                return Unit.INSTANCE;
             }
         });
 
@@ -337,23 +353,25 @@ public class LambdaSubscriberTest {
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        ps.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
+                return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 errors.add(e);
+                return Unit.INSTANCE;
             }
         }, new Function0() {
             @Override
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Subscription>() {
+        }, new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 throw new TestException();
             }
         });

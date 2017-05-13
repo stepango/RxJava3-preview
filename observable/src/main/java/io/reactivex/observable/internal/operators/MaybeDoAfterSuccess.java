@@ -13,12 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
@@ -28,9 +31,9 @@ import io.reactivex.observable.*;
 @Experimental
 public final class MaybeDoAfterSuccess<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Consumer<? super T> onAfterSuccess;
+    final Function1<? super T, Unit> onAfterSuccess;
 
-    public MaybeDoAfterSuccess(MaybeSource<T> source, Consumer<? super T> onAfterSuccess) {
+    public MaybeDoAfterSuccess(MaybeSource<T> source, Function1<? super T, Unit> onAfterSuccess) {
         super(source);
         this.onAfterSuccess = onAfterSuccess;
     }
@@ -44,11 +47,11 @@ public final class MaybeDoAfterSuccess<T> extends AbstractMaybeWithUpstream<T, T
 
         final MaybeObserver<? super T> actual;
 
-        final Consumer<? super T> onAfterSuccess;
+        final Function1<? super T, Unit> onAfterSuccess;
 
         Disposable d;
 
-        DoAfterObserver(MaybeObserver<? super T> actual, Consumer<? super T> onAfterSuccess) {
+        DoAfterObserver(MaybeObserver<? super T> actual, Function1<? super T, Unit> onAfterSuccess) {
             this.actual = actual;
             this.onAfterSuccess = onAfterSuccess;
         }
@@ -67,7 +70,7 @@ public final class MaybeDoAfterSuccess<T> extends AbstractMaybeWithUpstream<T, T
             actual.onSuccess(t);
 
             try {
-                onAfterSuccess.accept(t);
+                onAfterSuccess.invoke(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
              // remember, onSuccess is a terminal event and we can't call onError

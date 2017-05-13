@@ -13,19 +13,30 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static io.reactivex.common.internal.utils.TestingHelper.*;
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
+
+import static io.reactivex.common.internal.utils.TestingHelper.addToList;
+import static io.reactivex.common.internal.utils.TestingHelper.biConsumerThrows;
+import static io.reactivex.common.internal.utils.TestingHelper.callableListCreator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public final class ObservableCollectTest {
 
@@ -39,7 +50,7 @@ public final class ObservableCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> list, Integer v) {
+            public void invoke(List<Integer> list, Integer v) {
                 list.add(v);
             }
         }).toObservable();
@@ -70,7 +81,7 @@ public final class ObservableCollectTest {
         },
             new BiConsumer<StringBuilder, Integer>() {
                 @Override
-                public void accept(StringBuilder sb, Integer v) {
+                public void invoke(StringBuilder sb, Integer v) {
                 if (sb.length() > 0) {
                     sb.append("-");
                 }
@@ -123,7 +134,7 @@ public final class ObservableCollectTest {
             boolean once = true;
 
             @Override
-            public void accept(Object o, Integer t) {
+            public void invoke(Object o, Integer t) {
                 if (once) {
                     once = false;
                     throw e;
@@ -147,7 +158,7 @@ public final class ObservableCollectTest {
         Observable.just(1, 1, 1, 1, 2)
         .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
+            public void invoke(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         }).toObservable()
@@ -165,7 +176,7 @@ public final class ObservableCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> list, Integer v) {
+            public void invoke(List<Integer> list, Integer v) {
                 list.add(v);
             }
         });
@@ -196,7 +207,7 @@ public final class ObservableCollectTest {
         },
             new BiConsumer<StringBuilder, Integer>() {
                 @Override
-                public void accept(StringBuilder sb, Integer v) {
+                public void invoke(StringBuilder sb, Integer v) {
                 if (sb.length() > 0) {
                     sb.append("-");
                 }
@@ -247,7 +258,7 @@ public final class ObservableCollectTest {
             boolean once = true;
 
             @Override
-            public void accept(Object o, Integer t) {
+            public void invoke(Object o, Integer t) {
                 if (once) {
                     once = false;
                     throw e;
@@ -271,7 +282,7 @@ public final class ObservableCollectTest {
         Observable.just(1, 1, 1, 1, 2)
         .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
             @Override
-            public void accept(HashSet<Integer> s, Integer v) throws Exception {
+            public void invoke(HashSet<Integer> s, Integer v) throws Exception {
                 s.add(v);
             }
         })
@@ -288,7 +299,7 @@ public final class ObservableCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         }));
@@ -300,7 +311,7 @@ public final class ObservableCollectTest {
             }
         }, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         }).toObservable());
@@ -318,7 +329,7 @@ public final class ObservableCollectTest {
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
                     @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
+                    public void invoke(List<Integer> a, Integer b) throws Exception {
                         a.add(b);
                     }
                 });
@@ -335,7 +346,7 @@ public final class ObservableCollectTest {
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
                     @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
+                    public void invoke(List<Integer> a, Integer b) throws Exception {
                         a.add(b);
                     }
                 }).toObservable();
@@ -355,7 +366,7 @@ public final class ObservableCollectTest {
                     }
                 }, new BiConsumer<List<Integer>, Integer>() {
                     @Override
-                    public void accept(List<Integer> a, Integer b) throws Exception {
+                    public void invoke(List<Integer> a, Integer b) throws Exception {
                         a.add(b);
                     }
                 }).toObservable();

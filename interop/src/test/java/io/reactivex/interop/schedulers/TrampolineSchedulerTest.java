@@ -13,21 +13,29 @@
 
 package io.reactivex.interop.schedulers;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.disposables.CompositeDisposable;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
@@ -52,11 +60,12 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
             }
         });
 
-        o.blockingForEach(new Consumer<String>() {
+        o.blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String t) {
+            public Unit invoke(String t) {
                 System.out.println("t: " + t);
+                return Unit.INSTANCE;
             }
         });
     }

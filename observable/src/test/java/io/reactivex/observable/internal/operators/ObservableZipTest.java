@@ -13,26 +13,57 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Notification;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
+import io.reactivex.common.functions.Function6;
+import io.reactivex.common.functions.Function7;
+import io.reactivex.common.functions.Function8;
+import io.reactivex.common.functions.Function9;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableZipTest {
     BiFunction<String, String, String> concat2Strings;
@@ -767,12 +798,13 @@ public class ObservableZipTest {
                 });
 
         final ArrayList<String> list = new ArrayList<String>();
-        os.subscribe(new Consumer<String>() {
+        os.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 System.out.println(s);
                 list.add(s);
+                return Unit.INSTANCE;
             }
         });
 
@@ -865,12 +897,13 @@ public class ObservableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 System.out.println(s);
                 list.add(s);
+                return Unit.INSTANCE;
             }
         });
 
@@ -913,12 +946,13 @@ public class ObservableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 System.out.println(s);
                 list.add(s);
+                return Unit.INSTANCE;
             }
         });
 
@@ -942,12 +976,13 @@ public class ObservableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 System.out.println(s);
                 list.add(s);
+                return Unit.INSTANCE;
             }
         });
 

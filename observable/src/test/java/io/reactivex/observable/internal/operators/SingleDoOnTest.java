@@ -24,7 +24,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Single;
@@ -35,6 +34,7 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -60,10 +60,11 @@ public class SingleDoOnTest {
     public void doOnError() {
         final Object[] event = { null };
 
-        Single.error(new TestException()).doOnError(new Consumer<Throwable>() {
+        Single.error(new TestException()).doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 event[0] = e;
+                return Unit.INSTANCE;
             }
         })
         .test();
@@ -75,10 +76,11 @@ public class SingleDoOnTest {
     public void doOnSubscribe() {
         final int[] count = { 0 };
 
-        Single.never().doOnSubscribe(new Consumer<Disposable>() {
+        Single.never().doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable d) throws Exception {
+            public Unit invoke(Disposable d) {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         }).test();
 
@@ -89,10 +91,11 @@ public class SingleDoOnTest {
     public void doOnSuccess() {
         final Object[] event = { null };
 
-        Single.just(1).doOnSuccess(new Consumer<Integer>() {
+        Single.just(1).doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 event[0] = e;
+                return Unit.INSTANCE;
             }
         })
         .test();
@@ -104,10 +107,11 @@ public class SingleDoOnTest {
     public void doOnSubscribeNormal() {
         final int[] count = { 0 };
 
-        Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
+        Single.just(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -120,10 +124,11 @@ public class SingleDoOnTest {
     public void doOnSubscribeError() {
         final int[] count = { 0 };
 
-        Single.error(new TestException()).doOnSubscribe(new Consumer<Disposable>() {
+        Single.error(new TestException()).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -135,9 +140,9 @@ public class SingleDoOnTest {
     @Test
     public void doOnSubscribeJustCrash() {
 
-        Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
+        Single.just(1).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public Unit invoke(Disposable s) {
                 throw new TestException();
             }
         })
@@ -150,9 +155,9 @@ public class SingleDoOnTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
 
         try {
-            Single.error(new TestException("Outer")).doOnSubscribe(new Consumer<Disposable>() {
+            Single.error(new TestException("Outer")).doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException("Inner");
                 }
             })
@@ -171,10 +176,11 @@ public class SingleDoOnTest {
         final int[] call = { 0 };
 
         Single.just(1)
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable v) throws Exception {
+            public Unit invoke(Throwable v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -186,9 +192,9 @@ public class SingleDoOnTest {
     @Test
     public void onErrorCrashes() {
         TestObserver<Object> to = Single.error(new TestException("Outer"))
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable v) throws Exception {
+            public Unit invoke(Throwable v) {
                 throw new TestException("Inner");
             }
         })
@@ -206,7 +212,7 @@ public class SingleDoOnTest {
         Single.just(1)
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 throw new TestException();
             }
         })
@@ -219,7 +225,7 @@ public class SingleDoOnTest {
         TestObserver<Integer> to = Single.<Integer>error(new TestException("Main"))
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(Integer v, Throwable e) throws Exception {
+            public void invoke(Integer v, Throwable e) throws Exception {
                 throw new TestException("Inner");
             }
         })
@@ -318,10 +324,11 @@ public class SingleDoOnTest {
         final int[] call = { 0 };
 
         Single.error(new TestException())
-        .doOnSuccess(new Consumer<Object>() {
+                .doOnSuccess(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 call[0]++;
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -333,9 +340,9 @@ public class SingleDoOnTest {
     @Test
     public void doOnSuccessCrash() {
         Single.just(1)
-        .doOnSuccess(new Consumer<Integer>() {
+                .doOnSuccess(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -357,9 +364,9 @@ public class SingleDoOnTest {
                     s.onSuccess(1);
                 }
             }
-            .doOnSubscribe(new Consumer<Disposable>() {
+                    .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException("First");
                 }
             })

@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -55,11 +55,12 @@ public class ObservableDoOnUnsubscribeTest {
                         return Unit.INSTANCE;
                     }
                 })
-                .doOnNext(new Consumer<Long>() {
+                .doOnNext(new Function1<Long, kotlin.Unit>() {
                     @Override
-                    public void accept(Long aLong) {
+                    public Unit invoke(Long aLong) {
                             // Ensure there is at least some onNext events before un-subscription happens
                             onNextLatch.countDown();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnDispose(new Function0() {
@@ -118,11 +119,12 @@ public class ObservableDoOnUnsubscribeTest {
                         return Unit.INSTANCE;
                     }
                 })
-                .doOnNext(new Consumer<Long>() {
+                .doOnNext(new Function1<Long, kotlin.Unit>() {
                     @Override
-                    public void accept(Long aLong) {
+                    public Unit invoke(Long aLong) {
                             // Ensure there is at least some onNext events before un-subscription happens
                             onNextLatch.countDown();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnDispose(new Function0() {

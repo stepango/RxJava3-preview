@@ -13,35 +13,38 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
-public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUpstream<T, T> implements Consumer<T> {
+public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUpstream<T, T> implements Function1<T, kotlin.Unit> {
 
-    final Consumer<? super T> onDrop;
+    final Function1<? super T, Unit> onDrop;
 
     public FlowableOnBackpressureDrop(Flowable<T> source) {
         super(source);
         this.onDrop = this;
     }
 
-    public FlowableOnBackpressureDrop(Flowable<T> source, Consumer<? super T> onDrop) {
+    public FlowableOnBackpressureDrop(Flowable<T> source, Function1<? super T, Unit> onDrop) {
         super(source);
         this.onDrop = onDrop;
     }
 
     @Override
-    public void accept(T t) {
+    public Unit invoke(T t) {
         // deliberately ignoring
+        return Unit.INSTANCE;
     }
 
     @Override
@@ -55,13 +58,13 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
         private static final long serialVersionUID = -6246093802440953054L;
 
         final Subscriber<? super T> actual;
-        final Consumer<? super T> onDrop;
+        final Function1<? super T, Unit> onDrop;
 
         Subscription s;
 
         boolean done;
 
-        BackpressureDropSubscriber(Subscriber<? super T> actual, Consumer<? super T> onDrop) {
+        BackpressureDropSubscriber(Subscriber<? super T> actual, Function1<? super T, Unit> onDrop) {
             this.actual = actual;
             this.onDrop = onDrop;
         }
@@ -86,7 +89,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
                 BackpressureHelper.produced(this, 1);
             } else {
                 try {
-                    onDrop.accept(t);
+                    onDrop.invoke(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();

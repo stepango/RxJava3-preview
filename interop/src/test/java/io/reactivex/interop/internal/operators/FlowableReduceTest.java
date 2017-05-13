@@ -13,22 +13,32 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.Publisher;
-
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.reduce;
+import static io.reactivex.interop.RxJava3Interop.toFlowable;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableReduceTest {
     SingleObserver<Object> singleObserver;
@@ -217,11 +227,13 @@ public class FlowableReduceTest {
                         return l + "_" + r;
                     }
                 })
-                .doOnSuccess(new Consumer<String>() {
+                        .doOnSuccess(new Function1<String, kotlin.Unit>() {
                     @Override
-                    public void accept(String s) throws Exception {
+                    public Unit invoke(String s) {
                         count.incrementAndGet();
-                        System.out.println("Completed with " + s);}
+                        System.out.println("Completed with " + s);
+                        return Unit.INSTANCE;
+                    }
                 }));
             }
         }

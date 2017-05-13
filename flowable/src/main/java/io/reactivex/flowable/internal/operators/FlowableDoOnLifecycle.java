@@ -18,7 +18,6 @@ import org.reactivestreams.Subscription;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
@@ -27,11 +26,11 @@ import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
 public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream<T, T> {
-    private final Consumer<? super Subscription> onSubscribe;
+    private final Function1<? super Subscription, kotlin.Unit> onSubscribe;
     private final Function1<Long, Unit> onRequest;
     private final Function0 onCancel;
 
-    public FlowableDoOnLifecycle(Flowable<T> source, Consumer<? super Subscription> onSubscribe,
+    public FlowableDoOnLifecycle(Flowable<T> source, Function1<? super Subscription, kotlin.Unit> onSubscribe,
                                  Function1<Long, Unit> onRequest, Function0 onCancel) {
         super(source);
         this.onSubscribe = onSubscribe;
@@ -46,14 +45,14 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
 
     static final class SubscriptionLambdaSubscriber<T> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
-        final Consumer<? super Subscription> onSubscribe;
+        final Function1<? super Subscription, kotlin.Unit> onSubscribe;
         final Function1<Long, Unit> onRequest;
         final Function0 onCancel;
 
         Subscription s;
 
         SubscriptionLambdaSubscriber(Subscriber<? super T> actual,
-                                     Consumer<? super Subscription> onSubscribe,
+                                     Function1<? super Subscription, kotlin.Unit> onSubscribe,
                                      Function1<Long, Unit> onRequest,
                                      Function0 onCancel) {
             this.actual = actual;
@@ -66,7 +65,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
         public void onSubscribe(Subscription s) {
             // this way, multiple calls to onSubscribe can show up in tests that use doOnSubscribe to validate behavior
             try {
-                onSubscribe.accept(s);
+                onSubscribe.invoke(s);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

@@ -13,20 +13,32 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Consumer;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.flowable.internal.utils.*;
+import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import io.reactivex.flowable.internal.utils.NotificationLite;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A connectable observable which shares an underlying source and dispatches source values to subscribers in a backpressure-aware
@@ -83,7 +95,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
         boolean doConnect;
         PublishSubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
@@ -121,7 +133,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          * themselves.
          */
         try {
-            connection.accept(ps);
+            connection.invoke(ps);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);

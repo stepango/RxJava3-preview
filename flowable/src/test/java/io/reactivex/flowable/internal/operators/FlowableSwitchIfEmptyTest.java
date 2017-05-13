@@ -13,20 +13,27 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Consumer;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableOperator;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class FlowableSwitchIfEmptyTest {
@@ -36,10 +43,11 @@ public class FlowableSwitchIfEmptyTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final Flowable<Integer> observable = Flowable.just(4)
                 .switchIfEmpty(Flowable.just(2)
-                .doOnSubscribe(new Consumer<Subscription>() {
+                        .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) {
+                    public Unit invoke(Subscription s) {
                         subscribed.set(true);
+                        return Unit.INSTANCE;
                     }
                 }));
 

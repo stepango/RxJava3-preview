@@ -29,7 +29,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
@@ -38,6 +37,7 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -192,10 +192,11 @@ public class ObservableGroupJoinTest {
                             public Boolean invoke(PersonFruit t1) {
                                 return ppf.person.id == t1.personId;
                             }
-                        }).subscribe(new Consumer<PersonFruit>() {
+                        }).subscribe(new Function1<PersonFruit, kotlin.Unit>() {
                             @Override
-                            public void accept(PersonFruit t1) {
+                            public Unit invoke(PersonFruit t1) {
                                 observer.onNext(Arrays.asList(ppf.person.name, t1.fruit));
+                                return Unit.INSTANCE;
                             }
                         });
                     }

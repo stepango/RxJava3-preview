@@ -35,7 +35,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Burst;
 import io.reactivex.flowable.Flowable;
@@ -45,6 +44,7 @@ import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
@@ -292,7 +292,7 @@ public class FlowableScanTest {
                 }, new BiConsumer<List<Integer>, Integer>() {
 
                     @Override
-                    public void accept(List<Integer> list, Integer t2) {
+                    public void invoke(List<Integer> list, Integer t2) {
                         list.add(t2);
                     }
 
@@ -488,10 +488,11 @@ public class FlowableScanTest {
             }
         })
         .take(10)
-        .blockingForEach(new Consumer<HashMap<String, String>>() {
+                .blockingForEach(new Function1<HashMap<String, String>, kotlin.Unit>() {
             @Override
-            public void accept(HashMap<String, String> v) {
+            public Unit invoke(HashMap<String, String> v) {
                 System.out.println(v);
+                return Unit.INSTANCE;
             }
         });
     }
@@ -499,10 +500,11 @@ public class FlowableScanTest {
     @Test
     public void testScanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
-        Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
+        Function1<Throwable, kotlin.Unit> errorConsumer = new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t) throws Exception {
+            public Unit invoke(Throwable t) {
                  list.add(t);
+                return Unit.INSTANCE;
             }};
         try {
             RxJavaCommonPlugins.setErrorHandler(errorConsumer);
@@ -579,10 +581,11 @@ public class FlowableScanTest {
     @Test
     public void testScanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
-        Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
+        Function1<Throwable, kotlin.Unit> errorConsumer = new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable t) throws Exception {
+            public Unit invoke(Throwable t) {
                  list.add(t);
+                return Unit.INSTANCE;
             }};
         try {
             RxJavaCommonPlugins.setErrorHandler(errorConsumer);

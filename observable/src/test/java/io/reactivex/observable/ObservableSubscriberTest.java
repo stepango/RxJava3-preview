@@ -13,18 +13,28 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.SafeObserver;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObservableSubscriberTest {
     @Test
@@ -126,15 +136,17 @@ public class ObservableSubscriberTest {
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Observable.just(1).subscribe(new Consumer<Integer>() {
+        Observable.just(1).subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 
@@ -145,15 +157,17 @@ public class ObservableSubscriberTest {
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Observable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
+        Observable.<Integer>error(new TestException()).subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 list.add(100);
+                return Unit.INSTANCE;
             }
         });
 

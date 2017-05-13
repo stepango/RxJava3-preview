@@ -34,7 +34,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -230,10 +229,11 @@ public class FlowableRetryWithPredicateTest {
     public void testUnsubscribeFromRetry() {
         PublishProcessor<Integer> subject = PublishProcessor.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry(retryTwice).subscribe(new Consumer<Integer>() {
+        Disposable sub = subject.retry(retryTwice).subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer n) {
+            public Unit invoke(Integer n) {
                 count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
         subject.onNext(1);
@@ -345,12 +345,13 @@ public class FlowableRetryWithPredicateTest {
             public boolean test(Integer t1, Throwable t2) {
                 return true;
             }})
-        .forEach(new Consumer<Long>() {
+                .forEach(new Function1<Long, kotlin.Unit>() {
 
             @Override
-            public void accept(Long t) {
+            public Unit invoke(Long t) {
                 System.out.println(t);
                 list.add(t);
+                return Unit.INSTANCE;
             }});
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
@@ -369,12 +370,13 @@ public class FlowableRetryWithPredicateTest {
                 return x;
             }})
         .retry()
-        .forEach(new Consumer<Long>() {
+                .forEach(new Function1<Long, kotlin.Unit>() {
 
             @Override
-            public void accept(Long t) {
+            public Unit invoke(Long t) {
                 System.out.println(t);
                 list.add(t);
+                return Unit.INSTANCE;
             }});
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }

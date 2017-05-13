@@ -16,23 +16,28 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableUsing<T, D> extends Observable<T> {
     final Callable<? extends D> resourceSupplier;
     final Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier;
-    final Consumer<? super D> disposer;
+    final Function1<? super D, kotlin.Unit> disposer;
     final boolean eager;
 
     public ObservableUsing(Callable<? extends D> resourceSupplier,
-            Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier,
-            Consumer<? super D> disposer,
-            boolean eager) {
+                           Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier,
+                           Function1<? super D, kotlin.Unit> disposer,
+                           boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.sourceSupplier = sourceSupplier;
         this.disposer = disposer;
@@ -57,7 +62,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             try {
-                disposer.accept(resource);
+                disposer.invoke(resource);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(new CompositeException(e, ex), s);
@@ -78,12 +83,12 @@ public final class ObservableUsing<T, D> extends Observable<T> {
 
         final Observer<? super T> actual;
         final D resource;
-        final Consumer<? super D> disposer;
+        final Function1<? super D, kotlin.Unit> disposer;
         final boolean eager;
 
         Disposable s;
 
-        UsingObserver(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingObserver(Observer<? super T> actual, D resource, Function1<? super D, kotlin.Unit> disposer, boolean eager) {
             this.actual = actual;
             this.resource = resource;
             this.disposer = disposer;
@@ -108,7 +113,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             if (eager) {
                 if (compareAndSet(false, true)) {
                     try {
-                        disposer.accept(resource);
+                        disposer.invoke(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
                         t = new CompositeException(t, e);
@@ -129,7 +134,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             if (eager) {
                 if (compareAndSet(false, true)) {
                     try {
-                        disposer.accept(resource);
+                        disposer.invoke(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
                         actual.onError(e);
@@ -160,7 +165,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         void disposeAfter() {
             if (compareAndSet(false, true)) {
                 try {
-                    disposer.accept(resource);
+                    disposer.invoke(resource);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     // can't call actual.onError unless it is serialized, which is expensive

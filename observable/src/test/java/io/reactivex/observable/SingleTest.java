@@ -13,20 +13,35 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Test;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.disposables.SerialDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiConsumer;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.internal.operators.SingleInternalHelper;
 import io.reactivex.observable.observers.TestObserver;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SingleTest {
 
@@ -461,7 +476,7 @@ public class SingleTest {
 
         Single.just(1).doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
-            public void accept(final Integer integer, final Throwable throwable) throws Exception {
+            public void invoke(final Integer integer, final Throwable throwable) throws Exception {
                 if (integer != null) {
                     atomicInteger.incrementAndGet();
                 }
@@ -477,7 +492,7 @@ public class SingleTest {
 
         Single.error(new RuntimeException()).doOnEvent(new BiConsumer<Object, Throwable>() {
             @Override
-            public void accept(final Object o, final Throwable throwable) throws Exception {
+            public void invoke(final Object o, final Throwable throwable) throws Exception {
                 if (throwable != null) {
                     atomicInteger.incrementAndGet();
                 }

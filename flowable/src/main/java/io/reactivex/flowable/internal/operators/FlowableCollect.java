@@ -12,9 +12,10 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.Callable;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
@@ -22,7 +23,9 @@ import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
 
@@ -81,7 +84,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
                 return;
             }
             try {
-                collector.accept(u, t);
+                collector.invoke(u, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

@@ -15,8 +15,10 @@ package io.reactivex.observable;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.observable.ObservableEventStream.Event;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableGroupByTests {
 
@@ -34,11 +36,12 @@ public class ObservableGroupByTests {
             }
         })
         .take(1)
-        .blockingForEach(new Consumer<GroupedObservable<String, Event>>() {
+                .blockingForEach(new Function1<GroupedObservable<String, Event>, Unit>() {
             @Override
-            public void accept(GroupedObservable<String, Event> v) {
+            public Unit invoke(GroupedObservable<String, Event> v) {
                 System.out.println(v);
                 v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
+                return Unit.INSTANCE;
             }
         });
 
@@ -72,10 +75,11 @@ public class ObservableGroupByTests {
             }
         })
         .take(20)
-        .blockingForEach(new Consumer<Object>() {
+                .blockingForEach(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object pv) {
+            public Unit invoke(Object pv) {
                 System.out.println(pv);
+                return Unit.INSTANCE;
             }
         });
 

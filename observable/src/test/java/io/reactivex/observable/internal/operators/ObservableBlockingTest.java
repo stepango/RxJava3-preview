@@ -26,7 +26,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -34,6 +33,7 @@ import io.reactivex.observable.internal.observers.BlockingFirstObserver;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -60,10 +60,11 @@ public class ObservableBlockingTest {
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Consumer<Integer>() {
+                .blockingSubscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -76,10 +77,11 @@ public class ObservableBlockingTest {
 
         Observable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Consumer<Integer>() {
+                .blockingSubscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         }, Functions.emptyConsumer());
 
@@ -92,10 +94,11 @@ public class ObservableBlockingTest {
 
         TestException ex = new TestException();
 
-        Consumer<Object> cons = new Consumer<Object>() {
+        Function1<Object, kotlin.Unit> cons = new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         };
 
@@ -110,10 +113,11 @@ public class ObservableBlockingTest {
     public void blockingSubscribeConsumerConsumerAction() {
         final List<Object> list = new ArrayList<Object>();
 
-        Consumer<Object> cons = new Consumer<Object>() {
+        Function1<Object, kotlin.Unit> cons = new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) throws Exception {
+            public Unit invoke(Object v) {
                 list.add(v);
+                return Unit.INSTANCE;
             }
         };
 
@@ -201,9 +205,9 @@ public class ObservableBlockingTest {
     @Test(expected = TestException.class)
     public void blockingForEachThrows() {
         Observable.just(1)
-        .blockingForEach(new Consumer<Integer>() {
+                .blockingForEach(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer e) throws Exception {
+            public Unit invoke(Integer e) {
                 throw new TestException();
             }
         });

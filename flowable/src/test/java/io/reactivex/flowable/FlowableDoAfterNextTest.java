@@ -15,13 +15,14 @@
  */
 package io.reactivex.flowable;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
-import io.reactivex.common.functions.Consumer;
+import static org.junit.Assert.assertEquals;
 
 public class FlowableDoAfterNextTest {
 
@@ -30,9 +31,9 @@ public class FlowableDoAfterNextTest {
         final AtomicInteger count = new AtomicInteger();
         final RuntimeException e = new RuntimeException();
         Burst.items(1, 2).create()
-            .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
                 @Override
-                public void accept(Integer t) throws Exception {
+                public Unit invoke(Integer t) {
                     count.incrementAndGet();
                     throw e;
                 }})

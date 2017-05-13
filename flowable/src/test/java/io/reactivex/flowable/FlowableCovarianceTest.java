@@ -16,15 +16,22 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.*;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test super/extends of generics.
@@ -73,20 +80,22 @@ public class FlowableCovarianceTest {
                 return v.getClass();
             }
         })
-        .doOnNext(new Consumer<GroupedFlowable<Object, Movie>>() {
+                .doOnNext(new Function1<GroupedFlowable<Object, Movie>, Unit>() {
             @Override
-            public void accept(GroupedFlowable<Object, Movie> g) {
+            public Unit invoke(GroupedFlowable<Object, Movie> g) {
                 System.out.println(g.getKey());
+                return Unit.INSTANCE;
             }
         })
         .flatMap(new Function<GroupedFlowable<Object, Movie>, Publisher<String>>() {
             @Override
             public Publisher<String> apply(GroupedFlowable<Object, Movie> g) {
                 return g
-                        .doOnNext(new Consumer<Movie>() {
+                        .doOnNext(new Function1<Movie, Unit>() {
                             @Override
-                            public void accept(Movie v) {
+                            public Unit invoke(Movie v) {
                                 System.out.println(v);
+                                return Unit.INSTANCE;
                             }
                         })
                         .compose(new FlowableTransformer<Movie, Movie>() {

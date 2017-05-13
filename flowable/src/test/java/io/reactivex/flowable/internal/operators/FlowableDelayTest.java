@@ -13,25 +13,45 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.Notification;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DisposableSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableDelayTest {
     private Subscriber<Long> observer;
@@ -616,11 +636,12 @@ public class FlowableDelayTest {
     public void testDelayEmitsEverything() {
         Flowable<Integer> source = Flowable.range(1, 5);
         Flowable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
+        delayed = delayed.doOnEach(new Function1<Notification<Integer>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<Integer> t1) {
+            public Unit invoke(Notification<Integer> t1) {
                 System.out.println(t1);
+                return Unit.INSTANCE;
             }
 
         });
@@ -873,10 +894,11 @@ public class FlowableDelayTest {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
 
         Flowable.just(1)
-        .doOnSubscribe(new Consumer<Object>() {
+                .doOnSubscribe(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object o) {
+            public Unit invoke(Object o) {
                 subscribed.set(true);
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(delayUntil)
@@ -921,11 +943,12 @@ public class FlowableDelayTest {
 
         Flowable.<String>error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
-                .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
+                    public Unit invoke(Throwable throwable) {
                         thread.set(Thread.currentThread());
                         latch.countDown();
+                        return Unit.INSTANCE;
                     }
                 })
                 .onErrorResumeNext(Flowable.<String>empty())

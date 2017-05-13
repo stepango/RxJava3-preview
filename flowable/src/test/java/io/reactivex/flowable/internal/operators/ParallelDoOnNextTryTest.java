@@ -13,26 +13,33 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFailureHandling;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
-public class ParallelDoOnNextTryTest implements Consumer<Object> {
+import static org.junit.Assert.assertEquals;
+
+public class ParallelDoOnNextTryTest implements Function1<Object, kotlin.Unit> {
 
     volatile int calls;
 
     @Override
-    public void accept(Object t) throws Exception {
+    public Unit invoke(Object t) {
         calls++;
+        return Unit.INSTANCE;
     }
 
     @Test
@@ -98,12 +105,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithError() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.ERROR)
         .sequential()
@@ -115,12 +123,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithStop() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.STOP)
         .sequential()
@@ -132,16 +141,17 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             int count;
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (count++ == 1) {
-                    return;
+                    return Unit.INSTANCE;
                 }
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.RETRY)
         .sequential()
@@ -153,12 +163,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
@@ -175,12 +186,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithSkip() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.SKIP)
         .sequential()
@@ -193,12 +205,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailHandlerThrows() {
         TestSubscriber<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
@@ -240,12 +253,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithErrorConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.ERROR)
         .filter(Functions.alwaysTrue())
@@ -258,12 +272,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithStopConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.STOP)
         .filter(Functions.alwaysTrue())
@@ -276,16 +291,17 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             int count;
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (count++ == 1) {
-                    return;
+                    return Unit.INSTANCE;
                 }
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.RETRY)
         .filter(Functions.alwaysTrue())
@@ -298,12 +314,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override
@@ -321,12 +338,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailWithSkipConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, ParallelFailureHandling.SKIP)
         .filter(Functions.alwaysTrue())
@@ -340,12 +358,13 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
     public void doOnNextFailHandlerThrowsConditional() {
         TestSubscriber<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (1 / v < 0) {
                     System.out.println("Should not happen!");
                 }
+                return Unit.INSTANCE;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
             @Override

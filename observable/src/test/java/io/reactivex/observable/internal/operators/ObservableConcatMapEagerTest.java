@@ -13,23 +13,37 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class ObservableConcatMapEagerTest {
 
@@ -301,10 +315,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness2() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -321,10 +336,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness3() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -341,10 +357,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness4() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -361,10 +378,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness5() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -381,10 +399,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness6() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -401,10 +420,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness7() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -421,10 +441,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness8() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -441,10 +462,11 @@ public class ObservableConcatMapEagerTest {
     @Test
     public void testEagerness9() {
         final AtomicInteger count = new AtomicInteger();
-        Observable<Integer> source = Observable.just(1).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> source = Observable.just(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         }).hide();
 
@@ -564,12 +586,13 @@ public class ObservableConcatMapEagerTest {
                 return Observable.just(t);
             }
         })
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 if (once.compareAndSet(false, true)) {
                     subject.onNext(2);
                 }
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -592,10 +615,11 @@ public class ObservableConcatMapEagerTest {
             @Override
             public Observable<Integer> apply(Integer t) {
                 return Observable.range(1, Observable.bufferSize() * 2)
-                        .doOnNext(new Consumer<Integer>() {
+                        .doOnNext(new Function1<Integer, kotlin.Unit>() {
                             @Override
-                            public void accept(Integer t) {
+                            public Unit invoke(Integer t) {
                                 count.getAndIncrement();
+                                return Unit.INSTANCE;
                             }
                         }).hide();
             }

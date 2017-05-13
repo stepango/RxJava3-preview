@@ -13,26 +13,31 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.common.functions.Consumer;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 public class FlowableDoOnSubscribeTest {
 
     @Test
     public void testDoOnSubscribe() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> o = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
+        Flowable<Integer> o = Flowable.just(1).doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                     count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -45,15 +50,17 @@ public class FlowableDoOnSubscribeTest {
     @Test
     public void testDoOnSubscribe2() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        Flowable<Integer> o = Flowable.just(1).doOnSubscribe(new Consumer<Subscription>() {
+        Flowable<Integer> o = Flowable.just(1).doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                     count.incrementAndGet();
+                return Unit.INSTANCE;
             }
-        }).take(1).doOnSubscribe(new Consumer<Subscription>() {
+        }).take(1).doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                     count.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -76,16 +83,18 @@ public class FlowableDoOnSubscribeTest {
                 sref.set(s);
             }
 
-        }).doOnSubscribe(new Consumer<Subscription>() {
+        }).doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                     countBefore.incrementAndGet();
+                return Unit.INSTANCE;
             }
         }).publish().refCount()
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) {
+            public Unit invoke(Subscription s) {
                     countAfter.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 

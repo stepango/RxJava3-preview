@@ -44,7 +44,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.functions.Functions;
@@ -1161,10 +1160,11 @@ public class CompletableTest {
             public Completable apply(Object v) {
                 return normal.completable;
             }
-        }, new Consumer<Integer>() {
+        }, new Function1<Integer, Unit>() {
             @Override
-            public void accept(Integer d) {
+            public Unit invoke(Integer d) {
                 dispose.set(d);
+                return Unit.INSTANCE;
             }
         });
 
@@ -1207,10 +1207,11 @@ public class CompletableTest {
             public Completable apply(Integer v) {
                 return normal.completable;
             }
-        }, new Consumer<Integer>() {
+        }, new Function1<Integer, Unit>() {
             @Override
-            public void accept(Integer d) {
+            public Unit invoke(Integer d) {
                 dispose.set(d);
+                return Unit.INSTANCE;
             }
         }, false);
 
@@ -1253,10 +1254,11 @@ public class CompletableTest {
             public Completable apply(Integer v) {
                 return error.completable;
             }
-        }, new Consumer<Integer>() {
+        }, new Function1<Integer, Unit>() {
             @Override
-            public void accept(Integer d) {
+            public Unit invoke(Integer d) {
                 dispose.set(d);
+                return Unit.INSTANCE;
             }
         });
 
@@ -1299,10 +1301,11 @@ public class CompletableTest {
             public Completable apply(Integer v) {
                 return error.completable;
             }
-        }, new Consumer<Integer>() {
+        }, new Function1<Integer, Unit>() {
             @Override
-            public void accept(Integer d) {
+            public Unit invoke(Integer d) {
                 dispose.set(d);
+                return Unit.INSTANCE;
             }
         }, false);
 
@@ -1338,9 +1341,11 @@ public class CompletableTest {
             public Completable apply(Object v) {
                 return normal.completable;
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, Unit>() {
             @Override
-            public void accept(Object v) { }
+            public Unit invoke(Object v) {
+                return Unit.INSTANCE;
+            }
         });
     }
 
@@ -1351,9 +1356,11 @@ public class CompletableTest {
             public Object call() {
                 return 1;
             }
-        }, null, new Consumer<Object>() {
+        }, null, new Function1<Object, Unit>() {
             @Override
-            public void accept(Object v) { }
+            public Unit invoke(Object v) {
+                return Unit.INSTANCE;
+            }
         });
     }
 
@@ -1369,9 +1376,11 @@ public class CompletableTest {
             public Completable apply(Object v) {
                 return null;
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, Unit>() {
             @Override
-            public void accept(Object v) { }
+            public Unit invoke(Object v) {
+                return Unit.INSTANCE;
+            }
         });
 
         c.blockingAwait();
@@ -1403,9 +1412,11 @@ public class CompletableTest {
                     public Completable apply(Object v) {
                         return normal.completable;
                     }
-                }, new Consumer<Object>() {
+                }, new Function1<Object, Unit>() {
                     @Override
-                    public void accept(Object v) { }
+                    public Unit invoke(Object v) {
+                        return Unit.INSTANCE;
+                    }
                 });
 
         c.blockingAwait();
@@ -1422,9 +1433,11 @@ public class CompletableTest {
                 new Function<Object, Completable>() {
                     @Override
                     public Completable apply(Object v) { throw new TestException(); }
-                }, new Consumer<Object>() {
+                }, new Function1<Object, Unit>() {
                     @Override
-                    public void accept(Object v) { }
+                    public Unit invoke(Object v) {
+                        return Unit.INSTANCE;
+                    }
                 });
 
         c.blockingAwait();
@@ -1443,9 +1456,11 @@ public class CompletableTest {
                     public Completable apply(Object v) {
                         return normal.completable;
                     }
-                }, new Consumer<Object>() {
+                }, new Function1<Object, Unit>() {
                     @Override
-                    public void accept(Object v) { throw new TestException(); }
+                    public Unit invoke(Object v) {
+                        throw new TestException();
+                    }
                 });
 
         c.blockingAwait();
@@ -1770,10 +1785,11 @@ public class CompletableTest {
     public void doOnErrorNoError() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        Completable c = normal.completable.doOnError(new Consumer<Throwable>() {
+        Completable c = normal.completable.doOnError(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 error.set(e);
+                return Unit.INSTANCE;
             }
         });
 
@@ -1786,10 +1802,11 @@ public class CompletableTest {
     public void doOnErrorHasError() {
         final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
 
-        Completable c = error.completable.doOnError(new Consumer<Throwable>() {
+        Completable c = error.completable.doOnError(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 err.set(e);
+                return Unit.INSTANCE;
             }
         });
 
@@ -1810,9 +1827,11 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void doOnErrorThrows() {
-        Completable c = error.completable.doOnError(new Consumer<Throwable>() {
+        Completable c = error.completable.doOnError(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) { throw new IllegalStateException(); }
+            public Unit invoke(Throwable e) {
+                throw new IllegalStateException();
+            }
         });
 
         try {
@@ -1829,10 +1848,11 @@ public class CompletableTest {
     public void doOnSubscribeNormal() {
         final AtomicInteger calls = new AtomicInteger();
 
-        Completable c = normal.completable.doOnSubscribe(new Consumer<Disposable>() {
+        Completable c = normal.completable.doOnSubscribe(new Function1<Disposable, Unit>() {
             @Override
-            public void accept(Disposable s) {
+            public Unit invoke(Disposable s) {
                 calls.getAndIncrement();
+                return Unit.INSTANCE;
             }
         });
 
@@ -1850,9 +1870,11 @@ public class CompletableTest {
 
     @Test(expected = TestException.class)
     public void doOnSubscribeThrows() {
-        Completable c = normal.completable.doOnSubscribe(new Consumer<Disposable>() {
+        Completable c = normal.completable.doOnSubscribe(new Function1<Disposable, Unit>() {
             @Override
-            public void accept(Disposable d) { throw new TestException(); }
+            public Unit invoke(Disposable d) {
+                throw new TestException();
+            }
         });
 
         c.blockingAwait();
@@ -2261,7 +2283,7 @@ public class CompletableTest {
                 calls.getAndIncrement();
                 return null;
             }
-        }).repeatUntil(new Function0() {
+        }).repeatUntil(new Function0<Boolean>() {
             @Override
             public Boolean invoke() {
                 return times.decrementAndGet() == 0;
@@ -2471,10 +2493,11 @@ public class CompletableTest {
                 complete.set(true);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 err.set(e);
+                return Unit.INSTANCE;
             }
         });
 
@@ -2492,10 +2515,11 @@ public class CompletableTest {
                 complete.set(true);
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 err.set(e);
+                return Unit.INSTANCE;
             }
         });
 
@@ -2533,10 +2557,11 @@ public class CompletableTest {
                 public kotlin.Unit invoke() {
                     throw new TestException();
                 }
-            }, new Consumer<Throwable>() {
+            }, new Function1<Throwable, Unit>() {
                 @Override
-                public void accept(Throwable e) {
+                public Unit invoke(Throwable e) {
                     err.set(e);
+                    return Unit.INSTANCE;
                 }
             });
 
@@ -2554,9 +2579,11 @@ public class CompletableTest {
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) { throw new TestException(); }
+            public Unit invoke(Throwable e) {
+                throw new TestException();
+            }
         });
     }
 
@@ -2728,9 +2755,11 @@ public class CompletableTest {
             }
         });
 
-        flow.blockingForEach(new Consumer<Object>() {
+        flow.blockingForEach(new Function1<Object, Unit>() {
             @Override
-            public void accept(Object e) { }
+            public Unit invoke(Object e) {
+                return Unit.INSTANCE;
+            }
         });
     }
 
@@ -2912,10 +2941,11 @@ public class CompletableTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
+        c.subscribe(Functions.EMPTY_ACTION, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable v) {
+            public Unit invoke(Throwable v) {
                 complete.set(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -2967,10 +2997,11 @@ public class CompletableTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
+        c.subscribe(Functions.EMPTY_ACTION, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable v) {
+            public Unit invoke(Throwable v) {
                 complete.set(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3119,10 +3150,11 @@ public class CompletableTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
+        c.subscribe(Functions.EMPTY_ACTION, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable v) {
+            public Unit invoke(Throwable v) {
                 complete.set(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3174,10 +3206,11 @@ public class CompletableTest {
 
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
 
-        c.subscribe(Functions.EMPTY_ACTION, new Consumer<Throwable>() {
+        c.subscribe(Functions.EMPTY_ACTION, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable v) {
+            public Unit invoke(Throwable v) {
                 complete.set(v);
+                return Unit.INSTANCE;
             }
         });
 
@@ -3332,9 +3365,9 @@ public class CompletableTest {
                         return Unit.INSTANCE;
                     }
                 },
-                new Consumer<Throwable>() {
+                        new Function1<Throwable, Unit>() {
                     @Override
-                    public void accept(Throwable throwable) {
+                    public Unit invoke(Throwable throwable) {
                         throw new TestException();
                     }
                 });
@@ -3348,9 +3381,10 @@ public class CompletableTest {
         expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
-                error.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
+                error.completable.toSingleDefault(1).subscribe(new Function1<Integer, Unit>() {
                     @Override
-                    public void accept(Integer integer) {
+                    public Unit invoke(Integer integer) {
+                        return Unit.INSTANCE;
                     }
                 });
                 return Unit.INSTANCE;
@@ -3360,9 +3394,9 @@ public class CompletableTest {
 
     @Test
     public void usingFactoryReturnsNullAndDisposerThrows() {
-        Consumer<Integer> onDispose = new Consumer<Integer>() {
+        Function1<Integer, Unit> onDispose = new Function1<Integer, Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 throw new TestException();
             }
         };
@@ -3475,10 +3509,10 @@ public class CompletableTest {
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable t) {
-
+            public Unit invoke(Throwable t) {
+                return Unit.INSTANCE;
             }
         });
 
@@ -3497,9 +3531,11 @@ public class CompletableTest {
             public kotlin.Unit invoke() {
                 return Unit.INSTANCE;
             }
-        }, new Consumer<Throwable>() {
+        }, new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) { }
+            public Unit invoke(Throwable e) {
+                return Unit.INSTANCE;
+            }
         });
 
         stringSubject.onError(new TestException());
@@ -3806,7 +3842,7 @@ public class CompletableTest {
     @Test
     public void usingFactoryThrows() throws Exception {
         @SuppressWarnings("unchecked")
-        Consumer<Integer> onDispose = mock(Consumer.class);
+        Function1<Integer, Unit> onDispose = mock(Function1.class);
 
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
@@ -3823,7 +3859,7 @@ public class CompletableTest {
             }
         }, onDispose).subscribe(ts);
 
-        verify(onDispose).accept(1);
+        verify(onDispose).invoke(1);
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -3832,9 +3868,9 @@ public class CompletableTest {
 
     @Test
     public void usingFactoryAndDisposerThrow() {
-        Consumer<Integer> onDispose = new Consumer<Integer>() {
+        Function1<Integer, Unit> onDispose = new Function1<Integer, Unit>() {
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 throw new TestException();
             }
         };
@@ -3871,7 +3907,7 @@ public class CompletableTest {
     @Test
     public void usingFactoryReturnsNull() throws Exception {
         @SuppressWarnings("unchecked")
-        Consumer<Integer> onDispose = mock(Consumer.class);
+        Function1<Integer, Unit> onDispose = mock(Function1.class);
 
         TestObserver<Integer> ts = TestObserver.create();
 
@@ -3888,7 +3924,7 @@ public class CompletableTest {
             }
         }, onDispose).subscribe(ts);
 
-        verify(onDispose).accept(1);
+        verify(onDispose).invoke(1);
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -4087,12 +4123,13 @@ public class CompletableTest {
 
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(Functions.EMPTY_ACTION,
-        new Consumer<Throwable>() {
+                new Function1<Throwable, Unit>() {
             @Override
-            public void accept(Throwable e) {
+            public Unit invoke(Throwable e) {
                 if (subscriptionRef.get().isDisposed()) {
                     subscriptionRef.set(null);
                 }
+                return Unit.INSTANCE;
             }
         });
         subscriptionRef.set(completableSubscription);
@@ -4182,9 +4219,9 @@ public class CompletableTest {
         expectUncaughtTestException(new Function0() {
             @Override
             public kotlin.Unit invoke() {
-                normal.completable.toSingleDefault(1).subscribe(new Consumer<Integer>() {
+                normal.completable.toSingleDefault(1).subscribe(new Function1<Integer, Unit>() {
                     @Override
-                    public void accept(Integer integer) {
+                    public Unit invoke(Integer integer) {
                         throw new TestException();
                     }
                 });
@@ -4353,12 +4390,13 @@ public class CompletableTest {
     public void doOnEventComplete() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Completable.complete().doOnEvent(new Consumer<Throwable>() {
+        Completable.complete().doOnEvent(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(final Throwable throwable) throws Exception {
+            public Unit invoke(final Throwable throwable) {
                 if (throwable == null) {
                     atomicInteger.incrementAndGet();
                 }
+                return Unit.INSTANCE;
             }
         }).subscribe();
 
@@ -4369,12 +4407,13 @@ public class CompletableTest {
     public void doOnEventError() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Completable.error(new RuntimeException()).doOnEvent(new Consumer<Throwable>() {
+        Completable.error(new RuntimeException()).doOnEvent(new Function1<Throwable, Unit>() {
             @Override
-            public void accept(final Throwable throwable) throws Exception {
+            public Unit invoke(final Throwable throwable) {
                 if (throwable != null) {
                     atomicInteger.incrementAndGet();
                 }
+                return Unit.INSTANCE;
             }
         }).subscribe();
 

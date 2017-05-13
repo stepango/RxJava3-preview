@@ -13,9 +13,10 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.Callable;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
@@ -23,7 +24,8 @@ import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscribers.DeferredScalarSubscriber;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 /**
  * Reduce the sequence of values in each 'rail' to a single value.
@@ -121,7 +123,7 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
             }
 
             try {
-                collector.accept(collection, t);
+                collector.invoke(collection, t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancel();

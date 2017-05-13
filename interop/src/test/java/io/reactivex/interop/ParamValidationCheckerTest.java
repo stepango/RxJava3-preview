@@ -42,7 +42,6 @@ import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -604,7 +603,7 @@ public class ParamValidationCheckerTest {
 
         defaultValues.put(Function0.class, Functions.EMPTY_ACTION);
         defaultValues.put(Runnable.class, Functions.EMPTY_RUNNABLE);
-        defaultValues.put(Consumer.class, Functions.emptyConsumer());
+        defaultValues.put(Function1.class, Functions.emptyConsumer());
         defaultValues.put(Function1.class, Functions.EMPTY_LONG_CONSUMER);
         defaultValues.put(Function.class, Functions.justFunction(1));
         defaultValues.put(Callable.class, Functions.justCallable(1));
@@ -974,7 +973,7 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public void accept(Object t1, Object t2) throws Exception {
+        public void invoke(Object t1, Object t2) throws Exception {
         }
 
         @Override

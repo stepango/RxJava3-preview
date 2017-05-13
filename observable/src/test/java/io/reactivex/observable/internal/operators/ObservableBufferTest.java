@@ -13,25 +13,45 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.mockito.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DisposableObserver;
+import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableBufferTest {
 
@@ -285,7 +305,7 @@ public class ObservableBufferTest {
         assertFalse(action.fail);
     }
 
-    private static class LongTimeAction implements Consumer<List<Integer>> {
+    private static class LongTimeAction implements Function1<List<Integer>, kotlin.Unit> {
 
         CountDownLatch latch;
         boolean fail;
@@ -295,10 +315,10 @@ public class ObservableBufferTest {
         }
 
         @Override
-        public void accept(List<Integer> t1) {
+        public Unit invoke(List<Integer> t1) {
             try {
                 if (fail) {
-                    return;
+                    return Unit.INSTANCE;
                 }
                 Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -306,6 +326,7 @@ public class ObservableBufferTest {
             } finally {
                 latch.countDown();
             }
+            return Unit.INSTANCE;
         }
     }
 
@@ -343,10 +364,11 @@ public class ObservableBufferTest {
         TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
-        .doOnNext(new Consumer<List<Integer>>() {
+                .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
             @Override
-            public void accept(List<Integer> pv) {
+            public Unit invoke(List<Integer> pv) {
                 System.out.println(pv);
+                return Unit.INSTANCE;
             }
         })
         .subscribe(ts);
@@ -591,10 +613,11 @@ public class ObservableBufferTest {
         InOrder inOrder = inOrder(o);
 
         result
-        .doOnNext(new Consumer<List<Long>>() {
+                .doOnNext(new Function1<List<Long>, kotlin.Unit>() {
             @Override
-            public void accept(List<Long> pv) {
+            public Unit invoke(List<Long> pv) {
                 System.out.println(pv);
+                return Unit.INSTANCE;
             }
         })
         .subscribe(o);

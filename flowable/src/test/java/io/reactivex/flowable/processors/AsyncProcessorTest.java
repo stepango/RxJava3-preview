@@ -13,24 +13,36 @@
 
 package io.reactivex.flowable.processors;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.*;
-import org.reactivestreams.Subscriber;
-
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.*;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class AsyncProcessorTest extends DelayedFlowableProcessorTest<Object> {
 
@@ -204,10 +216,10 @@ public class AsyncProcessorTest extends DelayedFlowableProcessorTest<Object> {
             final AsyncProcessor<String> subject = AsyncProcessor.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
-            subject.subscribe(new Consumer<String>() {
+            subject.subscribe(new Function1<String, Unit>() {
 
                 @Override
-                public void accept(String t1) {
+                public Unit invoke(String t1) {
                     try {
                         // simulate a slow observer
                         Thread.sleep(50);
@@ -215,6 +227,7 @@ public class AsyncProcessorTest extends DelayedFlowableProcessorTest<Object> {
                         e.printStackTrace();
                     }
                     value1.set(t1);
+                    return Unit.INSTANCE;
                 }
 
             });

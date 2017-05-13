@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,10 +33,11 @@ public class FlowableDoOnTest {
     @Test
     public void testDoOnEach() {
         final AtomicReference<String> r = new AtomicReference<String>();
-        String output = Flowable.just("one").doOnNext(new Consumer<String>() {
+        String output = Flowable.just("one").doOnNext(new Function1<String, kotlin.Unit>() {
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 r.set(v);
+                return Unit.INSTANCE;
             }
         }).blockingSingle();
 
@@ -50,10 +51,11 @@ public class FlowableDoOnTest {
         Throwable t = null;
         try {
             Flowable.<String> error(new RuntimeException("an error"))
-            .doOnError(new Consumer<Throwable>() {
+                    .doOnError(new Function1<Throwable, kotlin.Unit>() {
                 @Override
-                public void accept(Throwable v) {
+                public Unit invoke(Throwable v) {
                     r.set(v);
+                    return Unit.INSTANCE;
                 }
             }).blockingSingle();
             fail("expected exception, not a return value");

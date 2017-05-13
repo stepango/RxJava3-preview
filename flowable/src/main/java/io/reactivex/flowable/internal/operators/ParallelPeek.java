@@ -20,7 +20,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
@@ -38,22 +37,22 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
 
     final ParallelFlowable<T> source;
 
-    final Consumer<? super T> onNext;
-    final Consumer<? super T> onAfterNext;
-    final Consumer<? super Throwable> onError;
+    final Function1<? super T, Unit> onNext;
+    final Function1<? super T, Unit> onAfterNext;
+    final Function1<? super Throwable, Unit> onError;
     final Function0 onComplete;
     final Function0 onAfterTerminated;
-    final Consumer<? super Subscription> onSubscribe;
+    final Function1<? super Subscription, kotlin.Unit> onSubscribe;
     final Function1<Long, Unit> onRequest;
     final Function0 onCancel;
 
     public ParallelPeek(ParallelFlowable<T> source,
-                        Consumer<? super T> onNext,
-                        Consumer<? super T> onAfterNext,
-                        Consumer<? super Throwable> onError,
+                        Function1<? super T, Unit> onNext,
+                        Function1<? super T, Unit> onAfterNext,
+                        Function1<? super Throwable, Unit> onError,
                         Function0 onComplete,
                         Function0 onAfterTerminated,
-                        Consumer<? super Subscription> onSubscribe,
+                        Function1<? super Subscription, kotlin.Unit> onSubscribe,
                         Function1<Long, Unit> onRequest,
                         Function0 onCancel
     ) {
@@ -134,7 +133,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 this.s = s;
 
                 try {
-                    parent.onSubscribe.accept(s);
+                    parent.onSubscribe.invoke(s);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     s.cancel();
@@ -151,7 +150,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
         public void onNext(T t) {
             if (!done) {
                 try {
-                    parent.onNext.accept(t);
+                    parent.onNext.invoke(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     onError(ex);
@@ -161,7 +160,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 actual.onNext(t);
 
                 try {
-                    parent.onAfterNext.accept(t);
+                    parent.onAfterNext.invoke(t);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     onError(ex);
@@ -178,7 +177,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
             done = true;
 
             try {
-                parent.onError.accept(t);
+                parent.onError.invoke(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 t = new CompositeException(t, ex);

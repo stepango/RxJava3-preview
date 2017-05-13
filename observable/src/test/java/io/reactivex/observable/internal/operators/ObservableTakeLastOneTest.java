@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -26,6 +25,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -89,11 +89,12 @@ public class ObservableTakeLastOneTest {
     public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
         final int num = 10;
-        long count = Observable.range(1,num).doOnNext(new Consumer<Integer>() {
+        long count = Observable.range(1, num).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t) {
+            public Unit invoke(Integer t) {
                 upstreamCount.incrementAndGet();
+                return Unit.INSTANCE;
             }})
             .takeLast(0).count().blockingGet();
         assertEquals(num, upstreamCount.get());

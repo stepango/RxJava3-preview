@@ -13,15 +13,20 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ConnectableObservable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.extensions.HasUpstreamObservableSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A connectable observable which shares an underlying source and dispatches source values to observers in a backpressure-aware
@@ -67,7 +72,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     }
 
     @Override
-    public void connect(Consumer<? super Disposable> connection) {
+    public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
         boolean doConnect;
         PublishObserver<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
@@ -105,7 +110,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
          * themselves.
          */
         try {
-            connection.accept(ps);
+            connection.invoke(ps);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);

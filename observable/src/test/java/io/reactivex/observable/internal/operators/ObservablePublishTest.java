@@ -29,7 +29,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.ConnectableObservable;
@@ -77,22 +76,24 @@ public class ObservablePublishTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        o.subscribe(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String v) {
+            public Unit invoke(String v) {
                 assertEquals("one", v);
                 latch.countDown();
+                return Unit.INSTANCE;
             }
         });
 
@@ -156,11 +157,12 @@ public class ObservablePublishTest {
     @Test
     public void testTakeUntilWithPublishedStreamUsingSelector() {
         final AtomicInteger emitted = new AtomicInteger();
-        Observable<Integer> xs = Observable.range(0, Observable.bufferSize() * 2).doOnNext(new Consumer<Integer>() {
+        Observable<Integer> xs = Observable.range(0, Observable.bufferSize() * 2).doOnNext(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 emitted.incrementAndGet();
+                return Unit.INSTANCE;
             }
 
         });
@@ -210,10 +212,11 @@ public class ObservablePublishTest {
         final AtomicInteger sourceEmission = new AtomicInteger();
         final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
         final Observable<Integer> source = Observable.range(1, 100)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer t1) {
+                    public Unit invoke(Integer t1) {
                         sourceEmission.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnDispose(new Function0() {
@@ -223,7 +226,6 @@ public class ObservablePublishTest {
                         return Unit.INSTANCE;
                     }
                 }).share();
-        ;
 
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
@@ -479,9 +481,9 @@ public class ObservablePublishTest {
     public void connectThrows() {
         ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
         try {
-            co.connect(new Consumer<Disposable>() {
+            co.connect(new Function1<Disposable, kotlin.Unit>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public Unit invoke(Disposable s) {
                     throw new TestException();
                 }
             });

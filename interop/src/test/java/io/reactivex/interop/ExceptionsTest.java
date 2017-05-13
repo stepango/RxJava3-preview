@@ -15,22 +15,35 @@
  */
 package io.reactivex.interop;
 
-import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.Subscription;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.GroupedObservable;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ExceptionsTest {
 
@@ -44,10 +57,10 @@ public class ExceptionsTest {
     public void testOnErrorNotImplementedIsThrown() {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
-            Observable.just(1, 2, 3).subscribe(new Consumer<Integer>() {
+            Observable.just(1, 2, 3).subscribe(new Function1<Integer, Unit>() {
 
                 @Override
-                public void accept(Integer t1) {
+                public Unit invoke(Integer t1) {
                     throw new RuntimeException("hello");
                 }
 
@@ -285,9 +298,9 @@ public class ExceptionsTest {
     public void testOnErrorExceptionIsThrownFromOnNext() throws Exception {
         Observable
             .just(1)
-            .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, Unit>() {
                 @Override
-                public void accept(Integer integer) {
+                public Unit invoke(Integer integer) {
                     throw new RuntimeException();
                 }
             })
@@ -353,9 +366,9 @@ public class ExceptionsTest {
     @Test(expected = RuntimeException.class)
     public void testOnErrorExceptionIsThrownFromSingleDoOnSuccess() throws Exception {
         Single.just(1)
-                .doOnSuccess(new Consumer<Integer>() {
+                .doOnSuccess(new Function1<Integer, Unit>() {
                     @Override
-                    public void accept(Integer integer) {
+                    public Unit invoke(Integer integer) {
                         throw new RuntimeException();
                     }
                 })

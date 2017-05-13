@@ -32,7 +32,6 @@ import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -101,6 +100,7 @@ import io.reactivex.observable.internal.operators.SingleUsing;
 import io.reactivex.observable.internal.operators.SingleZipArray;
 import io.reactivex.observable.internal.operators.SingleZipIterable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 
@@ -941,7 +941,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, U> Single<T> using(Callable<U> resourceSupplier,
                                          Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
-                                         Consumer<? super U> disposer) {
+                                         Function1<? super U, kotlin.Unit> disposer) {
         return using(resourceSupplier, singleFunction, disposer, true);
     }
 
@@ -972,7 +972,7 @@ public abstract class Single<T> implements SingleSource<T> {
     public static <T, U> Single<T> using(
             final Callable<U> resourceSupplier,
             final Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
-            final Consumer<? super U> disposer,
+            final Function1<? super U, kotlin.Unit> disposer,
             final boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(singleFunction, "singleFunction is null");
@@ -1760,7 +1760,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
-    public final Single<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
+    public final Single<T> doAfterSuccess(Function1<? super T, Unit> onAfterSuccess) {
         ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoAfterSuccess<T>(this, onAfterSuccess));
     }
@@ -1827,7 +1827,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
+    public final Single<T> doOnSubscribe(final Function1<? super Disposable, kotlin.Unit> onSubscribe) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoOnSubscribe<T>(this, onSubscribe));
     }
@@ -1845,7 +1845,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnSuccess(final Consumer<? super T> onSuccess) {
+    public final Single<T> doOnSuccess(final Function1<? super T, Unit> onSuccess) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoOnSuccess<T>(this, onSuccess));
     }
@@ -1881,7 +1881,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> doOnError(final Consumer<? super Throwable> onError) {
+    public final Single<T> doOnError(final Function1<? super Throwable, Unit> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
         return RxJavaObservablePlugins.onAssembly(new SingleDoOnError<T>(this, onError));
     }
@@ -2545,7 +2545,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(Consumer<? super T> onSuccess) {
+    public final Disposable subscribe(Function1<? super T, Unit> onSuccess) {
         return subscribe(onSuccess, Functions.ON_ERROR_MISSING);
     }
 
@@ -2570,7 +2570,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Consumer<? super T> onSuccess, final Consumer<? super Throwable> onError) {
+    public final Disposable subscribe(final Function1<? super T, Unit> onSuccess, final Function1<? super Throwable, Unit> onError) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
 

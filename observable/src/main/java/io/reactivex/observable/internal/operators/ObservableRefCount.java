@@ -13,14 +13,19 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
 import io.reactivex.common.disposables.CompositeDisposable;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ConnectableObservable;
+import io.reactivex.observable.Observer;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Returns an observable sequence that stays connected to the source as long as
@@ -87,8 +92,8 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
 
     }
 
-    private Consumer<Disposable> onSubscribe(final Observer<? super T> observer,
-            final AtomicBoolean writeLocked) {
+    private Function1<Disposable, kotlin.Unit> onSubscribe(final Observer<? super T> observer,
+                                                           final AtomicBoolean writeLocked) {
         return new DisposeConsumer(observer, writeLocked);
     }
 
@@ -176,7 +181,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         }
     }
 
-    final class DisposeConsumer implements Consumer<Disposable> {
+    final class DisposeConsumer implements Function1<Disposable, kotlin.Unit> {
         private final Observer<? super T> observer;
         private final AtomicBoolean writeLocked;
 
@@ -186,7 +191,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         }
 
         @Override
-        public void accept(Disposable subscription) {
+        public Unit invoke(Disposable subscription) {
             try {
                 baseDisposable.add(subscription);
                 // ready to subscribe to source so do it
@@ -196,6 +201,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
                 lock.unlock();
                 writeLocked.set(false);
             }
+            return Unit.INSTANCE;
         }
     }
 

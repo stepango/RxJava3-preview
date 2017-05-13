@@ -17,26 +17,27 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.CompletableSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public final class CompletablePeek extends Completable {
 
     final CompletableSource source;
-    final Consumer<? super Disposable> onSubscribe;
-    final Consumer<? super Throwable> onError;
+    final Function1<? super Disposable, Unit> onSubscribe;
+    final Function1<? super Throwable, Unit> onError;
     final Function0 onComplete;
     final Function0 onTerminate;
     final Function0 onAfterTerminate;
     final Function0 onDispose;
 
-    public CompletablePeek(CompletableSource source, Consumer<? super Disposable> onSubscribe,
-                           Consumer<? super Throwable> onError,
+    public CompletablePeek(CompletableSource source, Function1<? super Disposable, Unit> onSubscribe,
+                           Function1<? super Throwable, Unit> onError,
                            Function0 onComplete,
                            Function0 onTerminate,
                            Function0 onAfterTerminate,
@@ -70,7 +71,7 @@ public final class CompletablePeek extends Completable {
         @Override
         public void onSubscribe(final Disposable d) {
             try {
-                onSubscribe.accept(d);
+                onSubscribe.invoke(d);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 d.dispose();
@@ -91,7 +92,7 @@ public final class CompletablePeek extends Completable {
                 return;
             }
             try {
-                onError.accept(e);
+                onError.invoke(e);
                 onTerminate.invoke();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);

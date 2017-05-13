@@ -13,25 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableGenerate<T, S> extends Flowable<T> {
     final Callable<S> stateSupplier;
     final BiFunction<S, Emitter<T>, S> generator;
-    final Consumer<? super S> disposeState;
+    final Function1<? super S, kotlin.Unit> disposeState;
 
     public FlowableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
-            Consumer<? super S> disposeState) {
+                            Function1<? super S, kotlin.Unit> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
         this.disposeState = disposeState;
@@ -60,7 +64,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
         final Subscriber<? super T> actual;
         final BiFunction<S, ? super Emitter<T>, S> generator;
-        final Consumer<? super S> disposeState;
+        final Function1<? super S, kotlin.Unit> disposeState;
 
         S state;
 
@@ -71,8 +75,8 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         boolean hasNext;
 
         GeneratorSubscription(Subscriber<? super T> actual,
-                BiFunction<S, ? super Emitter<T>, S> generator,
-                Consumer<? super S> disposeState, S initialState) {
+                              BiFunction<S, ? super Emitter<T>, S> generator,
+                              Function1<? super S, kotlin.Unit> disposeState, S initialState) {
             this.actual = actual;
             this.generator = generator;
             this.disposeState = disposeState;
@@ -140,7 +144,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
         private void dispose(S s) {
             try {
-                disposeState.accept(s);
+                disposeState.invoke(s);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaCommonPlugins.onError(ex);

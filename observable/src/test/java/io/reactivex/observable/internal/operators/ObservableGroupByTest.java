@@ -33,7 +33,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.GroupedObservable;
@@ -171,19 +170,21 @@ public class ObservableGroupByTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.blockingForEach(new Consumer<GroupedObservable<K, V>>() {
+        observable.blockingForEach(new Function1<GroupedObservable<K, V>, Unit>() {
 
             @Override
-            public void accept(final GroupedObservable<K, V> o) {
+            public Unit invoke(final GroupedObservable<K, V> o) {
                 result.put(o.getKey(), new ConcurrentLinkedQueue<V>());
-                o.subscribe(new Consumer<V>() {
+                o.subscribe(new Function1<V, kotlin.Unit>() {
 
                     @Override
-                    public void accept(V v) {
+                    public Unit invoke(V v) {
                         result.get(o.getKey()).add(v);
+                        return Unit.INSTANCE;
                     }
 
                 });
+                return Unit.INSTANCE;
             }
         });
 
@@ -396,12 +397,13 @@ public class ObservableGroupByTest {
 
                     }
                 })
-                .take(30).subscribe(new Consumer<String>() {
+                .take(30).subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -449,12 +451,13 @@ public class ObservableGroupByTest {
 
                     }
                 })
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -598,12 +601,13 @@ public class ObservableGroupByTest {
 
                     }
                 })
-                .take(30).subscribe(new Consumer<String>() {
+                .take(30).subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         eventCounter.incrementAndGet();
                         System.out.println("=> " + s);
+                        return Unit.INSTANCE;
                     }
 
                 });
@@ -679,11 +683,12 @@ public class ObservableGroupByTest {
                 }
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -755,29 +760,32 @@ public class ObservableGroupByTest {
                             return "last group: " + t1;
                         }
 
-                    }).doOnEach(new Consumer<Notification<String>>() {
+                    }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
                         @Override
-                        public void accept(Notification<String> t1) {
+                        public Unit invoke(Notification<String> t1) {
                             System.err.println("subscribeOn notification => " + t1);
+                            return Unit.INSTANCE;
                         }
 
                     });
                 }
             }
 
-        }).doOnEach(new Consumer<Notification<String>>() {
+        }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<String> t1) {
+            public Unit invoke(Notification<String> t1) {
                 System.err.println("outer notification => " + t1);
+                return Unit.INSTANCE;
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -852,11 +860,12 @@ public class ObservableGroupByTest {
                 }
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -902,18 +911,20 @@ public class ObservableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Notification<String>>() {
+        }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<String> t1) {
+            public Unit invoke(Notification<String> t1) {
                 System.out.println("notification => " + t1);
+                return Unit.INSTANCE;
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -958,11 +969,12 @@ public class ObservableGroupByTest {
                 });
             }
 
-        }).blockingForEach(new Consumer<String>() {
+        }).blockingForEach(new Function1<String, kotlin.Unit>() {
 
             @Override
-            public void accept(String s) {
+            public Unit invoke(String s) {
                 results.add(s);
+                return Unit.INSTANCE;
             }
 
         });
@@ -1238,10 +1250,11 @@ public class ObservableGroupByTest {
 
         Observable<GroupedObservable<Integer, Integer>> m = source.groupBy(identity, dbl);
 
-        m.subscribe(new Consumer<GroupedObservable<Integer, Integer>>() {
+        m.subscribe(new Function1<GroupedObservable<Integer, Integer>, Unit>() {
             @Override
-            public void accept(GroupedObservable<Integer, Integer> t1) {
+            public Unit invoke(GroupedObservable<Integer, Integer> t1) {
                 inner.set(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -1317,11 +1330,12 @@ public class ObservableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Notification<String>>() {
+        }).doOnEach(new Function1<Notification<String>, kotlin.Unit>() {
 
             @Override
-            public void accept(Notification<String> t1) {
+            public Unit invoke(Notification<String> t1) {
                 System.out.println("NEXT: " + t1);
+                return Unit.INSTANCE;
             }
 
         }).subscribe(ts);
@@ -1380,18 +1394,20 @@ public class ObservableGroupByTest {
             public String apply(String value) {
                 return null;
             }
-        }).subscribe(new Consumer<GroupedObservable<String, String>>() {
+        }).subscribe(new Function1<GroupedObservable<String, String>, Unit>() {
 
             @Override
-            public void accept(GroupedObservable<String, String> groupedObservable) {
+            public Unit invoke(GroupedObservable<String, String> groupedObservable) {
                 key[0] = groupedObservable.getKey();
-                groupedObservable.subscribe(new Consumer<String>() {
+                groupedObservable.subscribe(new Function1<String, kotlin.Unit>() {
 
                     @Override
-                    public void accept(String s) {
+                    public Unit invoke(String s) {
                         values.add(s);
+                        return Unit.INSTANCE;
                     }
                 });
+                return Unit.INSTANCE;
             }
         });
         assertEquals(null, key[0]);
@@ -1506,10 +1522,11 @@ public class ObservableGroupByTest {
 
         Observable.just(1)
         .groupBy(Functions.justFunction(1))
-        .doOnNext(new Consumer<GroupedObservable<Integer, Integer>>() {
+                .doOnNext(new Function1<GroupedObservable<Integer, Integer>, Unit>() {
             @Override
-            public void accept(GroupedObservable<Integer, Integer> g) throws Exception {
+            public Unit invoke(GroupedObservable<Integer, Integer> g) {
                 TestHelper.checkDisposed(g);
+                return Unit.INSTANCE;
             }
         })
         .test();

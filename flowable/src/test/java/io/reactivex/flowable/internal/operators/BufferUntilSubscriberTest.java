@@ -13,17 +13,22 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.reactivestreams.Publisher;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class BufferUntilSubscriberTest {
 
@@ -62,12 +67,13 @@ public class BufferUntilSubscriberTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Object>>() {
+                    .doOnNext(new Function1<List<Object>, Unit>() {
                         @Override
-                        public void accept(List<Object> integers) {
+                        public Unit invoke(List<Object> integers) {
                                 counter.incrementAndGet();
                                 latch.countDown();
                                 innerLatch.countDown();
+                            return Unit.INSTANCE;
                         }
                     })
                     .subscribe();

@@ -13,10 +13,14 @@
 
 package io.reactivex.flowable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.Schedulers;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility for retrieving a mock eventstream for testing.
@@ -48,7 +52,7 @@ public final class FlowableEventStream {
         return Math.abs((int) x % max);
     }
 
-    static final class EventConsumer implements Consumer<Emitter<Event>> {
+    static final class EventConsumer implements Function1<Emitter<Event>, kotlin.Unit> {
         private final String type;
         private final int numInstances;
 
@@ -58,7 +62,7 @@ public final class FlowableEventStream {
         }
 
         @Override
-        public void accept(Emitter<Event> s) {
+        public Unit invoke(Emitter<Event> s) {
             s.onNext(randomEvent(type, numInstances));
             try {
                 // slow it down somewhat
@@ -67,6 +71,7 @@ public final class FlowableEventStream {
                 Thread.currentThread().interrupt();
                 s.onError(e);
             }
+            return Unit.INSTANCE;
         }
     }
 

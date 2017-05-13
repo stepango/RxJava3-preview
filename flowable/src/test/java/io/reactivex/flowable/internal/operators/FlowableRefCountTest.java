@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2016-present, RxJava Contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,7 +33,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
@@ -44,6 +43,7 @@ import io.reactivex.flowable.processors.ReplayProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,25 +61,28 @@ public class FlowableRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 5, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) {
+                    public Unit invoke(Subscription s) {
                         subscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
-                .doOnNext(new Consumer<Long>() {
+                .doOnNext(new Function1<Long, kotlin.Unit>() {
                     @Override
-                    public void accept(Long l) {
+                    public Unit invoke(Long l) {
                         nextCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Long>() {
+        Disposable s1 = r.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long l) {
+            public Unit invoke(Long l) {
                 receivedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -108,25 +111,28 @@ public class FlowableRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Integer> r = Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) {
+                    public Unit invoke(Subscription s) {
                         subscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer l) {
+                    public Unit invoke(Integer l) {
                         nextCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Integer>() {
+        Disposable s1 = r.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer l) {
+            public Unit invoke(Integer l) {
                 receivedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -154,21 +160,23 @@ public class FlowableRefCountTest {
     public void testRefCountSynchronousTake() {
         final AtomicInteger nextCount = new AtomicInteger();
         Flowable<Integer> r = Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-                .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
                     @Override
-                    public void accept(Integer l) {
-                            System.out.println("onNext --------> " + l);
-                            nextCount.incrementAndGet();
+                    public Unit invoke(Integer l) {
+                        System.out.println("onNext --------> " + l);
+                        nextCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .take(4)
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        r.subscribe(new Consumer<Integer>() {
+        r.subscribe(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer l) {
+            public Unit invoke(Integer l) {
                 receivedCount.incrementAndGet();
+                return Unit.INSTANCE;
             }
         });
 
@@ -183,20 +191,21 @@ public class FlowableRefCountTest {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
         Flowable<Long> r = Flowable.interval(0, 1, TimeUnit.MILLISECONDS)
-                .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeCount.incrementAndGet();
+                    public Unit invoke(Subscription s) {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeCount.incrementAndGet();
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeCount.incrementAndGet();
                         return Unit.INSTANCE;
                     }
                 })
@@ -229,20 +238,21 @@ public class FlowableRefCountTest {
         final CountDownLatch subscribeLatch = new CountDownLatch(1);
 
         Flowable<Long> o = synchronousInterval()
-                .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) {
-                            System.out.println("******************************* Subscribe received");
-                            // when we are subscribed
-                            subscribeLatch.countDown();
+                    public Unit invoke(Subscription s) {
+                        System.out.println("******************************* Subscribe received");
+                        // when we are subscribed
+                        subscribeLatch.countDown();
+                        return Unit.INSTANCE;
                     }
                 })
                 .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            unsubscribeLatch.countDown();
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        unsubscribeLatch.countDown();
                         return Unit.INSTANCE;
                     }
                 });
@@ -279,17 +289,18 @@ public class FlowableRefCountTest {
                 .doOnCancel(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
-                            System.out.println("******************************* Unsubscribe received");
-                            // when we are unsubscribed
-                            subUnsubCount.decrementAndGet();
+                        System.out.println("******************************* Unsubscribe received");
+                        // when we are unsubscribed
+                        subUnsubCount.decrementAndGet();
                         return Unit.INSTANCE;
                     }
                 })
-                .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
                     @Override
-                    public void accept(Subscription s) {
-                            System.out.println("******************************* SUBSCRIBE received");
-                            subUnsubCount.incrementAndGet();
+                    public Unit invoke(Subscription s) {
+                        System.out.println("******************************* SUBSCRIBE received");
+                        subUnsubCount.incrementAndGet();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -330,7 +341,7 @@ public class FlowableRefCountTest {
                     }
 
                 });
-                for (;;) {
+                for (; ; ) {
                     if (cancel.get()) {
                         break;
                     }
@@ -387,10 +398,11 @@ public class FlowableRefCountTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<Long>();
-        Disposable s1 = interval.subscribe(new Consumer<Long>() {
+        Disposable s1 = interval.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 list1.add(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -402,10 +414,11 @@ public class FlowableRefCountTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<Long>();
-        Disposable s2 = interval.subscribe(new Consumer<Long>() {
+        Disposable s2 = interval.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 list2.add(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -447,10 +460,11 @@ public class FlowableRefCountTest {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<Long>();
-        interval.subscribe(new Consumer<Long>() {
+        interval.subscribe(new Function1<Long, kotlin.Unit>() {
             @Override
-            public void accept(Long t1) {
+            public Unit invoke(Long t1) {
                 list3.add(t1);
+                return Unit.INSTANCE;
             }
         });
 
@@ -515,7 +529,7 @@ public class FlowableRefCountTest {
                 return t1 + t2;
             }
         })
-        .publish().refCount();
+                .publish().refCount();
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
@@ -536,61 +550,66 @@ public class FlowableRefCountTest {
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Flowable<String> interval =
-                Flowable.interval(200,TimeUnit.MILLISECONDS)
-                        .doOnSubscribe(new Consumer<Subscription>() {
-                            @Override
-                            public void accept(Subscription s) {
-                                            System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                    }
-                        }
-                         )
+                Flowable.interval(200, TimeUnit.MILLISECONDS)
+                        .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
+                                           @Override
+                                           public Unit invoke(Subscription s) {
+                                               System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
+                                               return Unit.INSTANCE;
+                                           }
+                                       }
+                        )
                         .flatMap(new Function<Long, Publisher<String>>() {
                             @Override
                             public Publisher<String> apply(Long t1) {
-                                    return Flowable.defer(new Callable<Publisher<String>>() {
-                                        @Override
-                                        public Publisher<String> call() {
-                                                return Flowable.<String>error(new Exception("Some exception"));
-                                        }
-                                    });
+                                return Flowable.defer(new Callable<Publisher<String>>() {
+                                    @Override
+                                    public Publisher<String> call() {
+                                        return Flowable.<String>error(new Exception("Some exception"));
+                                    }
+                                });
                             }
                         })
                         .onErrorResumeNext(new Function<Throwable, Publisher<String>>() {
                             @Override
                             public Publisher<String> apply(Throwable t1) {
-                                    return Flowable.error(t1);
+                                return Flowable.error(t1);
                             }
                         })
                         .publish()
                         .refCount();
 
         interval
-                .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
                     @Override
-                    public void accept(Throwable t1) {
-                            System.out.println("Subscriber 1 onError: " + t1);
+                    public Unit invoke(Throwable t1) {
+                        System.out.println("Subscriber 1 onError: " + t1);
+                        return Unit.INSTANCE;
                     }
                 })
                 .retry(5)
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Function1<String, kotlin.Unit>() {
                     @Override
-                    public void accept(String t1) {
-                            System.out.println("Subscriber 1: " + t1);
+                    public Unit invoke(String t1) {
+                        System.out.println("Subscriber 1: " + t1);
+                        return Unit.INSTANCE;
                     }
                 });
         Thread.sleep(100);
         interval
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t1) {
-                    System.out.println("Subscriber 2 onError: " + t1);
-            }
-        })
-        .retry(5)
-                .subscribe(new Consumer<String>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
                     @Override
-                    public void accept(String t1) {
-                            System.out.println("Subscriber 2: " + t1);
+                    public Unit invoke(Throwable t1) {
+                        System.out.println("Subscriber 2 onError: " + t1);
+                        return Unit.INSTANCE;
+                    }
+                })
+                .retry(5)
+                .subscribe(new Function1<String, kotlin.Unit>() {
+                    @Override
+                    public Unit invoke(String t1) {
+                        System.out.println("Subscriber 2: " + t1);
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -603,17 +622,21 @@ public class FlowableRefCountTest {
     private enum CancelledSubscriber implements RelaxedSubscriber<Integer> {
         INSTANCE;
 
-        @Override public void onSubscribe(Subscription s) {
+        @Override
+        public void onSubscribe(Subscription s) {
             s.cancel();
         }
 
-        @Override public void onNext(Integer o) {
+        @Override
+        public void onNext(Integer o) {
         }
 
-        @Override public void onError(Throwable t) {
+        @Override
+        public void onError(Throwable t) {
         }
 
-        @Override public void onComplete() {
+        @Override
+        public void onComplete() {
         }
     }
 
@@ -624,10 +647,10 @@ public class FlowableRefCountTest {
 
     @Test
     public void noOpConnect() {
-        final int[] calls = { 0 };
+        final int[] calls = {0};
         Flowable<Integer> o = new ConnectableFlowable<Integer>() {
             @Override
-            public void connect(Consumer<? super Disposable> connection) {
+            public void connect(Function1<? super Disposable, kotlin.Unit> connection) {
                 calls[0]++;
             }
 
@@ -658,8 +681,8 @@ public class FlowableRefCountTest {
                 return new byte[100 * 1000 * 1000];
             }
         })
-        .replay(1)
-        .refCount();
+                .replay(1)
+                .refCount();
 
         source.subscribe();
 
@@ -685,8 +708,8 @@ public class FlowableRefCountTest {
                 return new byte[100 * 1000 * 1000];
             }
         }).concatWith(Flowable.never())
-        .replay(1)
-        .refCount();
+                .replay(1)
+                .refCount();
 
         Disposable s1 = source.subscribe();
         Disposable s2 = source.subscribe();
@@ -729,8 +752,8 @@ public class FlowableRefCountTest {
                 throw new ExceptionData(new byte[100 * 1000 * 1000]);
             }
         })
-        .publish()
-        .refCount();
+                .publish()
+                .refCount();
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
 
@@ -756,8 +779,8 @@ public class FlowableRefCountTest {
                 return new byte[100 * 1000 * 1000];
             }
         }).concatWith(Flowable.never())
-        .publish()
-        .refCount();
+                .publish()
+                .refCount();
 
         Disposable s1 = source.test();
         Disposable s2 = source.test();
@@ -780,16 +803,16 @@ public class FlowableRefCountTest {
     @Test
     public void replayIsUnsubscribed() {
         ConnectableFlowable<Integer> co = Flowable.just(1)
-        .replay();
+                .replay();
 
-        assertTrue(((Disposable)co).isDisposed());
+        assertTrue(((Disposable) co).isDisposed());
 
         Disposable s = co.connect();
 
-        assertFalse(((Disposable)co).isDisposed());
+        assertFalse(((Disposable) co).isDisposed());
 
         s.dispose();
 
-        assertTrue(((Disposable)co).isDisposed());
+        assertTrue(((Disposable) co).isDisposed());
     }
 }

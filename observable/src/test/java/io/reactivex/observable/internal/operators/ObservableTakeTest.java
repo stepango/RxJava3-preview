@@ -13,23 +13,43 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.InOrder;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ObservableTakeTest {
 
@@ -187,11 +207,12 @@ public class ObservableTakeTest {
     @Test(timeout = 2000)
     public void testUnsubscribeFromSynchronousInfiniteObservable() {
         final AtomicLong count = new AtomicLong();
-        INFINITE_OBSERVABLE.take(10).subscribe(new Consumer<Long>() {
+        INFINITE_OBSERVABLE.take(10).subscribe(new Function1<Long, kotlin.Unit>() {
 
             @Override
-            public void accept(Long l) {
+            public Unit invoke(Long l) {
                 count.set(l);
+                return Unit.INSTANCE;
             }
 
         });
@@ -214,12 +235,13 @@ public class ObservableTakeTest {
                 }
             }
 
-        }).take(100).take(1).blockingForEach(new Consumer<Integer>() {
+        }).take(100).take(1).blockingForEach(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 System.out.println("Receive: " + t1);
 
+                return Unit.INSTANCE;
             }
 
         });
@@ -299,10 +321,10 @@ public class ObservableTakeTest {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.just(1).subscribeOn(Schedulers.computation()).take(1)
-        .subscribe(new Consumer<Integer>() {
+                .subscribe(new Function1<Integer, kotlin.Unit>() {
 
             @Override
-            public void accept(Integer t1) {
+            public Unit invoke(Integer t1) {
                 try {
                     Thread.sleep(100);
                 } catch (Exception e) {
@@ -311,6 +333,7 @@ public class ObservableTakeTest {
                 } finally {
                     latch.countDown();
                 }
+                return Unit.INSTANCE;
             }
 
         });
@@ -343,10 +366,11 @@ public class ObservableTakeTest {
 
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        source.take(1).doOnNext(new Consumer<Integer>() {
+        source.take(1).doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) {
+            public Unit invoke(Integer v) {
                 source.onNext(2);
+                return Unit.INSTANCE;
             }
         }).subscribe(ts);
 

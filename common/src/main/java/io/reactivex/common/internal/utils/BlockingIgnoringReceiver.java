@@ -15,16 +15,16 @@ package io.reactivex.common.internal.utils;
 
 import java.util.concurrent.CountDownLatch;
 
-import io.reactivex.common.functions.Consumer;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Stores an incoming Throwable (if any) and counts itself down.
  */
 public final class BlockingIgnoringReceiver
 extends CountDownLatch
-        implements Consumer<Throwable>, Function0 {
+        implements Function1<Throwable, Unit>, Function0<Unit> {
     public Throwable error;
 
     public BlockingIgnoringReceiver() {
@@ -32,9 +32,10 @@ extends CountDownLatch
     }
 
     @Override
-    public void accept(Throwable e) {
+    public Unit invoke(Throwable e) {
         error = e;
         countDown();
+        return Unit.INSTANCE;
     }
 
     @Override

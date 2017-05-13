@@ -16,24 +16,29 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleUsing<T, U> extends Single<T> {
 
     final Callable<U> resourceSupplier;
     final Function<? super U, ? extends SingleSource<? extends T>> singleFunction;
-    final Consumer<? super U> disposer;
+    final Function1<? super U, kotlin.Unit> disposer;
     final boolean eager;
 
     public SingleUsing(Callable<U> resourceSupplier,
                        Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
-                       Consumer<? super U> disposer,
+                       Function1<? super U, kotlin.Unit> disposer,
                        boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.singleFunction = singleFunction;
@@ -63,7 +68,7 @@ public final class SingleUsing<T, U> extends Single<T> {
 
             if (eager) {
                 try {
-                    disposer.accept(resource);
+                    disposer.invoke(resource);
                 } catch (Throwable exc) {
                     Exceptions.throwIfFatal(exc);
                     ex = new CompositeException(ex, exc);
@@ -72,7 +77,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             EmptyDisposable.error(ex, s);
             if (!eager) {
                 try {
-                    disposer.accept(resource);
+                    disposer.invoke(resource);
                 } catch (Throwable exc) {
                     Exceptions.throwIfFatal(exc);
                     RxJavaCommonPlugins.onError(exc);
@@ -91,14 +96,14 @@ public final class SingleUsing<T, U> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        final Consumer<? super U> disposer;
+        final Function1<? super U, kotlin.Unit> disposer;
 
         final boolean eager;
 
         Disposable d;
 
         UsingSingleObserver(SingleObserver<? super T> actual, U resource, boolean eager,
-                Consumer<? super U> disposer) {
+                            Function1<? super U, kotlin.Unit> disposer) {
             super(resource);
             this.actual = actual;
             this.eager = eager;
@@ -135,7 +140,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                 Object u = getAndSet(this);
                 if (u != this) {
                     try {
-                        disposer.accept((U)u);
+                        disposer.invoke((U) u);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         actual.onError(ex);
@@ -162,7 +167,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                 Object u = getAndSet(this);
                 if (u != this) {
                     try {
-                        disposer.accept((U)u);
+                        disposer.invoke((U) u);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         e = new CompositeException(e, ex);
@@ -184,7 +189,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             Object u = getAndSet(this);
             if (u != this) {
                 try {
-                    disposer.accept((U)u);
+                    disposer.invoke((U) u);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

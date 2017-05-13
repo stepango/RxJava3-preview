@@ -13,18 +13,23 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.TestHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 public class ObservableGenerateTest {
 
@@ -37,13 +42,13 @@ public class ObservableGenerateTest {
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
             @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
+            public void invoke(Object s, Emitter<Object> e) throws Exception {
                 e.onNext(s);
             }
-        }, new Consumer<Object>() {
+        }, new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object d) throws Exception {
-
+            public Unit invoke(Object d) {
+                return Unit.INSTANCE;
             }
         })
         .take(5)
@@ -60,7 +65,7 @@ public class ObservableGenerateTest {
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
             @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
+            public void invoke(Object s, Emitter<Object> e) throws Exception {
                 e.onNext(s);
             }
         }, Functions.emptyConsumer())
@@ -77,7 +82,7 @@ public class ObservableGenerateTest {
             }
         }, new BiConsumer<Object, Emitter<Object>>() {
             @Override
-            public void accept(Object s, Emitter<Object> e) throws Exception {
+            public void invoke(Object s, Emitter<Object> e) throws Exception {
                 throw new TestException();
             }
         }, Functions.emptyConsumer())
@@ -96,12 +101,12 @@ public class ObservableGenerateTest {
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
                 @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
+                public void invoke(Object s, Emitter<Object> e) throws Exception {
                     e.onComplete();
                 }
-            }, new Consumer<Object>() {
+            }, new Function1<Object, kotlin.Unit>() {
                 @Override
-                public void accept(Object d) throws Exception {
+                public Unit invoke(Object d) {
                     throw new TestException();
                 }
             })
@@ -123,7 +128,7 @@ public class ObservableGenerateTest {
                 }
             }, new BiConsumer<Object, Emitter<Object>>() {
                 @Override
-                public void accept(Object s, Emitter<Object> e) throws Exception {
+                public void invoke(Object s, Emitter<Object> e) throws Exception {
                     e.onComplete();
                 }
             }, Functions.emptyConsumer()));
@@ -135,7 +140,7 @@ public class ObservableGenerateTest {
         Observable.generate(Functions.justCallable(1),
         new BiConsumer<Integer, Emitter<Object>>() {
             @Override
-            public void accept(Integer s, Emitter<Object> e) throws Exception {
+            public void invoke(Integer s, Emitter<Object> e) throws Exception {
                 try {
                     e.onError(null);
                 } catch (NullPointerException ex) {
@@ -151,11 +156,12 @@ public class ObservableGenerateTest {
 
     @Test
     public void multipleOnNext() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
+        Observable.generate(new Function1<Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void accept(Emitter<Object> e) throws Exception {
+            public Unit invoke(Emitter<Object> e) {
                 e.onNext(1);
                 e.onNext(2);
+                return Unit.INSTANCE;
             }
         })
         .test()
@@ -166,11 +172,12 @@ public class ObservableGenerateTest {
     public void multipleOnError() {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
-            Observable.generate(new Consumer<Emitter<Object>>() {
+            Observable.generate(new Function1<Emitter<Object>, kotlin.Unit>() {
                 @Override
-                public void accept(Emitter<Object> e) throws Exception {
+                public Unit invoke(Emitter<Object> e) {
                     e.onError(new TestException("First"));
                     e.onError(new TestException("Second"));
+                    return Unit.INSTANCE;
                 }
             })
             .test()
@@ -184,11 +191,12 @@ public class ObservableGenerateTest {
 
     @Test
     public void multipleOnComplete() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
+        Observable.generate(new Function1<Emitter<Object>, kotlin.Unit>() {
             @Override
-            public void accept(Emitter<Object> e) throws Exception {
+            public Unit invoke(Emitter<Object> e) {
                 e.onComplete();
                 e.onComplete();
+                return Unit.INSTANCE;
             }
         })
         .test()

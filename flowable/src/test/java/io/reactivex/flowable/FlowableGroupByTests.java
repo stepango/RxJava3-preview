@@ -16,9 +16,11 @@ package io.reactivex.flowable;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.FlowableEventStream.Event;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableGroupByTests {
 
@@ -36,11 +38,12 @@ public class FlowableGroupByTests {
             }
         })
         .take(1)
-        .blockingForEach(new Consumer<GroupedFlowable<Object, Event>>() {
+                .blockingForEach(new Function1<GroupedFlowable<Object, Event>, Unit>() {
             @Override
-            public void accept(GroupedFlowable<Object, Event> v) {
+            public Unit invoke(GroupedFlowable<Object, Event> v) {
                 System.out.println(v);
                 v.take(1).subscribe();  // FIXME groups need consumption to a certain degree to cancel upstream
+                return Unit.INSTANCE;
             }
         });
 
@@ -72,10 +75,11 @@ public class FlowableGroupByTests {
             }
         })
         .take(20)
-        .blockingForEach(new Consumer<Object>() {
+                .blockingForEach(new Function1<Object, kotlin.Unit>() {
             @Override
-            public void accept(Object v) {
+            public Unit invoke(Object v) {
                 System.out.println(v);
+                return Unit.INSTANCE;
             }
         });
 

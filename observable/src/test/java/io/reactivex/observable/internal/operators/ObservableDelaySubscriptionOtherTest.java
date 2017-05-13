@@ -13,20 +13,27 @@
 
 package io.reactivex.observable.internal.operators;
 
+import org.junit.Assert;
+import org.junit.Test;
 
-
-
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableEmitter;
+import io.reactivex.observable.ObservableOnSubscribe;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableDelaySubscriptionOtherTest {
     @Test
@@ -38,10 +45,11 @@ public class ObservableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable d) {
+            public Unit invoke(Disposable d) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -71,10 +79,11 @@ public class ObservableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable d) {
+            public Unit invoke(Disposable d) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -105,10 +114,11 @@ public class ObservableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.just(1)
-        .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable d) {
+            public Unit invoke(Disposable d) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -138,10 +148,11 @@ public class ObservableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable d) {
+            public Unit invoke(Disposable d) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)
@@ -171,10 +182,11 @@ public class ObservableDelaySubscriptionOtherTest {
         final AtomicInteger subscribed = new AtomicInteger();
 
         Observable.<Integer>error(new TestException())
-        .doOnSubscribe(new Consumer<Disposable>() {
+                .doOnSubscribe(new Function1<Disposable, kotlin.Unit>() {
             @Override
-            public void accept(Disposable d) {
+            public Unit invoke(Disposable d) {
                 subscribed.getAndIncrement();
+                return Unit.INSTANCE;
             }
         })
         .delaySubscription(other)

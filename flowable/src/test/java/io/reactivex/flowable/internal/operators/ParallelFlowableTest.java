@@ -19,7 +19,6 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +37,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiConsumer;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Consumer;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ListAddBiConsumer;
@@ -310,7 +308,7 @@ public class ParallelFlowableTest {
         .parallel()
         .collect(as, new BiConsumer<List<Integer>, Integer>() {
             @Override
-            public void accept(List<Integer> a, Integer b) throws Exception {
+            public void invoke(List<Integer> a, Integer b) throws Exception {
                 a.add(b);
             }
         })
@@ -404,14 +402,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -451,14 +450,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -500,14 +500,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -548,14 +549,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -597,14 +599,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -646,14 +649,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -701,14 +705,15 @@ public class ParallelFlowableTest {
             .runOn(s)
             .collect(as, new BiConsumer<List<Integer>, Integer>() {
                 @Override
-                public void accept(List<Integer> a, Integer b) throws Exception {
+                public void invoke(List<Integer> a, Integer b) throws Exception {
                     a.add(b);
                 }
             })
-            .doOnNext(new Consumer<List<Integer>>() {
+                    .doOnNext(new Function1<List<Integer>, kotlin.Unit>() {
                 @Override
-                public void accept(List<Integer> v) throws Exception {
+                public Unit invoke(List<Integer> v) {
                     System.out.println(v.size());
+                    return Unit.INSTANCE;
                 }
             })
             .sequential()
@@ -864,10 +869,11 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel()
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -881,14 +887,15 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel()
-        .doOnNext(new Consumer<Integer>() {
+                .doOnNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (v == 3) {
                     throw new TestException();
                 } else {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -905,14 +912,15 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel()
-        .doAfterNext(new Consumer<Integer>() {
+                .doAfterNext(new Function1<Integer, kotlin.Unit>() {
             @Override
-            public void accept(Integer v) throws Exception {
+            public Unit invoke(Integer v) {
                 if (v == 3) {
                     throw new TestException();
                 } else {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -962,12 +970,13 @@ public class ParallelFlowableTest {
                 return v;
             }
         })
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -991,12 +1000,13 @@ public class ParallelFlowableTest {
                 return v;
             }
         })
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
-                    throw new IOException();
+                    throw new RuntimeException();
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1006,7 +1016,7 @@ public class ParallelFlowableTest {
 
         List<Throwable> errors = TestHelper.errorList(ts);
         TestCommonHelper.assertError(errors, 0, TestException.class);
-        TestCommonHelper.assertError(errors, 1, IOException.class);
+        TestCommonHelper.assertError(errors, 1, RuntimeException.class);
     }
 
     @Test
@@ -1055,10 +1065,11 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .doOnSubscribe(new Consumer<Subscription>() {
+                .doOnSubscribe(new Function1<Subscription, kotlin.Unit>() {
             @Override
-            public void accept(Subscription s) throws Exception {
+            public Unit invoke(Subscription s) {
                 count[0]++;
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1176,12 +1187,13 @@ public class ParallelFlowableTest {
                 return Flowable.just(v);
             }
         }, true)
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1208,12 +1220,13 @@ public class ParallelFlowableTest {
                 return Flowable.just(v);
             }
         }, true, 1)
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1240,12 +1253,13 @@ public class ParallelFlowableTest {
                 return Flowable.just(v);
             }
         }, true)
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1272,12 +1286,13 @@ public class ParallelFlowableTest {
                 return Flowable.just(v);
             }
         }, 1, true)
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()
@@ -1304,12 +1319,13 @@ public class ParallelFlowableTest {
                 return Flowable.just(v);
             }
         }, false)
-        .doOnError(new Consumer<Throwable>() {
+                .doOnError(new Function1<Throwable, kotlin.Unit>() {
             @Override
-            public void accept(Throwable e) throws Exception {
+            public Unit invoke(Throwable e) {
                 if (e instanceof TestException) {
                     count[0]++;
                 }
+                return Unit.INSTANCE;
             }
         })
         .sequential()

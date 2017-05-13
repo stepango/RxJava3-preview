@@ -16,10 +16,13 @@ package io.reactivex.flowable.internal.operators;
 import org.reactivestreams.Subscriber;
 
 import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
-import io.reactivex.common.annotations.*;
-import io.reactivex.common.functions.Consumer;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.Nullable;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscribers.*;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableConditionalSubscriber;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
@@ -29,9 +32,9 @@ import io.reactivex.flowable.internal.subscribers.*;
 @Experimental
 public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    final Consumer<? super T> onAfterNext;
+    final Function1<? super T, Unit> onAfterNext;
 
-    public FlowableDoAfterNext(Flowable<T> source, Consumer<? super T> onAfterNext) {
+    public FlowableDoAfterNext(Flowable<T> source, Function1<? super T, Unit> onAfterNext) {
         super(source);
         this.onAfterNext = onAfterNext;
     }
@@ -47,9 +50,9 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
     static final class DoAfterSubscriber<T> extends BasicFuseableSubscriber<T, T> {
 
-        final Consumer<? super T> onAfterNext;
+        final Function1<? super T, Unit> onAfterNext;
 
-        DoAfterSubscriber(Subscriber<? super T> actual, Consumer<? super T> onAfterNext) {
+        DoAfterSubscriber(Subscriber<? super T> actual, Function1<? super T, Unit> onAfterNext) {
             super(actual);
             this.onAfterNext = onAfterNext;
         }
@@ -63,7 +66,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
             if (sourceMode == NONE) {
                 try {
-                    onAfterNext.accept(t);
+                    onAfterNext.invoke(t);
                 } catch (Throwable ex) {
                     fail(ex);
                 }
@@ -80,7 +83,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
         public T poll() throws Throwable {
             T v = qs.poll();
             if (v != null) {
-                onAfterNext.accept(v);
+                onAfterNext.invoke(v);
             }
             return v;
         }
@@ -88,9 +91,9 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
     static final class DoAfterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
 
-        final Consumer<? super T> onAfterNext;
+        final Function1<? super T, Unit> onAfterNext;
 
-        DoAfterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Consumer<? super T> onAfterNext) {
+        DoAfterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Function1<? super T, Unit> onAfterNext) {
             super(actual);
             this.onAfterNext = onAfterNext;
         }
@@ -101,7 +104,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
             if (sourceMode == NONE) {
                 try {
-                    onAfterNext.accept(t);
+                    onAfterNext.invoke(t);
                 } catch (Throwable ex) {
                     fail(ex);
                 }
@@ -112,7 +115,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
         public boolean tryOnNext(T t) {
             boolean b = actual.tryOnNext(t);
             try {
-                onAfterNext.accept(t);
+                onAfterNext.invoke(t);
             } catch (Throwable ex) {
                 fail(ex);
             }
@@ -129,7 +132,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
         public T poll() throws Throwable {
             T v = qs.poll();
             if (v != null) {
-                onAfterNext.accept(v);
+                onAfterNext.invoke(v);
             }
             return v;
         }
