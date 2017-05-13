@@ -15,22 +15,23 @@ package io.reactivex.common.internal.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Cancellable;
+import kotlin.jvm.functions.Function0;
 
 /**
  * A disposable container that wraps a Cancellable instance.
  * <p>
  * Watch out for the AtomicReference API leak!
  */
-public final class CancellableDisposable extends AtomicReference<Cancellable>
+public final class CancellableDisposable extends AtomicReference<Function0>
 implements Disposable {
 
 
     private static final long serialVersionUID = 5718521705281392066L;
 
-    public CancellableDisposable(Cancellable cancellable) {
+    public CancellableDisposable(Function0 cancellable) {
         super(cancellable);
     }
 
@@ -42,10 +43,10 @@ implements Disposable {
     @Override
     public void dispose() {
         if (get() != null) {
-            Cancellable c = getAndSet(null);
+            Function0 c = getAndSet(null);
             if (c != null) {
                 try {
-                    c.cancel();
+                    c.invoke();
                 } catch (Exception ex) {
                     Exceptions.throwIfFatal(ex);
                     RxJavaCommonPlugins.onError(ex);

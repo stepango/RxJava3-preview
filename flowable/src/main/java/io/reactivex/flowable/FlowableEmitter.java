@@ -13,9 +13,11 @@
 
 package io.reactivex.flowable;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
-import io.reactivex.common.functions.Cancellable;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Emitter;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.Nullable;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Abstraction over a Reactive Streams {@link org.reactivestreams.Subscriber} that allows associating
@@ -43,7 +45,7 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * or Cancellation will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
-    void setCancellable(@Nullable Cancellable c);
+    void setCancellable(@Nullable Function0 c);
 
     /**
      * The current outstanding request amount.

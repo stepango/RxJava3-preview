@@ -22,7 +22,8 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Cancellable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,10 +35,11 @@ public class CancellableDisposableTest {
     public void normal() {
         final AtomicInteger count = new AtomicInteger();
 
-        Cancellable c = new Cancellable() {
+        Function0 c = new Function0() {
             @Override
-            public void cancel() throws Exception {
+            public Unit invoke() {
                 count.getAndIncrement();
+                return Unit.INSTANCE;
             }
         };
 
@@ -57,9 +59,9 @@ public class CancellableDisposableTest {
     public void cancelThrows() {
         final AtomicInteger count = new AtomicInteger();
 
-        Cancellable c = new Cancellable() {
+        Function0 c = new Function0() {
             @Override
-            public void cancel() throws Exception {
+            public Unit invoke() {
                 count.getAndIncrement();
                 throw new TestException();
             }
@@ -89,10 +91,11 @@ public class CancellableDisposableTest {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger count = new AtomicInteger();
 
-            Cancellable c = new Cancellable() {
+            Function0 c = new Function0() {
                 @Override
-                public void cancel() throws Exception {
+                public Unit invoke() {
                     count.getAndIncrement();
+                    return Unit.INSTANCE;
                 }
             };
 

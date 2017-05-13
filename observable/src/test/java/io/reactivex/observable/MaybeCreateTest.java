@@ -13,13 +13,15 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Cancellable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
+import static org.junit.Assert.assertTrue;
 
 public class MaybeCreateTest {
     @Test(expected = NullPointerException.class)
@@ -55,10 +57,11 @@ public class MaybeCreateTest {
             @Override
             public void subscribe(MaybeEmitter<Integer> e) throws Exception {
                 e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
+                e.setCancellable(new Function0() {
                     @Override
-                    public void cancel() throws Exception {
+                    public Unit invoke() {
                         d2.dispose();
+                        return Unit.INSTANCE;
                     }
                 });
 

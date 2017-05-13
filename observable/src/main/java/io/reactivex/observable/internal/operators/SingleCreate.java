@@ -15,11 +15,16 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.internal.disposables.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.internal.disposables.CancellableDisposable;
+import io.reactivex.common.internal.disposables.DisposableHelper;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleEmitter;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleOnSubscribe;
+import kotlin.jvm.functions.Function0;
 
 public final class SingleCreate<T> extends Single<T> {
 
@@ -102,7 +107,7 @@ public final class SingleCreate<T> extends Single<T> {
         }
 
         @Override
-        public void setCancellable(Cancellable c) {
+        public void setCancellable(Function0 c) {
             setDisposable(new CancellableDisposable(c));
         }
 

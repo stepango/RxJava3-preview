@@ -13,19 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.internal.disposables.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.internal.disposables.CancellableDisposable;
+import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.internal.queues.*;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
+import io.reactivex.flowable.internal.queues.SimplePlainQueue;
+import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function0;
 
 
 public final class FlowableCreate<T> extends Flowable<T> {
@@ -208,7 +218,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void setCancellable(Cancellable c) {
+        public void setCancellable(Function0 c) {
             emitter.setCancellable(c);
         }
 
@@ -303,7 +313,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public final void setCancellable(Cancellable c) {
+        public final void setCancellable(Function0 c) {
             setDisposable(new CancellableDisposable(c));
         }
 

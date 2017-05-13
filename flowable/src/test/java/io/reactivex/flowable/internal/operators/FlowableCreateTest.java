@@ -13,21 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FlowableCreateTest {
 
@@ -78,10 +93,11 @@ public class FlowableCreateTest {
             @Override
             public void subscribe(FlowableEmitter<Integer> e) throws Exception {
                 e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
+                e.setCancellable(new Function0() {
                     @Override
-                    public void cancel() throws Exception {
+                    public Unit invoke() {
                         d2.dispose();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -852,10 +868,11 @@ public class FlowableCreateTest {
 
                         final int[] calls = { 0 };
 
-                        f.setCancellable(new Cancellable() {
+                        f.setCancellable(new Function0() {
                             @Override
-                            public void cancel() throws Exception {
+                            public Unit invoke() {
                                 calls[0]++;
+                                return Unit.INSTANCE;
                             }
                         });
 

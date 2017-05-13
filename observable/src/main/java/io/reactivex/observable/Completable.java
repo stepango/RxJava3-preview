@@ -25,7 +25,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Cancellable;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
@@ -256,7 +255,7 @@ public abstract class Completable implements CompletableSource {
      * @param source the emitter that is called when a CompletableObserver subscribes to the returned {@code Completable}
      * @return the new Completable instance
      * @see CompletableOnSubscribe
-     * @see Cancellable
+     * @see Function0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

@@ -12,16 +12,22 @@
  */
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.internal.disposables.*;
+import io.reactivex.common.internal.disposables.CancellableDisposable;
+import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableEmitter;
+import io.reactivex.observable.ObservableOnSubscribe;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.extensions.SimpleQueue;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function0;
 
 public final class ObservableCreate<T> extends Observable<T> {
     final ObservableOnSubscribe<T> source;
@@ -100,7 +106,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public void setCancellable(Cancellable c) {
+        public void setCancellable(Function0 c) {
             setDisposable(new CancellableDisposable(c));
         }
 
@@ -252,7 +258,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public void setCancellable(Cancellable c) {
+        public void setCancellable(Function0 c) {
             emitter.setCancellable(c);
         }
 

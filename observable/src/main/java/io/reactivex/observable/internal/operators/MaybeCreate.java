@@ -15,11 +15,16 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.common.internal.disposables.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.internal.disposables.CancellableDisposable;
+import io.reactivex.common.internal.disposables.DisposableHelper;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeEmitter;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeOnSubscribe;
+import kotlin.jvm.functions.Function0;
 
 /**
  * Provides an API over MaybeObserver that serializes calls to onXXX and manages cancellation
@@ -124,7 +129,7 @@ public final class MaybeCreate<T> extends Maybe<T> {
         }
 
         @Override
-        public void setCancellable(Cancellable c) {
+        public void setCancellable(Function0 c) {
             setDisposable(new CancellableDisposable(c));
         }
 

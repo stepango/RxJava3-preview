@@ -30,7 +30,6 @@ import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.common.functions.Cancellable;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -381,7 +380,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param source the emitter that is called when a SingleObserver subscribes to the returned {@code Single}
      * @return the new Single instance
      * @see SingleOnSubscribe
-     * @see Cancellable
+     * @see Function0
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

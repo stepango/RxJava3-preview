@@ -13,16 +13,23 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleEmitter;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleOnSubscribe;
+import io.reactivex.observable.TestHelper;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SingleCreateTest {
 
@@ -61,10 +68,11 @@ public class SingleCreateTest {
             @Override
             public void subscribe(SingleEmitter<Integer> e) throws Exception {
                 e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
+                e.setCancellable(new Function0() {
                     @Override
-                    public void cancel() throws Exception {
+                    public Unit invoke() {
                         d2.dispose();
+                        return Unit.INSTANCE;
                     }
                 });
 

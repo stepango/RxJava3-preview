@@ -13,18 +13,32 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableEmitter;
+import io.reactivex.observable.ObservableOnSubscribe;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObservableCreateTest {
 
@@ -67,10 +81,11 @@ public class ObservableCreateTest {
             @Override
             public void subscribe(ObservableEmitter<Integer> e) throws Exception {
                 e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
+                e.setCancellable(new Function0() {
                     @Override
-                    public void cancel() throws Exception {
+                    public Unit invoke() {
                         d2.dispose();
+                        return Unit.INSTANCE;
                     }
                 });
 
@@ -403,10 +418,11 @@ public class ObservableCreateTest {
 
                     final int[] calls = { 0 };
 
-                    f.setCancellable(new Cancellable() {
+                    f.setCancellable(new Function0() {
                         @Override
-                        public void cancel() throws Exception {
+                        public Unit invoke() {
                             calls[0]++;
+                            return Unit.INSTANCE;
                         }
                     });
 

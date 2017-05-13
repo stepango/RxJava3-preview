@@ -13,15 +13,23 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Cancellable;
-import io.reactivex.flowable.*;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.ResourceSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 public class FlowableFromSourceTest {
 
@@ -661,12 +669,13 @@ public class FlowableFromSourceTest {
 
             subject.subscribe(as);
 
-            t.setCancellable(new Cancellable() {
+            t.setCancellable(new Function0() {
                 @Override
-                public void cancel() throws Exception {
+                public Unit invoke() {
                     as.dispose();
+                    return Unit.INSTANCE;
                 }
-            });;
+            });
         }
 
         @Override
