@@ -43,7 +43,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.functions.Functions;
@@ -55,6 +54,7 @@ import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -2332,9 +2332,9 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void retryBiPredicate5Times() {
-        Completable c = error.completable.retry(new BiPredicate<Integer, Throwable>() {
+        Completable c = error.completable.retry(new Function2<Integer, Throwable, Boolean>() {
             @Override
-            public boolean test(Integer n, Throwable e) {
+            public Boolean invoke(Integer n, Throwable e) {
                 return n < 5;
             }
         });

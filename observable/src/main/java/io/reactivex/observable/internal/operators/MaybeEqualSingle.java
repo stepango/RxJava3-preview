@@ -13,13 +13,18 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Compares two MaybeSources to see if they are both empty or emit the same value compared
@@ -32,10 +37,10 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
 
     final MaybeSource<? extends T> source2;
 
-    final BiPredicate<? super T, ? super T> isEqual;
+    final Function2<? super T, ? super T, Boolean> isEqual;
 
     public MaybeEqualSingle(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
-            BiPredicate<? super T, ? super T> isEqual) {
+                            Function2<? super T, ? super T, Boolean> isEqual) {
         this.source1 = source1;
         this.source2 = source2;
         this.isEqual = isEqual;
@@ -58,9 +63,9 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
 
         final EqualObserver<T> observer2;
 
-        final BiPredicate<? super T, ? super T> isEqual;
+        final Function2<? super T, ? super T, Boolean> isEqual;
 
-        EqualCoordinator(SingleObserver<? super Boolean> actual, BiPredicate<? super T, ? super T> isEqual) {
+        EqualCoordinator(SingleObserver<? super Boolean> actual, Function2<? super T, ? super T, Boolean> isEqual) {
             super(2);
             this.actual = actual;
             this.isEqual = isEqual;
@@ -94,7 +99,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
                     boolean b;
 
                     try {
-                        b = isEqual.test((T)o1, (T)o2);
+                        b = isEqual.invoke((T) o1, (T) o2);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         actual.onError(ex);

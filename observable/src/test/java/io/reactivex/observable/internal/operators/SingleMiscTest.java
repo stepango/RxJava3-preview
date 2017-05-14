@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
@@ -32,6 +31,7 @@ import io.reactivex.observable.SingleTransformer;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -192,9 +192,9 @@ public class SingleMiscTest {
                 return 1;
             }
         })
-        .retry(new BiPredicate<Integer, Throwable>() {
+                .retry(new Function2<Integer, Throwable, Boolean>() {
             @Override
-            public boolean test(Integer i, Throwable e) throws Exception {
+            public Boolean invoke(Integer i, Throwable e) {
                 return true;
             }
         })

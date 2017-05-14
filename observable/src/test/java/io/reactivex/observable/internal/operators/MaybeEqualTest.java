@@ -16,8 +16,9 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function2;
 
 public class MaybeEqualTest {
 
@@ -28,9 +29,9 @@ public class MaybeEqualTest {
 
     @Test
     public void predicateThrows() {
-        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2), new BiPredicate<Integer, Integer>() {
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2), new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) throws Exception {
+            public Boolean invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })

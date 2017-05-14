@@ -15,8 +15,10 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function2;
 
 public final class SingleContains<T> extends Single<Boolean> {
 
@@ -24,9 +26,9 @@ public final class SingleContains<T> extends Single<Boolean> {
 
     final Object value;
 
-    final BiPredicate<Object, Object> comparer;
+    final Function2<Object, Object, Boolean> comparer;
 
-    public SingleContains(SingleSource<T> source, Object value, BiPredicate<Object, Object> comparer) {
+    public SingleContains(SingleSource<T> source, Object value, Function2<Object, Object, Boolean> comparer) {
         this.source = source;
         this.value = value;
         this.comparer = comparer;
@@ -56,7 +58,7 @@ public final class SingleContains<T> extends Single<Boolean> {
             boolean b;
 
             try {
-                b = comparer.test(v, value);
+                b = comparer.invoke(v, value);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.onError(ex);

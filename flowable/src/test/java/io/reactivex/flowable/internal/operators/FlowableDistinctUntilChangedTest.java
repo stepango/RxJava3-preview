@@ -28,7 +28,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -40,6 +39,7 @@ import io.reactivex.flowable.subscribers.SubscriberFusion;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -158,9 +158,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void directComparer() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -171,9 +171,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void directComparerConditional() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -190,9 +190,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void directComparerFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -205,9 +205,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void directComparerConditionalFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -253,9 +253,9 @@ public class FlowableDistinctUntilChangedTest {
 
         TestSubscriber<String> ts = TestSubscriber.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
+        source.distinctUntilChanged(new Function2<String, String, Boolean>() {
             @Override
-            public boolean test(String a, String b) {
+            public Boolean invoke(String a, String b) {
                 return a.compareToIgnoreCase(b) == 0;
             }
         })
@@ -272,9 +272,9 @@ public class FlowableDistinctUntilChangedTest {
 
         TestSubscriber<String> ts = TestSubscriber.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
+        source.distinctUntilChanged(new Function2<String, String, Boolean>() {
             @Override
-            public boolean test(String a, String b) {
+            public Boolean invoke(String a, String b) {
                 throw new TestException();
             }
         })
@@ -290,9 +290,9 @@ public class FlowableDistinctUntilChangedTest {
         TestSubscriber<Integer> to = SubscriberFusion.newTest(FusedQueueSubscription.ANY);
 
         Flowable.just(1, 2, 2, 3, 3, 4, 5)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) throws Exception {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -311,9 +311,9 @@ public class FlowableDistinctUntilChangedTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) throws Exception {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -343,9 +343,9 @@ public class FlowableDistinctUntilChangedTest {
                     s.onComplete();
                 }
             }
-            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                    .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
                 @Override
-                public boolean test(Integer a, Integer b) throws Exception {
+                public Boolean invoke(Integer a, Integer b) {
                     throw new TestException();
                 }
             })
@@ -435,9 +435,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void conditionalSelectorCrash() {
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) throws Exception {
+            public Boolean invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })

@@ -16,17 +16,17 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.observable.Single;
+import kotlin.jvm.functions.Function2;
 
 public class SingleContainstTest {
 
     @Test
     public void comparerThrows() {
         Single.just(1)
-        .contains(2, new BiPredicate<Object, Object>() {
+                .contains(2, new Function2<Object, Object, Boolean>() {
             @Override
-            public boolean test(Object a, Object b) throws Exception {
+            public Boolean invoke(Object a, Object b) {
                 throw new TestException();
             }
         })

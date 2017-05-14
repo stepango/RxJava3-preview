@@ -40,7 +40,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.processors.AsyncProcessor;
@@ -1201,7 +1200,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctUntilChangedBiPredicateNull() {
-        just1.distinctUntilChanged((BiPredicate<Integer, Integer>)null);
+        just1.distinctUntilChanged((Function2<Integer, Integer, Boolean>) null);
     }
 
     @Test
@@ -1963,7 +1962,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryFunctionNull() {
-        just1.retry((BiPredicate<Integer, Throwable>)null);
+        just1.retry((Function2<Integer, Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

@@ -21,8 +21,8 @@ import java.util.List;
 
 import io.reactivex.common.ErrorMode;
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.internal.utils.AbstractAppendOnlyLinkedArrayList.NonThrowingPredicate;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -80,9 +80,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
+        list.forEachWhile(2, new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
+            public Boolean invoke(Integer t1, Integer t2) {
                 out.add(t2);
                 return t1.equals(t2);
             }
@@ -186,9 +186,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
+        list.forEachWhile(2, new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
+            public Boolean invoke(Integer t1, Integer t2) {
                 out.add(t2);
                 return t1.equals(t2);
             }
@@ -207,9 +207,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
+        list.forEachWhile(2, new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
+            public Boolean invoke(Integer t1, Integer t2) {
                 out.add(t2);
                 return t1.equals(t2);
             }
@@ -228,9 +228,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(3, new BiPredicate<Integer, Integer>() {
+        list.forEachWhile(3, new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer t1, Integer t2) throws Exception {
+            public Boolean invoke(Integer t1, Integer t2) {
                 out.add(t2);
                 return false;
             }

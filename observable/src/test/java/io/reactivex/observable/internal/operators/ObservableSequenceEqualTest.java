@@ -13,18 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiPredicate;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function2;
+
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
 
 public class ObservableSequenceEqualTest {
 
@@ -123,9 +129,9 @@ public class ObservableSequenceEqualTest {
     public void testWithEqualityErrorObservable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new BiPredicate<String, String>() {
+                new Function2<String, String, Boolean>() {
                     @Override
-                    public boolean test(String t1, String t2) {
+                    public Boolean invoke(String t1, String t2) {
                         throw new TestException();
                     }
                 }).toObservable();
@@ -268,9 +274,9 @@ public class ObservableSequenceEqualTest {
     public void testWithEqualityError() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just("one"), Observable.just("one"),
-                new BiPredicate<String, String>() {
+                new Function2<String, String, Boolean>() {
                     @Override
-                    public boolean test(String t1, String t2) {
+                    public Boolean invoke(String t1, String t2) {
                         throw new TestException();
                     }
                 });

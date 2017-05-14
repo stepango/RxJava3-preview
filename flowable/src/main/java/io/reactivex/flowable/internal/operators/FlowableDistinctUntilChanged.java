@@ -17,17 +17,19 @@ import org.reactivestreams.Subscriber;
 
 import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscribers.*;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableConditionalSubscriber;
+import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
+import kotlin.jvm.functions.Function2;
 
 public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWithUpstream<T, T> {
 
     final Function<? super T, K> keySelector;
 
-    final BiPredicate<? super K, ? super K> comparer;
+    final Function2<? super K, ? super K, Boolean> comparer;
 
-    public FlowableDistinctUntilChanged(Flowable<T> source, Function<? super T, K> keySelector, BiPredicate<? super K, ? super K> comparer) {
+    public FlowableDistinctUntilChanged(Flowable<T> source, Function<? super T, K> keySelector, Function2<? super K, ? super K, Boolean> comparer) {
         super(source);
         this.keySelector = keySelector;
         this.comparer = comparer;
@@ -49,15 +51,15 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
 
         final Function<? super T, K> keySelector;
 
-        final BiPredicate<? super K, ? super K> comparer;
+        final Function2<? super K, ? super K, Boolean> comparer;
 
         K last;
 
         boolean hasValue;
 
         DistinctUntilChangedSubscriber(Subscriber<? super T> actual,
-                Function<? super T, K> keySelector,
-                BiPredicate<? super K, ? super K> comparer) {
+                                       Function<? super T, K> keySelector,
+                                       Function2<? super K, ? super K, Boolean> comparer) {
             super(actual);
             this.keySelector = keySelector;
             this.comparer = comparer;
@@ -85,7 +87,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
             try {
                 key = keySelector.apply(t);
                 if (hasValue) {
-                    boolean equal = comparer.test(last, key);
+                    boolean equal = comparer.invoke(last, key);
                     last = key;
                     if (equal) {
                         return false;
@@ -123,7 +125,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                     return v;
                 }
 
-                if (!comparer.test(last, key)) {
+                if (!comparer.invoke(last, key)) {
                     last = key;
                     return v;
                 }
@@ -140,15 +142,15 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
 
         final Function<? super T, K> keySelector;
 
-        final BiPredicate<? super K, ? super K> comparer;
+        final Function2<? super K, ? super K, Boolean> comparer;
 
         K last;
 
         boolean hasValue;
 
         DistinctUntilChangedConditionalSubscriber(ConditionalSubscriber<? super T> actual,
-                Function<? super T, K> keySelector,
-                BiPredicate<? super K, ? super K> comparer) {
+                                                  Function<? super T, K> keySelector,
+                                                  Function2<? super K, ? super K, Boolean> comparer) {
             super(actual);
             this.keySelector = keySelector;
             this.comparer = comparer;
@@ -175,7 +177,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
             try {
                 key = keySelector.apply(t);
                 if (hasValue) {
-                    boolean equal = comparer.test(last, key);
+                    boolean equal = comparer.invoke(last, key);
                     last = key;
                     if (equal) {
                         return false;
@@ -213,7 +215,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                     return v;
                 }
 
-                if (!comparer.test(last, key)) {
+                if (!comparer.invoke(last, key)) {
                     last = key;
                     return v;
                 }

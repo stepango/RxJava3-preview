@@ -13,8 +13,8 @@
 
 package io.reactivex.common.internal.utils;
 
-import io.reactivex.common.functions.BiPredicate;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * A linked-array-list implementation that only supports appending and consumption.
@@ -106,7 +106,7 @@ public abstract class AbstractAppendOnlyLinkedArrayList<T> {
      * @throws Exception if the predicate throws
      */
     @SuppressWarnings("unchecked")
-    public final <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Exception {
+    public final <S> void forEachWhile(S state, Function2<? super S, ? super T, Boolean> consumer) throws Exception {
         Object[] a = head;
         final int c = capacity;
         for (;;) {
@@ -115,7 +115,7 @@ public abstract class AbstractAppendOnlyLinkedArrayList<T> {
                 if (o == null) {
                     return;
                 }
-                if (consumer.test(state, (T)o)) {
+                if (consumer.invoke(state, (T) o)) {
                     return;
                 }
             }

@@ -33,7 +33,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import kotlin.Unit;
@@ -749,7 +748,7 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryBiPreducateNull() {
-        error.retry((BiPredicate<Integer, Throwable>)null);
+        error.retry((Function2<Integer, Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

@@ -13,27 +13,34 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function2;
 
 public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     final Publisher<? extends T> first;
     final Publisher<? extends T> second;
-    final BiPredicate<? super T, ? super T> comparer;
+    final Function2<? super T, ? super T, Boolean> comparer;
     final int prefetch;
 
     public FlowableSequenceEqual(Publisher<? extends T> first, Publisher<? extends T> second,
-            BiPredicate<? super T, ? super T> comparer, int prefetch) {
+                                 Function2<? super T, ? super T, Boolean> comparer, int prefetch) {
         this.first = first;
         this.second = second;
         this.comparer = comparer;
@@ -62,7 +69,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         private static final long serialVersionUID = -6178010334400373240L;
 
-        final BiPredicate<? super T, ? super T> comparer;
+        final Function2<? super T, ? super T, Boolean> comparer;
 
         final EqualSubscriber<T> first;
 
@@ -76,7 +83,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         T v2;
 
-        public EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
+        public EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, Function2<? super T, ? super T, Boolean> comparer) {
             super(actual);
             this.comparer = comparer;
             this.wip = new AtomicInteger();
@@ -187,7 +194,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         boolean c;
 
                         try {
-                            c = comparer.test(a, b);
+                            c = comparer.invoke(a, b);
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancelAndClear();

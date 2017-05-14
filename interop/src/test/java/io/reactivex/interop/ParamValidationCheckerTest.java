@@ -40,7 +40,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -88,7 +87,6 @@ import io.reactivex.observable.SingleOnSubscribe;
 import io.reactivex.observable.SingleOperator;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.SingleTransformer;
-import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
@@ -920,8 +918,8 @@ public class ParamValidationCheckerTest {
 
     @SuppressWarnings("rawtypes")
     static final class AllFunctionals
-            implements BiFunction, Function2,
-            Function1, BiPredicate, Function0,
+            implements BiFunction,
+            Function1, Function2, Function0,
     Function3, Function4, Function5, Function6, Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,
@@ -974,11 +972,6 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public Unit invoke(Object t1, Object t2) {
-            return Unit.INSTANCE;
-        }
-
-        @Override
         public Object apply(Object t1, Object t2) throws Exception {
             return null;
         }
@@ -1004,7 +997,7 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public boolean test(Object t1, Object t2) throws Exception {
+        public Boolean invoke(Object t1, Object t2) {
             return false;
         }
 

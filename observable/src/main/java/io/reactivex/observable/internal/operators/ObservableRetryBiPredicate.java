@@ -16,16 +16,19 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function2;
 
 public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithUpstream<T, T> {
-    final BiPredicate<? super Integer, ? super Throwable> predicate;
+    final Function2<? super Integer, ? super Throwable, Boolean> predicate;
     public ObservableRetryBiPredicate(
             Observable<T> source,
-            BiPredicate<? super Integer, ? super Throwable> predicate) {
+            Function2<? super Integer, ? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -46,10 +49,10 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         final Observer<? super T> actual;
         final SequentialDisposable sa;
         final ObservableSource<? extends T> source;
-        final BiPredicate<? super Integer, ? super Throwable> predicate;
+        final Function2<? super Integer, ? super Throwable, Boolean> predicate;
         int retries;
         RetryBiObserver(Observer<? super T> actual,
-                BiPredicate<? super Integer, ? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
+                        Function2<? super Integer, ? super Throwable, Boolean> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;
@@ -69,7 +72,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         public void onError(Throwable t) {
             boolean b;
             try {
-                b = predicate.test(++retries, t);
+                b = predicate.invoke(++retries, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(t, e));

@@ -43,7 +43,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -2596,9 +2595,9 @@ public class MaybeTest {
             RxJavaCommonPlugins.reset();
         }
 
-        Maybe.sequenceEqual(Maybe.just(1), Maybe.error(new TestException()), new BiPredicate<Object, Object>() {
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.error(new TestException()), new Function2<Object, Object, Boolean>() {
             @Override
-            public boolean test(Object t1, Object t2) throws Exception {
+            public Boolean invoke(Object t1, Object t2) {
                 throw new TestException();
             }
         })
@@ -3095,9 +3094,9 @@ public class MaybeTest {
 
         Maybe.just(1).retry(5, Functions.alwaysTrue()).test().assertResult(1);
 
-        Maybe.just(1).retry(new BiPredicate<Integer, Throwable>() {
+        Maybe.just(1).retry(new Function2<Integer, Throwable, Boolean>() {
             @Override
-            public boolean test(Integer a, Throwable e) throws Exception {
+            public Boolean invoke(Integer a, Throwable e) {
                 return true;
             }
         }).test().assertResult(1);

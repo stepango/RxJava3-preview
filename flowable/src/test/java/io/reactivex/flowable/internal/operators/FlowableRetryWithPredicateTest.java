@@ -33,7 +33,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
@@ -44,6 +43,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,21 +54,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class FlowableRetryWithPredicateTest {
-    BiPredicate<Integer, Throwable> retryTwice = new BiPredicate<Integer, Throwable>() {
+    Function2<Integer, Throwable, Boolean> retryTwice = new Function2<Integer, Throwable, Boolean>() {
         @Override
-        public boolean test(Integer t1, Throwable t2) {
+        public Boolean invoke(Integer t1, Throwable t2) {
             return t1 <= 2;
         }
     };
-    BiPredicate<Integer, Throwable> retry5 = new BiPredicate<Integer, Throwable>() {
+    Function2<Integer, Throwable, Boolean> retry5 = new Function2<Integer, Throwable, Boolean>() {
         @Override
-        public boolean test(Integer t1, Throwable t2) {
+        public Boolean invoke(Integer t1, Throwable t2) {
             return t1 <= 5;
         }
     };
-    BiPredicate<Integer, Throwable> retryOnTestException = new BiPredicate<Integer, Throwable>() {
+    Function2<Integer, Throwable, Boolean> retryOnTestException = new Function2<Integer, Throwable, Boolean>() {
         @Override
-        public boolean test(Integer t1, Throwable t2) {
+        public Boolean invoke(Integer t1, Throwable t2) {
             return t2 instanceof IOException;
         }
     };
@@ -340,9 +340,9 @@ public class FlowableRetryWithPredicateTest {
                 }
                 return x;
             }})
-        .retry(new BiPredicate<Integer, Throwable>() {
+                .retry(new Function2<Integer, Throwable, Boolean>() {
             @Override
-            public boolean test(Integer t1, Throwable t2) {
+            public Boolean invoke(Integer t1, Throwable t2) {
                 return true;
             }})
                 .forEach(new Function1<Long, kotlin.Unit>() {
@@ -398,9 +398,9 @@ public class FlowableRetryWithPredicateTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         source
-        .retry(new BiPredicate<Integer, Throwable>() {
+                .retry(new Function2<Integer, Throwable, Boolean>() {
             @Override
-            public boolean test(Integer t1, Throwable t2) {
+            public Boolean invoke(Integer t1, Throwable t2) {
                 return t1 < 4; // FIXME was 3 in 1.x for some reason
             }
         }).subscribe(ts);
@@ -471,9 +471,9 @@ public class FlowableRetryWithPredicateTest {
     public void bipredicateThrows() {
 
         TestSubscriber<Object> to = Flowable.error(new TestException("Outer"))
-        .retry(new BiPredicate<Integer, Throwable>() {
+                .retry(new Function2<Integer, Throwable, Boolean>() {
             @Override
-            public boolean test(Integer n, Throwable e) throws Exception {
+            public Boolean invoke(Integer n, Throwable e) {
                 throw new TestException("Inner");
             }
         })
@@ -491,9 +491,9 @@ public class FlowableRetryWithPredicateTest {
         for (int i = 0; i < 500; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
+            final TestSubscriber<Integer> to = ps.retry(new Function2<Object, Object, Boolean>() {
                 @Override
-                public boolean test(Object t1, Object t2) throws Exception {
+                public Boolean invoke(Object t1, Object t2) {
                     return true;
                 }
             }).test();

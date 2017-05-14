@@ -12,7 +12,7 @@
  */
 package io.reactivex.common.internal.functions;
 
-import io.reactivex.common.functions.BiPredicate;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Utility methods containing the backport of Java 7's Objects utility class.
@@ -80,7 +80,7 @@ public final class ObjectHelper {
         return v1 < v2 ? -1 : (v1 > v2 ? 1 : 0);
     }
 
-    static final BiPredicate<Object, Object> EQUALS = new BiObjectPredicate();
+    static final Function2<Object, Object, Boolean> EQUALS = new BiObjectPredicate();
 
     /**
      * Returns a BiPredicate that compares its parameters via Objects.equals().
@@ -88,8 +88,8 @@ public final class ObjectHelper {
      * @return the bi-predicate instance
      */
     @SuppressWarnings("unchecked")
-    public static <T> BiPredicate<T, T> equalsPredicate() {
-        return (BiPredicate<T, T>)EQUALS;
+    public static <T> Function2<T, T, Boolean> equalsPredicate() {
+        return (Function2<T, T, Boolean>) EQUALS;
     }
 
     /**
@@ -122,9 +122,9 @@ public final class ObjectHelper {
         return value;
     }
 
-    static final class BiObjectPredicate implements BiPredicate<Object, Object> {
+    static final class BiObjectPredicate implements Function2<Object, Object, Boolean> {
         @Override
-        public boolean test(Object o1, Object o2) {
+        public Boolean invoke(Object o1, Object o2) {
             return ObjectHelper.equals(o1, o2);
         }
     }

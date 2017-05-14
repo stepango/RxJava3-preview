@@ -13,21 +13,24 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.BiPredicate;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionArbiter;
+import kotlin.jvm.functions.Function2;
 
 public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
-    final BiPredicate<? super Integer, ? super Throwable> predicate;
+    final Function2<? super Integer, ? super Throwable, Boolean> predicate;
     public FlowableRetryBiPredicate(
             Flowable<T> source,
-            BiPredicate<? super Integer, ? super Throwable> predicate) {
+            Function2<? super Integer, ? super Throwable, Boolean> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -49,10 +52,10 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         final Subscriber<? super T> actual;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
-        final BiPredicate<? super Integer, ? super Throwable> predicate;
+        final Function2<? super Integer, ? super Throwable, Boolean> predicate;
         int retries;
         RetryBiSubscriber(Subscriber<? super T> actual,
-                BiPredicate<? super Integer, ? super Throwable> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
+                          Function2<? super Integer, ? super Throwable, Boolean> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;
@@ -73,7 +76,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         public void onError(Throwable t) {
             boolean b;
             try {
-                b = predicate.test(++retries, t);
+                b = predicate.invoke(++retries, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(t, e));

@@ -42,7 +42,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -3789,7 +3788,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
-            BiPredicate<? super T, ? super T> isEqual) {
+                                                      Function2<? super T, ? super T, Boolean> isEqual) {
         return sequenceEqual(source1, source2, isEqual, bufferSize());
     }
 
@@ -3825,7 +3824,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
-            BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
+                                                      Function2<? super T, ? super T, Boolean> isEqual, int bufferSize) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
@@ -7663,7 +7662,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
+    public final Flowable<T> distinctUntilChanged(Function2<? super T, ? super T, Boolean> comparer) {
         ObjectHelper.requireNonNull(comparer, "comparer is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableDistinctUntilChanged<T, T>(this, Functions.<T>identity(), comparer));
     }
@@ -11452,7 +11451,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
+    public final Flowable<T> retry(Function2<? super Integer, ? super Throwable, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
         return RxJavaFlowablePlugins.onAssembly(new FlowableRetryBiPredicate<T>(this, predicate));

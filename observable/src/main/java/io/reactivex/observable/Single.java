@@ -29,7 +29,6 @@ import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -2146,7 +2145,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<Boolean> contains(final Object value, final BiPredicate<Object, Object> comparer) {
+    public final Single<Boolean> contains(final Object value, final Function2<Object, Object, Boolean> comparer) {
         ObjectHelper.requireNonNull(value, "value is null");
         ObjectHelper.requireNonNull(comparer, "comparer is null");
         return RxJavaObservablePlugins.onAssembly(new SingleContains<T>(this, value, comparer));
@@ -2435,7 +2434,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
+    public final Single<T> retry(Function2<? super Integer, ? super Throwable, Boolean> predicate) {
         return toSingle(toObservable().retry(predicate));
     }
 

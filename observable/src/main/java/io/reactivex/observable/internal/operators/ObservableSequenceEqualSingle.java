@@ -17,20 +17,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.internal.disposables.ArrayCompositeDisposable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.extensions.FuseToObservable;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function2;
 
 public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
     final ObservableSource<? extends T> first;
     final ObservableSource<? extends T> second;
-    final BiPredicate<? super T, ? super T> comparer;
+    final Function2<? super T, ? super T, Boolean> comparer;
     final int bufferSize;
 
     public ObservableSequenceEqualSingle(ObservableSource<? extends T> first, ObservableSource<? extends T> second,
-                                   BiPredicate<? super T, ? super T> comparer, int bufferSize) {
+                                         Function2<? super T, ? super T, Boolean> comparer, int bufferSize) {
         this.first = first;
         this.second = second;
         this.comparer = comparer;
@@ -53,7 +58,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
 
         private static final long serialVersionUID = -6178010334400373240L;
         final SingleObserver<? super Boolean> actual;
-        final BiPredicate<? super T, ? super T> comparer;
+        final Function2<? super T, ? super T, Boolean> comparer;
         final ArrayCompositeDisposable resources;
         final ObservableSource<? extends T> first;
         final ObservableSource<? extends T> second;
@@ -66,8 +71,8 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
         T v2;
 
         EqualCoordinator(SingleObserver<? super Boolean> actual, int bufferSize,
-                                ObservableSource<? extends T> first, ObservableSource<? extends T> second,
-                                BiPredicate<? super T, ? super T> comparer) {
+                         ObservableSource<? extends T> first, ObservableSource<? extends T> second,
+                         Function2<? super T, ? super T, Boolean> comparer) {
             this.actual = actual;
             this.first = first;
             this.second = second;
@@ -185,7 +190,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                         boolean c;
 
                         try {
-                            c = comparer.test(v1, v2);
+                            c = comparer.invoke(v1, v2);
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);

@@ -13,23 +13,30 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Subscriber;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
-import io.reactivex.flowable.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.Function;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function2;
+
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
 
 public class FlowableSequenceEqualTest {
 
@@ -128,9 +135,9 @@ public class FlowableSequenceEqualTest {
     public void testWithEqualityErrorFlowable() {
         Flowable<Boolean> observable = Flowable.sequenceEqual(
                 Flowable.just("one"), Flowable.just("one"),
-                new BiPredicate<String, String>() {
+                new Function2<String, String, Boolean>() {
                     @Override
-                    public boolean test(String t1, String t2) {
+                    public Boolean invoke(String t1, String t2) {
                         throw new TestException();
                     }
                 });

@@ -37,7 +37,6 @@ import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
@@ -3365,7 +3364,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
-            BiPredicate<? super T, ? super T> isEqual) {
+                                                    Function2<? super T, ? super T, Boolean> isEqual) {
         return sequenceEqual(source1, source2, isEqual, bufferSize());
     }
 
@@ -3397,7 +3396,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
-            BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
+                                                    Function2<? super T, ? super T, Boolean> isEqual, int bufferSize) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
@@ -6825,7 +6824,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
+    public final Observable<T> distinctUntilChanged(Function2<? super T, ? super T, Boolean> comparer) {
         ObjectHelper.requireNonNull(comparer, "comparer is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableDistinctUntilChanged<T, T>(this, Functions.<T>identity(), comparer));
     }
@@ -9655,7 +9654,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
+    public final Observable<T> retry(Function2<? super Integer, ? super Throwable, Boolean> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
         return RxJavaObservablePlugins.onAssembly(new ObservableRetryBiPredicate<T>(this, predicate));

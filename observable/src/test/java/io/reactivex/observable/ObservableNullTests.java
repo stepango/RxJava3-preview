@@ -35,7 +35,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.observers.TestObserver;
@@ -1284,7 +1283,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctUntilChangedBiPredicateNull() {
-        just1.distinctUntilChanged((BiPredicate<Object, Object>)null);
+        just1.distinctUntilChanged((Function2<Object, Object, Boolean>) null);
     }
 
     @Test
@@ -1993,7 +1992,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryFunctionNull() {
-        just1.retry((BiPredicate<Integer, Throwable>)null);
+        just1.retry((Function2<Integer, Throwable, Boolean>) null);
     }
 
     @Test(expected = NullPointerException.class)

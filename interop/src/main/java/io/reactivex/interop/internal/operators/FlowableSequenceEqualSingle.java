@@ -13,30 +13,34 @@
 
 package io.reactivex.interop.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.reactivestreams.Publisher;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import hu.akarnokd.reactivestreams.extensions.FusedQueue;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
 import io.reactivex.flowable.extensions.FuseToFlowable;
 import io.reactivex.flowable.internal.operators.FlowableSequenceEqual;
-import io.reactivex.flowable.internal.operators.FlowableSequenceEqual.*;
+import io.reactivex.flowable.internal.operators.FlowableSequenceEqual.EqualCoordinatorHelper;
+import io.reactivex.flowable.internal.operators.FlowableSequenceEqual.EqualSubscriber;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import kotlin.jvm.functions.Function2;
 
 public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implements FuseToFlowable<Boolean> {
     final Publisher<? extends T> first;
     final Publisher<? extends T> second;
-    final BiPredicate<? super T, ? super T> comparer;
+    final Function2<? super T, ? super T, Boolean> comparer;
     final int prefetch;
 
     public FlowableSequenceEqualSingle(Publisher<? extends T> first, Publisher<? extends T> second,
-            BiPredicate<? super T, ? super T> comparer, int prefetch) {
+                                       Function2<? super T, ? super T, Boolean> comparer, int prefetch) {
         this.first = first;
         this.second = second;
         this.comparer = comparer;
@@ -63,7 +67,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
         final SingleObserver<? super Boolean> actual;
 
-        final BiPredicate<? super T, ? super T> comparer;
+        final Function2<? super T, ? super T, Boolean> comparer;
 
         final EqualSubscriber<T> first;
 
@@ -75,7 +79,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
         T v2;
 
-        EqualCoordinator(SingleObserver<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
+        EqualCoordinator(SingleObserver<? super Boolean> actual, int prefetch, Function2<? super T, ? super T, Boolean> comparer) {
             this.actual = actual;
             this.comparer = comparer;
             this.first = new EqualSubscriber<T>(this, prefetch);
@@ -189,7 +193,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                         boolean c;
 
                         try {
-                            c = comparer.test(a, b);
+                            c = comparer.invoke(a, b);
                         } catch (Throwable exc) {
                             Exceptions.throwIfFatal(exc);
                             cancelAndClear();

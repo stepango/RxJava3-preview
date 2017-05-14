@@ -24,7 +24,6 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiPredicate;
 import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
@@ -80,6 +79,7 @@ import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.
@@ -1445,7 +1445,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
+    public final Completable retry(Function2<? super Integer, ? super Throwable, Boolean> predicate) {
         return fromObservable(toObservable().retry(predicate));
     }
 

@@ -13,22 +13,36 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.*;
-import org.mockito.InOrder;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.Function;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function2;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableDistinctUntilChangedTest {
 
@@ -143,9 +157,9 @@ public class ObservableDistinctUntilChangedTest {
 
         TestObserver<String> ts = TestObserver.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
+        source.distinctUntilChanged(new Function2<String, String, Boolean>() {
             @Override
-            public boolean test(String a, String b) {
+            public Boolean invoke(String a, String b) {
                 return a.compareToIgnoreCase(b) == 0;
             }
         })
@@ -162,9 +176,9 @@ public class ObservableDistinctUntilChangedTest {
 
         TestObserver<String> ts = TestObserver.create();
 
-        source.distinctUntilChanged(new BiPredicate<String, String>() {
+        source.distinctUntilChanged(new Function2<String, String, Boolean>() {
             @Override
-            public boolean test(String a, String b) {
+            public Boolean invoke(String a, String b) {
                 throw new TestException();
             }
         })
@@ -180,9 +194,9 @@ public class ObservableDistinctUntilChangedTest {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
 
         Observable.just(1, 2, 2, 3, 3, 4, 5)
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) throws Exception {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -201,9 +215,9 @@ public class ObservableDistinctUntilChangedTest {
         UnicastSubject<Integer> up = UnicastSubject.create();
 
         up
-        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
             @Override
-            public boolean test(Integer a, Integer b) throws Exception {
+            public Boolean invoke(Integer a, Integer b) {
                 return a.equals(b);
             }
         })
@@ -233,9 +247,9 @@ public class ObservableDistinctUntilChangedTest {
                     s.onComplete();
                 }
             })
-            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                    .distinctUntilChanged(new Function2<Integer, Integer, Boolean>() {
                 @Override
-                public boolean test(Integer a, Integer b) throws Exception {
+                public Boolean invoke(Integer a, Integer b) {
                     throw new TestException();
                 }
             })
