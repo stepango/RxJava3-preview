@@ -39,8 +39,8 @@ import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
 import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
-import io.reactivex.common.functions.Function8;
-import io.reactivex.common.functions.Function9;
+import kotlin.jvm.functions.Function8;
+import kotlin.jvm.functions.Function9;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -702,7 +702,7 @@ public class ObservableCombineLatestTest {
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8,
                 new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
                     @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
+                    public List<Integer> invoke(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
                         return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8);
                     }
                 });
@@ -731,7 +731,7 @@ public class ObservableCombineLatestTest {
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8, s9,
                 new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
                     @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
+                    public List<Integer> invoke(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
                         return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9);
                     }
                 });

@@ -35,12 +35,12 @@ import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
 import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
-import io.reactivex.common.functions.Function8;
-import io.reactivex.common.functions.Function9;
+import kotlin.jvm.functions.Function8;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
+import kotlin.jvm.functions.Function9;
 
 /**
  * Utility methods to convert the BiFunction, Function3..Function9 instances to Function of Object array.
@@ -730,7 +730,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5], (T7) a[6], (T8) a[7]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5], (T7) a[6], (T8) a[7]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -753,7 +753,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5], (T7) a[6], (T8) a[7], (T9) a[8]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5], (T7) a[6], (T8) a[7], (T9) a[8]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;

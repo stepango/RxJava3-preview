@@ -47,8 +47,7 @@ import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
 import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
-import io.reactivex.common.functions.Function8;
-import io.reactivex.common.functions.Function9;
+import kotlin.jvm.functions.Function8;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
@@ -68,6 +67,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
+import kotlin.jvm.functions.Function9;
 
 /**
  * The Flowable class that implements the Reactive-Streams Pattern and offers factory methods,

@@ -24,8 +24,8 @@ import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
 import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
-import io.reactivex.common.functions.Function8;
-import io.reactivex.common.functions.Function9;
+import kotlin.jvm.functions.Function8;
+import kotlin.jvm.functions.Function9;
 import io.reactivex.common.internal.functions.Functions.HashSetCallable;
 import io.reactivex.common.internal.functions.Functions.NaturalComparator;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -165,7 +165,7 @@ public class FunctionsTest {
     public void toFunction8() throws Exception {
         Functions.toFunction(new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) throws Exception {
+            public Integer invoke(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
                 return null;
             }
         }).invoke(new Object[20]);
@@ -175,7 +175,7 @@ public class FunctionsTest {
     public void toFunction9() throws Exception {
         Functions.toFunction(new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) throws Exception {
+            public Integer invoke(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
                 return null;
             }
         }).invoke(new Object[20]);

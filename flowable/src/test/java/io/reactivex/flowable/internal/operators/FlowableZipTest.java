@@ -47,8 +47,8 @@ import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
 import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
-import io.reactivex.common.functions.Function8;
-import io.reactivex.common.functions.Function9;
+import kotlin.jvm.functions.Function8;
+import kotlin.jvm.functions.Function9;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -1376,14 +1376,13 @@ public class FlowableZipTest {
         INSTANCE;
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8,
-                Object t9) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8,
+                             Object t9) {
             return "" + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8)
-                throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8) {
             return "" + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8;
         }
 
@@ -1598,8 +1597,8 @@ public class FlowableZipTest {
                 Flowable.just(8),
             new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                        Integer h) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
+                                     Integer h) {
                     return "" + a + b + c + d + e + f + g + h;
                 }
             }
@@ -1616,8 +1615,8 @@ public class FlowableZipTest {
                 Flowable.just(8), Flowable.just(9),
             new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
-                        Integer h, Integer i) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
+                                     Integer h, Integer i) {
                     return "" + a + b + c + d + e + f + g + h + i;
                 }
             }

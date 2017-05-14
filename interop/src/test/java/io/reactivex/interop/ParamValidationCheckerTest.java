@@ -45,8 +45,6 @@ import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
 import io.reactivex.common.functions.Function6;
 import io.reactivex.common.functions.Function7;
-import io.reactivex.common.functions.Function8;
-import io.reactivex.common.functions.Function9;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.BackpressureOverflowStrategy;
 import io.reactivex.flowable.BackpressureStrategy;
@@ -89,6 +87,8 @@ import io.reactivex.observable.SingleTransformer;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
+import kotlin.jvm.functions.Function8;
+import kotlin.jvm.functions.Function9;
 
 /**
  * Check that static and instance methods validate their parameters against
@@ -933,14 +933,13 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8,
-                Object t9) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8,
+                             Object t9) {
             return null;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8)
-                throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8) {
             return null;
         }
 
