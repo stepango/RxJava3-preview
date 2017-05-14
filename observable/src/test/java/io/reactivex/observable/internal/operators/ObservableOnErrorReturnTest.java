@@ -13,20 +13,28 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.reactivex.common.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableOnErrorReturnTest {
 
@@ -36,10 +44,10 @@ public class ObservableOnErrorReturnTest {
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Function1<Throwable, String>() {
 
             @Override
-            public String apply(Throwable e) {
+            public String invoke(Throwable e) {
                 capturedException.set(e);
                 return "failure";
             }
@@ -72,10 +80,10 @@ public class ObservableOnErrorReturnTest {
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Function1<Throwable, String>() {
 
             @Override
-            public String apply(Throwable e) {
+            public String invoke(Throwable e) {
                 capturedException.set(e);
                 throw new RuntimeException("exception from function");
             }
@@ -108,9 +116,9 @@ public class ObservableOnErrorReturnTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
+        w = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -119,10 +127,10 @@ public class ObservableOnErrorReturnTest {
             }
         });
 
-        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Function1<Throwable, String>() {
 
             @Override
-            public String apply(Throwable t1) {
+            public String invoke(Throwable t1) {
                 return "resume";
             }
 
@@ -146,20 +154,20 @@ public class ObservableOnErrorReturnTest {
     public void testBackpressure() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.range(0, 100000)
-                .onErrorReturn(new Function<Throwable, Integer>() {
+                .onErrorReturn(new Function1<Throwable, Integer>() {
 
                     @Override
-                    public Integer apply(Throwable t1) {
+                    public Integer invoke(Throwable t1) {
                         return 1;
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     int c;
 
                     @Override
-                    public Integer apply(Integer t1) {
+                    public Integer invoke(Integer t1) {
                         if (c++ <= 1) {
                             // slow
                             try {
@@ -228,9 +236,9 @@ public class ObservableOnErrorReturnTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> f) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> f) {
                 return f.onErrorReturnItem(1);
             }
         });

@@ -13,22 +13,26 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Single;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.elementAt;
+import static io.reactivex.interop.RxJava3Interop.elementAtOrError;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class FlowableElementAtTest {
 
@@ -147,16 +151,16 @@ public class FlowableElementAtTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, Maybe<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function1<Flowable<Object>, Maybe<Object>>() {
             @Override
-            public Maybe<Object> apply(Flowable<Object> o) throws Exception {
+            public Maybe<Object> invoke(Flowable<Object> o) {
                 return elementAt(o, 0);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function1<Flowable<Object>, Single<Object>>() {
             @Override
-            public Single<Object> apply(Flowable<Object> o) throws Exception {
+            public Single<Object> invoke(Flowable<Object> o) {
                 return elementAt(o, 0, 1);
             }
         });
@@ -175,16 +179,16 @@ public class FlowableElementAtTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return elementAt(f, 0);
             }
         }, false, null, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return elementAt(f, 0, 1);
             }
         }, false, null, 1, 1);

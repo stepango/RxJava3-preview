@@ -16,7 +16,6 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Single;
@@ -24,6 +23,7 @@ import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,9 +35,9 @@ public class SingleFlatMapTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
+                .flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) throws Exception {
+            public Completable invoke(Integer t) {
                 return Completable.complete().doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
@@ -58,9 +58,9 @@ public class SingleFlatMapTest {
         final boolean[] b = { false };
 
         Single.<Integer>error(new TestException())
-        .flatMapCompletable(new Function<Integer, Completable>() {
+                .flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) throws Exception {
+            public Completable invoke(Integer t) {
                 return Completable.complete().doOnComplete(new Function0() {
                     @Override
                     public kotlin.Unit invoke() {
@@ -81,9 +81,9 @@ public class SingleFlatMapTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
+                .flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) throws Exception {
+            public Completable invoke(Integer t) {
                 throw new TestException();
             }
         })
@@ -98,9 +98,9 @@ public class SingleFlatMapTest {
         final boolean[] b = { false };
 
         Single.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
+                .flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) throws Exception {
+            public Completable invoke(Integer t) {
                 return null;
             }
         })
@@ -113,9 +113,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void flatMapObservable() {
-        Single.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+        Single.just(1).flatMapObservable(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(v, 5);
             }
         })
@@ -131,8 +131,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void flatMapValue() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMap(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 if (integer == 1) {
                     return Single.just(2);
                 }
@@ -146,8 +147,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void flatMapValueDifferentType() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<String>>() {
-            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMap(new Function1<Integer, SingleSource<String>>() {
+            @Override
+            public SingleSource<String> invoke(final Integer integer) {
                 if (integer == 1) {
                     return Single.just("2");
                 }
@@ -161,8 +163,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void flatMapValueNull() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMap(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 return null;
             }
         })
@@ -174,8 +177,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void flatMapValueErrorThrown() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMap(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 throw new RuntimeException("something went terribly wrong!");
             }
         })
@@ -189,8 +193,9 @@ public class SingleFlatMapTest {
     public void flatMapError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Single.error(exception).flatMap(new Function<Object, SingleSource<Object>>() {
-            @Override public SingleSource<Object> apply(final Object integer) throws Exception {
+        Single.error(exception).flatMap(new Function1<Object, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> invoke(final Object integer) {
                 return Single.just(new Object());
             }
         })
@@ -200,9 +205,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+        TestHelper.checkDisposed(Single.just(1).flatMap(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(2);
             }
         }));
@@ -210,9 +215,9 @@ public class SingleFlatMapTest {
 
     @Test
     public void mappedSingleOnError() {
-        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+        Single.just(1).flatMap(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.error(new TestException());
             }
         })

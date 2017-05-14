@@ -36,7 +36,6 @@ import io.reactivex.common.TestConsumer;
 import io.reactivex.common.TestConsumer.TestWaitStrategy;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -1640,9 +1639,9 @@ public class TestSubscriberTest {
         ts.setInitialFusionMode(FusedQueueSubscription.SYNC);
 
         Flowable.range(1, 5)
-                .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
                     @Override
-                    public Object apply(Integer v) throws Exception {
+                    public Object invoke(Integer v) {
                         throw new TestException();
                     }
                 })
@@ -1662,9 +1661,9 @@ public class TestSubscriberTest {
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
-                .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
                     @Override
-                    public Object apply(Integer v) throws Exception {
+                    public Object invoke(Integer v) {
                         throw new TestException();
                     }
                 })

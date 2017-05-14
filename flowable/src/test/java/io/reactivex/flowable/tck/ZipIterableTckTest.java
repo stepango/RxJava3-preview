@@ -13,13 +13,13 @@
 
 package io.reactivex.flowable.tck;
 
-import java.util.Arrays;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
+import java.util.Arrays;
+
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class ZipIterableTckTest extends BaseTck<Long> {
@@ -32,9 +32,9 @@ public class ZipIterableTckTest extends BaseTck<Long> {
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements))
                 ),
-                new Function<Object[], Long>() {
+                    new Function1<Object[], Long>() {
                     @Override
-                    public Long apply(Object[] a) throws Exception {
+                    public Long invoke(Object[] a) {
                         return (Long)a[0] + (Long)a[1];
                     }
                 }

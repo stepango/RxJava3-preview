@@ -13,33 +13,40 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.flattenAsFlowable;
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingIterable;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.flattenAsFlowable;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeFlatMapIterableFlowableTest {
 
     @Test
     public void normal() {
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -50,9 +57,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void emptyIterable() {
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.<Integer>emptyList();
             }
         })
@@ -63,9 +70,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void error() {
 
-        flattenAsFlowable(Maybe.<Integer>error(new TestException()), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.<Integer>error(new TestException()), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -76,9 +83,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void empty() {
 
-        flattenAsFlowable(Maybe.<Integer>empty(), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.<Integer>empty(), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -89,9 +96,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void backpressure() {
 
-        TestSubscriber<Integer> ts = flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        TestSubscriber<Integer> ts = flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -110,9 +117,9 @@ public class MaybeFlatMapIterableFlowableTest {
 
     @Test
     public void take() {
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -125,9 +132,9 @@ public class MaybeFlatMapIterableFlowableTest {
     public void fused() {
         TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -143,9 +150,9 @@ public class MaybeFlatMapIterableFlowableTest {
     public void fusedNoSync() {
         TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.SYNC);
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -160,9 +167,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void iteratorCrash() {
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(1, 100, 100);
             }
         })
@@ -173,9 +180,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void hasNextCrash() {
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(100, 1, 100);
             }
         })
@@ -186,9 +193,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void nextCrash() {
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(100, 100, 1);
             }
         })
@@ -199,9 +206,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void hasNextCrash2() {
 
-        flattenAsFlowable(Maybe.just(1), new Function<Integer, Iterable<Integer>>() {
+        flattenAsFlowable(Maybe.just(1), new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(100, 2, 100);
             }
         })
@@ -212,9 +219,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void async1() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -233,9 +240,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void async2() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -253,9 +260,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void async3() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -274,9 +281,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void async4() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -295,9 +302,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void fusedEmptyCheck() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return Arrays.asList(1, 2, 3);
                     }
         }).subscribe(new RelaxedSubscriber<Integer>() {
@@ -334,9 +341,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void hasNextThrowsUnbounded() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return new CrashingIterable(100, 2, 100);
                     }
                 })
@@ -347,9 +354,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void nextThrowsUnbounded() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return new CrashingIterable(100, 100, 1);
                     }
                 })
@@ -360,9 +367,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void hasNextThrows() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return new CrashingIterable(100, 2, 100);
                     }
                 })
@@ -373,9 +380,9 @@ public class MaybeFlatMapIterableFlowableTest {
     @Test
     public void nextThrows() {
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Object, Iterable<Integer>>() {
+                , new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return new CrashingIterable(100, 100, 1);
                     }
                 })
@@ -389,9 +396,9 @@ public class MaybeFlatMapIterableFlowableTest {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             flattenAsFlowable(ps.singleElement(),
-            new Function<Integer, Iterable<Integer>>() {
+                    new Function1<Integer, Iterable<Integer>>() {
                 @Override
-                public Iterable<Integer> apply(Integer v) throws Exception {
+                public Iterable<Integer> invoke(Integer v) {
                     return Arrays.asList(1, 2, 3);
                 }
             })
@@ -411,9 +418,9 @@ public class MaybeFlatMapIterableFlowableTest {
             ps.onNext(1);
 
             final TestSubscriber<Integer> ts = flattenAsFlowable(ps.singleElement(),
-            new Function<Integer, Iterable<Integer>>() {
+                    new Function1<Integer, Iterable<Integer>>() {
                 @Override
-                public Iterable<Integer> apply(Integer v) throws Exception {
+                public Iterable<Integer> invoke(Integer v) {
                     return Arrays.asList(a);
                 }
             })
@@ -450,9 +457,9 @@ public class MaybeFlatMapIterableFlowableTest {
             ps.onNext(1);
 
             final TestSubscriber<Integer> ts = flattenAsFlowable(ps.singleElement(),
-            new Function<Integer, Iterable<Integer>>() {
+                    new Function1<Integer, Iterable<Integer>>() {
                 @Override
-                public Iterable<Integer> apply(Integer v) throws Exception {
+                public Iterable<Integer> invoke(Integer v) {
                     return Arrays.asList(1, 2, 3);
                 }
             })
@@ -484,9 +491,9 @@ public class MaybeFlatMapIterableFlowableTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Integer, Iterable<Integer>>() {
+                , new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new Iterable<Integer>() {
                     @Override
                     public Iterator<Integer> iterator() {
@@ -528,9 +535,9 @@ public class MaybeFlatMapIterableFlowableTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         flattenAsFlowable(Maybe.just(1)
-        , new Function<Integer, Iterable<Integer>>() {
+                , new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new Iterable<Integer>() {
                     @Override
                     public Iterator<Integer> iterator() {

@@ -13,6 +13,7 @@
 package io.reactivex.flowable;
 
 import io.reactivex.common.annotations.Nullable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A {@link Flowable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.
@@ -26,7 +27,7 @@ import io.reactivex.common.annotations.Nullable;
  *            the type of the key
  * @param <T>
  *            the type of the items emitted by the {@code GroupedFlowable}
- * @see Flowable#groupBy(io.reactivex.common.functions.Function)
+ * @see Flowable#groupBy(Function1)
  * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
  */
 public abstract class GroupedFlowable<K, T> extends Flowable<T> {

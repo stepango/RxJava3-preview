@@ -12,40 +12,46 @@
  */
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionArbiter;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
     final int prefetch;
 
     final ErrorMode errorMode;
 
     public FlowableConcatMap(Flowable<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, ErrorMode errorMode) {
+                             Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                             int prefetch, ErrorMode errorMode) {
         super(source);
         this.mapper = mapper;
         this.prefetch = prefetch;
         this.errorMode = errorMode;
     }
 
-    public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> s, Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, ErrorMode errorMode) {
+    public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> s, Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                                                 int prefetch, ErrorMode errorMode) {
         switch (errorMode) {
         case BOUNDARY:
             return new ConcatMapDelayed<T, R>(s, mapper, prefetch, false);
@@ -74,7 +80,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         final ConcatMapInner<R> inner;
 
-        final Function<? super T, ? extends Publisher<? extends R>> mapper;
+        final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
         final int prefetch;
 
@@ -97,7 +103,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         int sourceMode;
 
         BaseConcatMapSubscriber(
-                Function<? super T, ? extends Publisher<? extends R>> mapper,
+                Function1<? super T, ? extends Publisher<? extends R>> mapper,
                 int prefetch) {
             this.mapper = mapper;
             this.prefetch = prefetch;
@@ -185,8 +191,8 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         final AtomicInteger wip;
 
         ConcatMapImmediate(Subscriber<? super R> actual,
-                Function<? super T, ? extends Publisher<? extends R>> mapper,
-                int prefetch) {
+                           Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                           int prefetch) {
             super(mapper, prefetch);
             this.actual = actual;
             this.wip = new AtomicInteger();
@@ -283,7 +289,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
+                                p = ObjectHelper.requireNonNull(mapper.invoke(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
@@ -390,8 +396,8 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         final boolean veryEnd;
 
         ConcatMapDelayed(Subscriber<? super R> actual,
-                Function<? super T, ? extends Publisher<? extends R>> mapper,
-                int prefetch, boolean veryEnd) {
+                         Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                         int prefetch, boolean veryEnd) {
             super(mapper, prefetch);
             this.actual = actual;
             this.veryEnd = veryEnd;
@@ -496,7 +502,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
+                                p = ObjectHelper.requireNonNull(mapper.invoke(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 

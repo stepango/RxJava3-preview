@@ -23,7 +23,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
@@ -290,9 +289,9 @@ public class SingleDoOnTest {
 
     @Test
     public void doOnDisposeDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function1<Single<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
+            public SingleSource<Object> invoke(Single<Object> s) {
                 return s.doOnDispose(Functions.EMPTY_ACTION);
             }
         });

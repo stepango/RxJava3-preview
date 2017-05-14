@@ -25,7 +25,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -33,6 +32,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -91,10 +91,10 @@ public class ObservableRepeatTest {
             }
         }).subscribeOn(Schedulers.newThread());
 
-        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(new Function<Integer, Integer>() {
+        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -189,9 +189,9 @@ public class ObservableRepeatTest {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.just(1, 2)
         .repeat(5)
-        .concatMap(new Function<Integer, Observable<Integer>>() {
+                .concatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer x) {
+            public Observable<Integer> invoke(Integer x) {
                 System.out.println("testRepeatRetarget -> " + x);
                 concatBase.add(x);
                 return Observable.<Integer>empty()
@@ -274,12 +274,12 @@ public class ObservableRepeatTest {
     public void shouldDisposeInnerObservable() {
       final PublishSubject<Object> subject = PublishSubject.create();
       final Disposable disposable = Observable.just("Leak")
-          .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+              .repeatWhen(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> completions) throws Exception {
-                return completions.switchMap(new Function<Object, ObservableSource<Object>>() {
+            public ObservableSource<Object> invoke(Observable<Object> completions) {
+                return completions.switchMap(new Function1<Object, ObservableSource<Object>>() {
                     @Override
-                    public ObservableSource<Object> apply(Object ignore) throws Exception {
+                    public ObservableSource<Object> invoke(Object ignore) {
                         return subject;
                     }
                 });
@@ -295,9 +295,9 @@ public class ObservableRepeatTest {
     @Test
     public void testRepeatWhen() {
         Observable.error(new TestException())
-        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+                .repeatWhen(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> v) {
                 return v.delay(10, TimeUnit.SECONDS);
             }
         })
@@ -308,9 +308,9 @@ public class ObservableRepeatTest {
 
     @Test
     public void whenTake() {
-        Observable.range(1, 3).repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+        Observable.range(1, 3).repeatWhen(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> handler) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> handler) {
                 return handler.take(2);
             }
         })
@@ -321,12 +321,12 @@ public class ObservableRepeatTest {
     @Test
     public void handlerError() {
         Observable.range(1, 3)
-        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+                .repeatWhen(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
-                return v.map(new Function<Object, Object>() {
+            public ObservableSource<Object> invoke(Observable<Object> v) {
+                return v.map(new Function1<Object, Object>() {
                     @Override
-                    public Object apply(Object w) throws Exception {
+                    public Object invoke(Object w) {
                         throw new TestException();
                     }
                 });

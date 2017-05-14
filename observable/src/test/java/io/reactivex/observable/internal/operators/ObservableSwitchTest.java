@@ -30,7 +30,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.Observable;
@@ -465,14 +464,14 @@ public class ObservableSwitchTest {
     public void testIssue2654() {
         Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.<String>never());
 
-        Observable<String> src = oneItem.switchMap(new Function<String, Observable<String>>() {
+        Observable<String> src = oneItem.switchMap(new Function1<String, Observable<String>>() {
             @Override
-            public Observable<String> apply(final String s) {
+            public Observable<String> invoke(final String s) {
                 return Observable.just(s)
                         .mergeWith(Observable.interval(10, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, String>() {
+                                .map(new Function1<Long, String>() {
                             @Override
-                            public String apply(Long i) {
+                            public String invoke(Long i) {
                                 return s + " " + i;
                             }
                         })).take(250);
@@ -581,9 +580,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .switchMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+                .switchMapDelayError(new Function1<Object, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                    public ObservableSource<Integer> invoke(Object v) {
                         return Observable.just(1);
                     }
                 }, 16));
@@ -592,9 +591,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapDelayErrorJustSource() {
         Observable.just(0)
-        .switchMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+                .switchMapDelayError(new Function1<Object, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
+            public ObservableSource<Integer> invoke(Object v) {
                 return Observable.just(1);
             }
         }, 16)
@@ -605,9 +604,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .switchMap(new Function<Object, ObservableSource<Integer>>() {
+                .switchMap(new Function1<Object, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                    public ObservableSource<Integer> invoke(Object v) {
                         return Observable.just(1);
                     }
                 }, 16));
@@ -616,9 +615,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapJustSource() {
         Observable.just(0)
-        .switchMap(new Function<Object, ObservableSource<Integer>>() {
+                .switchMap(new Function1<Object, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
+            public ObservableSource<Integer> invoke(Object v) {
                 return Observable.just(1);
             }
         }, 16)
@@ -646,9 +645,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapSingleJustSource() {
         Observable.just(0)
-        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
+                .switchMapSingle(new Function1<Object, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
+            public SingleSource<Integer> invoke(Object v) {
                 return Single.just(1);
             }
         })
@@ -659,9 +658,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapSingleMapperReturnsNull() {
         Observable.just(0)
-        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
+                .switchMapSingle(new Function1<Object, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
+            public SingleSource<Integer> invoke(Object v) {
                 return null;
             }
         })
@@ -678,9 +677,9 @@ public class ObservableSwitchTest {
     @Test
     public void switchMapSingleFunctionDoesntReturnSingle() {
         Observable.just(0)
-        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
+                .switchMapSingle(new Function1<Object, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Object v) throws Exception {
+            public SingleSource<Integer> invoke(Object v) {
                 return new SingleSource<Integer>() {
                     @Override
                     public void subscribe(SingleObserver<? super Integer> s) {
@@ -698,9 +697,9 @@ public class ObservableSwitchTest {
     public void switchMapSingleDelayErrorJustSource() {
         final AtomicBoolean completed = new AtomicBoolean();
         Observable.just(0, 1)
-        .switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+                .switchMapSingleDelayError(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 if (v == 0) {
                     return Single.error(new RuntimeException());
                 } else {
@@ -749,9 +748,9 @@ public class ObservableSwitchTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                ps1.switchMap(new Function1<Integer, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                    public ObservableSource<Integer> invoke(Integer v) {
                         if (v == 1) {
                             return ps2;
                         }
@@ -796,9 +795,9 @@ public class ObservableSwitchTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                ps1.switchMap(new Function1<Integer, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                    public ObservableSource<Integer> invoke(Integer v) {
                         if (v == 1) {
                             return ps2;
                         }
@@ -841,9 +840,9 @@ public class ObservableSwitchTest {
         for (int i = 0; i < 500; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
 
-            final TestObserver<Integer> to = ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
+            final TestObserver<Integer> to = ps1.switchMap(new Function1<Integer, ObservableSource<Integer>>() {
                 @Override
-                public ObservableSource<Integer> apply(Integer v) throws Exception {
+                public ObservableSource<Integer> invoke(Integer v) {
                     return Observable.never();
                 }
             })
@@ -870,9 +869,9 @@ public class ObservableSwitchTest {
     @Test
     public void mapperThrows() {
         Observable.just(1).hide()
-        .switchMap(new Function<Integer, ObservableSource<Object>>() {
+                .switchMap(new Function1<Integer, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Integer v) throws Exception {
+            public ObservableSource<Object> invoke(Integer v) {
                 throw new TestException();
             }
         })

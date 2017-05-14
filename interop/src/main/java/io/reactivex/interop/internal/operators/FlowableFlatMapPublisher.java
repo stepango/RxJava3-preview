@@ -13,22 +13,24 @@
 
 package io.reactivex.interop.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.operators.*;
+import io.reactivex.flowable.internal.operators.FlowableFlatMap;
+import io.reactivex.flowable.internal.operators.FlowableScalarXMap;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableFlatMapPublisher<T, U> extends Flowable<U> {
     final Publisher<T> source;
-    final Function<? super T, ? extends Publisher<? extends U>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;
     final int bufferSize;
 
     public FlowableFlatMapPublisher(Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends U>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+                                    Function1<? super T, ? extends Publisher<? extends U>> mapper,
+                                    boolean delayErrors, int maxConcurrency, int bufferSize) {
         this.source = source;
         this.mapper = mapper;
         this.delayErrors = delayErrors;

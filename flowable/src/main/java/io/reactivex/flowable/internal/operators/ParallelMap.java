@@ -13,15 +13,17 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps each 'rail' of the source ParallelFlowable with a mapper function.
@@ -33,9 +35,9 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
 
     final ParallelFlowable<T> source;
 
-    final Function<? super T, ? extends R> mapper;
+    final Function1<? super T, ? extends R> mapper;
 
-    public ParallelMap(ParallelFlowable<T> source, Function<? super T, ? extends R> mapper) {
+    public ParallelMap(ParallelFlowable<T> source, Function1<? super T, ? extends R> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -71,13 +73,13 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
 
         final Subscriber<? super R> actual;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function1<? super T, ? extends R> mapper;
 
         Subscription s;
 
         boolean done;
 
-        ParallelMapSubscriber(Subscriber<? super R> actual, Function<? super T, ? extends R> mapper) {
+        ParallelMapSubscriber(Subscriber<? super R> actual, Function1<? super T, ? extends R> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -109,7 +111,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                v = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancel();
@@ -144,13 +146,13 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
 
         final ConditionalSubscriber<? super R> actual;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function1<? super T, ? extends R> mapper;
 
         Subscription s;
 
         boolean done;
 
-        ParallelMapConditionalSubscriber(ConditionalSubscriber<? super R> actual, Function<? super T, ? extends R> mapper) {
+        ParallelMapConditionalSubscriber(ConditionalSubscriber<? super R> actual, Function1<? super T, ? extends R> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -182,7 +184,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                v = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancel();
@@ -201,7 +203,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                v = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancel();

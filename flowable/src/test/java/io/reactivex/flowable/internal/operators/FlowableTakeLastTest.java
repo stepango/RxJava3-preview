@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
@@ -132,12 +131,12 @@ public class FlowableTakeLastTest {
         assertEquals(Flowable.bufferSize() * 4, ts.valueCount());
     }
 
-    private Function<Integer, Integer> newSlowProcessor() {
-        return new Function<Integer, Integer>() {
+    private Function1<Integer, Integer> newSlowProcessor() {
+        return new Function1<Integer, Integer>() {
             int c;
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 if (c++ < 100) {
                     try {
                         Thread.sleep(1);
@@ -334,9 +333,9 @@ public class FlowableTakeLastTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.takeLast(5);
             }
         });

@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.common.functions.Function;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -34,9 +33,9 @@ public class ObservableWindowTests {
         Observable.concat(
             Observable.just(1, 2, 3, 4, 5, 6)
             .window(3)
-            .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
+                    .map(new Function1<Observable<Integer>, Observable<List<Integer>>>() {
                 @Override
-                public Observable<List<Integer>> apply(Observable<Integer> xs) {
+                public Observable<List<Integer>> invoke(Observable<Integer> xs) {
                     return xs.toList().toObservable();
                 }
             })

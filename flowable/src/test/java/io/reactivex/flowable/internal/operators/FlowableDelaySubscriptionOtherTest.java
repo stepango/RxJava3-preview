@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.BackpressureStrategy;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.FlowableEmitter;
@@ -332,9 +331,9 @@ public class FlowableDelaySubscriptionOtherTest {
 
     @Test
     public void badSourceOther() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
+            public Object invoke(Flowable<Integer> o) {
                 return Flowable.just(1).delaySubscription(o);
             }
         }, false, 1, 1, 1);

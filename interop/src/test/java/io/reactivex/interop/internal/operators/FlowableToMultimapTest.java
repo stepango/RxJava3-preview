@@ -13,19 +13,30 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
-
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.toMultimap;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableToMultimapTest {
     SingleObserver<Object> singleObserver;
@@ -35,15 +46,15 @@ public class FlowableToMultimapTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+    Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
         @Override
-        public Integer apply(String t1) {
+        public Integer invoke(String t1) {
             return t1.length();
         }
     };
-    Function<String, String> duplicate = new Function<String, String>() {
+    Function1<String, String> duplicate = new Function1<String, String>() {
         @Override
-        public String apply(String t1) {
+        public String invoke(String t1) {
             return t1 + t1;
         }
     };
@@ -99,18 +110,18 @@ public class FlowableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
 
         Single<Map<Integer, Collection<String>>> mapped = toMultimap(source,
                 lengthFunc, identity,
-                mapFactory, new Function<Integer, Collection<String>>() {
+                mapFactory, new Function1<Integer, Collection<String>>() {
                     @Override
-                    public Collection<String> apply(Integer e) {
+                    public Collection<String> invoke(Integer e) {
                         return new ArrayList<String>();
                     }
                 });
@@ -129,9 +140,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithCollectionFactory() {
         Flowable<String> source = Flowable.just("cc", "dd", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
+        Function1<Integer, Collection<String>> collectionFactory = new Function1<Integer, Collection<String>>() {
             @Override
-            public Collection<String> apply(Integer t1) {
+            public Collection<String> invoke(Integer t1) {
                 if (t1 == 2) {
                     return new ArrayList<String>();
                 } else {
@@ -140,9 +151,9 @@ public class FlowableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
@@ -170,9 +181,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithError() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFuncErr = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 if ("b".equals(t1)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -196,9 +207,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithErrorInValueSelector() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
+        Function1<String, String> duplicateErr = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 if ("b".equals(t1)) {
                     throw new RuntimeException("Forced failure");
                 }
@@ -230,9 +241,9 @@ public class FlowableToMultimapTest {
         };
 
         Single<Map<Integer, Collection<String>>> mapped = toMultimap(source
-                , lengthFunc, new Function<String, String>() {
+                , lengthFunc, new Function1<String, String>() {
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         return v;
                     }
                 }, mapFactory);
@@ -251,9 +262,9 @@ public class FlowableToMultimapTest {
     public void testToMultimapWithThrowingCollectionFactory() {
         Flowable<String> source = Flowable.just("cc", "cc", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
+        Function1<Integer, Collection<String>> collectionFactory = new Function1<Integer, Collection<String>>() {
             @Override
-            public Collection<String> apply(Integer t1) {
+            public Collection<String> invoke(Integer t1) {
                 if (t1 == 2) {
                     throw new RuntimeException("Forced failure");
                 } else {
@@ -262,9 +273,9 @@ public class FlowableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };

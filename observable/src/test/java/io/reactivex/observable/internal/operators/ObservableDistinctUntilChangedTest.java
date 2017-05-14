@@ -25,7 +25,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -35,6 +34,7 @@ import io.reactivex.observable.observers.ObserverFusion;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -50,9 +50,9 @@ public class ObservableDistinctUntilChangedTest {
     Observer<String> w2;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
+    final Function1<String, String> TO_UPPER_WITH_EXCEPTION = new Function1<String, String>() {
         @Override
-        public String apply(String s) {
+        public String invoke(String s) {
             if (s.equals("x")) {
                 return "xx";
             }
@@ -272,9 +272,9 @@ public class ObservableDistinctUntilChangedTest {
 
         PublishSubject<Mutable> pp = PublishSubject.create();
 
-        TestObserver<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
+        TestObserver<Mutable> ts = pp.distinctUntilChanged(new Function1<Mutable, Object>() {
             @Override
-            public Object apply(Mutable m) throws Exception {
+            public Object invoke(Mutable m) {
                 return m.value;
             }
         })

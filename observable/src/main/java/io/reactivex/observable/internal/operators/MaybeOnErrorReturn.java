@@ -14,11 +14,13 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Returns a value generated via a function if the main source signals an onError.
@@ -26,10 +28,10 @@ import io.reactivex.observable.*;
  */
 public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Function<? super Throwable, ? extends T> valueSupplier;
+    final Function1<? super Throwable, ? extends T> valueSupplier;
 
     public MaybeOnErrorReturn(MaybeSource<T> source,
-            Function<? super Throwable, ? extends T> valueSupplier) {
+                              Function1<? super Throwable, ? extends T> valueSupplier) {
         super(source);
         this.valueSupplier = valueSupplier;
     }
@@ -43,12 +45,12 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
 
         final MaybeObserver<? super T> actual;
 
-        final Function<? super Throwable, ? extends T> valueSupplier;
+        final Function1<? super Throwable, ? extends T> valueSupplier;
 
         Disposable d;
 
         OnErrorReturnMaybeObserver(MaybeObserver<? super T> actual,
-                Function<? super Throwable, ? extends T> valueSupplier) {
+                                   Function1<? super Throwable, ? extends T> valueSupplier) {
             this.actual = actual;
             this.valueSupplier = valueSupplier;
         }
@@ -82,7 +84,7 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
             T v;
 
             try {
-                v = ObjectHelper.requireNonNull(valueSupplier.apply(e), "The valueSupplier returned a null value");
+                v = ObjectHelper.requireNonNull(valueSupplier.invoke(e), "The valueSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(new CompositeException(e, ex));

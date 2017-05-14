@@ -13,20 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.observers.DisposableObserver;
+import io.reactivex.observable.observers.SerializedObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstream<T, T> {
-    final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
+    final Function1<? super T, ? extends ObservableSource<U>> debounceSelector;
 
-    public ObservableDebounce(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
+    public ObservableDebounce(ObservableSource<T> source, Function1<? super T, ? extends ObservableSource<U>> debounceSelector) {
         super(source);
         this.debounceSelector = debounceSelector;
     }
@@ -39,7 +43,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
     static final class DebounceObserver<T, U>
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
+        final Function1<? super T, ? extends ObservableSource<U>> debounceSelector;
 
         Disposable s;
 
@@ -50,7 +54,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
         boolean done;
 
         DebounceObserver(Observer<? super T> actual,
-                Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
+                         Function1<? super T, ? extends ObservableSource<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
         }
@@ -80,7 +84,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             ObservableSource<U> p;
 
             try {
-                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The Observable supplied is null");
+                p = ObjectHelper.requireNonNull(debounceSelector.invoke(t), "The Observable supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();

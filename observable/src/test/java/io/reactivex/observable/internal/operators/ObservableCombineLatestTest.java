@@ -34,7 +34,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -459,10 +458,10 @@ public class ObservableCombineLatestTest {
     @Test
     public void test1ToNSources() {
         int n = 30;
-        Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
+        Function1<Object[], List<Object>> func = new Function1<Object[], List<Object>>() {
 
             @Override
-            public List<Object> apply(Object[] args) {
+            public List<Object> invoke(Object[] args) {
                 return Arrays.asList(args);
             }
         };
@@ -490,10 +489,10 @@ public class ObservableCombineLatestTest {
     @Test(timeout = 5000)
     public void test1ToNSourcesScheduled() throws InterruptedException {
         int n = 10;
-        Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
+        Function1<Object[], List<Object>> func = new Function1<Object[], List<Object>>() {
 
             @Override
-            public List<Object> apply(Object[] args) {
+            public List<Object> invoke(Object[] args) {
                 return Arrays.asList(args);
             }
         };
@@ -749,10 +748,10 @@ public class ObservableCombineLatestTest {
     @Test
     public void testZeroSources() {
         Observable<Object> result = Observable.combineLatest(
-                Collections.<Observable<Object>> emptyList(), new Function<Object[], Object>() {
+                Collections.<Observable<Object>>emptyList(), new Function1<Object[], Object>() {
 
             @Override
-            public Object apply(Object[] args) {
+            public Object invoke(Object[] args) {
                 return args;
             }
 
@@ -808,9 +807,9 @@ public class ObservableCombineLatestTest {
 
         Observable.combineLatest(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -824,9 +823,9 @@ public class ObservableCombineLatestTest {
 
         Observable.combineLatestDelayError(new ObservableSource[] {
                 Observable.just(1), Observable.just(2)
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -840,9 +839,9 @@ public class ObservableCombineLatestTest {
 
         Observable.combineLatestDelayError(new ObservableSource[] {
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -856,9 +855,9 @@ public class ObservableCombineLatestTest {
 
         Observable.combineLatestDelayError(Arrays.asList(
                 Observable.just(1), Observable.just(2)
-        ), new Function<Object[], Object>() {
+        ), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -872,9 +871,9 @@ public class ObservableCombineLatestTest {
 
         Observable.combineLatestDelayError(Arrays.asList(
                 Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
-        ), new Function<Object[], Object>() {
+        ), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -960,9 +959,9 @@ public class ObservableCombineLatestTest {
     @Test
     public void errorDelayed() {
         Observable.combineLatestDelayError(
-                new Function<Object[], Object>() {
+                new Function1<Object[], Object>() {
                     @Override
-                    public Object apply(Object[] a) throws Exception {
+                    public Object invoke(Object[] a) {
                         return a;
                     }
                 },
@@ -978,9 +977,9 @@ public class ObservableCombineLatestTest {
     @Test
     public void errorDelayed2() {
         Observable.combineLatestDelayError(
-                new Function<Object[], Object>() {
+                new Function1<Object[], Object>() {
                     @Override
-                    public Object apply(Object[] a) throws Exception {
+                    public Object invoke(Object[] a) {
                         return a;
                     }
                 },
@@ -1099,9 +1098,9 @@ public class ObservableCombineLatestTest {
                             }
                         })
                     ),
-                    new Function<Object[], Object>() {
+                    new Function1<Object[], Object>() {
                         @Override
-                        public Object apply(Object[] a) throws Exception {
+                        public Object invoke(Object[] a) {
                             return 0;
                         }
                     })
@@ -1126,16 +1125,16 @@ public class ObservableCombineLatestTest {
             TestScheduler testScheduler = new TestScheduler();
 
             Observable<Integer> emptyObservable = Observable.timer(10, TimeUnit.MILLISECONDS, testScheduler)
-                    .flatMap(new Function<Long, ObservableSource<Integer>>() {
+                    .flatMap(new Function1<Long, ObservableSource<Integer>>() {
                         @Override
-                        public ObservableSource<Integer> apply(Long aLong) throws Exception {
+                        public ObservableSource<Integer> invoke(Long aLong) {
                             return Observable.error(new Exception());
                         }
                     });
-            Observable<Object> errorObservable = Observable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(new Function<Long, Object>() {
+            Observable<Object> errorObservable = Observable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(new Function1<Long, Object>() {
                 @Override
-                public Object apply(Long aLong) throws Exception {
-                    throw new Exception();
+                public Object invoke(Long aLong) {
+                    throw new TestException();
                 }
             });
 
@@ -1171,9 +1170,9 @@ public class ObservableCombineLatestTest {
                                             return Unit.INSTANCE;
                                         }
                                     })),
-                    new Function<Object[], Object>() {
+                    new Function1<Object[], Object>() {
                         @Override
-                        public Object apply(Object[] objects) throws Exception {
+                        public Object invoke(Object[] objects) {
                             return 0;
                         }
                     }

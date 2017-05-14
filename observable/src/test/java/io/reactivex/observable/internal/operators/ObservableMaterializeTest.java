@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Notification;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -192,9 +191,9 @@ public class ObservableMaterializeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Notification<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Notification<Object>>>() {
             @Override
-            public ObservableSource<Notification<Object>> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Notification<Object>> invoke(Observable<Object> o) {
                 return o.materialize();
             }
         });

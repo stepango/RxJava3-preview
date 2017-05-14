@@ -13,29 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<T, R> {
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
     final int bufferSize;
     final boolean delayErrors;
 
     public FlowableSwitchMap(Flowable<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
-                    boolean delayErrors) {
+                             Function1<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
+                             boolean delayErrors) {
         super(source);
         this.mapper = mapper;
         this.bufferSize = bufferSize;
@@ -54,7 +61,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         private static final long serialVersionUID = -3491074160481096299L;
         final Subscriber<? super R> actual;
-        final Function<? super T, ? extends Publisher<? extends R>> mapper;
+        final Function1<? super T, ? extends Publisher<? extends R>> mapper;
         final int bufferSize;
         final boolean delayErrors;
 
@@ -79,8 +86,8 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         volatile long unique;
 
         SwitchMapSubscriber(Subscriber<? super R> actual,
-                Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
-                        boolean delayErrors) {
+                            Function1<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
+                            boolean delayErrors) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -112,7 +119,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
             Publisher<? extends R> p;
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The publisher returned is null");
+                p = ObjectHelper.requireNonNull(mapper.invoke(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

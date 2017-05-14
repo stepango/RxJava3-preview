@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
@@ -542,16 +541,16 @@ public class ObservableSingleTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
+            public Object invoke(Observable<Object> o) {
                 return o.singleOrError();
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
+            public Object invoke(Observable<Object> o) {
                 return o.singleElement();
             }
         }, false, 1, 1, 1);
@@ -559,16 +558,16 @@ public class ObservableSingleTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Observable<Object> o) {
                 return o.singleOrError();
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function1<Observable<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
+            public MaybeSource<Object> invoke(Observable<Object> o) {
                 return o.singleElement();
             }
         });

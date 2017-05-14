@@ -18,7 +18,6 @@ import org.junit.Test;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -266,9 +265,9 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.takeWhile(Functions.alwaysTrue());
             }
         });

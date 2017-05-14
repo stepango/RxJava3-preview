@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
 import kotlin.Unit;
@@ -48,14 +47,14 @@ public class BufferUntilSubscriberTest {
             Flowable.fromArray(numbers)
                     .takeUntil(s)
                     .window(50)
-                    .flatMap(new Function<Flowable<Integer>, Publisher<Object>>() {
+                    .flatMap(new Function1<Flowable<Integer>, Publisher<Object>>() {
                         @Override
-                        public Publisher<Object> apply(Flowable<Integer> integerObservable) {
+                        public Publisher<Object> invoke(Flowable<Integer> integerObservable) {
                                 return integerObservable
                                         .subscribeOn(Schedulers.computation())
-                                        .map(new Function<Integer, Object>() {
+                                        .map(new Function1<Integer, Object>() {
                                             @Override
-                                            public Object apply(Integer integer) {
+                                            public Object invoke(Integer integer) {
                                                     if (integer >= 5 && completed.compareAndSet(false, true)) {
                                                         s.onComplete();
                                                     }

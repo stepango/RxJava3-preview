@@ -15,21 +15,29 @@
  */
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import org.junit.*;
-import org.mockito.MockitoAnnotations;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableJoinTest {
     Observer<Object> observer = TestHelper.mockObserver();
@@ -41,10 +49,10 @@ public class ObservableJoinTest {
         }
     };
 
-    <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
-        return new Function<Integer, Observable<T>>() {
+    <T> Function1<Integer, Observable<T>> just(final Observable<T> observable) {
+        return new Function1<Integer, Observable<T>>() {
             @Override
-            public Observable<T> apply(Integer t1) {
+            public Observable<T> invoke(Integer t1) {
                 return observable;
             }
         };
@@ -238,9 +246,9 @@ public class ObservableJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> fail = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -262,9 +270,9 @@ public class ObservableJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> fail = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };

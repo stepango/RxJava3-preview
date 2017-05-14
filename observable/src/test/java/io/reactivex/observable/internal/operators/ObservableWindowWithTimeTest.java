@@ -28,7 +28,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -211,9 +210,9 @@ public class ObservableWindowWithTimeTest {
                 return Unit.INSTANCE;
             }
         })
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Observable<Integer> w) {
+            public Observable<Integer> invoke(Observable<Integer> w) {
                 return w.startWith(indicator)
                         .doOnComplete(new Function0() {
                             @Override
@@ -489,9 +488,9 @@ public class ObservableWindowWithTimeTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })
@@ -522,9 +521,9 @@ public class ObservableWindowWithTimeTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 10, true)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })
@@ -555,9 +554,9 @@ public class ObservableWindowWithTimeTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 2, true)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })
@@ -588,9 +587,9 @@ public class ObservableWindowWithTimeTest {
         };
 
         ps.window(1, 2, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })

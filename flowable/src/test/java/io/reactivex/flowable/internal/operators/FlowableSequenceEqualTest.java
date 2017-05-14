@@ -26,12 +26,12 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
 import static org.mockito.ArgumentMatchers.isA;
@@ -245,9 +245,11 @@ public class FlowableSequenceEqualTest {
 
     @Test
     public void syncFusedCrashFlowable() {
-        Flowable<Integer> source = Flowable.range(1, 10).map(new Function<Integer, Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception { throw new TestException(); }
+            public Integer invoke(Integer v) {
+                throw new TestException();
+            }
         });
 
         Flowable.sequenceEqual(source, Flowable.range(1, 10).hide())
@@ -351,9 +353,11 @@ public class FlowableSequenceEqualTest {
 
     @Test
     public void syncFusedCrash() {
-        Flowable<Integer> source = Flowable.range(1, 10).map(new Function<Integer, Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception { throw new TestException(); }
+            public Integer invoke(Integer v) {
+                throw new TestException();
+            }
         });
 
         Flowable.sequenceEqual(source, Flowable.range(1, 10).hide())

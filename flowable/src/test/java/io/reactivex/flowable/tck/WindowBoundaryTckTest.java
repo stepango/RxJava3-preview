@@ -13,14 +13,14 @@
 
 package io.reactivex.flowable.tck;
 
-import java.util.List;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
+import java.util.List;
+
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class WindowBoundaryTckTest extends BaseTck<List<Long>> {
@@ -32,7 +32,7 @@ public class WindowBoundaryTckTest extends BaseTck<List<Long>> {
             Flowable.fromIterable(iterate(elements))
             .window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
             .onBackpressureBuffer()
-            .flatMap((Function)Functions.identity())
+                    .flatMap((Function1) Functions.identity())
         ;
     }
 }

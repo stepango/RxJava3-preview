@@ -13,15 +13,18 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.ScalarCallable;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeHideTest {
 
@@ -58,9 +61,9 @@ public class MaybeHideTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDisposedMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> m) {
                 return m.hide();
             }
         });
@@ -75,9 +78,9 @@ public class MaybeHideTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, Maybe<Object>>() {
             @Override
-            public Maybe<Object> apply(Maybe<Object> f) throws Exception {
+            public Maybe<Object> invoke(Maybe<Object> f) {
                 return f.hide();
             }
         });

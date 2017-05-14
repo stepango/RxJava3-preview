@@ -16,8 +16,8 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class FlatMapTckTest extends BaseTck<Integer> {
@@ -26,9 +26,9 @@ public class FlatMapTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .flatMap(new Function<Integer, Publisher<Integer>>() {
+                        .flatMap(new Function1<Integer, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Integer v) throws Exception {
+                    public Publisher<Integer> invoke(Integer v) {
                         return Flowable.just(v);
                     }
                 })

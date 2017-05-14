@@ -29,7 +29,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.internal.operators.CompletableError;
 import io.reactivex.observable.internal.operators.MaybeError;
@@ -214,7 +213,7 @@ public class RxJavaObservablePluginsTest {
                     return null;
                 }
             };
-            Function f1 = Functions.identity();
+            Function1 f1 = Functions.identity();
             BiFunction f2 = new BiFunction() {
                 @Override
                 public Object apply(Object t1, Object t2) {
@@ -250,8 +249,7 @@ public class RxJavaObservablePluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Callable.class)) {
                             m.invoke(null, f0);
-                        } else
-                        if (paramType.isAssignableFrom(Function.class)) {
+                        } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, f1);
                         } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, a1);
@@ -303,9 +301,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void observableCreate() {
         try {
-            RxJavaObservablePlugins.setOnObservableAssembly(new Function<Observable, Observable>() {
+            RxJavaObservablePlugins.setOnObservableAssembly(new Function1<Observable, Observable>() {
                 @Override
-                public Observable apply(Observable t) {
+                public Observable invoke(Observable t) {
                     return new ObservableRange(1, 2);
                 }
             });
@@ -407,9 +405,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void singleCreate() {
         try {
-            RxJavaObservablePlugins.setOnSingleAssembly(new Function<Single, Single>() {
+            RxJavaObservablePlugins.setOnSingleAssembly(new Function1<Single, Single>() {
                 @Override
-                public Single apply(Single t) {
+                public Single invoke(Single t) {
                     return new SingleJust<Integer>(10);
                 }
             });
@@ -505,9 +503,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void completableCreate() {
         try {
-            RxJavaObservablePlugins.setOnCompletableAssembly(new Function<Completable, Completable>() {
+            RxJavaObservablePlugins.setOnCompletableAssembly(new Function1<Completable, Completable>() {
                 @Override
-                public Completable apply(Completable t) {
+                public Completable invoke(Completable t) {
                     return new CompletableError(new TestException());
                 }
             });
@@ -603,15 +601,15 @@ public class RxJavaObservablePluginsTest {
     @SuppressWarnings("rawtypes")
     public void onErrorWithSuper() throws Exception {
         try {
-            Function<? super ConnectableObservable, ? extends ConnectableObservable> connectableObservable2ConnectableObservable = new Function<ConnectableObservable, ConnectableObservable>() {
+            Function1<? super ConnectableObservable, ? extends ConnectableObservable> connectableObservable2ConnectableObservable = new Function1<ConnectableObservable, ConnectableObservable>() {
                 @Override
-                public ConnectableObservable apply(ConnectableObservable connectableObservable) throws Exception {
+                public ConnectableObservable invoke(ConnectableObservable connectableObservable) {
                     return connectableObservable;
                 }
             };
-            Function<Maybe, Maybe> maybe2maybe = new Function<Maybe, Maybe>() {
+            Function1<Maybe, Maybe> maybe2maybe = new Function1<Maybe, Maybe>() {
                 @Override
-                public Maybe apply(Maybe maybe) throws Exception {
+                public Maybe invoke(Maybe maybe) {
                     return maybe;
                 }
             };
@@ -621,9 +619,9 @@ public class RxJavaObservablePluginsTest {
                     return maybeObserver;
                 }
             };
-            Function<Observable, Observable> observable2observable = new Function<Observable, Observable>() {
+            Function1<Observable, Observable> observable2observable = new Function1<Observable, Observable>() {
                 @Override
-                public Observable apply(Observable observable) throws Exception {
+                public Observable invoke(Observable observable) {
                     return observable;
                 }
             };
@@ -633,9 +631,9 @@ public class RxJavaObservablePluginsTest {
                     return observer;
                 }
             };
-            Function<Single, Single> single2single = new Function<Single, Single>() {
+            Function1<Single, Single> single2single = new Function1<Single, Single>() {
                 @Override
-                public Single apply(Single single) throws Exception {
+                public Single invoke(Single single) {
                     return single;
                 }
             };
@@ -651,9 +649,9 @@ public class RxJavaObservablePluginsTest {
                     return completableObserver;
                 }
             };
-            Function<? super Completable, ? extends Completable> completable2completable = new Function<Completable, Completable>() {
+            Function1<? super Completable, ? extends Completable> completable2completable = new Function1<Completable, Completable>() {
                 @Override
-                public Completable apply(Completable completable) throws Exception {
+                public Completable invoke(Completable completable) {
                     return completable;
                 }
             };
@@ -1074,9 +1072,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void overrideConnectableObservable() {
         try {
-            RxJavaObservablePlugins.setOnConnectableObservableAssembly(new Function<ConnectableObservable, ConnectableObservable>() {
+            RxJavaObservablePlugins.setOnConnectableObservableAssembly(new Function1<ConnectableObservable, ConnectableObservable>() {
                 @Override
-                public ConnectableObservable apply(ConnectableObservable co) throws Exception {
+                public ConnectableObservable invoke(ConnectableObservable co) {
                     return new ConnectableObservable() {
 
                         @Override
@@ -1118,9 +1116,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void maybeCreate() {
         try {
-            RxJavaObservablePlugins.setOnMaybeAssembly(new Function<Maybe, Maybe>() {
+            RxJavaObservablePlugins.setOnMaybeAssembly(new Function1<Maybe, Maybe>() {
                 @Override
-                public Maybe apply(Maybe t) {
+                public Maybe invoke(Maybe t) {
                     return new MaybeError(new TestException());
                 }
             });

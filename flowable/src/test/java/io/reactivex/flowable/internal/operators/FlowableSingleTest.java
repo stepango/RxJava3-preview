@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
@@ -536,23 +535,23 @@ public class FlowableSingleTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return o.singleOrError();
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return o.singleElement();
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return o.singleOrError();
             }
         }, false, 1, 1, 1);

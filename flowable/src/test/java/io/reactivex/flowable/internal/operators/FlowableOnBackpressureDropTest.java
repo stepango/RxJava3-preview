@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -190,9 +189,9 @@ public class FlowableOnBackpressureDropTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.onBackpressureDrop();
             }
         }, false, 1, 1, 1);
@@ -200,9 +199,9 @@ public class FlowableOnBackpressureDropTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> f) {
                 return f.onBackpressureDrop();
             }
         });

@@ -36,7 +36,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.ReplayProcessor;
@@ -1095,9 +1094,9 @@ public class FlowableTests {
         Flowable.just(1, 2, 3).compose(new FlowableTransformer<Integer, String>() {
             @Override
             public Publisher<String> apply(Flowable<Integer> t1) {
-                return t1.map(new Function<Integer, String>() {
+                return t1.map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer v) {
+                    public String invoke(Integer v) {
                         return String.valueOf(v);
                     }
                 });
@@ -1172,9 +1171,9 @@ public class FlowableTests {
     public void testExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
-        Flowable.just(value).to(new Function<Flowable<Object>, Object>() {
+        Flowable.just(value).to(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> onSubscribe) {
+            public Object invoke(Flowable<Object> onSubscribe) {
                     onSubscribe.subscribe(subscriber);
                     subscriber.assertNoErrors();
                     subscriber.assertComplete();
@@ -1188,9 +1187,9 @@ public class FlowableTests {
     public void zipIterableObject() {
         @SuppressWarnings("unchecked")
         final List<Flowable<Integer>> flowables = Arrays.asList(Flowable.just(1, 2, 3), Flowable.just(1, 2, 3));
-        Flowable.zip(flowables, new Function<Object[], Object>() {
+        Flowable.zip(flowables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] o) throws Exception {
+            public Object invoke(Object[] o) {
                 int sum = 0;
                 for (Object i : o) {
                     sum += (Integer) i;
@@ -1204,9 +1203,9 @@ public class FlowableTests {
     public void combineLatestObject() {
         @SuppressWarnings("unchecked")
         final List<Flowable<Integer>> flowables = Arrays.asList(Flowable.just(1, 2, 3), Flowable.just(1, 2, 3));
-        Flowable.combineLatest(flowables, new Function<Object[], Object>() {
+        Flowable.combineLatest(flowables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] o) throws Exception {
+            public Object invoke(final Object[] o) {
                 int sum = 1;
                 for (Object i : o) {
                     sum *= (Integer) i;

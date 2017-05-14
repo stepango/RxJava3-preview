@@ -27,7 +27,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -83,9 +82,9 @@ public class ObservableDoOnEachTest {
     @Test
     public void testDoOnEachWithError() {
         Observable<String> base = Observable.just("one", "fail", "two", "three", "fail");
-        Observable<String> errs = base.map(new Function<String, String>() {
+        Observable<String> errs = base.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -729,9 +728,9 @@ public class ObservableDoOnEachTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.doOnEach(new TestObserver<Object>());
             }
         });

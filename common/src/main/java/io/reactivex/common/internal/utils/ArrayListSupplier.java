@@ -13,12 +13,13 @@
 
 package io.reactivex.common.internal.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.functions.Function;
+import kotlin.jvm.functions.Function1;
 
-public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object, List<Object>> {
+public enum ArrayListSupplier implements Callable<List<Object>>, Function1<Object, List<Object>> {
     INSTANCE;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -27,8 +28,8 @@ public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T, O> Function<O, List<T>> asFunction() {
-        return (Function)INSTANCE;
+    public static <T, O> Function1<O, List<T>> asFunction() {
+        return (Function1) INSTANCE;
     }
 
     @Override
@@ -36,7 +37,8 @@ public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object
         return new ArrayList<Object>();
     }
 
-    @Override public List<Object> apply(Object o) throws Exception {
+    @Override
+    public List<Object> invoke(Object o) {
         return new ArrayList<Object>();
     }
 }

@@ -33,7 +33,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.GroupedObservable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -85,15 +84,15 @@ public class ObservableRetryTest {
 
         });
         TestObserver<String> ts = new TestObserver<String>(consumer);
-        producer.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
+        producer.retryWhen(new Function1<Observable<? extends Throwable>, Observable<Object>>() {
 
             @Override
-            public Observable<Object> apply(Observable<? extends Throwable> attempts) {
+            public Observable<Object> invoke(Observable<? extends Throwable> attempts) {
                 // Worker w = Schedulers.computation().createWorker();
                 return attempts
-                    .map(new Function<Throwable, Tuple>() {
+                        .map(new Function1<Throwable, Tuple>() {
                         @Override
-                        public Tuple apply(Throwable n) {
+                        public Tuple invoke(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
                     .scan(new BiFunction<Tuple, Tuple, Tuple>() {
@@ -101,9 +100,9 @@ public class ObservableRetryTest {
                         public Tuple apply(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
                         }})
-                    .flatMap(new Function<Tuple, Observable<Long>>() {
+                        .flatMap(new Function1<Tuple, Observable<Long>>() {
                         @Override
-                        public Observable<Long> apply(Tuple t) {
+                        public Observable<Long> invoke(Tuple t) {
                             System.out.println("Retry # " + t.count);
                             return t.count > 20 ?
                                 Observable.<Long>error(t.n) :
@@ -157,14 +156,14 @@ public class ObservableRetryTest {
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         TestObserver<String> to = new TestObserver<String>(observer);
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
+        origin.retryWhen(new Function1<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<? extends Throwable> t1) {
+            public Observable<Object> invoke(Observable<? extends Throwable> t1) {
                 return t1
                 .observeOn(Schedulers.computation())
-                .map(new Function<Throwable, Object>() {
+                        .map(new Function1<Throwable, Object>() {
                     @Override
-                    public Object apply(Throwable t1) {
+                    public Object invoke(Throwable t1) {
                         return 1;
                     }
                 }).startWith(1);
@@ -197,13 +196,13 @@ public class ObservableRetryTest {
         Observer<String> observer = TestHelper.mockObserver();
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
+        origin.retryWhen(new Function1<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<? extends Throwable> t1) {
-                return t1.map(new Function<Throwable, Integer>() {
+            public Observable<Object> invoke(Observable<? extends Throwable> t1) {
+                return t1.map(new Function1<Throwable, Integer>() {
 
                     @Override
-                    public Integer apply(Throwable t1) {
+                    public Integer invoke(Throwable t1) {
                         return 0;
                     }
                 }).startWith(0).cast(Object.class);
@@ -227,9 +226,9 @@ public class ObservableRetryTest {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(1));
         TestObserver<String> to = new TestObserver<String>(observer);
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+        origin.retryWhen(new Function1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
+            public Observable<?> invoke(Observable<? extends Throwable> t1) {
                 return Observable.empty();
             }
         }).subscribe(to);
@@ -247,9 +246,9 @@ public class ObservableRetryTest {
     public void testOnErrorFromNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(2));
-        origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+        origin.retryWhen(new Function1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
-            public Observable<?> apply(Observable<? extends Throwable> t1) {
+            public Observable<?> invoke(Observable<? extends Throwable> t1) {
                 return Observable.error(new RuntimeException());
             }
         }).subscribe(observer);
@@ -277,9 +276,9 @@ public class ObservableRetryTest {
         };
 
         int first = Observable.unsafeCreate(onSubscribe)
-                .retryWhen(new Function<Observable<? extends Throwable>, Observable<?>>() {
+                .retryWhen(new Function1<Observable<? extends Throwable>, Observable<?>>() {
                     @Override
-                    public Observable<?> apply(Observable<? extends Throwable> attempt) {
+                    public Observable<?> invoke(Observable<? extends Throwable> attempt) {
                         return attempt.zipWith(Observable.just(1), new BiFunction<Throwable, Integer, Void>() {
                             @Override
                             public Void apply(Throwable o, Integer integer) {
@@ -813,23 +812,23 @@ public class ObservableRetryTest {
         final AtomicInteger count = new AtomicInteger();
 
         Observable<String> origin = Observable.range(0, NUM_MSG)
-                .map(new Function<Integer, String>() {
+                .map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer t1) {
+                    public String invoke(Integer t1) {
                         return "msg: " + count.incrementAndGet();
                     }
                 });
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
+                .groupBy(new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedObservable<String,String>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<String, String>, Observable<String>>() {
             @Override
-            public Observable<String> apply(GroupedObservable<String, String> t1) {
+            public Observable<String> invoke(GroupedObservable<String, String> t1) {
                 return t1.take(1);
             }
         })
@@ -865,15 +864,15 @@ public class ObservableRetryTest {
         });
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
+                .groupBy(new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedObservable<String,String>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<String, String>, Observable<String>>() {
             @Override
-            public Observable<String> apply(GroupedObservable<String, String> t1) {
+            public Observable<String> invoke(GroupedObservable<String, String> t1) {
                 return t1.take(1);
             }
         })
@@ -938,12 +937,12 @@ public class ObservableRetryTest {
     public void shouldDisposeInnerObservable() {
       final PublishSubject<Object> subject = PublishSubject.create();
       final Disposable disposable = Observable.error(new RuntimeException("Leak"))
-          .retryWhen(new Function<Observable<Throwable>, ObservableSource<Object>>() {
+              .retryWhen(new Function1<Observable<Throwable>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Throwable> errors) throws Exception {
-                return errors.switchMap(new Function<Throwable, ObservableSource<Object>>() {
+            public ObservableSource<Object> invoke(Observable<Throwable> errors) {
+                return errors.switchMap(new Function1<Throwable, ObservableSource<Object>>() {
                     @Override
-                    public ObservableSource<Object> apply(Throwable ignore) throws Exception {
+                    public ObservableSource<Object> invoke(Throwable ignore) {
                         return subject;
                     }
                 });

@@ -13,12 +13,13 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableSource;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 public class CompletableOnErrorXTest {
 
@@ -34,9 +35,9 @@ public class CompletableOnErrorXTest {
     public void normalResumeNext() {
         final int[] call = { 0 };
         Completable.complete()
-        .onErrorResumeNext(new Function<Throwable, CompletableSource>() {
+                .onErrorResumeNext(new Function1<Throwable, CompletableSource>() {
             @Override
-            public CompletableSource apply(Throwable e) throws Exception {
+            public CompletableSource invoke(Throwable e) {
                 call[0]++;
                 return Completable.complete();
             }

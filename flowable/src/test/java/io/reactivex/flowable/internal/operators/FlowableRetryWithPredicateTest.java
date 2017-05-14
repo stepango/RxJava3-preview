@@ -33,7 +33,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -299,9 +298,9 @@ public class FlowableRetryWithPredicateTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
-        Flowable.just(1).map(new Function<Integer, Integer>() {
+        Flowable.just(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 c.incrementAndGet();
                 throw e;
             }
@@ -314,9 +313,9 @@ public class FlowableRetryWithPredicateTest {
     @Test
     public void testJustAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);
-        int value = Flowable.just(1).map(new Function<Integer, Integer>() {
+        int value = Flowable.just(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 if (throwException.compareAndSet(true, false)) {
                     throw new TestException();
                 }
@@ -331,9 +330,9 @@ public class FlowableRetryWithPredicateTest {
     public void testIssue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Flowable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
+        Flowable.<Long>just(1L, 2L, 3L).map(new Function1<Long, Long>() {
             @Override
-            public Long apply(Long x) {
+            public Long invoke(Long x) {
                 System.out.println("map " + x);
                 if (x == 2 && isFirst.getAndSet(false)) {
                     throw new RuntimeException("retryable error");
@@ -360,9 +359,9 @@ public class FlowableRetryWithPredicateTest {
     public void testIssue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Flowable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
+        Flowable.<Long>just(1L, 2L, 3L).map(new Function1<Long, Long>() {
             @Override
-            public Long apply(Long x) {
+            public Long invoke(Long x) {
                 System.out.println("map " + x);
                 if (x == 2 && isFirst.getAndSet(false)) {
                     throw new RuntimeException("retryable error");

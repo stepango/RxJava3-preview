@@ -13,16 +13,26 @@
 
 package io.reactivex.interop;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Observable;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -52,32 +62,32 @@ public class RxVsStreamPerf {
     public void setup() {
         range = Flowable.range(1, times);
 
-        rangeFlatMapJust = range.flatMap(new Function<Integer, Publisher<Integer>>() {
+        rangeFlatMapJust = range.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         });
 
-        rangeFlatMap = range.flatMap(new Function<Integer, Publisher<Integer>>() {
+        rangeFlatMap = range.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.range(v, 2);
             }
         });
 
         rangeObservable = Observable.range(1, times);
 
-        rangeObservableFlatMapJust = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
+        rangeObservableFlatMapJust = rangeObservable.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(v);
             }
         });
 
-        rangeObservableFlatMap = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
+        rangeObservableFlatMap = rangeObservable.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         });

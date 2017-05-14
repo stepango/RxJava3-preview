@@ -13,18 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeTakeUntilPublisherTest {
 
@@ -35,9 +41,9 @@ public class MaybeTakeUntilPublisherTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> m) {
                 return m.takeUntil(Observable.never());
             }
         });

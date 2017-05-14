@@ -33,7 +33,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -319,9 +318,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingResourceSupplierNull() {
-        Single.using(null, new Function<Object, Single<Integer>>() {
+        Single.using(null, new Function1<Object, Single<Integer>>() {
             @Override
-            public Single<Integer> apply(Object d) {
+            public Single<Integer> invoke(Object d) {
                 return just1;
             }
         }, Functions.emptyConsumer());
@@ -344,9 +343,9 @@ public class SingleNullTests {
             public Object call() {
                 return 1;
             }
-        }, new Function<Object, Single<Object>>() {
+        }, new Function1<Object, Single<Object>>() {
             @Override
-            public Single<Object> apply(Object d) {
+            public Single<Object> invoke(Object d) {
                 return null;
             }
         }, Functions.emptyConsumer()).blockingGet();
@@ -359,9 +358,9 @@ public class SingleNullTests {
             public Object call() {
                 return 1;
             }
-        }, new Function<Object, Single<Integer>>() {
+        }, new Function1<Object, Single<Integer>>() {
             @Override
-            public Single<Integer> apply(Object d) {
+            public Single<Integer> invoke(Object d) {
                 return just1;
             }
         }, null);
@@ -369,9 +368,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterableNull() {
-        Single.zip((Iterable<Single<Integer>>)null, new Function<Object[], Object>() {
+        Single.zip((Iterable<Single<Integer>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         });
@@ -384,9 +383,9 @@ public class SingleNullTests {
             public Iterator<Single<Object>> iterator() {
                 return null;
             }
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }).blockingGet();
@@ -395,9 +394,9 @@ public class SingleNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
-        Single.zip(Arrays.asList(null, just1), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(null, just1), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }).blockingGet();
@@ -412,9 +411,9 @@ public class SingleNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneFunctionReturnsNull() {
-        Single.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(just1, just1), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return null;
             }
         }).blockingGet();
@@ -529,9 +528,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipArrayNull() {
-        Single.zipArray(new Function<Object[], Object>() {
+        Single.zipArray(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, (Single<Integer>[])null);
@@ -540,9 +539,9 @@ public class SingleNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
-        Single.zip(Arrays.asList(just1, null), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(just1, null), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         })
@@ -552,9 +551,9 @@ public class SingleNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
+        Single.zipArray(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, just1, null)
@@ -570,9 +569,9 @@ public class SingleNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayFunctionReturnsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
+        Single.zipArray(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return null;
             }
         }, just1, just1).blockingGet();
@@ -639,9 +638,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapFunctionReturnsNull() {
-        just1.flatMap(new Function<Integer, Single<Object>>() {
+        just1.flatMap(new Function1<Integer, Single<Object>>() {
             @Override
-            public Single<Object> apply(Integer v) {
+            public Single<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingGet();
@@ -684,14 +683,14 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorReturnSupplierNull() {
-        just1.onErrorReturn((Function<Throwable, Integer>)null);
+        just1.onErrorReturn((Function1<Throwable, Integer>) null);
     }
 
     @Test(expected = NullPointerException.class)
     public void onErrorReturnsSupplierReturnsNull() {
-        error.onErrorReturn(new Function<Throwable, Integer>() {
+        error.onErrorReturn(new Function1<Throwable, Integer>() {
             @Override
-            public Integer apply(Throwable t) throws Exception {
+            public Integer invoke(Throwable t) {
                 return null;
             }
         }).blockingGet();
@@ -709,15 +708,15 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextFunctionNull() {
-        error.onErrorResumeNext((Function<Throwable, Single<Integer>>)null);
+        error.onErrorResumeNext((Function1<Throwable, Single<Integer>>) null);
     }
 
     @Test
     public void onErrorResumeNextFunctionReturnsNull() {
         try {
-            error.onErrorResumeNext(new Function<Throwable, Single<Integer>>() {
+            error.onErrorResumeNext(new Function1<Throwable, Single<Integer>>() {
                 @Override
-                public Single<Integer> apply(Throwable e) {
+                public Single<Integer> invoke(Throwable e) {
                     return null;
                 }
             }).blockingGet();
@@ -733,9 +732,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void repeatWhenFunctionReturnsNull() {
-        error.repeatWhen(new Function<Observable<Object>, Observable<Object>>() {
+        error.repeatWhen(new Function1<Observable<Object>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<Object> v) {
+            public Observable<Object> invoke(Observable<Object> v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -763,9 +762,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryWhenFunctionReturnsNull() {
-        error.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
+        error.retryWhen(new Function1<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<? extends Throwable> e) {
+            public Observable<Object> invoke(Observable<? extends Throwable> e) {
                 return null;
             }
         }).blockingGet();

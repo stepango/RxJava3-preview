@@ -17,10 +17,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a value into a MaybeSource and relays its signal.
@@ -30,9 +31,9 @@ import io.reactivex.observable.*;
  */
 public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
-    final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
+    final Function1<? super T, ? extends MaybeSource<? extends R>> mapper;
 
-    public MaybeFlatten(MaybeSource<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+    public MaybeFlatten(MaybeSource<T> source, Function1<? super T, ? extends MaybeSource<? extends R>> mapper) {
         super(source);
         this.mapper = mapper;
     }
@@ -51,12 +52,12 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         final MaybeObserver<? super R> actual;
 
-        final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
+        final Function1<? super T, ? extends MaybeSource<? extends R>> mapper;
 
         Disposable d;
 
         FlatMapMaybeObserver(MaybeObserver<? super R> actual,
-                Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+                             Function1<? super T, ? extends MaybeSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -86,7 +87,7 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
             MaybeSource<? extends R> source;
 
             try {
-                source = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
+                source = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null MaybeSource");
             } catch (Exception ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(ex);

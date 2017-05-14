@@ -26,13 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -91,10 +91,10 @@ public class FlowableRepeatTest {
             }
         }).subscribeOn(Schedulers.newThread());
 
-        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(new Function<Integer, Integer>() {
+        Object[] ys = oi.repeat().subscribeOn(Schedulers.newThread()).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -189,9 +189,9 @@ public class FlowableRepeatTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1, 2)
         .repeat(5)
-        .concatMap(new Function<Integer, Flowable<Integer>>() {
+                .concatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer x) {
+            public Flowable<Integer> invoke(Integer x) {
                 System.out.println("testRepeatRetarget -> " + x);
                 concatBase.add(x);
                 return Flowable.<Integer>empty()
@@ -225,9 +225,9 @@ public class FlowableRepeatTest {
     public void repeatWhenDefaultScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(1).repeatWhen((Function)new Function<Flowable, Flowable>() {
+        Flowable.just(1).repeatWhen((Function1) new Function1<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
+            public Flowable invoke(Flowable o) {
                 return o.take(2);
             }
         }).subscribe(ts);
@@ -244,9 +244,9 @@ public class FlowableRepeatTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.just(1).subscribeOn(Schedulers.trampoline())
-        .repeatWhen((Function)new Function<Flowable, Flowable>() {
+                .repeatWhen((Function1) new Function1<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
+            public Flowable invoke(Flowable o) {
                 return o.take(2);
             }
         }).subscribe(ts);
@@ -323,12 +323,12 @@ public class FlowableRepeatTest {
     public void shouldDisposeInnerObservable() {
       final PublishProcessor<Object> subject = PublishProcessor.create();
       final Disposable disposable = Flowable.just("Leak")
-          .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
+              .repeatWhen(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> completions) throws Exception {
-                return completions.switchMap(new Function<Object, Flowable<Object>>() {
+            public Flowable<Object> invoke(Flowable<Object> completions) {
+                return completions.switchMap(new Function1<Object, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Object ignore) throws Exception {
+                    public Flowable<Object> invoke(Object ignore) {
                         return subject;
                     }
                 });
@@ -344,9 +344,9 @@ public class FlowableRepeatTest {
     @Test
     public void testRepeatWhen() {
         Flowable.error(new TestException())
-        .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
+                .repeatWhen(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> v) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> v) {
                 return v.delay(10, TimeUnit.SECONDS);
             }
         })
@@ -357,9 +357,9 @@ public class FlowableRepeatTest {
 
     @Test
     public void whenTake() {
-        Flowable.range(1, 3).repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
+        Flowable.range(1, 3).repeatWhen(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> handler) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> handler) {
                 return handler.take(2);
             }
         })

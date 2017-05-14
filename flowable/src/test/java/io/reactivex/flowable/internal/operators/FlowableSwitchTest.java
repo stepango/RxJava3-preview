@@ -35,7 +35,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -531,14 +530,14 @@ public class FlowableSwitchTest {
     public void testIssue2654() {
         Flowable<String> oneItem = Flowable.just("Hello").mergeWith(Flowable.<String>never());
 
-        Flowable<String> src = oneItem.switchMap(new Function<String, Flowable<String>>() {
+        Flowable<String> src = oneItem.switchMap(new Function1<String, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(final String s) {
+            public Flowable<String> invoke(final String s) {
                 return Flowable.just(s)
                         .mergeWith(Flowable.interval(10, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, String>() {
+                                .map(new Function1<Long, String>() {
                             @Override
-                            public String apply(Long i) {
+                            public String invoke(Long i) {
                                 return s + " " + i;
                             }
                         })).take(250);
@@ -575,9 +574,9 @@ public class FlowableSwitchTest {
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
                           .map(
-                                new Function<Long, Flowable<Long>>() {
+                                  new Function1<Long, Flowable<Long>>() {
                                     @Override
-                                    public Flowable<Long> apply(Long t) {
+                                    public Flowable<Long> invoke(Long t) {
                                         return Flowable.just(1L, 2L, 3L);
                                     }
                                 }
@@ -593,9 +592,9 @@ public class FlowableSwitchTest {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, Flowable<Long>>() {
+                        .map(new Function1<Long, Flowable<Long>>() {
                             @Override
-                            public Flowable<Long> apply(Long t) {
+                            public Flowable<Long> invoke(Long t) {
                                 return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide();
                             }
                         }).take(3)).subscribe(ts);
@@ -611,9 +610,9 @@ public class FlowableSwitchTest {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, Flowable<Long>>() {
+                        .map(new Function1<Long, Flowable<Long>>() {
                             @Override
-                            public Flowable<Long> apply(Long t) {
+                            public Flowable<Long> invoke(Long t) {
                                 return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide();
                             }
                         }).take(3)).subscribe(ts);
@@ -635,9 +634,9 @@ public class FlowableSwitchTest {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(1L);
         Flowable.switchOnNext(
                 Flowable.interval(100, TimeUnit.MILLISECONDS)
-                        .map(new Function<Long, Flowable<Long>>() {
+                        .map(new Function1<Long, Flowable<Long>>() {
                             @Override
-                            public Flowable<Long> apply(Long t) {
+                            public Flowable<Long> invoke(Long t) {
                                 return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L))
                                         .doOnRequest(new Function1<Long, Unit>() {
                                             @Override
@@ -777,9 +776,9 @@ public class FlowableSwitchTest {
     @Test
     public void switchMapDelayErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .switchMapDelayError(new Function<Object, Publisher<Integer>>() {
+                .switchMapDelayError(new Function1<Object, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Object v) throws Exception {
+                    public Publisher<Integer> invoke(Object v) {
                         return Flowable.just(1);
                     }
                 }, 16));
@@ -788,9 +787,9 @@ public class FlowableSwitchTest {
     @Test
     public void switchMapDelayErrorJustSource() {
         Flowable.just(0)
-        .switchMapDelayError(new Function<Object, Publisher<Integer>>() {
+                .switchMapDelayError(new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object v) throws Exception {
+            public Publisher<Integer> invoke(Object v) {
                 return Flowable.just(1);
             }
         }, 16)
@@ -802,9 +801,9 @@ public class FlowableSwitchTest {
     @Test
     public void switchMapErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .switchMap(new Function<Object, Publisher<Integer>>() {
+                .switchMap(new Function1<Object, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Object v) throws Exception {
+                    public Publisher<Integer> invoke(Object v) {
                         return Flowable.just(1);
                     }
                 }, 16));
@@ -813,9 +812,9 @@ public class FlowableSwitchTest {
     @Test
     public void switchMapJustSource() {
         Flowable.just(0)
-        .switchMap(new Function<Object, Publisher<Integer>>() {
+                .switchMap(new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object v) throws Exception {
+            public Publisher<Integer> invoke(Object v) {
                 return Flowable.just(1);
             }
         }, 16)
@@ -854,9 +853,9 @@ public class FlowableSwitchTest {
                 final PublishProcessor<Integer> ps1 = PublishProcessor.create();
                 final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
-                ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
+                ps1.switchMap(new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
+                    public Flowable<Integer> invoke(Integer v) {
                         if (v == 1) {
                             return ps2;
                         }
@@ -901,9 +900,9 @@ public class FlowableSwitchTest {
                 final PublishProcessor<Integer> ps1 = PublishProcessor.create();
                 final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
-                ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
+                ps1.switchMap(new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
+                    public Flowable<Integer> invoke(Integer v) {
                         if (v == 1) {
                             return ps2;
                         }
@@ -946,9 +945,9 @@ public class FlowableSwitchTest {
         for (int i = 0; i < 500; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
+            final TestSubscriber<Integer> to = ps1.switchMap(new Function1<Integer, Flowable<Integer>>() {
                 @Override
-                public Flowable<Integer> apply(Integer v) throws Exception {
+                public Flowable<Integer> invoke(Integer v) {
                     return Flowable.never();
                 }
             })
@@ -975,9 +974,9 @@ public class FlowableSwitchTest {
     @Test
     public void mapperThrows() {
         Flowable.just(1).hide()
-        .switchMap(new Function<Integer, Flowable<Object>>() {
+                .switchMap(new Function1<Integer, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Integer v) throws Exception {
+            public Flowable<Object> invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -1114,9 +1113,9 @@ public class FlowableSwitchTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.switchMap(Functions.justFunction(Flowable.just(1)));
             }
         }, false, 1, 1, 1);
@@ -1170,9 +1169,9 @@ public class FlowableSwitchTest {
     @Test
     public void fusedInnerCrash() {
         Flowable.just(1).hide()
-        .switchMap(Functions.justFunction(Flowable.just(1).map(new Function<Integer, Object>() {
+                .switchMap(Functions.justFunction(Flowable.just(1).map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })))

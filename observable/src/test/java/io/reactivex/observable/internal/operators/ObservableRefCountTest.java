@@ -31,7 +31,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.ConnectableObservable;
 import io.reactivex.observable.Observable;
@@ -555,9 +554,9 @@ public class ObservableRefCountTest {
                             }
                         }
                          )
-                        .flatMap(new Function<Long, Observable<String>>() {
+                        .flatMap(new Function1<Long, Observable<String>>() {
                             @Override
-                            public Observable<String> apply(Long t1) {
+                            public Observable<String> invoke(Long t1) {
                                     return Observable.defer(new Callable<Observable<String>>() {
                                         @Override
                                         public Observable<String> call() {
@@ -566,9 +565,9 @@ public class ObservableRefCountTest {
                                     });
                             }
                         })
-                        .onErrorResumeNext(new Function<Throwable, Observable<String>>() {
+                        .onErrorResumeNext(new Function1<Throwable, Observable<String>>() {
                             @Override
-                            public Observable<String> apply(Throwable t1) {
+                            public Observable<String> invoke(Throwable t1) {
                                     return Observable.<String>error(t1);
                             }
                         })

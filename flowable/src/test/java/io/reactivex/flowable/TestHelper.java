@@ -32,7 +32,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
@@ -286,7 +285,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeFlowable(Function<Flowable<T>, ? extends Publisher<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeFlowable(Function1<Flowable<T>, ? extends Publisher<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -312,7 +311,7 @@ public enum TestHelper {
                 }
             };
 
-            Publisher<R> out = transform.apply(source);
+            Publisher<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -475,8 +474,8 @@ public enum TestHelper {
      * @param goodValue the good value to emit before turning bad, if not null
      * @param expected the expected resulting values, null to ignore values received
      */
-    public static <T> void checkBadSourceFlowable(Function<Flowable<T>, Object> mapper,
-            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+    public static <T> void checkBadSourceFlowable(Function1<Flowable<T>, Object> mapper,
+                                                  final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Flowable<T> bad = new Flowable<T>() {
@@ -502,7 +501,7 @@ public enum TestHelper {
                 }
             };
 
-            Object o = mapper.apply(bad);
+            Object o = mapper.invoke(bad);
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;

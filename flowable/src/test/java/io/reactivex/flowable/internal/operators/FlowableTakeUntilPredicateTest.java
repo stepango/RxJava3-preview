@@ -21,7 +21,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -181,9 +180,9 @@ public class FlowableTakeUntilPredicateTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.takeUntil(Functions.alwaysFalse());
             }
         });

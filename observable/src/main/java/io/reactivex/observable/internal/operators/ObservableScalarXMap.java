@@ -18,11 +18,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.extensions.QueueDisposable;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
@@ -45,8 +48,8 @@ public final class ObservableScalarXMap {
      */
     @SuppressWarnings("unchecked")
     public static <T, R> boolean tryScalarXMapSubscribe(ObservableSource<T> source,
-            Observer<? super R> observer,
-            Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
+                                                        Observer<? super R> observer,
+                                                        Function1<? super T, ? extends ObservableSource<? extends R>> mapper) {
         if (source instanceof Callable) {
             T t;
 
@@ -66,7 +69,7 @@ public final class ObservableScalarXMap {
             ObservableSource<? extends R> r;
 
             try {
-                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                r = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
@@ -111,7 +114,7 @@ public final class ObservableScalarXMap {
      * @return the new Observable instance
      */
     public static <T, U> Observable<U> scalarXMap(T value,
-            Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
+                                                  Function1<? super T, ? extends ObservableSource<? extends U>> mapper) {
         return RxJavaObservablePlugins.onAssembly(new ScalarXMapObservable<T, U>(value, mapper));
     }
 
@@ -125,10 +128,10 @@ public final class ObservableScalarXMap {
 
         final T value;
 
-        final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
+        final Function1<? super T, ? extends ObservableSource<? extends R>> mapper;
 
         ScalarXMapObservable(T value,
-                Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
+                             Function1<? super T, ? extends ObservableSource<? extends R>> mapper) {
             this.value = value;
             this.mapper = mapper;
         }
@@ -138,7 +141,7 @@ public final class ObservableScalarXMap {
         public void subscribeActual(Observer<? super R> s) {
             ObservableSource<? extends R> other;
             try {
-                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
+                other = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
                 EmptyDisposable.error(e, s);
                 return;

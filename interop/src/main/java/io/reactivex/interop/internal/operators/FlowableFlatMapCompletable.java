@@ -13,23 +13,27 @@
 
 package io.reactivex.interop.internal.operators;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.operators.AbstractFlowableWithUpstream;
-import io.reactivex.flowable.internal.subscriptions.*;
-import io.reactivex.observable.*;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a sequence of values into CompletableSources and awaits their termination.
@@ -37,15 +41,15 @@ import io.reactivex.observable.*;
  */
 public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    final Function<? super T, ? extends CompletableSource> mapper;
+    final Function1<? super T, ? extends CompletableSource> mapper;
 
     final int maxConcurrency;
 
     final boolean delayErrors;
 
     public FlowableFlatMapCompletable(Flowable<T> source,
-            Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
-            int maxConcurrency) {
+                                      Function1<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
+                                      int maxConcurrency) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayErrors;
@@ -65,7 +69,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         final AtomicThrowable errors;
 
-        final Function<? super T, ? extends CompletableSource> mapper;
+        final Function1<? super T, ? extends CompletableSource> mapper;
 
         final boolean delayErrors;
 
@@ -76,8 +80,8 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
         Subscription s;
 
         FlatMapCompletableMainSubscriber(Subscriber<? super T> observer,
-                Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
-                int maxConcurrency) {
+                                         Function1<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
+                                         int maxConcurrency) {
             this.actual = observer;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
@@ -108,7 +112,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

@@ -13,15 +13,19 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.ParallelFailureHandling;
+import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps each 'rail' of the source ParallelFlowable with a mapper function
@@ -35,12 +39,12 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
     final ParallelFlowable<T> source;
 
-    final Function<? super T, ? extends R> mapper;
+    final Function1<? super T, ? extends R> mapper;
 
     final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
-    public ParallelMapTry(ParallelFlowable<T> source, Function<? super T, ? extends R> mapper,
-            BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public ParallelMapTry(ParallelFlowable<T> source, Function1<? super T, ? extends R> mapper,
+                          BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         this.source = source;
         this.mapper = mapper;
         this.errorHandler = errorHandler;
@@ -77,7 +81,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
         final Subscriber<? super R> actual;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function1<? super T, ? extends R> mapper;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
@@ -85,8 +89,8 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
         boolean done;
 
-        ParallelMapTrySubscriber(Subscriber<? super R> actual, Function<? super T, ? extends R> mapper,
-                BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ParallelMapTrySubscriber(Subscriber<? super R> actual, Function1<? super T, ? extends R> mapper,
+                                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.actual = actual;
             this.mapper = mapper;
             this.errorHandler = errorHandler;
@@ -129,7 +133,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                    v = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
 
@@ -189,7 +193,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
         final ConditionalSubscriber<? super R> actual;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function1<? super T, ? extends R> mapper;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
         Subscription s;
@@ -197,8 +201,8 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
         boolean done;
 
         ParallelMapTryConditionalSubscriber(ConditionalSubscriber<? super R> actual,
-                Function<? super T, ? extends R> mapper,
-                BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+                                            Function1<? super T, ? extends R> mapper,
+                                            BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.actual = actual;
             this.mapper = mapper;
             this.errorHandler = errorHandler;
@@ -241,7 +245,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+                    v = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
 

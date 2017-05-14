@@ -15,11 +15,11 @@ package io.reactivex.interop.schedulers;
 
 import org.junit.Test;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Completable;
@@ -28,6 +28,7 @@ import io.reactivex.observable.Observable;
 import io.reactivex.observable.Single;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 public class FailOnBlockingTest {
 
@@ -39,9 +40,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
 
@@ -65,9 +66,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
 
@@ -91,9 +92,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingIterable().iterator().next();
 
@@ -117,9 +118,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingSubscribe();
 
@@ -143,9 +144,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingSingle();
 
@@ -169,9 +170,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingForEach(Functions.emptyConsumer());
 
@@ -195,9 +196,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLatest().iterator().hasNext();
 
@@ -221,9 +222,9 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingNext().iterator().hasNext();
 
@@ -247,11 +248,18 @@ public class FailOnBlockingTest {
 
             Flowable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
-                    Flowable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
+                    try {
+                        //TODO checked exception
+                        Flowable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
                     return v;
                 }
@@ -273,9 +281,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
 
@@ -299,9 +307,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
 
@@ -325,9 +333,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingIterable().iterator().next();
 
@@ -351,9 +359,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingSubscribe();
 
@@ -377,9 +385,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingSingle();
 
@@ -403,9 +411,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingForEach(Functions.emptyConsumer());
 
@@ -429,9 +437,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingLatest().iterator().hasNext();
 
@@ -455,9 +463,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingNext().iterator().hasNext();
 
@@ -481,11 +489,18 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.computation())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
-                    Observable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
+                    try {
+                        //TODO checked exception
+                        Observable.just(1).delay(10, TimeUnit.SECONDS).toFuture().get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
                     return v;
                 }
@@ -507,9 +522,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.single())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Observable.just(1).delay(10, TimeUnit.SECONDS).blockingFirst();
 
@@ -533,9 +548,9 @@ public class FailOnBlockingTest {
 
             Single.just(1)
             .subscribeOn(Schedulers.single())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Single.just(1).delay(10, TimeUnit.SECONDS).blockingGet();
 
@@ -559,9 +574,9 @@ public class FailOnBlockingTest {
 
             Maybe.just(1)
             .subscribeOn(Schedulers.single())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Maybe.just(1).delay(10, TimeUnit.SECONDS).blockingGet();
 
@@ -633,9 +648,9 @@ public class FailOnBlockingTest {
 
             Observable.just(1)
             .subscribeOn(Schedulers.io())
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
                     return Observable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingFirst();
                 }
             })
@@ -660,9 +675,9 @@ public class FailOnBlockingTest {
             RxJavaCommonPlugins.setFailOnNonBlockingScheduler(true);
 
             Flowable.just(1)
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
 
                     Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
 
@@ -678,9 +693,9 @@ public class FailOnBlockingTest {
         }
 
         Flowable.just(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return Flowable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingLast();
             }
         })

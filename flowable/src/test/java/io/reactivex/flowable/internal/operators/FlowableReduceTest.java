@@ -26,7 +26,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
@@ -61,9 +60,9 @@ public class FlowableReduceTest {
     public void testAggregateAsIntSumFlowable() {
 
         Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5).reduce(0, sum)
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -79,9 +78,9 @@ public class FlowableReduceTest {
     public void testAggregateAsIntSumSourceThrowsFlowable() {
         Flowable<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
+                .reduce(0, sum).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -103,9 +102,9 @@ public class FlowableReduceTest {
         };
 
         Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
+                .reduce(0, sumErr).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -120,10 +119,10 @@ public class FlowableReduceTest {
     @Test
     public void testAggregateAsIntSumResultSelectorThrowsFlowable() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
+        Function1<Integer, Integer> error = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -257,9 +256,9 @@ public class FlowableReduceTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.reduce(sum);
             }
         }, false, 1, 1, 1);
@@ -267,9 +266,9 @@ public class FlowableReduceTest {
 
     @Test
     public void badSourceFlowable() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.reduce(sum);
             }
         }, false, 1, 1, 1);
@@ -295,13 +294,13 @@ public class FlowableReduceTest {
     public void shouldReduceTo10Events() {
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.range(0, 10).flatMap(new Function<Integer, Publisher<String>>() {
+        Flowable.range(0, 10).flatMap(new Function1<Integer, Publisher<String>>() {
             @Override
-            public Publisher<String> apply(final Integer x) throws Exception {
+            public Publisher<String> invoke(final Integer x) {
                 return Flowable.range(0, 2)
-                    .map(new Function<Integer, String>() {
+                        .map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer y) throws Exception {
+                    public String invoke(Integer y) {
                         return blockingOp(x, y);
                     }
                 }).subscribeOn(Schedulers.io())
@@ -334,13 +333,13 @@ public class FlowableReduceTest {
     public void shouldReduceTo10EventsFlowable() {
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.range(0, 10).flatMap(new Function<Integer, Publisher<String>>() {
+        Flowable.range(0, 10).flatMap(new Function1<Integer, Publisher<String>>() {
             @Override
-            public Publisher<String> apply(final Integer x) throws Exception {
+            public Publisher<String> invoke(final Integer x) {
                 return Flowable.range(0, 2)
-                    .map(new Function<Integer, String>() {
+                        .map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer y) throws Exception {
+                    public String invoke(Integer y) {
                         return blockingOp(x, y);
                     }
                 }).subscribeOn(Schedulers.io())

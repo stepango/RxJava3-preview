@@ -15,7 +15,6 @@ package io.reactivex.observable;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.ObservableEventStream.Event;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -29,9 +28,9 @@ public class ObservableGroupByTests {
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, String>() {
+                .groupBy(new Function1<Event, String>() {
             @Override
-            public String apply(Event event) {
+            public String invoke(Event event) {
                 return event.type;
             }
         })
@@ -57,18 +56,18 @@ public class ObservableGroupByTests {
             ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, String>() {
+                .groupBy(new Function1<Event, String>() {
             @Override
-            public String apply(Event event) {
+            public String invoke(Event event) {
                 return event.type;
             }
         })
-        .flatMap(new Function<GroupedObservable<String, Event>, Observable<Object>>() {
+                .flatMap(new Function1<GroupedObservable<String, Event>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(GroupedObservable<String, Event> g) {
-                return g.map(new Function<Event, Object>() {
+            public Observable<Object> invoke(GroupedObservable<String, Event> g) {
+                return g.map(new Function1<Event, Object>() {
                     @Override
-                    public Object apply(Event event) {
+                    public Object invoke(Event event) {
                         return event.instanceId + " - " + event.values.get("count200");
                     }
                 });

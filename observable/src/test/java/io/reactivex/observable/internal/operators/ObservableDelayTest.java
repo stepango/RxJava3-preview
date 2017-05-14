@@ -28,7 +28,6 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -137,9 +136,9 @@ public class ObservableDelayTest {
     @Test
     public void testDelayWithError() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler)
-        .map(new Function<Long, Long>() {
+                .map(new Function1<Long, Long>() {
             @Override
-            public Long apply(Long value) {
+            public Long invoke(Long value) {
                 if (value == 1L) {
                     throw new RuntimeException("error!");
                 }
@@ -256,9 +255,9 @@ public class ObservableDelayTest {
             delays.add(delay);
         }
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delays.get(t1);
             }
         };
@@ -286,10 +285,10 @@ public class ObservableDelayTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -312,10 +311,10 @@ public class ObservableDelayTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -337,10 +336,10 @@ public class ObservableDelayTest {
     public void testDelayWithObservableDelayFunctionThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -361,10 +360,10 @@ public class ObservableDelayTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> delay = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -391,10 +390,10 @@ public class ObservableDelayTest {
                 return delay;
             }
         };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -426,10 +425,10 @@ public class ObservableDelayTest {
                 throw new TestException();
             }
         };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -460,10 +459,10 @@ public class ObservableDelayTest {
                 return delay;
             }
         };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -488,10 +487,10 @@ public class ObservableDelayTest {
     public void testDelayWithObservableEmptyDelayer() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return Observable.empty();
             }
         };
@@ -520,10 +519,10 @@ public class ObservableDelayTest {
                 return sdelay;
             }
         };
-        Function<Integer, Observable<Integer>> delayFunc = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> delayFunc = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -551,9 +550,9 @@ public class ObservableDelayTest {
 
         final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
 
-        Function<Long, Observable<Long>> delayFunc = new Function<Long, Observable<Long>>() {
+        Function1<Long, Observable<Long>> delayFunc = new Function1<Long, Observable<Long>>() {
             @Override
-            public Observable<Long> apply(Long t1) {
+            public Observable<Long> invoke(Long t1) {
                 return delayer;
             }
         };
@@ -605,10 +604,10 @@ public class ObservableDelayTest {
             subjects.add(PublishSubject.<Integer> create());
         }
 
-        Observable<Integer> result = source.delay(new Function<Integer, Observable<Integer>>() {
+        Observable<Integer> result = source.delay(new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return subjects.get(t1);
             }
         });
@@ -662,12 +661,12 @@ public class ObservableDelayTest {
         Observable.range(1, Observable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -691,12 +690,12 @@ public class ObservableDelayTest {
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -717,21 +716,21 @@ public class ObservableDelayTest {
     public void testBackpressureWithSelectorDelay() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.range(1, Observable.bufferSize() * 2)
-                .delay(new Function<Integer, Observable<Long>>() {
+                .delay(new Function1<Integer, Observable<Long>>() {
 
                     @Override
-                    public Observable<Long> apply(Integer i) {
+                    public Observable<Long> invoke(Integer i) {
                         return Observable.timer(100, TimeUnit.MILLISECONDS);
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -753,21 +752,21 @@ public class ObservableDelayTest {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.range(1, Observable.bufferSize() * 2)
                 .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
-                , new Function<Integer, Observable<Long>>() {
+                        , new Function1<Integer, Observable<Long>>() {
 
                     @Override
-                    public Observable<Long> apply(Integer i) {
+                    public Observable<Long> invoke(Integer i) {
                         return Observable.timer(100, TimeUnit.MILLISECONDS);
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -912,16 +911,16 @@ public class ObservableDelayTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.delay(1, TimeUnit.SECONDS);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.delay(Functions.justFunction(Observable.never()));
             }
         });

@@ -16,18 +16,28 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
-import io.reactivex.flowable.internal.utils.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import io.reactivex.flowable.internal.utils.QueueDrainHelper;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Multicasts a Flowable over a selector function.
@@ -37,15 +47,15 @@ import io.reactivex.flowable.internal.utils.*;
  */
 public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
-    final Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector;
+    final Function1<? super Flowable<T>, ? extends Publisher<? extends R>> selector;
 
     final int prefetch;
 
     final boolean delayError;
 
     public FlowablePublishMulticast(Flowable<T> source,
-            Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector, int prefetch,
-            boolean delayError) {
+                                    Function1<? super Flowable<T>, ? extends Publisher<? extends R>> selector, int prefetch,
+                                    boolean delayError) {
         super(source);
         this.selector = selector;
         this.prefetch = prefetch;
@@ -59,7 +69,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         Publisher<? extends R> other;
 
         try {
-            other = ObjectHelper.requireNonNull(selector.apply(mp), "selector returned a null Publisher");
+            other = ObjectHelper.requireNonNull(selector.invoke(mp), "selector returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);

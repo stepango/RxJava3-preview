@@ -13,17 +13,18 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertFalse;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.UnicastProcessor;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
 
 public class ParallelFromPublisherTest {
 
@@ -57,9 +58,9 @@ public class ParallelFromPublisherTest {
     @Test
     public void syncFusedMapCrash() {
         Flowable.just(1)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -76,9 +77,9 @@ public class ParallelFromPublisherTest {
         up.onNext(1);
 
         up
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })

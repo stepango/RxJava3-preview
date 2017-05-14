@@ -17,10 +17,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a source item to another MaybeSource then calls a BiFunction with the
@@ -32,13 +34,13 @@ import io.reactivex.observable.*;
  */
 public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpstream<T, R> {
 
-    final Function<? super T, ? extends MaybeSource<? extends U>> mapper;
+    final Function1<? super T, ? extends MaybeSource<? extends U>> mapper;
 
     final BiFunction<? super T, ? super U, ? extends R> resultSelector;
 
     public MaybeFlatMapBiSelector(MaybeSource<T> source,
-            Function<? super T, ? extends MaybeSource<? extends U>> mapper,
-            BiFunction<? super T, ? super U, ? extends R> resultSelector) {
+                                  Function1<? super T, ? extends MaybeSource<? extends U>> mapper,
+                                  BiFunction<? super T, ? super U, ? extends R> resultSelector) {
         super(source);
         this.mapper = mapper;
         this.resultSelector = resultSelector;
@@ -52,13 +54,13 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
     static final class FlatMapBiMainObserver<T, U, R>
     implements MaybeObserver<T>, Disposable {
 
-        final Function<? super T, ? extends MaybeSource<? extends U>> mapper;
+        final Function1<? super T, ? extends MaybeSource<? extends U>> mapper;
 
         final InnerObserver<T, U, R> inner;
 
         FlatMapBiMainObserver(MaybeObserver<? super R> actual,
-                Function<? super T, ? extends MaybeSource<? extends U>> mapper,
-                BiFunction<? super T, ? super U, ? extends R> resultSelector) {
+                              Function1<? super T, ? extends MaybeSource<? extends U>> mapper,
+                              BiFunction<? super T, ? super U, ? extends R> resultSelector) {
             this.inner = new InnerObserver<T, U, R>(actual, resultSelector);
             this.mapper = mapper;
         }
@@ -85,7 +87,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
             MaybeSource<? extends U> next;
 
             try {
-                next = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
+                next = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 inner.actual.onError(ex);

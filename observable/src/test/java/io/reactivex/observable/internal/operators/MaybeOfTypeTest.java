@@ -16,10 +16,11 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeOfTypeTest {
 
@@ -68,9 +69,9 @@ public class MaybeOfTypeTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
+        TestHelper.checkDisposedMaybe(new Function1<Maybe<Object>, Maybe<Object>>() {
             @Override
-            public Maybe<Object> apply(Maybe<Object> m) throws Exception {
+            public Maybe<Object> invoke(Maybe<Object> m) {
                 return m.ofType(Object.class);
             }
         });
@@ -85,9 +86,9 @@ public class MaybeOfTypeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, Maybe<Object>>() {
             @Override
-            public Maybe<Object> apply(Maybe<Object> f) throws Exception {
+            public Maybe<Object> invoke(Maybe<Object> f) {
                 return f.ofType(Object.class);
             }
         });

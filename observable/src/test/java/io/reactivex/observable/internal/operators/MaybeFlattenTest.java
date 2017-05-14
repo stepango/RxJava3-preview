@@ -16,16 +16,18 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeFlattenTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
+        TestHelper.checkDisposed(Maybe.just(1).flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(2);
             }
         }));
@@ -33,12 +35,12 @@ public class MaybeFlattenTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Integer>, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> v) throws Exception {
-                return v.flatMap(new Function<Integer, MaybeSource<Integer>>() {
+            public MaybeSource<Integer> invoke(Maybe<Integer> v) {
+                return v.flatMap(new Function1<Integer, MaybeSource<Integer>>() {
                     @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    public MaybeSource<Integer> invoke(Integer v) {
                         return Maybe.just(2);
                     }
                 });
@@ -49,9 +51,9 @@ public class MaybeFlattenTest {
     @Test
     public void mainError() {
         Maybe.<Integer>error(new TestException())
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
                     @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    public MaybeSource<Integer> invoke(Integer v) {
                         return Maybe.just(2);
                     }
                 })
@@ -62,9 +64,9 @@ public class MaybeFlattenTest {
     @Test
     public void mainEmpty() {
         Maybe.<Integer>empty()
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
                     @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    public MaybeSource<Integer> invoke(Integer v) {
                         return Maybe.just(2);
                     }
                 })
@@ -75,9 +77,9 @@ public class MaybeFlattenTest {
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
                     @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    public MaybeSource<Integer> invoke(Integer v) {
                         throw new TestException();
                     }
                 })
@@ -88,9 +90,9 @@ public class MaybeFlattenTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
                     @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    public MaybeSource<Integer> invoke(Integer v) {
                         return null;
                     }
                 })

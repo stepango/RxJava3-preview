@@ -13,17 +13,23 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.Callable;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import kotlin.jvm.functions.Function1;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableToMapTest {
     Subscriber<Object> objectObserver;
@@ -33,15 +39,15 @@ public class FlowableToMapTest {
         objectObserver = TestHelper.mockSubscriber();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+    Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
         @Override
-        public Integer apply(String t1) {
+        public Integer invoke(String t1) {
             return t1.length();
         }
     };
-    Function<String, String> duplicate = new Function<String, String>() {
+    Function1<String, String> duplicate = new Function1<String, String>() {
         @Override
-        public String apply(String t1) {
+        public String invoke(String t1) {
             return t1 + t1;
         }
     };
@@ -88,9 +94,9 @@ public class FlowableToMapTest {
     public void testToMapWithErrorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFuncErr = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 if ("bb".equals(t1)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -117,9 +123,9 @@ public class FlowableToMapTest {
     public void testToMapWithErrorInValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
+        Function1<String, String> duplicateErr = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 if ("bb".equals(t1)) {
                     throw new RuntimeException("Forced failure");
                 }
@@ -162,15 +168,15 @@ public class FlowableToMapTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 return t1.length();
             }
         };
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         }, mapFactory);
@@ -198,15 +204,15 @@ public class FlowableToMapTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 return t1.length();
             }
         };
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         }, mapFactory);

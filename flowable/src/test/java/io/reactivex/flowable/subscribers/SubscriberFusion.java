@@ -14,7 +14,6 @@
 package io.reactivex.flowable.subscribers;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -43,7 +42,7 @@ public enum SubscriberFusion {
      * @param cancelled should the TestSubscriber cancelled before the subscription even happens?
      * @return the new Function instance
      */
-    public static <T> Function<Flowable<T>, TestSubscriber<T>> test(
+    public static <T> Function1<Flowable<T>, TestSubscriber<T>> test(
             final long initialRequest, final int mode, final boolean cancelled) {
         return new TestFusionCheckFunction<T>(mode, cancelled, initialRequest);
     }
@@ -79,7 +78,7 @@ public enum SubscriberFusion {
         }
     }
 
-    static final class TestFusionCheckFunction<T> implements Function<Flowable<T>, TestSubscriber<T>> {
+    static final class TestFusionCheckFunction<T> implements Function1<Flowable<T>, TestSubscriber<T>> {
         private final int mode;
         private final boolean cancelled;
         private final long initialRequest;
@@ -91,7 +90,7 @@ public enum SubscriberFusion {
         }
 
         @Override
-        public TestSubscriber<T> apply(Flowable<T> t) throws Exception {
+        public TestSubscriber<T> invoke(Flowable<T> t) {
             TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
             ts.setInitialFusionMode(mode);
             if (cancelled) {

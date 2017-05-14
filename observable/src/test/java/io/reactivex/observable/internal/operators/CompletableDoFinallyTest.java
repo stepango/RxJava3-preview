@@ -20,12 +20,12 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,9 +61,9 @@ public class CompletableDoFinallyTest implements Function0 {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, Completable>() {
+        TestHelper.checkDoubleOnSubscribeCompletable(new Function1<Completable, Completable>() {
             @Override
-            public Completable apply(Completable f) throws Exception {
+            public Completable invoke(Completable f) {
                 return f.doFinally(CompletableDoFinallyTest.this);
             }
         });

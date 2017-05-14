@@ -13,18 +13,25 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SingleZipArrayTest {
 
@@ -152,9 +159,9 @@ public class SingleZipArrayTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Single.zipArray(new Function<Object[], Object>() {
+        Single.zipArray(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, Single.just(1), null)
@@ -164,9 +171,9 @@ public class SingleZipArrayTest {
     @SuppressWarnings("unchecked")
     @Test
     public void emptyArray() {
-        Single.zipArray(new Function<Object[], Object[]>() {
+        Single.zipArray(new Function1<Object[], Object[]>() {
             @Override
-            public Object[] apply(Object[] a) throws Exception {
+            public Object[] invoke(Object[] a) {
                 return a;
             }
         }, new SingleSource[0])
@@ -177,9 +184,9 @@ public class SingleZipArrayTest {
     @SuppressWarnings("unchecked")
     @Test
     public void oneArray() {
-        Single.zipArray(new Function<Object[], Object>() {
+        Single.zipArray(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return (Integer)a[0] + 1;
             }
         }, Single.just(1))

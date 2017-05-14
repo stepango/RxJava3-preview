@@ -16,9 +16,9 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class GroupByTckTest extends BaseTck<Integer> {
@@ -27,13 +27,13 @@ public class GroupByTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements).groupBy(new Function<Integer, Integer>() {
+                Flowable.range(0, (int) elements).groupBy(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) throws Exception {
+                    public Integer invoke(Integer v) {
                         return v & 1;
                     }
                 })
-                .flatMap((Function)Functions.identity())
+                        .flatMap((Function1) Functions.identity())
         ;
     }
 }

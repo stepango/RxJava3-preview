@@ -13,18 +13,25 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
-
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableToMapTest {
     Observer<Object> objectObserver;
@@ -36,15 +43,15 @@ public class ObservableToMapTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+    Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
         @Override
-        public Integer apply(String t1) {
+        public Integer invoke(String t1) {
             return t1.length();
         }
     };
-    Function<String, String> duplicate = new Function<String, String>() {
+    Function1<String, String> duplicate = new Function1<String, String>() {
         @Override
-        public String apply(String t1) {
+        public String invoke(String t1) {
             return t1 + t1;
         }
     };
@@ -91,9 +98,9 @@ public class ObservableToMapTest {
     public void testToMapWithErrorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFuncErr = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 if ("bb".equals(t1)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -120,9 +127,9 @@ public class ObservableToMapTest {
     public void testToMapWithErrorInValueSelectorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
+        Function1<String, String> duplicateErr = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 if ("bb".equals(t1)) {
                     throw new RuntimeException("Forced failure");
                 }
@@ -165,15 +172,15 @@ public class ObservableToMapTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         }, mapFactory).toObservable();
@@ -201,15 +208,15 @@ public class ObservableToMapTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         }, mapFactory).toObservable();
@@ -267,9 +274,9 @@ public class ObservableToMapTest {
     public void testToMapWithError() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFuncErr = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 if ("bb".equals(t1)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -295,9 +302,9 @@ public class ObservableToMapTest {
     public void testToMapWithErrorInValueSelector() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
+        Function1<String, String> duplicateErr = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 if ("bb".equals(t1)) {
                     throw new RuntimeException("Forced failure");
                 }
@@ -339,15 +346,15 @@ public class ObservableToMapTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 return t1.length();
             }
         };
-        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         }, mapFactory);
@@ -374,15 +381,15 @@ public class ObservableToMapTest {
             }
         };
 
-        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 return t1.length();
             }
         };
-        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         }, mapFactory);

@@ -22,7 +22,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import kotlin.jvm.functions.Function1;
@@ -137,9 +136,9 @@ public class ParallelMapTest {
     public void mapCrash() {
         Flowable.just(1)
         .parallel()
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -152,9 +151,9 @@ public class ParallelMapTest {
     public void mapCrashConditional() {
         Flowable.just(1)
         .parallel()
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -169,9 +168,9 @@ public class ParallelMapTest {
         Flowable.just(1)
         .parallel()
         .runOn(Schedulers.computation())
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })

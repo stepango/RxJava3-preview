@@ -13,15 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
-import io.reactivex.observable.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableReduceTest {
     Observer<Object> observer;
@@ -44,9 +53,9 @@ public class ObservableReduceTest {
     public void testAggregateAsIntSumObservable() {
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 }).toObservable();
@@ -62,9 +71,9 @@ public class ObservableReduceTest {
     public void testAggregateAsIntSumSourceThrowsObservable() {
         Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
+                .reduce(0, sum).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 }).toObservable();
@@ -86,9 +95,9 @@ public class ObservableReduceTest {
         };
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
+                .reduce(0, sumErr).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 }).toObservable();
@@ -103,10 +112,10 @@ public class ObservableReduceTest {
     @Test
     public void testAggregateAsIntSumResultSelectorThrowsObservable() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
+        Function1<Integer, Integer> error = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -144,9 +153,9 @@ public class ObservableReduceTest {
     public void testAggregateAsIntSum() {
 
         Single<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -161,9 +170,9 @@ public class ObservableReduceTest {
     public void testAggregateAsIntSumSourceThrows() {
         Single<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
+                .reduce(0, sum).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -184,9 +193,9 @@ public class ObservableReduceTest {
         };
 
         Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
+                .reduce(0, sumErr).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -200,10 +209,10 @@ public class ObservableReduceTest {
     @Test
     public void testAggregateAsIntSumResultSelectorThrows() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
+        Function1<Integer, Integer> error = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new TestException();
             }
         };

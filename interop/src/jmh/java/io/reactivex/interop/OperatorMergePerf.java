@@ -13,15 +13,23 @@
 
 package io.reactivex.interop;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -31,9 +39,9 @@ public class OperatorMergePerf {
     @Benchmark
     public void oneStreamOfNthatMergesIn1(final InputMillion input) throws InterruptedException {
         Flowable<Flowable<Integer>> os = Flowable.range(1, input.size)
-                .map(new Function<Integer, Flowable<Integer>>() {
+                .map(new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) {
+                    public Flowable<Integer> invoke(Integer v) {
                         return Flowable.just(v);
                     }
                 });
@@ -50,9 +58,9 @@ public class OperatorMergePerf {
     // flatMap
     @Benchmark
     public void merge1SyncStreamOfN(final InputMillion input) throws InterruptedException {
-        Flowable<Flowable<Integer>> os = Flowable.just(1).map(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Flowable<Integer>> os = Flowable.just(1).map(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer i) {
+            public Flowable<Integer> invoke(Integer i) {
                     return Flowable.range(0, input.size);
             }
         });
@@ -68,9 +76,9 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNSyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        Flowable<Flowable<Integer>> os = input.observable.map(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Flowable<Integer>> os = input.observable.map(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer i) {
+            public Flowable<Integer> invoke(Integer i) {
                     return Flowable.range(0, input.size);
             }
         });
@@ -85,9 +93,9 @@ public class OperatorMergePerf {
 
     @Benchmark
     public void mergeNAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
-        Flowable<Flowable<Integer>> os = input.observable.map(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Flowable<Integer>> os = input.observable.map(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer i) {
+            public Flowable<Integer> invoke(Integer i) {
                     return Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
             }
         });

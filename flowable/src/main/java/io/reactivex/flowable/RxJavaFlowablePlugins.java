@@ -12,16 +12,25 @@
  */
 package io.reactivex.flowable;
 
-import java.util.concurrent.*;
-
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
-import io.reactivex.common.functions.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadFactory;
+
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.Nullable;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.common.internal.schedulers.*;
+import io.reactivex.common.internal.schedulers.ComputationScheduler;
+import io.reactivex.common.internal.schedulers.IoScheduler;
+import io.reactivex.common.internal.schedulers.NewThreadScheduler;
+import io.reactivex.common.internal.schedulers.SingleScheduler;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.jvm.functions.Function1;
+
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
  */
@@ -29,15 +38,15 @@ public final class RxJavaFlowablePlugins {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<? super Flowable, ? extends Flowable> onFlowableAssembly;
+    static volatile Function1<? super Flowable, ? extends Flowable> onFlowableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<? super ConnectableFlowable, ? extends ConnectableFlowable> onConnectableFlowableAssembly;
+    static volatile Function1<? super ConnectableFlowable, ? extends ConnectableFlowable> onConnectableFlowableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<? super ParallelFlowable, ? extends ParallelFlowable> onParallelAssembly;
+    static volatile Function1<? super ParallelFlowable, ? extends ParallelFlowable> onParallelAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
@@ -88,7 +97,7 @@ public final class RxJavaFlowablePlugins {
      */
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static Function<? super Flowable, ? extends Flowable> getOnFlowableAssembly() {
+    public static Function1<? super Flowable, ? extends Flowable> getOnFlowableAssembly() {
         return onFlowableAssembly;
     }
 
@@ -98,7 +107,7 @@ public final class RxJavaFlowablePlugins {
      */
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static Function<? super ConnectableFlowable, ? extends ConnectableFlowable> getOnConnectableFlowableAssembly() {
+    public static Function1<? super ConnectableFlowable, ? extends ConnectableFlowable> getOnConnectableFlowableAssembly() {
         return onConnectableFlowableAssembly;
     }
 
@@ -117,7 +126,7 @@ public final class RxJavaFlowablePlugins {
      * @param onFlowableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnFlowableAssembly(@Nullable Function<? super Flowable, ? extends Flowable> onFlowableAssembly) {
+    public static void setOnFlowableAssembly(@Nullable Function1<? super Flowable, ? extends Flowable> onFlowableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -129,7 +138,7 @@ public final class RxJavaFlowablePlugins {
      * @param onConnectableFlowableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnConnectableFlowableAssembly(@Nullable Function<? super ConnectableFlowable, ? extends ConnectableFlowable> onConnectableFlowableAssembly) {
+    public static void setOnConnectableFlowableAssembly(@Nullable Function1<? super ConnectableFlowable, ? extends ConnectableFlowable> onConnectableFlowableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -174,7 +183,7 @@ public final class RxJavaFlowablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
-        Function<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
+        Function1<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -190,7 +199,7 @@ public final class RxJavaFlowablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ConnectableFlowable<T> onAssembly(@NonNull ConnectableFlowable<T> source) {
-        Function<? super ConnectableFlowable, ? extends ConnectableFlowable> f = onConnectableFlowableAssembly;
+        Function1<? super ConnectableFlowable, ? extends ConnectableFlowable> f = onConnectableFlowableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -204,7 +213,7 @@ public final class RxJavaFlowablePlugins {
      */
     @Experimental
     @SuppressWarnings("rawtypes")
-    public static void setOnParallelAssembly(@Nullable Function<? super ParallelFlowable, ? extends ParallelFlowable> handler) {
+    public static void setOnParallelAssembly(@Nullable Function1<? super ParallelFlowable, ? extends ParallelFlowable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -219,7 +228,7 @@ public final class RxJavaFlowablePlugins {
     @Experimental
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static Function<? super ParallelFlowable, ? extends ParallelFlowable> getOnParallelAssembly() {
+    public static Function1<? super ParallelFlowable, ? extends ParallelFlowable> getOnParallelAssembly() {
         return onParallelAssembly;
     }
 
@@ -234,7 +243,7 @@ public final class RxJavaFlowablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
-        Function<? super ParallelFlowable, ? extends ParallelFlowable> f = onParallelAssembly;
+        Function1<? super ParallelFlowable, ? extends ParallelFlowable> f = onParallelAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -307,9 +316,9 @@ public final class RxJavaFlowablePlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, R> R apply(@NonNull Function<T, R> f, @NonNull T t) {
+    static <T, R> R apply(@NonNull Function1<T, R> f, @NonNull T t) {
         try {
-            return f.apply(t);
+            return f.invoke(t);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -360,7 +369,7 @@ public final class RxJavaFlowablePlugins {
      * @throws NullPointerException if the function parameter returns null
      */
     @NonNull
-    static Scheduler applyRequireNonNull(@NonNull Function<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
+    static Scheduler applyRequireNonNull(@NonNull Function1<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
         return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Callable result can't be null");
     }
 

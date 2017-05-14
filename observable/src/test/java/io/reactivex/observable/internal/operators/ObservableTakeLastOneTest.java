@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.TestHelper;
@@ -108,9 +107,9 @@ public class ObservableTakeLastOneTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> f) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> f) {
                 return f.takeLast(1);
             }
         });

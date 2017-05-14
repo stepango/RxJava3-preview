@@ -15,25 +15,30 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
-import io.reactivex.common.internal.disposables.*;
+import io.reactivex.common.internal.disposables.DisposableHelper;
+import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
-import io.reactivex.observable.extensions.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.extensions.QueueDisposable;
+import io.reactivex.observable.extensions.SimpleQueue;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
 import io.reactivex.observable.observers.SerializedObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstream<T, U> {
-    final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
+    final Function1<? super T, ? extends ObservableSource<? extends U>> mapper;
     final int bufferSize;
 
     final ErrorMode delayErrors;
 
-    public ObservableConcatMap(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-            int bufferSize, ErrorMode delayErrors) {
+    public ObservableConcatMap(ObservableSource<T> source, Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
+                               int bufferSize, ErrorMode delayErrors) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayErrors;
@@ -59,7 +64,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
         final SequentialDisposable sa;
-        final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
+        final Function1<? super T, ? extends ObservableSource<? extends U>> mapper;
         final Observer<U> inner;
         final int bufferSize;
 
@@ -76,7 +81,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         int fusionMode;
 
         SourceObserver(Observer<? super U> actual,
-                                Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
+                       Function1<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -209,7 +214,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends U> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                            o = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             dispose();
@@ -268,7 +273,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         final Observer<? super R> actual;
 
-        final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
+        final Function1<? super T, ? extends ObservableSource<? extends R>> mapper;
 
         final int bufferSize;
 
@@ -293,8 +298,8 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         int sourceMode;
 
         ConcatMapDelayErrorObserver(Observer<? super R> actual,
-                Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
-                        boolean tillTheEnd) {
+                                    Function1<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
+                                    boolean tillTheEnd) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -436,7 +441,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends R> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                            o = ObjectHelper.requireNonNull(mapper.invoke(v), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             this.d.dispose();

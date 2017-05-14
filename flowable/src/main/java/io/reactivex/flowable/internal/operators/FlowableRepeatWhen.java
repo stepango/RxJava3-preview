@@ -13,24 +13,31 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
-import io.reactivex.flowable.processors.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionArbiter;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SerializedSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T, T> {
-    final Function<? super Flowable<Object>, ? extends Publisher<?>> handler;
+    final Function1<? super Flowable<Object>, ? extends Publisher<?>> handler;
 
     public FlowableRepeatWhen(Flowable<T> source,
-            Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
+                              Function1<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         super(source);
         this.handler = handler;
     }
@@ -45,7 +52,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         Publisher<?> when;
 
         try {
-            when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
+            when = ObjectHelper.requireNonNull(handler.invoke(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);

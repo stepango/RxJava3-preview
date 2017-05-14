@@ -15,9 +15,11 @@ package io.reactivex.observable.internal.operators;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 public class SingleToObservableTest {
 
@@ -28,9 +30,9 @@ public class SingleToObservableTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToObservable(new Function<Single<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingleToObservable(new Function1<Single<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Single<Object> s) throws Exception {
+            public ObservableSource<Object> invoke(Single<Object> s) {
                 return s.toObservable();
             }
         });

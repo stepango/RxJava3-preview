@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -47,9 +46,9 @@ public class FlowableWindowWithSizeTest {
     private static <T> List<List<T>> toLists(Flowable<Flowable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<List<T>>();
-        Flowable.concat(observables.map(new Function<Flowable<T>, Flowable<List<T>>>() {
+        Flowable.concat(observables.map(new Function1<Flowable<T>, Flowable<List<T>>>() {
             @Override
-            public Flowable<List<T>> apply(Flowable<T> xs) {
+            public Flowable<List<T>> invoke(Flowable<T> xs) {
                 return xs.toList();
             }
         }))
@@ -292,9 +291,9 @@ public class FlowableWindowWithSizeTest {
         hotStream()
         .window(10)
         .take(2)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> w) {
+            public Flowable<Integer> invoke(Flowable<Integer> w) {
                 return w.startWith(indicator);
             }
         }).subscribe(ts);
@@ -311,15 +310,15 @@ public class FlowableWindowWithSizeTest {
 
         Flowable.range(1, 5)
         .window(2, 1)
-        .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
+                .map(new Function1<Flowable<Integer>, Flowable<List<Integer>>>() {
             @Override
-            public Flowable<List<Integer>> apply(Flowable<Integer> t) {
+            public Flowable<List<Integer>> invoke(Flowable<Integer> t) {
                 return t.toList();
             }
         })
-        .concatMap(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
+                .concatMap(new Function1<Flowable<List<Integer>>, Publisher<List<Integer>>>() {
             @Override
-            public Publisher<List<Integer>> apply(Flowable<List<Integer>> v) {
+            public Publisher<List<Integer>> invoke(Flowable<List<Integer>> v) {
                 return v;
             }
         })
@@ -356,23 +355,23 @@ public class FlowableWindowWithSizeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Flowable<Object>>>() {
             @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Flowable<Object>> invoke(Flowable<Object> o) {
                 return o.window(1);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Flowable<Object>>>() {
             @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Flowable<Object>> invoke(Flowable<Object> o) {
                 return o.window(2, 1);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Flowable<Object>>>() {
             @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Flowable<Object>> invoke(Flowable<Object> o) {
                 return o.window(1, 2);
             }
         });

@@ -13,25 +13,32 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SingleZipIterableTest {
 
-    final Function<Object[], Object> addString = new Function<Object[], Object>() {
+    final Function1<Object[], Object> addString = new Function1<Object[], Object>() {
         @Override
-        public Object apply(Object[] a) throws Exception {
+        public Object invoke(Object[] a) {
             return Arrays.toString(a);
         }
     };
@@ -70,9 +77,9 @@ public class SingleZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void zipperThrows() {
-        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] b) throws Exception {
+            public Object invoke(Object[] b) {
                 throw new TestException();
             }
         })
@@ -83,9 +90,9 @@ public class SingleZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void zipperReturnsNull() {
-        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(Single.just(1), Single.just(2)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return null;
             }
         })
@@ -154,9 +161,9 @@ public class SingleZipIterableTest {
 
     @Test
     public void iteratorThrows() {
-        Single.zip(new CrashingMappedIterable<Single<Integer>>(1, 100, 100, new Function<Integer, Single<Integer>>() {
+        Single.zip(new CrashingMappedIterable<Single<Integer>>(1, 100, 100, new Function1<Integer, Single<Integer>>() {
             @Override
-            public Single<Integer> apply(Integer v) throws Exception {
+            public Single<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         }), addString)
@@ -166,9 +173,9 @@ public class SingleZipIterableTest {
 
     @Test
     public void hasNextThrows() {
-        Single.zip(new CrashingMappedIterable<Single<Integer>>(100, 20, 100, new Function<Integer, Single<Integer>>() {
+        Single.zip(new CrashingMappedIterable<Single<Integer>>(100, 20, 100, new Function1<Integer, Single<Integer>>() {
             @Override
-            public Single<Integer> apply(Integer v) throws Exception {
+            public Single<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         }), addString)
@@ -178,9 +185,9 @@ public class SingleZipIterableTest {
 
     @Test
     public void nextThrows() {
-        Single.zip(new CrashingMappedIterable<Single<Integer>>(100, 100, 5, new Function<Integer, Single<Integer>>() {
+        Single.zip(new CrashingMappedIterable<Single<Integer>>(100, 100, 5, new Function1<Integer, Single<Integer>>() {
             @Override
-            public Single<Integer> apply(Integer v) throws Exception {
+            public Single<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         }), addString)
@@ -191,9 +198,9 @@ public class SingleZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
-        Single.zip(Arrays.asList(null, Single.just(1)), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(null, Single.just(1)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         })
@@ -203,9 +210,9 @@ public class SingleZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
-        Single.zip(Arrays.asList(Single.just(1), null), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(Single.just(1), null), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         })
@@ -214,9 +221,9 @@ public class SingleZipIterableTest {
 
     @Test
     public void emptyIterable() {
-        Single.zip(Collections.<SingleSource<Integer>>emptyList(), new Function<Object[], Object[]>() {
+        Single.zip(Collections.<SingleSource<Integer>>emptyList(), new Function1<Object[], Object[]>() {
             @Override
-            public Object[] apply(Object[] a) throws Exception {
+            public Object[] invoke(Object[] a) {
                 return a;
             }
         })
@@ -226,9 +233,9 @@ public class SingleZipIterableTest {
 
     @Test
     public void oneIterable() {
-        Single.zip(Collections.singleton(Single.just(1)), new Function<Object[], Object>() {
+        Single.zip(Collections.singleton(Single.just(1)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return (Integer)a[0] + 1;
             }
         })

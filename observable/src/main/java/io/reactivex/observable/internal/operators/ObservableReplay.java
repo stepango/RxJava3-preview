@@ -26,7 +26,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.ConnectableObservable;
@@ -68,7 +67,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     public static <U, R> Observable<R> multicastSelector(
             final Callable<? extends ConnectableObservable<U>> connectableFactory,
-            final Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
+            final Function1<? super Observable<U>, ? extends ObservableSource<R>> selector) {
         return RxJavaObservablePlugins.onAssembly(new MulticastReplay<R, U>(connectableFactory, selector));
     }
 
@@ -1025,9 +1024,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
     static final class MulticastReplay<R, U> extends Observable<R> {
         private final Callable<? extends ConnectableObservable<U>> connectableFactory;
-        private final Function<? super Observable<U>, ? extends ObservableSource<R>> selector;
+        private final Function1<? super Observable<U>, ? extends ObservableSource<R>> selector;
 
-        MulticastReplay(Callable<? extends ConnectableObservable<U>> connectableFactory, Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
+        MulticastReplay(Callable<? extends ConnectableObservable<U>> connectableFactory, Function1<? super Observable<U>, ? extends ObservableSource<R>> selector) {
             this.connectableFactory = connectableFactory;
             this.selector = selector;
         }
@@ -1038,7 +1037,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             ObservableSource<R> observable;
             try {
                 co = connectableFactory.call();
-                observable = selector.apply(co);
+                observable = selector.invoke(co);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptyDisposable.error(e, child);

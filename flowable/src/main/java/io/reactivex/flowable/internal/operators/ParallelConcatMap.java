@@ -13,12 +13,13 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.ErrorMode;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Concatenates the generated Publishers on each rail.
@@ -30,7 +31,7 @@ public final class ParallelConcatMap<T, R> extends ParallelFlowable<R> {
 
     final ParallelFlowable<T> source;
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
     final int prefetch;
 
@@ -38,8 +39,8 @@ public final class ParallelConcatMap<T, R> extends ParallelFlowable<R> {
 
     public ParallelConcatMap(
             ParallelFlowable<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
-                    int prefetch, ErrorMode errorMode) {
+            Function1<? super T, ? extends Publisher<? extends R>> mapper,
+            int prefetch, ErrorMode errorMode) {
         this.source = source;
         this.mapper = ObjectHelper.requireNonNull(mapper, "mapper");
         this.prefetch = prefetch;

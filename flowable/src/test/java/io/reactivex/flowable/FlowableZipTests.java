@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.FlowableCovarianceTest.CoolRating;
 import io.reactivex.flowable.FlowableCovarianceTest.ExtendedResult;
 import io.reactivex.flowable.FlowableCovarianceTest.HorrorMovie;
@@ -42,16 +41,16 @@ public class FlowableZipTests {
     @Test
     public void testZipObservableOfObservables() {
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(new Function<Event, String>() {
+                .groupBy(new Function1<Event, String>() {
                     @Override
-                    public String apply(Event e) {
+                    public String invoke(Event e) {
                         return e.instanceId;
                     }
                 })
                 // now we have streams of cluster+instanceId
-                .flatMap(new Function<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>() {
+                .flatMap(new Function1<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>() {
                     @Override
-                    public Publisher<HashMap<String, String>> apply(final GroupedFlowable<String, Event> ge) {
+                    public Publisher<HashMap<String, String>> invoke(final GroupedFlowable<String, Event> ge) {
                             return ge.scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
@@ -108,9 +107,9 @@ public class FlowableZipTests {
 
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> result = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> result = Flowable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] args) {
+            public Object invoke(Object[] args) {
                 System.out.println("received: " + args);
                 assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;

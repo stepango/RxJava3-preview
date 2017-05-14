@@ -36,7 +36,6 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -96,7 +95,7 @@ public class ObservableZipTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCollectionSizeDifferentThanFunction() {
-        Function<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
+        Function1<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
         //Function3<String, Integer, int[], String>
 
         /* define an Observer to receive aggregated events */
@@ -995,9 +994,9 @@ public class ObservableZipTest {
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> o = Observable.zip(observables, new Function<Object[], Object>() {
+        Observable<Object> o = Observable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] args) {
+            public Object invoke(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;
             }
@@ -1019,9 +1018,9 @@ public class ObservableZipTest {
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> o = Observable.zip(observables, new Function<Object[], Object>() {
+        Observable<Object> o = Observable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] args) {
+            public Object invoke(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;
             }
@@ -1374,9 +1373,9 @@ public class ObservableZipTest {
 
         Arrays.fill(arr, Observable.just(1));
 
-        Observable.zip(Arrays.asList(arr), new Function<Object[], Object>() {
+        Observable.zip(Arrays.asList(arr), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1398,15 +1397,15 @@ public class ObservableZipTest {
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
             TestObserver<List<Object>> ts = Observable.zip(
-                    Observable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                    Observable.just(1).observeOn(Schedulers.single()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),
-                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),

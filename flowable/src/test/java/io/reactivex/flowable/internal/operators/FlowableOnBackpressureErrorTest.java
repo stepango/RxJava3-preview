@@ -16,16 +16,17 @@ package io.reactivex.flowable.internal.operators;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableOnBackpressureErrorTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> f) {
                 return new FlowableOnBackpressureError<Object>(f);
             }
         });
@@ -33,9 +34,9 @@ public class FlowableOnBackpressureErrorTest {
 
     @Test
     public void badSource() {
-        TestHelper.<Integer>checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.<Integer>checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return new FlowableOnBackpressureError<Integer>(f);
             }
         }, false, 1, 1, 1);

@@ -15,15 +15,16 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BasicFuseableObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T, U> {
-    final Function<? super T, ? extends U> function;
+    final Function1<? super T, ? extends U> function;
 
-    public ObservableMap(ObservableSource<T> source, Function<? super T, ? extends U> function) {
+    public ObservableMap(ObservableSource<T> source, Function1<? super T, ? extends U> function) {
         super(source);
         this.function = function;
     }
@@ -35,9 +36,9 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
 
 
     static final class MapObserver<T, U> extends BasicFuseableObserver<T, U> {
-        final Function<? super T, ? extends U> mapper;
+        final Function1<? super T, ? extends U> mapper;
 
-        MapObserver(Observer<? super U> actual, Function<? super T, ? extends U> mapper) {
+        MapObserver(Observer<? super U> actual, Function1<? super T, ? extends U> mapper) {
             super(actual);
             this.mapper = mapper;
         }
@@ -56,7 +57,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
             U v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
+                v = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper function returned a null value.");
             } catch (Throwable ex) {
                 fail(ex);
                 return;
@@ -73,7 +74,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
         @Override
         public U poll() throws Exception {
             T t = qs.poll();
-            return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
+            return t != null ? ObjectHelper.<U>requireNonNull(mapper.invoke(t), "The mapper function returned a null value.") : null;
         }
     }
 }

@@ -23,7 +23,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -245,9 +244,9 @@ public class ObservableAnyTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1).isEmpty().toObservable()
-            .flatMap(new Function<Boolean, Observable<Integer>>() {
+                .flatMap(new Function1<Boolean, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Boolean t1) {
+                public Observable<Integer> invoke(Boolean t1) {
                     return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -466,9 +465,9 @@ public class ObservableAnyTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()
-            .flatMapObservable(new Function<Boolean, Observable<Integer>>() {
+                .flatMapObservable(new Function1<Boolean, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Boolean t1) {
+                public Observable<Integer> invoke(Boolean t1) {
                     return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -505,15 +504,15 @@ public class ObservableAnyTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Boolean>>() {
             @Override
-            public ObservableSource<Boolean> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Boolean> invoke(Observable<Object> o) {
                 return o.any(Functions.alwaysTrue()).toObservable();
             }
         });
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Object>, SingleSource<Boolean>>() {
             @Override
-            public SingleSource<Boolean> apply(Observable<Object> o) throws Exception {
+            public SingleSource<Boolean> invoke(Observable<Object> o) {
                 return o.any(Functions.alwaysTrue());
             }
         });

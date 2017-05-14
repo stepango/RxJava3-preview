@@ -15,16 +15,18 @@ package io.reactivex.observable.internal.operators;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class SingleFlatMapCompletableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).flatMapCompletable(new Function<Integer, Completable>() {
+        TestHelper.checkDisposed(Single.just(1).flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 return Completable.complete();
             }
         }));

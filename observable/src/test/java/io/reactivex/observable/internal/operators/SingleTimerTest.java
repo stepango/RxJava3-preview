@@ -13,17 +13,22 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertTrue;
 
 public class SingleTimerTest {
 
@@ -39,9 +44,9 @@ public class SingleTimerTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestObserver<Long> ts = Single.timer(1, TimeUnit.MILLISECONDS, s)
-                .map(new Function<Long, Long>() {
+                        .map(new Function1<Long, Long>() {
                     @Override
-                    public Long apply(Long v) throws Exception {
+                    public Long invoke(Long v) {
                         try {
                         Thread.sleep(3000);
                         } catch (InterruptedException ex) {

@@ -13,24 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class FlowableWithLatestFromTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
@@ -296,9 +308,9 @@ public class FlowableWithLatestFromTest {
         ts.assertNoErrors();
     }
 
-    static final Function<Object[], String> toArray = new Function<Object[], String>() {
+    static final Function1<Object[], String> toArray = new Function1<Object[], String>() {
         @Override
-        public String apply(Object[] args) {
+        public String invoke(Object[] args) {
             return Arrays.toString(args);
         }
     };
@@ -600,14 +612,14 @@ public class FlowableWithLatestFromTest {
     @Test
     public void manyIteratorThrows() {
         Flowable.just(1)
-        .withLatestFrom(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
+                .withLatestFrom(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.just(2);
             }
-        }), new Function<Object[], Object>() {
+                }), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return a;
             }
         })
@@ -699,9 +711,9 @@ public class FlowableWithLatestFromTest {
     @Test
     public void combineToNull2() {
         Flowable.just(1)
-        .withLatestFrom(Arrays.asList(Flowable.just(2), Flowable.just(3)), new Function<Object[], Object>() {
+                .withLatestFrom(Arrays.asList(Flowable.just(2), Flowable.just(3)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] o) throws Exception {
+            public Object invoke(Object[] o) {
                 return null;
             }
         })

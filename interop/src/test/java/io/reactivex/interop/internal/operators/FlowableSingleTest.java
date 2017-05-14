@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Maybe;
@@ -329,23 +328,23 @@ public class FlowableSingleTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return singleElement(o);
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return singleElement(o);
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return singleOrError(o);
             }
         }, false, 1, 1, 1);
@@ -353,16 +352,16 @@ public class FlowableSingleTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function1<Flowable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Flowable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Flowable<Object> o) {
                 return singleOrError(o);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function1<Flowable<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Flowable<Object> o) throws Exception {
+            public MaybeSource<Object> invoke(Flowable<Object> o) {
                 return singleElement(o);
             }
         });

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.ObservableCovarianceTest.CoolRating;
 import io.reactivex.observable.ObservableCovarianceTest.ExtendedResult;
 import io.reactivex.observable.ObservableCovarianceTest.HorrorMovie;
@@ -41,16 +40,16 @@ public class ObservableZipTests {
     @Test
     public void testZipObservableOfObservables() throws Exception {
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
-                .groupBy(new Function<Event, String>() {
+                .groupBy(new Function1<Event, String>() {
                     @Override
-                    public String apply(Event e) {
+                    public String invoke(Event e) {
                         return e.instanceId;
                     }
                 })
                 // now we have streams of cluster+instanceId
-                .flatMap(new Function<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>() {
+                .flatMap(new Function1<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>() {
                     @Override
-                    public Observable<HashMap<String, String>> apply(final GroupedObservable<String, Event> ge) {
+                    public Observable<HashMap<String, String>> invoke(final GroupedObservable<String, Event> ge) {
                             return ge.scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
@@ -109,9 +108,9 @@ public class ObservableZipTests {
 
         Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> result = Observable.zip(observables, new Function<Object[], Object>() {
+        Observable<Object> result = Observable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] args) {
+            public Object invoke(Object[] args) {
                 System.out.println("received: " + args);
                 Assert.assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;

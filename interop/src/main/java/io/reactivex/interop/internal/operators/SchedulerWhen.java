@@ -16,15 +16,22 @@
 package io.reactivex.interop.internal.operators;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.annotations.Experimental;
+import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.observable.*;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.Observable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Allows the use of operators for controlling the timing around when actions
@@ -100,14 +107,14 @@ public class SchedulerWhen extends Scheduler implements Disposable {
     private final FlowableProcessor<Flowable<Completable>> workerProcessor;
     private Disposable disposable;
 
-    public SchedulerWhen(Function<Flowable<Flowable<Completable>>, Completable> combine, Scheduler actualScheduler) {
+    public SchedulerWhen(Function1<Flowable<Flowable<Completable>>, Completable> combine, Scheduler actualScheduler) {
         this.actualScheduler = actualScheduler;
         // workers are converted into completables and put in this queue.
         this.workerProcessor = UnicastProcessor.<Flowable<Completable>>create().toSerialized();
         // send it to a custom combinator to pick the order and rate at which
         // workers are processed.
         try {
-            disposable = combine.apply(workerProcessor).subscribe();
+            disposable = combine.invoke(workerProcessor).subscribe();
         } catch (Throwable e) {
             Exceptions.propagate(e);
         }
@@ -256,7 +263,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         }
     }
 
-    static final class CreateWorkerFunction implements Function<ScheduledAction, Completable> {
+    static final class CreateWorkerFunction implements Function1<ScheduledAction, Completable> {
         final Worker actualWorker;
 
         CreateWorkerFunction(Worker actualWorker) {
@@ -264,7 +271,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         }
 
         @Override
-        public Completable apply(final ScheduledAction action) {
+        public Completable invoke(final ScheduledAction action) {
             return new WorkerCompletable(action);
         }
 

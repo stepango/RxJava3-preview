@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -300,9 +299,9 @@ public class FlowableMaterializeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Notification<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Notification<Object>>>() {
             @Override
-            public Flowable<Notification<Object>> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Notification<Object>> invoke(Flowable<Object> o) {
                 return o.materialize();
             }
         });
@@ -310,9 +309,9 @@ public class FlowableMaterializeTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> f) throws Exception {
+            public Object invoke(Flowable<Object> f) {
                 return f.materialize();
             }
         }, false, null, null, Notification.createOnComplete());

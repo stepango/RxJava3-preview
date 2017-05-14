@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -44,9 +43,9 @@ public class FlowableAnyTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
-            .flatMap(new Function<Boolean, Publisher<Integer>>() {
+                .flatMap(new Function1<Boolean, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Boolean t1) {
+                public Publisher<Integer> invoke(Boolean t1) {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -255,9 +254,9 @@ public class FlowableAnyTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
-            .flatMap(new Function<Boolean, Publisher<Integer>>() {
+                .flatMap(new Function1<Boolean, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Boolean t1) {
+                public Publisher<Integer> invoke(Boolean t1) {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -325,9 +324,9 @@ public class FlowableAnyTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Boolean>>() {
             @Override
-            public Publisher<Boolean> apply(Flowable<Object> o) throws Exception {
+            public Publisher<Boolean> invoke(Flowable<Object> o) {
                 return o.any(Functions.alwaysTrue());
             }
         });

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -64,9 +63,9 @@ public class ObservableMapTest {
         Map<String, String> m2 = getMap("Two");
         Observable<Map<String, String>> o = Observable.just(m1, m2);
 
-        Observable<String> m = o.map(new Function<Map<String, String>, String>() {
+        Observable<String> m = o.map(new Function1<Map<String, String>, String>() {
             @Override
-            public String apply(Map<String, String> map) {
+            public String invoke(Map<String, String> map) {
                 return map.get("firstName");
             }
         });
@@ -85,10 +84,10 @@ public class ObservableMapTest {
         Observable<Integer> ids = Observable.just(1, 2);
 
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
-        Observable<String> m = ids.flatMap(new Function<Integer, Observable<String>>() {
+        Observable<String> m = ids.flatMap(new Function1<Integer, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Integer id) {
+            public Observable<String> invoke(Integer id) {
                 /* simulate making a nested async call which creates another Observable */
                 Observable<Map<String, String>> subObservable = null;
                 if (id == 1) {
@@ -102,9 +101,9 @@ public class ObservableMapTest {
                 }
 
                 /* simulate kicking off the async call and performing a select on it to transform the data */
-                return subObservable.map(new Function<Map<String, String>, String>() {
+                return subObservable.map(new Function1<Map<String, String>, String>() {
                     @Override
-                    public String apply(Map<String, String> map) {
+                    public String invoke(Map<String, String> map) {
                         return map.get("firstName");
                     }
                 });
@@ -133,14 +132,14 @@ public class ObservableMapTest {
 
         Observable<Observable<Map<String, String>>> o = Observable.just(observable1, observable2);
 
-        Observable<String> m = o.flatMap(new Function<Observable<Map<String, String>>, Observable<String>>() {
+        Observable<String> m = o.flatMap(new Function1<Observable<Map<String, String>>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Observable<Map<String, String>> o) {
-                return o.map(new Function<Map<String, String>, String>() {
+            public Observable<String> invoke(Observable<Map<String, String>> o) {
+                return o.map(new Function1<Map<String, String>, String>() {
 
                     @Override
-                    public String apply(Map<String, String> map) {
+                    public String invoke(Map<String, String> map) {
                         return map.get("firstName");
                     }
                 });
@@ -161,9 +160,9 @@ public class ObservableMapTest {
     @Test
     public void testMapWithError() {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
-        Observable<String> m = w.map(new Function<String, String>() {
+        Observable<String> m = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -190,9 +189,9 @@ public class ObservableMapTest {
     @Test(expected = IllegalArgumentException.class)
     public void testMapWithIssue417() {
         Observable.just(1).observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer arg0) {
+                    public Integer invoke(Integer arg0) {
                         throw new IllegalArgumentException("any error");
                     }
                 }).blockingSingle();
@@ -205,9 +204,9 @@ public class ObservableMapTest {
         // so map needs to handle the error by itself.
         Observable<String> m = Observable.just("one")
                 .observeOn(Schedulers.computation())
-                .map(new Function<String, String>() {
+                .map(new Function1<String, String>() {
                     @Override
-                    public String apply(String arg0) {
+                    public String invoke(String arg0) {
                         throw new IllegalArgumentException("any error");
                     }
                 });
@@ -221,10 +220,10 @@ public class ObservableMapTest {
      */
     @Test
     public void testErrorPassesThruMap() {
-        assertNull(Observable.range(1, 0).lastElement().map(new Function<Integer, Integer>() {
+        assertNull(Observable.range(1, 0).lastElement().map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 return i;
             }
 
@@ -236,10 +235,10 @@ public class ObservableMapTest {
      */
     @Test(expected = IllegalStateException.class)
     public void testErrorPassesThruMap2() {
-        Observable.error(new IllegalStateException()).map(new Function<Object, Object>() {
+        Observable.error(new IllegalStateException()).map(new Function1<Object, Object>() {
 
             @Override
-            public Object apply(Object i) {
+            public Object invoke(Object i) {
                 return i;
             }
 
@@ -252,10 +251,10 @@ public class ObservableMapTest {
      */
     @Test(expected = ArithmeticException.class)
     public void testMapWithErrorInFunc() {
-        Observable.range(1, 1).lastElement().map(new Function<Integer, Integer>() {
+        Observable.range(1, 1).lastElement().map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 return i / 0;
             }
 
@@ -350,9 +349,9 @@ public class ObservableMapTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.map(Functions.identity());
             }
         });
@@ -400,9 +399,9 @@ public class ObservableMapTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
+            public Object invoke(Observable<Object> o) {
                 return o.map(Functions.identity());
             }
         }, false, 1, 1, 1);

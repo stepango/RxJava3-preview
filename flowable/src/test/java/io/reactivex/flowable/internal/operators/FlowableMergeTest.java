@@ -42,7 +42,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -820,10 +819,10 @@ public class FlowableMergeTest {
     public void testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Flowable<Flowable<Integer>> o1 = createInfiniteFlowable(generated1)
-        .map(new Function<Integer, Flowable<Integer>>() {
+                .map(new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.just(t1);
             }
 
@@ -873,10 +872,10 @@ public class FlowableMergeTest {
     @Test(timeout = 5000)
     public void testBackpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
-        Flowable<Flowable<Integer>> o1 = createInfiniteFlowable(generated1).map(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Flowable<Integer>> o1 = createInfiniteFlowable(generated1).map(new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.just(1, 2, 3);
             }
 
@@ -1012,10 +1011,10 @@ public class FlowableMergeTest {
 
     private Flowable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
         Flowable<Flowable<Integer>> os = Flowable.range(1, outerSize)
-        .map(new Function<Integer, Flowable<Integer>>() {
+                .map(new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer i) {
+            public Flowable<Integer> invoke(Integer i) {
                 return Flowable.range(1, innerSize).subscribeOn(Schedulers.computation());
             }
 
@@ -1070,10 +1069,10 @@ public class FlowableMergeTest {
 
     private Flowable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
         Flowable<Flowable<Integer>> os = Flowable.range(1, outerSize)
-        .map(new Function<Integer, Flowable<Integer>>() {
+                .map(new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer i) {
+            public Flowable<Integer> invoke(Integer i) {
                 return Flowable.range(1, innerSize);
             }
 
@@ -1110,10 +1109,10 @@ public class FlowableMergeTest {
     public void mergeManyAsyncSingle() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable<Flowable<Integer>> os = Flowable.range(1, 10000)
-        .map(new Function<Integer, Flowable<Integer>>() {
+                .map(new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(final Integer i) {
+            public Flowable<Integer> invoke(final Integer i) {
                 return Flowable.unsafeCreate(new Publisher<Integer>() {
 
                     @Override
@@ -1248,9 +1247,9 @@ public class FlowableMergeTest {
 
             Flowable.range(1, 2)
                     // produce many integers per second
-                    .flatMap(new Function<Integer, Flowable<Integer>>() {
+                    .flatMap(new Function1<Integer, Flowable<Integer>>() {
                         @Override
-                        public Flowable<Integer> apply(final Integer number) {
+                        public Flowable<Integer> invoke(final Integer number) {
                             return Flowable.range(1, Integer.MAX_VALUE)
                                     .doOnRequest(new Function1<Long, Unit>() {
 
@@ -1361,22 +1360,22 @@ public class FlowableMergeTest {
         };
     }
 
-    Function<Integer, Flowable<Integer>> toScalar = new Function<Integer, Flowable<Integer>>() {
+    Function1<Integer, Flowable<Integer>> toScalar = new Function1<Integer, Flowable<Integer>>() {
         @Override
-        public Flowable<Integer> apply(Integer v) {
+        public Flowable<Integer> invoke(Integer v) {
             return Flowable.just(v);
         }
     };
 
-    Function<Integer, Flowable<Integer>> toHiddenScalar = new Function<Integer, Flowable<Integer>>() {
+    Function1<Integer, Flowable<Integer>> toHiddenScalar = new Function1<Integer, Flowable<Integer>>() {
         @Override
-        public Flowable<Integer> apply(Integer t) {
+        public Flowable<Integer> invoke(Integer t) {
             return Flowable.just(t).hide();
         }
     };
     ;
 
-    void runMerge(Function<Integer, Flowable<Integer>> func, TestSubscriber<Integer> ts) {
+    void runMerge(Function1<Integer, Flowable<Integer>> func, TestSubscriber<Integer> ts) {
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < 1000; i++) {
             list.add(i);
@@ -1464,9 +1463,9 @@ public class FlowableMergeTest {
     public void mergeJustNull() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
 
-        Flowable.range(1, 2).flatMap(new Function<Integer, Flowable<Integer>>() {
+        Flowable.range(1, 2).flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return Flowable.just(null);
             }
         }).subscribe(ts);
@@ -1558,7 +1557,7 @@ public class FlowableMergeTest {
     public void flatMapJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).flatMap((Function)Functions.identity()).subscribe(ts);
+        Flowable.just(Flowable.just(1)).flatMap((Function1) Functions.identity()).subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -1570,7 +1569,7 @@ public class FlowableMergeTest {
     public void flatMapJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).flatMap((Function)Functions.identity()).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5)).flatMap((Function1) Functions.identity()).subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
@@ -1582,7 +1581,7 @@ public class FlowableMergeTest {
     public void flatMapMaxConcurrentJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).flatMap((Function)Functions.identity(), 5).subscribe(ts);
+        Flowable.just(Flowable.just(1)).flatMap((Function1) Functions.identity(), 5).subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -1594,7 +1593,7 @@ public class FlowableMergeTest {
     public void flatMapMaxConcurrentJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).flatMap((Function)Functions.identity(), 5).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5)).flatMap((Function1) Functions.identity(), 5).subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();

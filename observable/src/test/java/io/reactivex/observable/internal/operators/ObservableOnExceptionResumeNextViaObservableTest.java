@@ -13,17 +13,25 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ObservableOnExceptionResumeNextViaObservableTest {
 
@@ -149,9 +157,9 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
+        w = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -190,11 +198,11 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         Observable.range(0, 100000)
                 .onExceptionResumeNext(Observable.just(1))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     int c;
 
                     @Override
-                    public Integer apply(Integer t1) {
+                    public Integer invoke(Integer t1) {
                         if (c++ <= 1) {
                             // slow
                             try {

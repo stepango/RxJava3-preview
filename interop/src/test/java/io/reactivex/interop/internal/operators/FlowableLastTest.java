@@ -19,7 +19,6 @@ import org.mockito.InOrder;
 import java.util.NoSuchElementException;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Maybe;
@@ -322,23 +321,23 @@ public class FlowableLastTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function1<Flowable<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Flowable<Object> o) throws Exception {
+            public MaybeSource<Object> invoke(Flowable<Object> o) {
                 return lastElement(o);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function1<Flowable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Flowable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Flowable<Object> o) {
                 return lastOrError(o);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function1<Flowable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Flowable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Flowable<Object> o) {
                 return last(o, 2);
             }
         });

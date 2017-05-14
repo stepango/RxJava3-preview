@@ -13,25 +13,33 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingIterable;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableFromIterableTest {
 
@@ -237,9 +245,9 @@ public class ObservableFromIterableTest {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
-        new Function<Integer, ObservableSource<Integer>>() {
+                new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         }).subscribe(to);

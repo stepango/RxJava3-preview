@@ -15,10 +15,11 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps the upstream success value into some other value.
@@ -28,9 +29,9 @@ import io.reactivex.observable.*;
  */
 public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
-    final Function<? super T, ? extends R> mapper;
+    final Function1<? super T, ? extends R> mapper;
 
-    public MaybeMap(MaybeSource<T> source, Function<? super T, ? extends R> mapper) {
+    public MaybeMap(MaybeSource<T> source, Function1<? super T, ? extends R> mapper) {
         super(source);
         this.mapper = mapper;
     }
@@ -44,11 +45,11 @@ public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         final MaybeObserver<? super R> actual;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function1<? super T, ? extends R> mapper;
 
         Disposable d;
 
-        MapMaybeObserver(MaybeObserver<? super R> actual, Function<? super T, ? extends R> mapper) {
+        MapMaybeObserver(MaybeObserver<? super R> actual, Function1<? super T, ? extends R> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -79,7 +80,7 @@ public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null item");
+                v = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null item");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(ex);

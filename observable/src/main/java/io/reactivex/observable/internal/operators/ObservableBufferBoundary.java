@@ -13,14 +13,17 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.ObservableSource;
@@ -29,16 +32,18 @@ import io.reactivex.observable.extensions.SimplePlainQueue;
 import io.reactivex.observable.internal.observers.QueueDrainObserver;
 import io.reactivex.observable.internal.queues.MpscLinkedQueue;
 import io.reactivex.observable.internal.utils.QueueDrainHelper;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DisposableObserver;
+import io.reactivex.observable.observers.SerializedObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractObservableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final ObservableSource<? extends Open> bufferOpen;
-    final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
+    final Function1<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
 
     public ObservableBufferBoundary(ObservableSource<T> source, ObservableSource<? extends Open> bufferOpen,
-                                    Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
+                                    Function1<? super Open, ? extends ObservableSource<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
         super(source);
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
@@ -56,7 +61,7 @@ extends AbstractObservableWithUpstream<T, U> {
     static final class BufferBoundaryObserver<T, U extends Collection<? super T>, Open, Close>
     extends QueueDrainObserver<T, U, U> implements Disposable {
         final ObservableSource<? extends Open> bufferOpen;
-        final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
+        final Function1<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
         final Callable<U> bufferSupplier;
         final CompositeDisposable resources;
 
@@ -67,9 +72,9 @@ extends AbstractObservableWithUpstream<T, U> {
         final AtomicInteger windows = new AtomicInteger();
 
         BufferBoundaryObserver(Observer<? super U> actual,
-                ObservableSource<? extends Open> bufferOpen,
-                Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
-                        Callable<U> bufferSupplier) {
+                               ObservableSource<? extends Open> bufferOpen,
+                               Function1<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
+                               Callable<U> bufferSupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
@@ -170,7 +175,7 @@ extends AbstractObservableWithUpstream<T, U> {
             ObservableSource<? extends Close> p;
 
             try {
-                p = ObjectHelper.requireNonNull(bufferClose.apply(window), "The buffer closing Observable is null");
+                p = ObjectHelper.requireNonNull(bufferClose.invoke(window), "The buffer closing Observable is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);

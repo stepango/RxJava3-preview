@@ -28,7 +28,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -84,9 +83,9 @@ public class ObservableTakeTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
         Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         }).blockingSingle();
@@ -95,9 +94,9 @@ public class ObservableTakeTest {
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3))
-                .take(2).map(new Function<Integer, Integer>() {
+                .take(2).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -111,9 +110,9 @@ public class ObservableTakeTest {
 
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
-        Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
+        Observable<Integer> w = Observable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -406,9 +405,9 @@ public class ObservableTakeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.take(2);
             }
         });

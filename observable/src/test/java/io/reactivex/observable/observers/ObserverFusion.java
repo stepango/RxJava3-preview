@@ -13,7 +13,6 @@
 
 package io.reactivex.observable.observers;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.extensions.QueueDisposable;
 import kotlin.Unit;
@@ -42,7 +41,7 @@ public enum ObserverFusion {
      * @param cancelled should the TestObserver cancelled before the subscription even happens?
      * @return the new Function instance
      */
-    public static <T> Function<Observable<T>, TestObserver<T>> test(
+    public static <T> Function1<Observable<T>, TestObserver<T>> test(
             final int mode, final boolean cancelled) {
         return new TestFunctionCallback<T>(mode, cancelled);
     }
@@ -79,7 +78,7 @@ public enum ObserverFusion {
         }
     }
 
-    static final class TestFunctionCallback<T> implements Function<Observable<T>, TestObserver<T>> {
+    static final class TestFunctionCallback<T> implements Function1<Observable<T>, TestObserver<T>> {
         private final int mode;
         private final boolean cancelled;
 
@@ -89,7 +88,7 @@ public enum ObserverFusion {
         }
 
         @Override
-        public TestObserver<T> apply(Observable<T> t) throws Exception {
+        public TestObserver<T> invoke(Observable<T> t) {
             TestObserver<T> ts = new TestObserver<T>();
             ts.setInitialFusionMode(mode);
             if (cancelled) {

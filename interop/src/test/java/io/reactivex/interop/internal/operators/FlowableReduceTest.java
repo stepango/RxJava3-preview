@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Maybe;
@@ -59,9 +58,9 @@ public class FlowableReduceTest {
     public void testAggregateAsIntSum() {
 
         Single<Integer> result = reduce(Flowable.just(1, 2, 3, 4, 5), 0, sum)
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -76,9 +75,9 @@ public class FlowableReduceTest {
     public void testAggregateAsIntSumSourceThrows() {
         Single<Integer> result = reduce(Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
-                , 0, sum).map(new Function<Integer, Integer>() {
+                , 0, sum).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -99,9 +98,9 @@ public class FlowableReduceTest {
         };
 
         Single<Integer> result = reduce(Flowable.just(1, 2, 3, 4, 5)
-                , 0, sumErr).map(new Function<Integer, Integer>() {
+                , 0, sumErr).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 });
@@ -115,10 +114,10 @@ public class FlowableReduceTest {
     @Test
     public void testAggregateAsIntSumResultSelectorThrows() {
 
-        Function<Integer, Integer> error = new Function<Integer, Integer>() {
+        Function1<Integer, Integer> error = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -157,9 +156,9 @@ public class FlowableReduceTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Integer>, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function1<Flowable<Integer>, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Flowable<Integer> f) throws Exception {
+            public MaybeSource<Integer> invoke(Flowable<Integer> f) {
                 return reduce(f, sum);
             }
         });
@@ -183,9 +182,9 @@ public class FlowableReduceTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return reduce(f, sum);
             }
         }, false, 1, 1, 1);
@@ -211,13 +210,13 @@ public class FlowableReduceTest {
     public void shouldReduceTo10Events() {
         final AtomicInteger count = new AtomicInteger();
 
-        Flowable.range(0, 10).flatMap(new Function<Integer, Publisher<String>>() {
+        Flowable.range(0, 10).flatMap(new Function1<Integer, Publisher<String>>() {
             @Override
-            public Publisher<String> apply(final Integer x) throws Exception {
+            public Publisher<String> invoke(final Integer x) {
                 return toFlowable(reduce(Flowable.range(0, 2)
-                    .map(new Function<Integer, String>() {
+                                .map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer y) throws Exception {
+                    public String invoke(Integer y) {
                         return blockingOp(x, y);
                     }
                 }).subscribeOn(Schedulers.io())

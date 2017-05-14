@@ -22,7 +22,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
@@ -49,9 +48,9 @@ public class MaybeDoOnEventTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Integer>, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
+            public MaybeSource<Integer> invoke(Maybe<Integer> m) {
                 return m.doOnEvent(new Function2<Integer, Throwable, kotlin.Unit>() {
                     @Override
                     public Unit invoke(Integer v, Throwable e) {

@@ -13,12 +13,13 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Helper utility class to support Single with inner classes.
@@ -44,17 +45,17 @@ public final class SingleInternalHelper {
     }
 
     @SuppressWarnings("rawtypes")
-    enum ToObservable implements Function<SingleSource, Observable> {
+    enum ToObservable implements Function1<SingleSource, Observable> {
         INSTANCE;
         @SuppressWarnings("unchecked")
         @Override
-        public Observable apply(SingleSource v) {
+        public Observable invoke(SingleSource v) {
             return new SingleToObservable(v);
         }
     }
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<SingleSource<? extends T>, Observable<? extends T>> toObservable() {
-        return (Function)ToObservable.INSTANCE;
+    public static <T> Function1<SingleSource<? extends T>, Observable<? extends T>> toObservable() {
+        return (Function1) ToObservable.INSTANCE;
     }
 
     static final class ToObservableIterator<T> implements Iterator<Observable<T>> {

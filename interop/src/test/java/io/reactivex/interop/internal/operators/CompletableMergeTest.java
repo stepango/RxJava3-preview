@@ -13,23 +13,33 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import java.util.List;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.ignoreElements;
+import static io.reactivex.interop.RxJava3Interop.mergeCompletable;
+import static io.reactivex.interop.RxJava3Interop.mergeCompletableDelayError;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CompletableMergeTest {
     @Test
@@ -104,9 +114,9 @@ public class CompletableMergeTest {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestObserver<Void> to = mergeCompletable(pp1.map(new Function<Integer, Completable>() {
+                TestObserver<Void> to = mergeCompletable(pp1.map(new Function1<Integer, Completable>() {
                     @Override
-                    public Completable apply(Integer v) throws Exception {
+                    public Completable invoke(Integer v) {
                         return ignoreElements(pp2);
                     }
                 })).test();
@@ -157,9 +167,9 @@ public class CompletableMergeTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserver<Void> to = mergeCompletableDelayError(pp1.map(new Function<Integer, Completable>() {
+            TestObserver<Void> to = mergeCompletableDelayError(pp1.map(new Function1<Integer, Completable>() {
                 @Override
-                public Completable apply(Integer v) throws Exception {
+                public Completable invoke(Integer v) {
                     return ignoreElements(pp2);
                 }
             })).test();
@@ -261,9 +271,9 @@ public class CompletableMergeTest {
         final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestObserver<Void> to = mergeCompletableDelayError(
-        pp0.map(new Function<PublishProcessor<Integer>, Completable>() {
+                pp0.map(new Function1<PublishProcessor<Integer>, Completable>() {
             @Override
-            public Completable apply(PublishProcessor<Integer> v) throws Exception {
+            public Completable invoke(PublishProcessor<Integer> v) {
                 return ignoreElements(v);
             }
         }), 1)

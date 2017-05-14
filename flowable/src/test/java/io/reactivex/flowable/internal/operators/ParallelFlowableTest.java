@@ -36,7 +36,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ListAddBiConsumer;
 import io.reactivex.common.internal.utils.MergerBiFunction;
@@ -61,9 +60,9 @@ public class ParallelFlowableTest {
         Flowable<Integer> source = Flowable.range(1, 1000000).hide();
         for (int i = 1; i < 33; i++) {
             Flowable<Integer> result = ParallelFlowable.from(source, i)
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
                     return v + 1;
                 }
             })
@@ -89,9 +88,9 @@ public class ParallelFlowableTest {
         Flowable<Integer> source = Flowable.range(1, 1000000);
         for (int i = 1; i < 33; i++) {
             Flowable<Integer> result = ParallelFlowable.from(source, i)
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
                     return v + 1;
                 }
             })
@@ -125,9 +124,9 @@ public class ParallelFlowableTest {
             try {
                 Flowable<Integer> result = ParallelFlowable.from(source, i)
                 .runOn(scheduler)
-                .map(new Function<Integer, Integer>() {
+                        .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) throws Exception {
+                    public Integer invoke(Integer v) {
                         return v + 1;
                     }
                 })
@@ -166,9 +165,9 @@ public class ParallelFlowableTest {
             try {
                 Flowable<Integer> result = ParallelFlowable.from(source, i)
                 .runOn(scheduler)
-                .map(new Function<Integer, Integer>() {
+                        .map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) throws Exception {
+                    public Integer invoke(Integer v) {
                         return v + 1;
                     }
                 })
@@ -229,9 +228,9 @@ public class ParallelFlowableTest {
                     TestSubscriber<Long> ts = new TestSubscriber<Long>();
 
                     Flowable.range(1, n)
-                    .map(new Function<Integer, Long>() {
+                            .map(new Function1<Integer, Long>() {
                         @Override
-                        public Long apply(Integer v) throws Exception {
+                        public Long invoke(Integer v) {
                             return (long)v;
                         }
                     })
@@ -314,9 +313,9 @@ public class ParallelFlowableTest {
             }
         })
         .sequential()
-        .flatMapIterable(new Function<List<Integer>, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<List<Integer>, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(List<Integer> v) throws Exception {
+            public Iterable<Integer> invoke(List<Integer> v) {
                 return v;
             }
         })
@@ -347,9 +346,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel()
-        .concatMap(new Function<Integer, Publisher<Integer>>() {
+                .concatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.range(v * 10 + 1, 3);
             }
         })
@@ -368,9 +367,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel()
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.range(v * 10 + 1, 3);
             }
         })
@@ -969,9 +968,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 if (v == 3) {
                     throw new TestException();
                 }
@@ -999,9 +998,9 @@ public class ParallelFlowableTest {
     public void doOnErrorThrows() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 if (v == 3) {
                     throw new TestException();
                 }
@@ -1138,9 +1137,9 @@ public class ParallelFlowableTest {
     public void to() {
         Flowable.range(1, 5)
         .parallel()
-        .to(new Function<ParallelFlowable<Integer>, Flowable<Integer>>() {
+                .to(new Function1<ParallelFlowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+            public Flowable<Integer> invoke(ParallelFlowable<Integer> pf) {
                 return pf.sequential();
             }
         })
@@ -1152,9 +1151,9 @@ public class ParallelFlowableTest {
     public void toThrows() {
         Flowable.range(1, 5)
         .parallel()
-        .to(new Function<ParallelFlowable<Integer>, Flowable<Integer>>() {
+                .to(new Function1<ParallelFlowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+            public Flowable<Integer> invoke(ParallelFlowable<Integer> pf) {
                 throw new TestException();
             }
         });
@@ -1167,9 +1166,9 @@ public class ParallelFlowableTest {
         .compose(new ParallelTransformer<Integer, Integer>() {
             @Override
             public ParallelFlowable<Integer> apply(ParallelFlowable<Integer> pf) {
-                return pf.map(new Function<Integer, Integer>() {
+                return pf.map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) throws Exception {
+                    public Integer invoke(Integer v) {
                         return v + 1;
                     }
                 });
@@ -1186,9 +1185,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 if (v == 3) {
                    return Flowable.error(new TestException());
                 }
@@ -1219,9 +1218,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 if (v == 3) {
                    return Flowable.error(new TestException());
                 }
@@ -1252,9 +1251,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 if (v == 3) {
                    return Flowable.error(new TestException());
                 }
@@ -1285,9 +1284,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 if (v == 3) {
                    return Flowable.error(new TestException());
                 }
@@ -1318,9 +1317,9 @@ public class ParallelFlowableTest {
 
         Flowable.range(1, 5)
         .parallel(2)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 if (v == 3) {
                    return Flowable.error(new TestException());
                 }

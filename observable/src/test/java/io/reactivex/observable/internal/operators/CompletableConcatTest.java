@@ -13,19 +13,28 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.CompletableSubject;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class CompletableConcatTest {
 
@@ -53,9 +62,9 @@ public class CompletableConcatTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final CompletableSubject ps2 = CompletableSubject.create();
 
-                TestObserver<Void> to = Completable.concat(ps1.map(new Function<Integer, Completable>() {
+                TestObserver<Void> to = Completable.concat(ps1.map(new Function1<Integer, Completable>() {
                     @Override
-                    public Completable apply(Integer v) throws Exception {
+                    public Completable invoke(Integer v) {
                         return ps2;
                     }
                 })).test();
@@ -92,9 +101,9 @@ public class CompletableConcatTest {
 
     @Test
     public void synchronousFusedCrash() {
-        Completable.concat(Observable.range(1, 2).map(new Function<Integer, Completable>() {
+        Completable.concat(Observable.range(1, 2).map(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 throw new TestException();
             }
         }))

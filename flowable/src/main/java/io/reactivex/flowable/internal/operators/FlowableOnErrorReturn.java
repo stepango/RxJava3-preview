@@ -15,15 +15,17 @@ package io.reactivex.flowable.internal.operators;
 
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscribers.SinglePostCompleteSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream<T, T> {
-    final Function<? super Throwable, ? extends T> valueSupplier;
-    public FlowableOnErrorReturn(Flowable<T> source, Function<? super Throwable, ? extends T> valueSupplier) {
+    final Function1<? super Throwable, ? extends T> valueSupplier;
+
+    public FlowableOnErrorReturn(Flowable<T> source, Function1<? super Throwable, ? extends T> valueSupplier) {
         super(source);
         this.valueSupplier = valueSupplier;
     }
@@ -37,9 +39,9 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
     extends SinglePostCompleteSubscriber<T, T> {
 
         private static final long serialVersionUID = -3740826063558713822L;
-        final Function<? super Throwable, ? extends T> valueSupplier;
+        final Function1<? super Throwable, ? extends T> valueSupplier;
 
-        OnErrorReturnSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
+        OnErrorReturnSubscriber(Subscriber<? super T> actual, Function1<? super Throwable, ? extends T> valueSupplier) {
             super(actual);
             this.valueSupplier = valueSupplier;
         }
@@ -54,7 +56,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         public void onError(Throwable t) {
             T v;
             try {
-                v = ObjectHelper.requireNonNull(valueSupplier.apply(t), "The valueSupplier returned a null value");
+                v = ObjectHelper.requireNonNull(valueSupplier.invoke(t), "The valueSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(new CompositeException(t, ex));

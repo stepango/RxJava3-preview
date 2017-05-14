@@ -13,25 +13,32 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DisposableSubscriber;
+import io.reactivex.flowable.subscribers.SerializedSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T, T> {
-    final Function<? super T, ? extends Publisher<U>> debounceSelector;
+    final Function1<? super T, ? extends Publisher<U>> debounceSelector;
 
-    public FlowableDebounce(Flowable<T> source, Function<? super T, ? extends Publisher<U>> debounceSelector) {
+    public FlowableDebounce(Flowable<T> source, Function1<? super T, ? extends Publisher<U>> debounceSelector) {
         super(source);
         this.debounceSelector = debounceSelector;
     }
@@ -46,7 +53,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
         private static final long serialVersionUID = 6725975399620862591L;
         final Subscriber<? super T> actual;
-        final Function<? super T, ? extends Publisher<U>> debounceSelector;
+        final Function1<? super T, ? extends Publisher<U>> debounceSelector;
 
         Subscription s;
 
@@ -57,7 +64,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
         boolean done;
 
         DebounceSubscriber(Subscriber<? super T> actual,
-                Function<? super T, ? extends Publisher<U>> debounceSelector) {
+                           Function1<? super T, ? extends Publisher<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
         }
@@ -88,7 +95,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             Publisher<U> p;
 
             try {
-                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
+                p = ObjectHelper.requireNonNull(debounceSelector.invoke(t), "The publisher supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();

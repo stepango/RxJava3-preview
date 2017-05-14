@@ -12,21 +12,29 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.HalfSerializer;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Combines a main sequence of values with the latest from multiple other sequences via
@@ -42,16 +50,16 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
     @Nullable
     final Iterable<? extends Publisher<?>> otherIterable;
 
-    final Function<? super Object[], R> combiner;
+    final Function1<? super Object[], R> combiner;
 
-    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Publisher<?>[] otherArray, Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Publisher<?>[] otherArray, Function1<? super Object[], R> combiner) {
         super(source);
         this.otherArray = otherArray;
         this.otherIterable = null;
         this.combiner = combiner;
     }
 
-    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, @NonNull Function1<? super Object[], R> combiner) {
         super(source);
         this.otherArray = null;
         this.otherIterable = otherIterable;
@@ -102,7 +110,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         final Subscriber<? super R> actual;
 
-        final Function<? super Object[], R> combiner;
+        final Function1<? super Object[], R> combiner;
 
         final WithLatestInnerSubscriber[] subscribers;
 
@@ -116,7 +124,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         volatile boolean done;
 
-        WithLatestFromSubscriber(Subscriber<? super R> actual, Function<? super Object[], R> combiner, int n) {
+        WithLatestFromSubscriber(Subscriber<? super R> actual, Function1<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
             WithLatestInnerSubscriber[] s = new WithLatestInnerSubscriber[n];
@@ -169,7 +177,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(combiner.apply(objects), "combiner returned a null value");
+                v = ObjectHelper.requireNonNull(combiner.invoke(objects), "combiner returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancel();
@@ -295,10 +303,10 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
     }
 
-    final class SingletonArrayFunc implements Function<T, R> {
+    final class SingletonArrayFunc implements Function1<T, R> {
         @Override
-        public R apply(T t) throws Exception {
-            return combiner.apply(new Object[] { t });
+        public R invoke(T t) {
+            return combiner.invoke(new Object[]{t});
         }
     }
 }

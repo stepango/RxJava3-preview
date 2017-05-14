@@ -13,18 +13,21 @@
 
 package io.reactivex.observable.internal.operators;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstream<T, T> {
-    final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
+    final Function1<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
     final boolean allowFatal;
 
     public ObservableOnErrorNext(ObservableSource<T> source,
-                                 Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
+                                 Function1<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
         super(source);
         this.nextSupplier = nextSupplier;
         this.allowFatal = allowFatal;
@@ -39,7 +42,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
 
     static final class OnErrorNextObserver<T> implements Observer<T> {
         final Observer<? super T> actual;
-        final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
+        final Function1<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
         final boolean allowFatal;
         final SequentialDisposable arbiter;
 
@@ -47,7 +50,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
 
         boolean done;
 
-        OnErrorNextObserver(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
+        OnErrorNextObserver(Observer<? super T> actual, Function1<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
@@ -87,7 +90,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
             ObservableSource<? extends T> p;
 
             try {
-                p = nextSupplier.apply(t);
+                p = nextSupplier.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(t, e));

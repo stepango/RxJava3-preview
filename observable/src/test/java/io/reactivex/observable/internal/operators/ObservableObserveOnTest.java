@@ -32,7 +32,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -240,10 +239,10 @@ public class ObservableObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 100000).map(new Function<Integer, Integer>() {
+        Observable.range(1, 100000).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * _multiple;
             }
 
@@ -271,10 +270,10 @@ public class ObservableObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 100000).map(new Function<Integer, Integer>() {
+        Observable.range(1, 100000).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * _multiple;
             }
 
@@ -307,10 +306,10 @@ public class ObservableObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Observable.range(1, 10000).map(new Function<Integer, Integer>() {
+        Observable.range(1, 10000).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 if (randomIntFrom0to100() > 98) {
                     try {
                         Thread.sleep(2);
@@ -513,9 +512,9 @@ public class ObservableObserveOnTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.observeOn(new TestScheduler());
             }
         });

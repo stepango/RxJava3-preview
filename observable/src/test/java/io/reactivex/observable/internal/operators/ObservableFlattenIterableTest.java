@@ -14,22 +14,22 @@
 package io.reactivex.observable.internal.operators;
 
 
+import org.junit.Test;
 
 import java.util.Arrays;
 
-import org.junit.Test;
-
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableFlattenIterableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
+        TestHelper.checkDisposed(PublishSubject.create().flatMapIterable(new Function1<Object, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Object v) throws Exception {
+            public Iterable<Integer> invoke(Object v) {
                 return Arrays.asList(10, 20);
             }
         }));
@@ -37,12 +37,12 @@ public class ObservableFlattenIterableTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return o.flatMapIterable(new Function<Object, Iterable<Integer>>() {
+            public Object invoke(Observable<Integer> o) {
+                return o.flatMapIterable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return Arrays.asList(10, 20);
                     }
                 });

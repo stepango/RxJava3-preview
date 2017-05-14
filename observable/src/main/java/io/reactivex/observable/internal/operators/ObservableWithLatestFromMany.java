@@ -13,18 +13,23 @@
 package io.reactivex.observable.internal.operators;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import io.reactivex.common.*;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.utils.HalfSerializer;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Combines a main sequence of values with the latest from multiple other sequences via
@@ -42,16 +47,16 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     final Iterable<? extends ObservableSource<?>> otherIterable;
 
     @NonNull
-    final Function<? super Object[], R> combiner;
+    final Function1<? super Object[], R> combiner;
 
-    public ObservableWithLatestFromMany(@NonNull ObservableSource<T> source, @NonNull ObservableSource<?>[] otherArray, @NonNull Function<? super Object[], R> combiner) {
+    public ObservableWithLatestFromMany(@NonNull ObservableSource<T> source, @NonNull ObservableSource<?>[] otherArray, @NonNull Function1<? super Object[], R> combiner) {
         super(source);
         this.otherArray = otherArray;
         this.otherIterable = null;
         this.combiner = combiner;
     }
 
-    public ObservableWithLatestFromMany(@NonNull ObservableSource<T> source, @NonNull Iterable<? extends ObservableSource<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
+    public ObservableWithLatestFromMany(@NonNull ObservableSource<T> source, @NonNull Iterable<? extends ObservableSource<?>> otherIterable, @NonNull Function1<? super Object[], R> combiner) {
         super(source);
         this.otherArray = null;
         this.otherIterable = otherIterable;
@@ -102,7 +107,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         final Observer<? super R> actual;
 
-        final Function<? super Object[], R> combiner;
+        final Function1<? super Object[], R> combiner;
 
         final WithLatestInnerObserver[] observers;
 
@@ -114,7 +119,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         volatile boolean done;
 
-        WithLatestFromObserver(Observer<? super R> actual, Function<? super Object[], R> combiner, int n) {
+        WithLatestFromObserver(Observer<? super R> actual, Function1<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
             WithLatestInnerObserver[] s = new WithLatestInnerObserver[n];
@@ -165,7 +170,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(combiner.apply(objects), "combiner returned a null value");
+                v = ObjectHelper.requireNonNull(combiner.invoke(objects), "combiner returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 dispose();
@@ -283,10 +288,10 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
     }
 
-    final class SingletonArrayFunc implements Function<T, R> {
+    final class SingletonArrayFunc implements Function1<T, R> {
         @Override
-        public R apply(T t) throws Exception {
-            return combiner.apply(new Object[] { t });
+        public R invoke(T t) {
+            return combiner.invoke(new Object[]{t});
         }
     }
 }

@@ -26,7 +26,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -94,15 +93,15 @@ public class FlowableDoFinallyTest implements Function0 {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> f) {
                 return f.doFinally(FlowableDoFinallyTest.this);
             }
         });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> f) {
                 return f.doFinally(FlowableDoFinallyTest.this).filter(Functions.alwaysTrue());
             }
         });

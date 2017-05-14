@@ -16,20 +16,23 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.internal.observers.ResumeSingleObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleResumeNext<T> extends Single<T> {
     final SingleSource<? extends T> source;
 
-    final Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
+    final Function1<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
 
     public SingleResumeNext(SingleSource<? extends T> source,
-            Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
+                            Function1<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
         this.source = source;
         this.nextFunction = nextFunction;
     }
@@ -45,10 +48,10 @@ public final class SingleResumeNext<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        final Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
+        final Function1<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
 
         ResumeMainSingleObserver(SingleObserver<? super T> actual,
-                Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
+                                 Function1<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
             this.actual = actual;
             this.nextFunction = nextFunction;
         }
@@ -70,7 +73,7 @@ public final class SingleResumeNext<T> extends Single<T> {
             SingleSource<? extends T> source;
 
             try {
-                source = ObjectHelper.requireNonNull(nextFunction.apply(e), "The nextFunction returned a null SingleSource.");
+                source = ObjectHelper.requireNonNull(nextFunction.invoke(e), "The nextFunction returned a null SingleSource.");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(new CompositeException(e, ex));

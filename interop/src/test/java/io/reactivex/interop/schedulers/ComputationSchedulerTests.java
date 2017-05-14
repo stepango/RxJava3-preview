@@ -24,7 +24,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.ComputationScheduler;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
@@ -101,10 +100,10 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     public final void testComputationThreadPool1() {
         Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
         Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.<Integer> merge(o1, o2).map(new Function<Integer, String>() {
+        Flowable<String> o = Flowable.<Integer>merge(o1, o2).map(new Function1<Integer, String>() {
 
             @Override
-            public String apply(Integer t) {
+            public String invoke(Integer t) {
                 assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
@@ -128,10 +127,10 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
         Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
         Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.<Integer> merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+        Flowable<String> o = Flowable.<Integer>merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
             @Override
-            public String apply(Integer t) {
+            public String invoke(Integer t) {
                 assertFalse(Thread.currentThread().getName().equals(currentThreadName));
                 assertTrue(Thread.currentThread().getName().startsWith("RxComputationThreadPool"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();

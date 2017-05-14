@@ -36,7 +36,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -690,27 +689,27 @@ public class FlowableAmbTest {
 
     @Test
     public void iteratorThrows() {
-        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
+        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.never();
             }
         }))
         .test()
         .assertFailureAndMessage(TestException.class, "iterator()");
 
-        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 1, 100, new Function<Integer, Flowable<Integer>>() {
+        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 1, 100, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.never();
             }
         }))
         .test()
         .assertFailureAndMessage(TestException.class, "hasNext()");
 
-        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 100, 1, new Function<Integer, Flowable<Integer>>() {
+        Flowable.amb(new CrashingMappedIterable<Flowable<Integer>>(100, 100, 1, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.never();
             }
         }))

@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.common.Emitter;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
@@ -78,20 +77,20 @@ public final class FlowableInternalHelper {
         return new SimpleBiGenerator<T, S>(consumer);
     }
 
-    static final class ItemDelayFunction<T, U> implements Function<T, Publisher<T>> {
-        final Function<? super T, ? extends Publisher<U>> itemDelay;
+    static final class ItemDelayFunction<T, U> implements Function1<T, Publisher<T>> {
+        final Function1<? super T, ? extends Publisher<U>> itemDelay;
 
-        ItemDelayFunction(Function<? super T, ? extends Publisher<U>> itemDelay) {
+        ItemDelayFunction(Function1<? super T, ? extends Publisher<U>> itemDelay) {
             this.itemDelay = itemDelay;
         }
 
         @Override
-        public Publisher<T> apply(final T v) throws Exception {
-            return new FlowableTakePublisher<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+        public Publisher<T> invoke(final T v) {
+            return new FlowableTakePublisher<U>(itemDelay.invoke(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
-    public static <T, U> Function<T, Publisher<T>> itemDelay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
+    public static <T, U> Function1<T, Publisher<T>> itemDelay(final Function1<? super T, ? extends Publisher<U>> itemDelay) {
         return new ItemDelayFunction<T, U>(itemDelay);
     }
 
@@ -149,7 +148,7 @@ public final class FlowableInternalHelper {
         return new SubscriberOnComplete<T>(subscriber);
     }
 
-    static final class FlatMapWithCombinerInner<U, R, T> implements Function<U, R> {
+    static final class FlatMapWithCombinerInner<U, R, T> implements Function1<U, R> {
         private final BiFunction<? super T, ? super U, ? extends R> combiner;
         private final T t;
 
@@ -159,49 +158,55 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public R apply(U w) throws Exception {
-            return combiner.apply(t, w);
+        public R invoke(U w) {
+            try {
+                return combiner.apply(t, w);
+            } catch (Exception e) {
+                //TODO checked exceptions
+                if (e instanceof RuntimeException) throw (RuntimeException) e;
+                else throw new RuntimeException(e);
+            }
         }
     }
 
-    static final class FlatMapWithCombinerOuter<T, R, U> implements Function<T, Publisher<R>> {
+    static final class FlatMapWithCombinerOuter<T, R, U> implements Function1<T, Publisher<R>> {
         private final BiFunction<? super T, ? super U, ? extends R> combiner;
-        private final Function<? super T, ? extends Publisher<? extends U>> mapper;
+        private final Function1<? super T, ? extends Publisher<? extends U>> mapper;
 
         FlatMapWithCombinerOuter(BiFunction<? super T, ? super U, ? extends R> combiner,
-                Function<? super T, ? extends Publisher<? extends U>> mapper) {
+                                 Function1<? super T, ? extends Publisher<? extends U>> mapper) {
             this.combiner = combiner;
             this.mapper = mapper;
         }
 
         @Override
-        public Publisher<R> apply(final T t) throws Exception {
+        public Publisher<R> invoke(final T t) {
             @SuppressWarnings("unchecked")
-            Publisher<U> u = (Publisher<U>)mapper.apply(t);
+            Publisher<U> u = (Publisher<U>) mapper.invoke(t);
             return new FlowableMapPublisher<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
 
-    public static <T, U, R> Function<T, Publisher<R>> flatMapWithCombiner(
-            final Function<? super T, ? extends Publisher<? extends U>> mapper,
+    public static <T, U, R> Function1<T, Publisher<R>> flatMapWithCombiner(
+            final Function1<? super T, ? extends Publisher<? extends U>> mapper,
                     final BiFunction<? super T, ? super U, ? extends R> combiner) {
         return new FlatMapWithCombinerOuter<T, R, U>(combiner, mapper);
     }
 
-    static final class FlatMapIntoIterable<T, U> implements Function<T, Publisher<U>> {
-        private final Function<? super T, ? extends Iterable<? extends U>> mapper;
+    static final class FlatMapIntoIterable<T, U> implements Function1<T, Publisher<U>> {
+        private final Function1<? super T, ? extends Iterable<? extends U>> mapper;
 
-        FlatMapIntoIterable(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        FlatMapIntoIterable(Function1<? super T, ? extends Iterable<? extends U>> mapper) {
             this.mapper = mapper;
         }
 
         @Override
-        public Publisher<U> apply(T t) throws Exception {
-            return new FlowableFromIterable<U>(mapper.apply(t));
+        public Publisher<U> invoke(T t) {
+            return new FlowableFromIterable<U>(mapper.invoke(t));
         }
     }
 
-    public static <T, U> Function<T, Publisher<U>> flatMapIntoIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public static <T, U> Function1<T, Publisher<U>> flatMapIntoIterable(final Function1<? super T, ? extends Iterable<? extends U>> mapper) {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
 
@@ -221,7 +226,7 @@ public final class FlowableInternalHelper {
         return new TimedReplay<T>(parent, time, unit, scheduler);
     }
 
-    public static <T, R> Function<Flowable<T>, Publisher<R>> replayFunction(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
+    public static <T, R> Function1<Flowable<T>, Publisher<R>> replayFunction(final Function1<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
         return new ReplayFunction<T, R>(selector, scheduler);
     }
 
@@ -235,20 +240,20 @@ public final class FlowableInternalHelper {
     }
 
     static final class ZipIterableFunction<T, R>
-    implements Function<List<Publisher<? extends T>>, Publisher<? extends R>> {
-        private final Function<? super Object[], ? extends R> zipper;
+            implements Function1<List<Publisher<? extends T>>, Publisher<? extends R>> {
+        private final Function1<? super Object[], ? extends R> zipper;
 
-        ZipIterableFunction(Function<? super Object[], ? extends R> zipper) {
+        ZipIterableFunction(Function1<? super Object[], ? extends R> zipper) {
             this.zipper = zipper;
         }
 
         @Override
-        public Publisher<? extends R> apply(List<Publisher<? extends T>> list) {
+        public Publisher<? extends R> invoke(List<Publisher<? extends T>> list) {
             return Flowable.zipIterable(list, zipper, false, Flowable.bufferSize());
         }
     }
 
-    public static <T, R> Function<List<Publisher<? extends T>>, Publisher<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Function1<List<Publisher<? extends T>>, Publisher<? extends R>> zipIterable(final Function1<? super Object[], ? extends R> zipper) {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
@@ -320,18 +325,18 @@ public final class FlowableInternalHelper {
         }
     }
 
-    static final class ReplayFunction<T, R> implements Function<Flowable<T>, Publisher<R>> {
-        private final Function<? super Flowable<T>, ? extends Publisher<R>> selector;
+    static final class ReplayFunction<T, R> implements Function1<Flowable<T>, Publisher<R>> {
+        private final Function1<? super Flowable<T>, ? extends Publisher<R>> selector;
         private final Scheduler scheduler;
 
-        ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
+        ReplayFunction(Function1<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
             this.selector = selector;
             this.scheduler = scheduler;
         }
 
         @Override
-        public Publisher<R> apply(Flowable<T> t) throws Exception {
-            return Flowable.fromPublisher(selector.apply(t)).observeOn(scheduler);
+        public Publisher<R> invoke(Flowable<T> t) {
+            return Flowable.fromPublisher(selector.invoke(t)).observeOn(scheduler);
         }
     }
 }

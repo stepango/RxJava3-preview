@@ -13,25 +13,32 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
-import io.reactivex.flowable.internal.subscribers.*;
+import io.reactivex.flowable.internal.subscribers.InnerQueuedSubscriber;
+import io.reactivex.flowable.internal.subscribers.InnerQueuedSubscriberSupport;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
     final int maxConcurrency;
 
@@ -40,10 +47,10 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
     final ErrorMode errorMode;
 
     public FlowableConcatMapEager(Flowable<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int maxConcurrency,
-            int prefetch,
-            ErrorMode errorMode) {
+                                  Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                                  int maxConcurrency,
+                                  int prefetch,
+                                  ErrorMode errorMode) {
         super(source);
         this.mapper = mapper;
         this.maxConcurrency = maxConcurrency;
@@ -65,7 +72,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         final Subscriber<? super R> actual;
 
-        final Function<? super T, ? extends Publisher<? extends R>> mapper;
+        final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
         final int maxConcurrency;
 
@@ -88,8 +95,8 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
         volatile InnerQueuedSubscriber<R> current;
 
         ConcatMapEagerDelayErrorSubscriber(Subscriber<? super R> actual,
-                Function<? super T, ? extends Publisher<? extends R>> mapper, int maxConcurrency, int prefetch,
-                ErrorMode errorMode) {
+                                           Function1<? super T, ? extends Publisher<? extends R>> mapper, int maxConcurrency, int prefetch,
+                                           ErrorMode errorMode) {
             this.actual = actual;
             this.mapper = mapper;
             this.maxConcurrency = maxConcurrency;
@@ -117,7 +124,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             Publisher<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                p = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

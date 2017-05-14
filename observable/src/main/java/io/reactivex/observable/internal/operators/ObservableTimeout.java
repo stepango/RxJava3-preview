@@ -16,26 +16,29 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.ObserverFullArbiter;
 import io.reactivex.observable.internal.observers.FullArbiterObserver;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DisposableObserver;
+import io.reactivex.observable.observers.SerializedObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpstream<T, T> {
     final ObservableSource<U> firstTimeoutIndicator;
-    final Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
+    final Function1<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
     final ObservableSource<? extends T> other;
 
     public ObservableTimeout(
             ObservableSource<T> source,
             ObservableSource<U> firstTimeoutIndicator,
-            Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
-                    ObservableSource<? extends T> other) {
+            Function1<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
+            ObservableSource<? extends T> other) {
         super(source);
         this.firstTimeoutIndicator = firstTimeoutIndicator;
         this.itemTimeoutIndicator = itemTimeoutIndicator;
@@ -61,15 +64,15 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         private static final long serialVersionUID = 2672739326310051084L;
         final Observer<? super T> actual;
         final ObservableSource<U> firstTimeoutIndicator;
-        final Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
+        final Function1<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
 
         Disposable s;
 
         volatile long index;
 
         TimeoutObserver(Observer<? super T> actual,
-                ObservableSource<U> firstTimeoutIndicator,
-                Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
+                        ObservableSource<U> firstTimeoutIndicator,
+                        Function1<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
             this.actual = actual;
             this.firstTimeoutIndicator = firstTimeoutIndicator;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
@@ -112,7 +115,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<V> p;
 
             try {
-                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The ObservableSource returned is null");
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.invoke(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
@@ -220,7 +223,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         private static final long serialVersionUID = -1957813281749686898L;
         final Observer<? super T> actual;
         final ObservableSource<U> firstTimeoutIndicator;
-        final Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
+        final Function1<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
         final ObservableSource<? extends T> other;
         final ObserverFullArbiter<T> arbiter;
 
@@ -231,8 +234,8 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         volatile long index;
 
         TimeoutOtherObserver(Observer<? super T> actual,
-                                      ObservableSource<U> firstTimeoutIndicator,
-                                      Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator, ObservableSource<? extends T> other) {
+                             ObservableSource<U> firstTimeoutIndicator,
+                             Function1<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator, ObservableSource<? extends T> other) {
             this.actual = actual;
             this.firstTimeoutIndicator = firstTimeoutIndicator;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
@@ -284,7 +287,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<V> p;
 
             try {
-                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The ObservableSource returned is null");
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.invoke(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

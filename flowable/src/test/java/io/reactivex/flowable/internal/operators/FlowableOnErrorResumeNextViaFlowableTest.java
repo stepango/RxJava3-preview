@@ -13,20 +13,27 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.Mockito;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableOnErrorResumeNextViaFlowableTest {
 
@@ -68,9 +75,9 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
+        w = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -197,11 +204,11 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         Flowable.range(0, 100000)
                 .onErrorResumeNext(Flowable.just(1))
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     int c;
 
                     @Override
-                    public Integer apply(Integer t1) {
+                    public Integer invoke(Integer t1) {
                         if (c++ <= 1) {
                             // slow
                             try {

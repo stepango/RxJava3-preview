@@ -14,29 +14,33 @@
 package io.reactivex.observable.internal.operators;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableCombineLatest<T, R> extends Observable<R> {
     final ObservableSource<? extends T>[] sources;
     final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
-    final Function<? super Object[], ? extends R> combiner;
+    final Function1<? super Object[], ? extends R> combiner;
     final int bufferSize;
     final boolean delayError;
 
     public ObservableCombineLatest(ObservableSource<? extends T>[] sources,
-            Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
-            Function<? super Object[], ? extends R> combiner, int bufferSize,
-            boolean delayError) {
+                                   Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
+                                   Function1<? super Object[], ? extends R> combiner, int bufferSize,
+                                   boolean delayError) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
         this.combiner = combiner;
@@ -77,7 +81,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         private static final long serialVersionUID = 8567835998786448817L;
         final Observer<? super R> actual;
-        final Function<? super Object[], ? extends R> combiner;
+        final Function1<? super Object[], ? extends R> combiner;
         final CombinerObserver<T, R>[] observers;
         final T[] latest;
         final SpscLinkedArrayQueue<Object> queue;
@@ -94,8 +98,8 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         @SuppressWarnings("unchecked")
         LatestCoordinator(Observer<? super R> actual,
-                Function<? super Object[], ? extends R> combiner,
-                int count, int bufferSize, boolean delayError) {
+                          Function1<? super Object[], ? extends R> combiner,
+                          int count, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.combiner = combiner;
             this.delayError = delayError;
@@ -234,7 +238,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = ObjectHelper.requireNonNull(combiner.apply(array), "The combiner returned a null");
+                        v = ObjectHelper.requireNonNull(combiner.invoke(array), "The combiner returned a null");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelled = true;

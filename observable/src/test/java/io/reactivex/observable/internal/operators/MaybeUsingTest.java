@@ -25,7 +25,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
@@ -49,9 +48,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 throw new TestException();
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.just(1);
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -72,9 +71,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.error(new TestException());
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -95,9 +94,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.empty();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -119,9 +118,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.error(new TestException());
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -143,9 +142,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.empty();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -167,9 +166,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 throw new TestException();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -191,9 +190,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 throw new TestException();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -214,9 +213,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 throw new TestException("Main");
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -243,9 +242,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+            }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     throw new TestException("Main");
                 }
             }, new Function1<Object, kotlin.Unit>() {
@@ -272,9 +271,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.never();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -300,9 +299,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+            }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     return Maybe.never();
                 }
             }, new Function1<Object, kotlin.Unit>() {
@@ -328,9 +327,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     return Maybe.never();
                 }
         }, new Function1<Object, kotlin.Unit>() {
@@ -349,9 +348,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.just(1);
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -372,9 +371,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.empty();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -394,9 +393,9 @@ public class MaybeUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, MaybeSource<Integer>>() {
+        }, new Function1<Object, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Object v) throws Exception {
+            public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.error(new TestException("Main"));
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -423,9 +422,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+            }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     return Maybe.wrap(new MaybeSource<Integer>() {
                         @Override
                         public void subscribe(MaybeObserver<? super Integer> s) {
@@ -467,9 +466,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+            }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     return ps.lastElement();
                 }
             }, new Function1<Object, kotlin.Unit>() {
@@ -511,9 +510,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+            }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     return ps.firstElement();
                 }
             }, new Function1<Object, kotlin.Unit>() {
@@ -555,9 +554,9 @@ public class MaybeUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, MaybeSource<Integer>>() {
+            }, new Function1<Object, MaybeSource<Integer>>() {
                 @Override
-                public MaybeSource<Integer> apply(Object v) throws Exception {
+                public MaybeSource<Integer> invoke(Object v) {
                     return ps.firstElement();
                 }
             }, new Function1<Object, kotlin.Unit>() {

@@ -13,21 +13,24 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionArbiter;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T, T> {
-    final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
+    final Function1<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
     final boolean allowFatal;
 
     public FlowableOnErrorNext(Flowable<T> source,
-            Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
+                               Function1<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
         super(source);
         this.nextSupplier = nextSupplier;
         this.allowFatal = allowFatal;
@@ -42,7 +45,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
 
     static final class OnErrorNextSubscriber<T> implements RelaxedSubscriber<T> {
         final Subscriber<? super T> actual;
-        final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
+        final Function1<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
         final boolean allowFatal;
         final SubscriptionArbiter arbiter;
 
@@ -50,7 +53,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
 
         boolean done;
 
-        OnErrorNextSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
+        OnErrorNextSubscriber(Subscriber<? super T> actual, Function1<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
@@ -93,7 +96,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
             Publisher<? extends T> p;
 
             try {
-                p = nextSupplier.apply(t);
+                p = nextSupplier.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(t, e));

@@ -13,29 +13,34 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.GroupedObservable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpstream<T, GroupedObservable<K, V>> {
-    final Function<? super T, ? extends K> keySelector;
-    final Function<? super T, ? extends V> valueSelector;
+    final Function1<? super T, ? extends K> keySelector;
+    final Function1<? super T, ? extends V> valueSelector;
     final int bufferSize;
     final boolean delayError;
 
     public ObservableGroupBy(ObservableSource<T> source,
-            Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector,
-            int bufferSize, boolean delayError) {
+                             Function1<? super T, ? extends K> keySelector, Function1<? super T, ? extends V> valueSelector,
+                             int bufferSize, boolean delayError) {
         super(source);
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
@@ -53,8 +58,8 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         private static final long serialVersionUID = -3688291656102519502L;
 
         final Observer<? super GroupedObservable<K, V>> actual;
-        final Function<? super T, ? extends K> keySelector;
-        final Function<? super T, ? extends V> valueSelector;
+        final Function1<? super T, ? extends K> keySelector;
+        final Function1<? super T, ? extends V> valueSelector;
         final int bufferSize;
         final boolean delayError;
         final Map<Object, GroupedUnicast<K, V>> groups;
@@ -65,7 +70,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        public GroupByObserver(Observer<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+        public GroupByObserver(Observer<? super GroupedObservable<K, V>> actual, Function1<? super T, ? extends K> keySelector, Function1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
@@ -87,7 +92,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         public void onNext(T t) {
             K key;
             try {
-                key = keySelector.apply(t);
+                key = keySelector.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();
@@ -114,7 +119,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The value supplied is null");
+                v = ObjectHelper.requireNonNull(valueSelector.invoke(t), "The value supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();

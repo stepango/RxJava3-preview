@@ -22,7 +22,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeSource;
@@ -150,9 +149,9 @@ public class MaybeDoAfterSuccessTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Integer>, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
+            public MaybeSource<Integer> invoke(Maybe<Integer> m) {
                 return m.doAfterSuccess(afterSuccess);
             }
         });

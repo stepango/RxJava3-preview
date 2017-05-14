@@ -13,19 +13,27 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.Timed;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
+import kotlin.jvm.functions.Function1;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableTimestampTest {
     Subscriber<Object> observer;
@@ -87,9 +95,9 @@ public class FlowableTimestampTest {
     public void timeIntervalDefault() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler v) throws Exception {
+            public Scheduler invoke(Scheduler v) {
                 return scheduler;
             }
         });
@@ -97,9 +105,9 @@ public class FlowableTimestampTest {
         try {
             Flowable.range(1, 5)
             .timestamp()
-            .map(new Function<Timed<Integer>, Long>() {
+                    .map(new Function1<Timed<Integer>, Long>() {
                 @Override
-                public Long apply(Timed<Integer> v) throws Exception {
+                public Long invoke(Timed<Integer> v) {
                     return v.time();
                 }
             })
@@ -114,9 +122,9 @@ public class FlowableTimestampTest {
     public void timeIntervalDefaultSchedulerCustomUnit() {
         final TestScheduler scheduler = new TestScheduler();
 
-        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler v) throws Exception {
+            public Scheduler invoke(Scheduler v) {
                 return scheduler;
             }
         });
@@ -124,9 +132,9 @@ public class FlowableTimestampTest {
         try {
             Flowable.range(1, 5)
             .timestamp(TimeUnit.SECONDS)
-            .map(new Function<Timed<Integer>, Long>() {
+                    .map(new Function1<Timed<Integer>, Long>() {
                 @Override
-                public Long apply(Timed<Integer> v) throws Exception {
+                public Long invoke(Timed<Integer> v) {
                     return v.time();
                 }
             })

@@ -38,7 +38,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -231,9 +230,9 @@ public class FlowableBufferTest {
             }
         });
 
-        Function<Object, Flowable<Object>> closer = new Function<Object, Flowable<Object>>() {
+        Function1<Object, Flowable<Object>> closer = new Function1<Object, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Object opening) {
+            public Flowable<Object> invoke(Object opening) {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
@@ -604,9 +603,9 @@ public class FlowableBufferTest {
     @Test(timeout = 2000)
     public void bufferWithStartEndBoundaryTake2() {
         Flowable<Long> start = Flowable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
-        Function<Long, Flowable<Long>> end = new Function<Long, Flowable<Long>>() {
+        Function1<Long, Flowable<Long>> end = new Function1<Long, Flowable<Long>>() {
             @Override
-            public Flowable<Long> apply(Long t1) {
+            public Flowable<Long> invoke(Long t1) {
                 return Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
             }
         };
@@ -708,9 +707,9 @@ public class FlowableBufferTest {
     public void bufferWithStartEndStartThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> end = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.never();
             }
         };
@@ -736,9 +735,9 @@ public class FlowableBufferTest {
     public void bufferWithStartEndEndFunctionThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> end = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -763,9 +762,9 @@ public class FlowableBufferTest {
     public void bufferWithStartEndEndThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> end = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.error(new TestException());
             }
         };
@@ -1202,9 +1201,9 @@ public class FlowableBufferTest {
     @Test
     public void timeAndSkipOverlapScheduler() {
 
-        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler t) {
+            public Scheduler invoke(Scheduler t) {
                 return scheduler;
             }
         });
@@ -1252,9 +1251,9 @@ public class FlowableBufferTest {
     @SuppressWarnings("unchecked")
     @Test
     public void timeAndSkipSkipDefaultScheduler() {
-        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler t) {
+            public Scheduler invoke(Scheduler t) {
                 return scheduler;
             }
         });
@@ -1918,23 +1917,23 @@ public class FlowableBufferTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.buffer(1);
             }
         }, false, 1, 1, Arrays.asList(1));
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.buffer(1, 2);
             }
         }, false, 1, 1, Arrays.asList(1));
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.buffer(2, 1);
             }
         }, false, 1, 1, Arrays.asList(1));
@@ -1942,23 +1941,23 @@ public class FlowableBufferTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<List<Object>>>() {
             @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
+            public Publisher<List<Object>> invoke(Flowable<Object> f) {
                 return f.buffer(1);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<List<Object>>>() {
             @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
+            public Publisher<List<Object>> invoke(Flowable<Object> f) {
                 return f.buffer(1, 2);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<List<Object>>>() {
             @Override
-            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
+            public Publisher<List<Object>> invoke(Flowable<Object> f) {
                 return f.buffer(2, 1);
             }
         });

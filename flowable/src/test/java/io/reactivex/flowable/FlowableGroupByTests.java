@@ -16,7 +16,6 @@ package io.reactivex.flowable;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.FlowableEventStream.Event;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
@@ -31,9 +30,9 @@ public class FlowableGroupByTests {
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, Object>() {
+                .groupBy(new Function1<Event, Object>() {
             @Override
-            public Object apply(Event event) {
+            public Object invoke(Event event) {
                 return event.type;
             }
         })
@@ -57,18 +56,18 @@ public class FlowableGroupByTests {
             FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
         )
         // group by type (2 clusters)
-        .groupBy(new Function<Event, Object>() {
+                .groupBy(new Function1<Event, Object>() {
             @Override
-            public Object apply(Event event) {
+            public Object invoke(Event event) {
                 return event.type;
             }
         })
-        .flatMap(new Function<GroupedFlowable<Object, Event>, Publisher<Object>>() {
+                .flatMap(new Function1<GroupedFlowable<Object, Event>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(GroupedFlowable<Object, Event> g) {
-                return g.map(new Function<Event, Object>() {
+            public Publisher<Object> invoke(GroupedFlowable<Object, Event> g) {
+                return g.map(new Function1<Event, Object>() {
                     @Override
-                    public Object apply(Event event) {
+                    public Object invoke(Event event) {
                         return event.instanceId + " - " + event.values.get("count200");
                     }
                 });
@@ -91,15 +90,15 @@ public class FlowableGroupByTests {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 20)
-        .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 return i % 5;
             }
         })
-        .concatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+                .concatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> v) {
+            public Flowable<Integer> invoke(GroupedFlowable<Integer, Integer> v) {
                 return v;
             }
         }).subscribe(ts);

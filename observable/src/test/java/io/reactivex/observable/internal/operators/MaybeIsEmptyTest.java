@@ -13,14 +13,17 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertTrue;
 
 public class MaybeIsEmptyTest {
 
@@ -85,9 +88,9 @@ public class MaybeIsEmptyTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedMaybeToSingle(new Function<Maybe<Object>, SingleSource<Boolean>>() {
+        TestHelper.checkDisposedMaybeToSingle(new Function1<Maybe<Object>, SingleSource<Boolean>>() {
             @Override
-            public SingleSource<Boolean> apply(Maybe<Object> m) throws Exception {
+            public SingleSource<Boolean> invoke(Maybe<Object> m) {
                 return m.isEmpty();
             }
         });
@@ -102,9 +105,9 @@ public class MaybeIsEmptyTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, Single<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function1<Maybe<Object>, Single<Boolean>>() {
             @Override
-            public Single<Boolean> apply(Maybe<Object> f) throws Exception {
+            public Single<Boolean> invoke(Maybe<Object> f) {
                 return f.isEmpty();
             }
         });
@@ -112,9 +115,9 @@ public class MaybeIsEmptyTest {
 
     @Test
     public void disposeToMaybe() {
-        TestHelper.checkDisposedMaybe(new Function<Maybe<Object>, Maybe<Boolean>>() {
+        TestHelper.checkDisposedMaybe(new Function1<Maybe<Object>, Maybe<Boolean>>() {
             @Override
-            public Maybe<Boolean> apply(Maybe<Object> m) throws Exception {
+            public Maybe<Boolean> invoke(Maybe<Object> m) {
                 return m.isEmpty().toMaybe();
             }
         });
@@ -129,9 +132,9 @@ public class MaybeIsEmptyTest {
 
     @Test
     public void doubleOnSubscribeToMaybe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, Maybe<Boolean>>() {
             @Override
-            public Maybe<Boolean> apply(Maybe<Object> f) throws Exception {
+            public Maybe<Boolean> invoke(Maybe<Object> f) {
                 return f.isEmpty().toMaybe();
             }
         });

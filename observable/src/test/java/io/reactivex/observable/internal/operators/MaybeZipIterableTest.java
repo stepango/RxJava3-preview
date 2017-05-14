@@ -13,25 +13,29 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeZipIterableTest {
 
-    final Function<Object[], Object> addString = new Function<Object[], Object>() {
+    final Function1<Object[], Object> addString = new Function1<Object[], Object>() {
         @Override
-        public Object apply(Object[] a) throws Exception {
+        public Object invoke(Object[] a) {
             return Arrays.toString(a);
         }
     };
@@ -70,9 +74,9 @@ public class MaybeZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void zipperThrows() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function<Object[], Object>() {
+        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] b) throws Exception {
+            public Object invoke(Object[] b) {
                 throw new TestException();
             }
         })
@@ -83,9 +87,9 @@ public class MaybeZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void zipperReturnsNull() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function<Object[], Object>() {
+        Maybe.zip(Arrays.asList(Maybe.just(1), Maybe.just(2)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return null;
             }
         })
@@ -154,9 +158,9 @@ public class MaybeZipIterableTest {
 
     @Test
     public void iteratorThrows() {
-        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(1, 100, 100, new Function<Integer, Maybe<Integer>>() {
+        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(1, 100, 100, new Function1<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
+            public Maybe<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         }), addString)
@@ -166,9 +170,9 @@ public class MaybeZipIterableTest {
 
     @Test
     public void hasNextThrows() {
-        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(100, 20, 100, new Function<Integer, Maybe<Integer>>() {
+        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(100, 20, 100, new Function1<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
+            public Maybe<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         }), addString)
@@ -178,9 +182,9 @@ public class MaybeZipIterableTest {
 
     @Test
     public void nextThrows() {
-        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 5, new Function<Integer, Maybe<Integer>>() {
+        Maybe.zip(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 5, new Function1<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
+            public Maybe<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         }), addString)
@@ -191,9 +195,9 @@ public class MaybeZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableOneIsNull() {
-        Maybe.zip(Arrays.asList(null, Maybe.just(1)), new Function<Object[], Object>() {
+        Maybe.zip(Arrays.asList(null, Maybe.just(1)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         })
@@ -203,9 +207,9 @@ public class MaybeZipIterableTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableTwoIsNull() {
-        Maybe.zip(Arrays.asList(Maybe.just(1), null), new Function<Object[], Object>() {
+        Maybe.zip(Arrays.asList(Maybe.just(1), null), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         })

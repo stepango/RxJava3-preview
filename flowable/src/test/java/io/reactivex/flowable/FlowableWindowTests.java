@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.common.functions.Function;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -34,9 +33,9 @@ public class FlowableWindowTests {
         Flowable.concat(
             Flowable.just(1, 2, 3, 4, 5, 6)
             .window(3)
-            .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
+                    .map(new Function1<Flowable<Integer>, Flowable<List<Integer>>>() {
                 @Override
-                public Flowable<List<Integer>> apply(Flowable<Integer> xs) {
+                public Flowable<List<Integer>> invoke(Flowable<Integer> xs) {
                     return xs.toList();
                 }
             })

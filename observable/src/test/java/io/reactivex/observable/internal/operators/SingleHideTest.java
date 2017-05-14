@@ -16,9 +16,11 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 public class SingleHideTest {
 
@@ -37,9 +39,9 @@ public class SingleHideTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function1<Single<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
+            public SingleSource<Object> invoke(Single<Object> s) {
                 return s.hide();
             }
         });

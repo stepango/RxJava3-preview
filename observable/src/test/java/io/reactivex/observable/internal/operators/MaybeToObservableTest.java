@@ -13,13 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.HasUpstreamMaybeSource;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertSame;
 
 public class MaybeToObservableTest {
 
@@ -32,9 +34,9 @@ public class MaybeToObservableTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToObservable(new Function<Maybe<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybeToObservable(new Function1<Maybe<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Maybe<Object> m) throws Exception {
+            public ObservableSource<Object> invoke(Maybe<Object> m) {
                 return m.toObservable();
             }
         });

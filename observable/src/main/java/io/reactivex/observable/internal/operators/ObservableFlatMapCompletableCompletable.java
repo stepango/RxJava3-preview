@@ -13,17 +13,25 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.extensions.FuseToObservable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a sequence of values into CompletableSources and awaits their termination.
@@ -33,12 +41,12 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
     final ObservableSource<T> source;
 
-    final Function<? super T, ? extends CompletableSource> mapper;
+    final Function1<? super T, ? extends CompletableSource> mapper;
 
     final boolean delayErrors;
 
     public ObservableFlatMapCompletableCompletable(ObservableSource<T> source,
-            Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
+                                                   Function1<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
         this.source = source;
         this.mapper = mapper;
         this.delayErrors = delayErrors;
@@ -61,7 +69,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
         final AtomicThrowable errors;
 
-        final Function<? super T, ? extends CompletableSource> mapper;
+        final Function1<? super T, ? extends CompletableSource> mapper;
 
         final boolean delayErrors;
 
@@ -69,7 +77,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
         Disposable d;
 
-        FlatMapCompletableMainObserver(CompletableObserver observer, Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
+        FlatMapCompletableMainObserver(CompletableObserver observer, Function1<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
             this.actual = observer;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
@@ -92,7 +100,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 d.dispose();

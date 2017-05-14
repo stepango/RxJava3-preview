@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
@@ -47,14 +46,14 @@ public class ObservableBufferUntilSubscriberTest {
             Observable.fromArray(numbers)
                     .takeUntil(s)
                     .window(50)
-                    .flatMap(new Function<Observable<Integer>, Observable<Object>>() {
+                    .flatMap(new Function1<Observable<Integer>, Observable<Object>>() {
                         @Override
-                        public Observable<Object> apply(Observable<Integer> integerObservable) {
+                        public Observable<Object> invoke(Observable<Integer> integerObservable) {
                                 return integerObservable
                                         .subscribeOn(Schedulers.computation())
-                                        .map(new Function<Integer, Object>() {
+                                        .map(new Function1<Integer, Object>() {
                                             @Override
-                                            public Object apply(Integer integer) {
+                                            public Object invoke(Integer integer) {
                                                     if (integer >= 5 && completed.compareAndSet(false, true)) {
                                                         s.onComplete();
                                                     }

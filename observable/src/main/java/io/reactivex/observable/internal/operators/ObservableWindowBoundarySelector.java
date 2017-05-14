@@ -13,13 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.Observable;
@@ -28,17 +30,19 @@ import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.QueueDrainObserver;
 import io.reactivex.observable.internal.queues.MpscLinkedQueue;
 import io.reactivex.observable.internal.utils.NotificationLite;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.DisposableObserver;
+import io.reactivex.observable.observers.SerializedObserver;
 import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObservableWithUpstream<T, Observable<T>> {
     final ObservableSource<B> open;
-    final Function<? super B, ? extends ObservableSource<V>> close;
+    final Function1<? super B, ? extends ObservableSource<V>> close;
     final int bufferSize;
 
     public ObservableWindowBoundarySelector(
             ObservableSource<T> source,
-            ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close,
+            ObservableSource<B> open, Function1<? super B, ? extends ObservableSource<V>> close,
             int bufferSize) {
         super(source);
         this.open = open;
@@ -57,7 +61,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
     extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable {
         final ObservableSource<B> open;
-        final Function<? super B, ? extends ObservableSource<V>> close;
+        final Function1<? super B, ? extends ObservableSource<V>> close;
         final int bufferSize;
         final CompositeDisposable resources;
 
@@ -70,7 +74,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         final AtomicLong windows = new AtomicLong();
 
         WindowBoundaryMainObserver(Observer<? super Observable<T>> actual,
-                                            ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close, int bufferSize) {
+                                   ObservableSource<B> open, Function1<? super B, ? extends ObservableSource<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
             this.close = close;
@@ -242,7 +246,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                         ObservableSource<V> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(close.apply(wo.open), "The ObservableSource supplied is null");
+                            p = ObjectHelper.requireNonNull(close.invoke(wo.open), "The ObservableSource supplied is null");
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             cancelled = true;

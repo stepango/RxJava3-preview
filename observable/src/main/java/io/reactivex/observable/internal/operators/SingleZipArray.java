@@ -13,22 +13,26 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleZipArray<T, R> extends Single<R> {
 
     final SingleSource<? extends T>[] sources;
 
-    final Function<? super Object[], ? extends R> zipper;
+    final Function1<? super Object[], ? extends R> zipper;
 
-    public SingleZipArray(SingleSource<? extends T>[] sources, Function<? super Object[], ? extends R> zipper) {
+    public SingleZipArray(SingleSource<? extends T>[] sources, Function1<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }
@@ -71,14 +75,14 @@ public final class SingleZipArray<T, R> extends Single<R> {
 
         final SingleObserver<? super R> actual;
 
-        final Function<? super Object[], ? extends R> zipper;
+        final Function1<? super Object[], ? extends R> zipper;
 
         final ZipSingleObserver<T>[] observers;
 
         final Object[] values;
 
         @SuppressWarnings("unchecked")
-        ZipCoordinator(SingleObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
+        ZipCoordinator(SingleObserver<? super R> observer, int n, Function1<? super Object[], ? extends R> zipper) {
             super(n);
             this.actual = observer;
             this.zipper = zipper;
@@ -110,7 +114,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(zipper.apply(values), "The zipper returned a null value");
+                    v = ObjectHelper.requireNonNull(zipper.invoke(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     actual.onError(ex);
@@ -177,10 +181,10 @@ public final class SingleZipArray<T, R> extends Single<R> {
         }
     }
 
-    final class SingletonArrayFunc implements Function<T, R> {
+    final class SingletonArrayFunc implements Function1<T, R> {
         @Override
-        public R apply(T t) throws Exception {
-            return zipper.apply(new Object[] { t });
+        public R invoke(T t) {
+            return zipper.invoke(new Object[]{t});
         }
     }
 }

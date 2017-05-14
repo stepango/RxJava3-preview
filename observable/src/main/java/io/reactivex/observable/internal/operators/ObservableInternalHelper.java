@@ -20,7 +20,6 @@ import io.reactivex.common.Emitter;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.ConnectableObservable;
@@ -79,20 +78,20 @@ public final class ObservableInternalHelper {
         return new SimpleBiGenerator<T, S>(consumer);
     }
 
-    static final class ItemDelayFunction<T, U> implements Function<T, ObservableSource<T>> {
-        final Function<? super T, ? extends ObservableSource<U>> itemDelay;
+    static final class ItemDelayFunction<T, U> implements Function1<T, ObservableSource<T>> {
+        final Function1<? super T, ? extends ObservableSource<U>> itemDelay;
 
-        ItemDelayFunction(Function<? super T, ? extends ObservableSource<U>> itemDelay) {
+        ItemDelayFunction(Function1<? super T, ? extends ObservableSource<U>> itemDelay) {
             this.itemDelay = itemDelay;
         }
 
         @Override
-        public ObservableSource<T> apply(final T v) throws Exception {
-            return new ObservableTake<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+        public ObservableSource<T> invoke(final T v) {
+            return new ObservableTake<U>(itemDelay.invoke(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
-    public static <T, U> Function<T, ObservableSource<T>> itemDelay(final Function<? super T, ? extends ObservableSource<U>> itemDelay) {
+    public static <T, U> Function1<T, ObservableSource<T>> itemDelay(final Function1<? super T, ? extends ObservableSource<U>> itemDelay) {
         return new ItemDelayFunction<T, U>(itemDelay);
     }
 
@@ -151,7 +150,7 @@ public final class ObservableInternalHelper {
         return new ObserverOnComplete<T>(observer);
     }
 
-    static final class FlatMapWithCombinerInner<U, R, T> implements Function<U, R> {
+    static final class FlatMapWithCombinerInner<U, R, T> implements Function1<U, R> {
         private final BiFunction<? super T, ? super U, ? extends R> combiner;
         private final T t;
 
@@ -161,75 +160,81 @@ public final class ObservableInternalHelper {
         }
 
         @Override
-        public R apply(U w) throws Exception {
-            return combiner.apply(t, w);
+        public R invoke(U w) {
+            try {
+                return combiner.apply(t, w);
+            } catch (Exception e) {
+                //TODO checked exceptions
+                if (e instanceof RuntimeException) throw (RuntimeException) e;
+                else throw new RuntimeException(e);
+            }
         }
     }
 
-    static final class FlatMapWithCombinerOuter<T, R, U> implements Function<T, ObservableSource<R>> {
+    static final class FlatMapWithCombinerOuter<T, R, U> implements Function1<T, ObservableSource<R>> {
         private final BiFunction<? super T, ? super U, ? extends R> combiner;
-        private final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
+        private final Function1<? super T, ? extends ObservableSource<? extends U>> mapper;
 
         FlatMapWithCombinerOuter(BiFunction<? super T, ? super U, ? extends R> combiner,
-                Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
+                                 Function1<? super T, ? extends ObservableSource<? extends U>> mapper) {
             this.combiner = combiner;
             this.mapper = mapper;
         }
 
         @Override
-        public ObservableSource<R> apply(final T t) throws Exception {
+        public ObservableSource<R> invoke(final T t) {
             @SuppressWarnings("unchecked")
-            ObservableSource<U> u = (ObservableSource<U>)mapper.apply(t);
+            ObservableSource<U> u = (ObservableSource<U>) mapper.invoke(t);
             return new ObservableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
 
-    public static <T, U, R> Function<T, ObservableSource<R>> flatMapWithCombiner(
-            final Function<? super T, ? extends ObservableSource<? extends U>> mapper,
+    public static <T, U, R> Function1<T, ObservableSource<R>> flatMapWithCombiner(
+            final Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
                     final BiFunction<? super T, ? super U, ? extends R> combiner) {
         return new FlatMapWithCombinerOuter<T, R, U>(combiner, mapper);
     }
 
-    static final class FlatMapIntoIterable<T, U> implements Function<T, ObservableSource<U>> {
-        private final Function<? super T, ? extends Iterable<? extends U>> mapper;
+    static final class FlatMapIntoIterable<T, U> implements Function1<T, ObservableSource<U>> {
+        private final Function1<? super T, ? extends Iterable<? extends U>> mapper;
 
-        FlatMapIntoIterable(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        FlatMapIntoIterable(Function1<? super T, ? extends Iterable<? extends U>> mapper) {
             this.mapper = mapper;
         }
 
         @Override
-        public ObservableSource<U> apply(T t) throws Exception {
-            return new ObservableFromIterable<U>(mapper.apply(t));
+        public ObservableSource<U> invoke(T t) {
+            return new ObservableFromIterable<U>(mapper.invoke(t));
         }
     }
 
-    public static <T, U> Function<T, ObservableSource<U>> flatMapIntoIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public static <T, U> Function1<T, ObservableSource<U>> flatMapIntoIterable(final Function1<? super T, ? extends Iterable<? extends U>> mapper) {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
 
-    enum MapToInt implements Function<Object, Object> {
+    enum MapToInt implements Function1<Object, Object> {
         INSTANCE;
         @Override
-        public Object apply(Object t) throws Exception {
+        public Object invoke(Object t) {
             return 0;
         }
     }
 
     static final class RepeatWhenOuterHandler
-    implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
-        private final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler;
+            implements Function1<Observable<Notification<Object>>, ObservableSource<?>> {
+        private final Function1<? super Observable<Object>, ? extends ObservableSource<?>> handler;
 
-        RepeatWhenOuterHandler(Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
+        RepeatWhenOuterHandler(Function1<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
             this.handler = handler;
         }
 
         @Override
-        public ObservableSource<?> apply(Observable<Notification<Object>> no) throws Exception {
-            return handler.apply(no.map(MapToInt.INSTANCE));
+        public ObservableSource<?> invoke(Observable<Notification<Object>> no) {
+            return handler.invoke(no.map(MapToInt.INSTANCE));
         }
     }
 
-    public static Function<Observable<Notification<Object>>, ObservableSource<?>> repeatWhenHandler(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
+    public static Function1<Observable<Notification<Object>>, ObservableSource<?>> repeatWhenHandler(final Function1<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         return new RepeatWhenOuterHandler(handler);
     }
 
@@ -249,17 +254,21 @@ public final class ObservableInternalHelper {
         return new TimedReplayCallable<T>(parent, time, unit, scheduler);
     }
 
-    public static <T, R> Function<Observable<T>, ObservableSource<R>> replayFunction(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
+    public static <T, R> Function1<Observable<T>, ObservableSource<R>> replayFunction(final Function1<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
         return new ReplayFunction<T, R>(selector, scheduler);
     }
 
-    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Function1<Notification<Object>, Boolean> {
+    enum ErrorMapper implements Function1<Notification<Object>, Throwable> {
         INSTANCE;
 
         @Override
-        public Throwable apply(Notification<Object> t) throws Exception {
+        public Throwable invoke(Notification<Object> t) {
             return t.getError();
         }
+    }
+
+    enum FilterMapper implements Function1<Notification<Object>, Boolean> {
+        INSTANCE;
 
         @Override
         public Boolean invoke(Notification<Object> t) {
@@ -268,72 +277,72 @@ public final class ObservableInternalHelper {
     }
 
     static final class RetryWhenInner
-    implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
-        private final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler;
+            implements Function1<Observable<Notification<Object>>, ObservableSource<?>> {
+        private final Function1<? super Observable<Throwable>, ? extends ObservableSource<?>> handler;
 
         RetryWhenInner(
-                Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
+                Function1<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
             this.handler = handler;
         }
 
         @Override
-        public ObservableSource<?> apply(Observable<Notification<Object>> no) throws Exception {
+        public ObservableSource<?> invoke(Observable<Notification<Object>> no) {
             Observable<Throwable> map = no
-                    .takeWhile(ErrorMapperFilter.INSTANCE)
-                    .map(ErrorMapperFilter.INSTANCE);
-            return handler.apply(map);
+                    .takeWhile(FilterMapper.INSTANCE)
+                    .map(ErrorMapper.INSTANCE);
+            return handler.invoke(map);
         }
     }
 
-    public static <T> Function<Observable<Notification<Object>>, ObservableSource<?>> retryWhenHandler(final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
+    public static <T> Function1<Observable<Notification<Object>>, ObservableSource<?>> retryWhenHandler(final Function1<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
         return new RetryWhenInner(handler);
     }
 
     static final class ZipIterableFunction<T, R>
-    implements Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> {
-        private final Function<? super Object[], ? extends R> zipper;
+            implements Function1<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> {
+        private final Function1<? super Object[], ? extends R> zipper;
 
-        ZipIterableFunction(Function<? super Object[], ? extends R> zipper) {
+        ZipIterableFunction(Function1<? super Object[], ? extends R> zipper) {
             this.zipper = zipper;
         }
 
         @Override
-        public ObservableSource<? extends R> apply(List<ObservableSource<? extends T>> list) {
+        public ObservableSource<? extends R> invoke(List<ObservableSource<? extends T>> list) {
             return Observable.zipIterable(list, zipper, false, Observable.bufferSize());
         }
     }
 
-    public static <T, R> Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Function1<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function1<? super Object[], ? extends R> zipper) {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
-    public static <T,R> Observable<R> switchMapSingle(Observable<T> source, final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public static <T, R> Observable<R> switchMapSingle(Observable<T> source, final Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
         return source.switchMap(convertSingleMapperToObservableMapper(mapper), 1);
     }
 
     public static <T,R> Observable<R> switchMapSingleDelayError(Observable<T> source,
-            Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+                                                                Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
         return source.switchMapDelayError(convertSingleMapperToObservableMapper(mapper), 1);
     }
 
-    private static <T, R> Function<T, Observable<R>> convertSingleMapperToObservableMapper(
-            final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    private static <T, R> Function1<T, Observable<R>> convertSingleMapperToObservableMapper(
+            final Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return new ObservableMapper<T,R>(mapper);
     }
 
-    static final class ObservableMapper<T,R> implements Function<T,Observable<R>> {
+    static final class ObservableMapper<T, R> implements Function1<T, Observable<R>> {
 
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+        final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
-        ObservableMapper(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        ObservableMapper(Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.mapper = mapper;
         }
 
         @Override
-        public Observable<R> apply(T t) throws Exception {
+        public Observable<R> invoke(T t) {
             return RxJavaObservablePlugins.onAssembly(new SingleToObservable<R>(
-                ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value")));
+                    ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null value")));
         }
 
     }
@@ -406,18 +415,18 @@ public final class ObservableInternalHelper {
         }
     }
 
-    static final class ReplayFunction<T, R> implements Function<Observable<T>, ObservableSource<R>> {
-        private final Function<? super Observable<T>, ? extends ObservableSource<R>> selector;
+    static final class ReplayFunction<T, R> implements Function1<Observable<T>, ObservableSource<R>> {
+        private final Function1<? super Observable<T>, ? extends ObservableSource<R>> selector;
         private final Scheduler scheduler;
 
-        ReplayFunction(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, Scheduler scheduler) {
+        ReplayFunction(Function1<? super Observable<T>, ? extends ObservableSource<R>> selector, Scheduler scheduler) {
             this.selector = selector;
             this.scheduler = scheduler;
         }
 
         @Override
-        public ObservableSource<R> apply(Observable<T> t) throws Exception {
-            return Observable.wrap(selector.apply(t)).observeOn(scheduler);
+        public ObservableSource<R> invoke(Observable<T> t) {
+            return Observable.wrap(selector.invoke(t)).observeOn(scheduler);
         }
     }
 }

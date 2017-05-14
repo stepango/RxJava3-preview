@@ -13,32 +13,40 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.queues.*;
+import io.reactivex.flowable.internal.queues.MpscLinkedQueue;
+import io.reactivex.flowable.internal.queues.SimplePlainQueue;
 import io.reactivex.flowable.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.QueueDrainHelper;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DisposableSubscriber;
+import io.reactivex.flowable.subscribers.SerializedSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractFlowableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final Publisher<? extends Open> bufferOpen;
-    final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
+    final Function1<? super Open, ? extends Publisher<? extends Close>> bufferClose;
 
     public FlowableBufferBoundary(Flowable<T> source, Publisher<? extends Open> bufferOpen,
-            Function<? super Open, ? extends Publisher<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
+                                  Function1<? super Open, ? extends Publisher<? extends Close>> bufferClose, Callable<U> bufferSupplier) {
         super(source);
         this.bufferOpen = bufferOpen;
         this.bufferClose = bufferClose;
@@ -56,7 +64,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, Open, Close>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Disposable {
         final Publisher<? extends Open> bufferOpen;
-        final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
+        final Function1<? super Open, ? extends Publisher<? extends Close>> bufferClose;
         final Callable<U> bufferSupplier;
         final CompositeDisposable resources;
 
@@ -67,9 +75,9 @@ extends AbstractFlowableWithUpstream<T, U> {
         final AtomicInteger windows = new AtomicInteger();
 
         BufferBoundarySubscriber(Subscriber<? super U> actual,
-                Publisher<? extends Open> bufferOpen,
-                Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
-                        Callable<U> bufferSupplier) {
+                                 Publisher<? extends Open> bufferOpen,
+                                 Function1<? super Open, ? extends Publisher<? extends Close>> bufferClose,
+                                 Callable<U> bufferSupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
@@ -184,7 +192,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             Publisher<? extends Close> p;
 
             try {
-                p = ObjectHelper.requireNonNull(bufferClose.apply(window), "The buffer closing publisher is null");
+                p = ObjectHelper.requireNonNull(bufferClose.invoke(window), "The buffer closing publisher is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);

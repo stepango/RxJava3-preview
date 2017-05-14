@@ -13,33 +13,40 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.queues.*;
+import io.reactivex.flowable.internal.queues.MpscLinkedQueue;
+import io.reactivex.flowable.internal.queues.SimplePlainQueue;
 import io.reactivex.flowable.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.NotificationLite;
 import io.reactivex.flowable.processors.UnicastProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DisposableSubscriber;
+import io.reactivex.flowable.subscribers.SerializedSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowableWithUpstream<T, Flowable<T>> {
     final Publisher<B> open;
-    final Function<? super B, ? extends Publisher<V>> close;
+    final Function1<? super B, ? extends Publisher<V>> close;
     final int bufferSize;
 
     public FlowableWindowBoundarySelector(
             Flowable<T> source,
-            Publisher<B> open, Function<? super B, ? extends Publisher<V>> close,
+            Publisher<B> open, Function1<? super B, ? extends Publisher<V>> close,
             int bufferSize) {
         super(source);
         this.open = open;
@@ -58,7 +65,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
     extends QueueDrainSubscriber<T, Object, Flowable<T>>
     implements Subscription {
         final Publisher<B> open;
-        final Function<? super B, ? extends Publisher<V>> close;
+        final Function1<? super B, ? extends Publisher<V>> close;
         final int bufferSize;
         final CompositeDisposable resources;
 
@@ -71,7 +78,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         final AtomicLong windows = new AtomicLong();
 
         WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual,
-                Publisher<B> open, Function<? super B, ? extends Publisher<V>> close, int bufferSize) {
+                                     Publisher<B> open, Function1<? super B, ? extends Publisher<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
             this.close = close;
@@ -258,7 +265,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                         Publisher<V> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(close.apply(wo.open), "The publisher supplied is null");
+                            p = ObjectHelper.requireNonNull(close.invoke(wo.open), "The publisher supplied is null");
                         } catch (Throwable e) {
                             cancelled = true;
                             a.onError(e);

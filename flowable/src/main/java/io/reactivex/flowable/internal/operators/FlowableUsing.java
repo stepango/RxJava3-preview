@@ -24,7 +24,6 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
@@ -32,12 +31,12 @@ import kotlin.jvm.functions.Function1;
 
 public final class FlowableUsing<T, D> extends Flowable<T> {
     final Callable<? extends D> resourceSupplier;
-    final Function<? super D, ? extends Publisher<? extends T>> sourceSupplier;
+    final Function1<? super D, ? extends Publisher<? extends T>> sourceSupplier;
     final Function1<? super D, kotlin.Unit> disposer;
     final boolean eager;
 
     public FlowableUsing(Callable<? extends D> resourceSupplier,
-                         Function<? super D, ? extends Publisher<? extends T>> sourceSupplier,
+                         Function1<? super D, ? extends Publisher<? extends T>> sourceSupplier,
                          Function1<? super D, kotlin.Unit> disposer,
                          boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -60,7 +59,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         Publisher<? extends T> source;
         try {
-            source = sourceSupplier.apply(resource);
+            source = sourceSupplier.invoke(resource);
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             try {

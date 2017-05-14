@@ -32,7 +32,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.ConnectableFlowable;
@@ -71,7 +70,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     public static <U, R> Flowable<R> multicastSelector(
             final Callable<? extends ConnectableFlowable<U>> connectableFactory,
-            final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
+            final Function1<? super Flowable<U>, ? extends Publisher<R>> selector) {
         return Flowable.unsafeCreate(new MultiCastPublisher<R, U>(connectableFactory, selector));
     }
 
@@ -1117,9 +1116,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
     static final class MultiCastPublisher<R, U> implements Publisher<R> {
         private final Callable<? extends ConnectableFlowable<U>> connectableFactory;
-        private final Function<? super Flowable<U>, ? extends Publisher<R>> selector;
+        private final Function1<? super Flowable<U>, ? extends Publisher<R>> selector;
 
-        MultiCastPublisher(Callable<? extends ConnectableFlowable<U>> connectableFactory, Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
+        MultiCastPublisher(Callable<? extends ConnectableFlowable<U>> connectableFactory, Function1<? super Flowable<U>, ? extends Publisher<R>> selector) {
             this.connectableFactory = connectableFactory;
             this.selector = selector;
         }
@@ -1137,7 +1136,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             Publisher<R> observable;
             try {
-                observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null Publisher");
+                observable = ObjectHelper.requireNonNull(selector.invoke(co), "The selector returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, child);

@@ -19,7 +19,6 @@ import org.mockito.InOrder;
 import java.util.NoSuchElementException;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
@@ -323,41 +322,41 @@ public class ObservableLastTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function1<Observable<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
+            public MaybeSource<Object> invoke(Observable<Object> o) {
                 return o.lastElement();
             }
         });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.lastElement().toObservable();
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Observable<Object> o) {
                 return o.lastOrError();
             }
         });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.lastOrError().toObservable();
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Observable<Object> o) {
                 return o.last(2);
             }
         });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.last(2).toObservable();
             }
         });

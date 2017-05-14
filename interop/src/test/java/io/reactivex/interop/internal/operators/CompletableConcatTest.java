@@ -13,23 +13,29 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import java.util.List;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.interop.TestHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.concatCompletable;
+import static io.reactivex.interop.RxJava3Interop.ignoreElements;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class CompletableConcatTest {
 
@@ -76,9 +82,9 @@ public class CompletableConcatTest {
                 final PublishProcessor<Integer> ps1 = PublishProcessor.create();
                 final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
-                TestObserver<Void> to = concatCompletable(ps1.map(new Function<Integer, Completable>() {
+                TestObserver<Void> to = concatCompletable(ps1.map(new Function1<Integer, Completable>() {
                     @Override
-                    public Completable apply(Integer v) throws Exception {
+                    public Completable invoke(Integer v) {
                         return ignoreElements(ps2);
                     }
                 })).test();
@@ -115,9 +121,9 @@ public class CompletableConcatTest {
 
     @Test
     public void synchronousFusedCrash() {
-        concatCompletable(Flowable.range(1, 2).map(new Function<Integer, Completable>() {
+        concatCompletable(Flowable.range(1, 2).map(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 throw new TestException();
             }
         }))

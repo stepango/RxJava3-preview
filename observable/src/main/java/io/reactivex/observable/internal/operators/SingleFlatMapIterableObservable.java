@@ -18,11 +18,14 @@ import java.util.Iterator;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.internal.observers.BasicIntQueueDisposable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a success value into an Iterable and streams it back as an Observable.
@@ -34,10 +37,10 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
     final SingleSource<T> source;
 
-    final Function<? super T, ? extends Iterable<? extends R>> mapper;
+    final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
     public SingleFlatMapIterableObservable(SingleSource<T> source,
-            Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                           Function1<? super T, ? extends Iterable<? extends R>> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -55,7 +58,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         final Observer<? super R> actual;
 
-        final Function<? super T, ? extends Iterable<? extends R>> mapper;
+        final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
         Disposable d;
 
@@ -66,7 +69,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
         boolean outputFused;
 
         FlatMapIterableObserver(Observer<? super R> actual,
-                Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                Function1<? super T, ? extends Iterable<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -86,7 +89,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
             Iterator<? extends R> iterator;
             boolean has;
             try {
-                iterator = mapper.apply(value).iterator();
+                iterator = mapper.invoke(value).iterator();
 
                 has = iterator.hasNext();
             } catch (Throwable ex) {

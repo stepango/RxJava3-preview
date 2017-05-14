@@ -13,15 +13,25 @@
 
 package io.reactivex.interop;
 
-import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Observable;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -41,16 +51,16 @@ public class FlatMapJustPerf {
     public void setup() {
         Integer[] array = new Integer[times];
 
-        flowable = Flowable.fromArray(array).flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowable = Flowable.fromArray(array).flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         });
 
-        observable = Observable.fromArray(array).flatMap(new Function<Integer, Observable<Integer>>() {
+        observable = Observable.fromArray(array).flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(v);
             }
         });

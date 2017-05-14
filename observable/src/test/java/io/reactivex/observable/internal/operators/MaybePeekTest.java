@@ -22,7 +22,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
@@ -46,9 +45,9 @@ public class MaybePeekTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> m) {
                 return m.doOnSuccess(Functions.emptyConsumer());
             }
         });

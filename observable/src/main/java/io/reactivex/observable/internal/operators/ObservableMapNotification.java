@@ -17,22 +17,23 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableMapNotification<T, R> extends AbstractObservableWithUpstream<T, ObservableSource<? extends R>> {
 
-    final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
-    final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
+    final Function1<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
+    final Function1<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
     final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
 
     public ObservableMapNotification(
             ObservableSource<T> source,
-            Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
-            Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
-                    Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
+            Function1<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
+            Function1<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
+            Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
         super(source);
         this.onNextMapper = onNextMapper;
         this.onErrorMapper = onErrorMapper;
@@ -47,16 +48,16 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
     static final class MapNotificationObserver<T, R>
     implements Observer<T>, Disposable {
         final Observer<? super ObservableSource<? extends R>> actual;
-        final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
-        final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
+        final Function1<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
+        final Function1<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
         final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
 
         Disposable s;
 
         MapNotificationObserver(Observer<? super ObservableSource<? extends R>> actual,
-                Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
-                Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
-                        Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
+                                Function1<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
+                                Function1<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
+                                Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
             this.actual = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -88,7 +89,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext Observable returned is null");
+                p = ObjectHelper.requireNonNull(onNextMapper.invoke(t), "The onNext Observable returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
@@ -103,7 +104,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError Observable returned is null");
+                p = ObjectHelper.requireNonNull(onErrorMapper.invoke(t), "The onError Observable returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

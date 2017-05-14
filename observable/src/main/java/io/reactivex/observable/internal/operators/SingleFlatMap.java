@@ -17,17 +17,19 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleFlatMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;
 
-    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+    final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
-    public SingleFlatMap(SingleSource<? extends T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public SingleFlatMap(SingleSource<? extends T> source, Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
         this.mapper = mapper;
         this.source = source;
     }
@@ -44,10 +46,10 @@ public final class SingleFlatMap<T, R> extends Single<R> {
 
         final SingleObserver<? super R> actual;
 
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+        final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
         SingleFlatMapCallback(SingleObserver<? super R> actual,
-                Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+                              Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -74,7 +76,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
             SingleSource<? extends R> o;
 
             try {
-                o = ObjectHelper.requireNonNull(mapper.apply(value), "The single returned by the mapper is null");
+                o = ObjectHelper.requireNonNull(mapper.invoke(value), "The single returned by the mapper is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

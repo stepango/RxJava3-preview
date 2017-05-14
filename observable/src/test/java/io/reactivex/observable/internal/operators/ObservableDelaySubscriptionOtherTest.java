@@ -25,7 +25,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableEmitter;
 import io.reactivex.observable.ObservableOnSubscribe;
@@ -209,9 +208,9 @@ public class ObservableDelaySubscriptionOtherTest {
 
     @Test
     public void badSourceOther() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
+            public Object invoke(Observable<Integer> o) {
                 return Observable.just(1).delaySubscription(o);
             }
         }, false, 1, 1, 1);

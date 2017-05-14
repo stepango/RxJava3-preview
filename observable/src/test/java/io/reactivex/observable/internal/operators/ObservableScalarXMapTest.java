@@ -13,19 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.operators.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObservableScalarXMapTest {
 
@@ -75,9 +80,9 @@ public class ObservableScalarXMapTest {
     @Test
     public void tryScalarXMap() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, new Function<Integer, ObservableSource<Integer>>() {
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer f) throws Exception {
+            public ObservableSource<Integer> invoke(Integer f) {
                 return Observable.just(1);
             }
         }));
@@ -89,9 +94,9 @@ public class ObservableScalarXMapTest {
     public void emptyXMap() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, new Function<Integer, ObservableSource<Integer>>() {
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer f) throws Exception {
+            public ObservableSource<Integer> invoke(Integer f) {
                 return Observable.just(1);
             }
         }));
@@ -103,9 +108,9 @@ public class ObservableScalarXMapTest {
     public void mapperCrashes() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, ObservableSource<Integer>>() {
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer f) throws Exception {
+            public ObservableSource<Integer> invoke(Integer f) {
                 throw new TestException();
             }
         }));
@@ -117,9 +122,9 @@ public class ObservableScalarXMapTest {
     public void mapperToJust() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, ObservableSource<Integer>>() {
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer f) throws Exception {
+            public ObservableSource<Integer> invoke(Integer f) {
                 return Observable.just(1);
             }
         }));
@@ -131,9 +136,9 @@ public class ObservableScalarXMapTest {
     public void mapperToEmpty() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, ObservableSource<Integer>>() {
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer f) throws Exception {
+            public ObservableSource<Integer> invoke(Integer f) {
                 return Observable.empty();
             }
         }));
@@ -145,9 +150,9 @@ public class ObservableScalarXMapTest {
     public void mapperToCrashingCallable() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, ObservableSource<Integer>>() {
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer f) throws Exception {
+            public ObservableSource<Integer> invoke(Integer f) {
                 return new CallablePublisher();
             }
         }));
@@ -157,9 +162,9 @@ public class ObservableScalarXMapTest {
 
     @Test
     public void scalarMapToEmpty() {
-        ObservableScalarXMap.scalarXMap(1, new Function<Integer, ObservableSource<Integer>>() {
+        ObservableScalarXMap.scalarXMap(1, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.empty();
             }
         })
@@ -169,9 +174,9 @@ public class ObservableScalarXMapTest {
 
     @Test
     public void scalarMapToCrashingCallable() {
-        ObservableScalarXMap.scalarXMap(1, new Function<Integer, ObservableSource<Integer>>() {
+        ObservableScalarXMap.scalarXMap(1, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return new CallablePublisher();
             }
         })

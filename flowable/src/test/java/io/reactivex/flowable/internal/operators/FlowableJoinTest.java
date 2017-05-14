@@ -15,23 +15,30 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import java.util.List;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableJoinTest {
     Subscriber<Object> observer = TestHelper.mockSubscriber();
@@ -43,10 +50,10 @@ public class FlowableJoinTest {
         }
     };
 
-    <T> Function<Integer, Flowable<T>> just(final Flowable<T> observable) {
-        return new Function<Integer, Flowable<T>>() {
+    <T> Function1<Integer, Flowable<T>> just(final Flowable<T> observable) {
+        return new Function1<Integer, Flowable<T>>() {
             @Override
-            public Flowable<T> apply(Integer t1) {
+            public Flowable<T> invoke(Integer t1) {
                 return observable;
             }
         };
@@ -240,9 +247,9 @@ public class FlowableJoinTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> fail = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> fail = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -264,9 +271,9 @@ public class FlowableJoinTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> fail = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> fail = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };

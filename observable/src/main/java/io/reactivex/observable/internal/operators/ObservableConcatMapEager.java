@@ -16,20 +16,25 @@ package io.reactivex.observable.internal.operators;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.ErrorMode;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
-import io.reactivex.observable.extensions.*;
-import io.reactivex.observable.internal.observers.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.extensions.QueueDisposable;
+import io.reactivex.observable.extensions.SimpleQueue;
+import io.reactivex.observable.internal.observers.InnerQueuedObserver;
+import io.reactivex.observable.internal.observers.InnerQueuedObserverSupport;
 import io.reactivex.observable.internal.utils.QueueDrainHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableConcatMapEager<T, R> extends AbstractObservableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
+    final Function1<? super T, ? extends ObservableSource<? extends R>> mapper;
 
     final ErrorMode errorMode;
 
@@ -38,9 +43,9 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
     final int prefetch;
 
     public ObservableConcatMapEager(ObservableSource<T> source,
-            Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-            ErrorMode errorMode,
-            int maxConcurrency, int prefetch) {
+                                    Function1<? super T, ? extends ObservableSource<? extends R>> mapper,
+                                    ErrorMode errorMode,
+                                    int maxConcurrency, int prefetch) {
         super(source);
         this.mapper = mapper;
         this.errorMode = errorMode;
@@ -61,7 +66,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         final Observer<? super R> actual;
 
-        final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
+        final Function1<? super T, ? extends ObservableSource<? extends R>> mapper;
 
         final int maxConcurrency;
 
@@ -88,8 +93,8 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
         int activeCount;
 
         ConcatMapEagerMainObserver(Observer<? super R> actual,
-                Function<? super T, ? extends ObservableSource<? extends R>> mapper,
-                int maxConcurrency, int prefetch, ErrorMode errorMode) {
+                                   Function1<? super T, ? extends ObservableSource<? extends R>> mapper,
+                                   int maxConcurrency, int prefetch, ErrorMode errorMode) {
             this.actual = actual;
             this.mapper = mapper;
             this.maxConcurrency = maxConcurrency;
@@ -263,7 +268,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             break;
                         }
 
-                        source = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                        source = ObjectHelper.requireNonNull(mapper.invoke(v), "The mapper returned a null ObservableSource");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         d.dispose();

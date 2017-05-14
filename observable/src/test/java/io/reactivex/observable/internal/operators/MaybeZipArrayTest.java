@@ -13,18 +13,23 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function3;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeZipArrayTest {
 
@@ -152,9 +157,9 @@ public class MaybeZipArrayTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Maybe.zipArray(new Function<Object[], Object>() {
+        Maybe.zipArray(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, Maybe.just(1), null)

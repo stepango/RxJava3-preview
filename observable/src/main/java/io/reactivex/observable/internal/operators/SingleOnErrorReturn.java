@@ -14,19 +14,22 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleOnErrorReturn<T> extends Single<T> {
     final SingleSource<? extends T> source;
 
-    final Function<? super Throwable, ? extends T> valueSupplier;
+    final Function1<? super Throwable, ? extends T> valueSupplier;
 
     final T value;
 
     public SingleOnErrorReturn(SingleSource<? extends T> source,
-            Function<? super Throwable, ? extends T> valueSupplier, T value) {
+                               Function1<? super Throwable, ? extends T> valueSupplier, T value) {
         this.source = source;
         this.valueSupplier = valueSupplier;
         this.value = value;
@@ -54,7 +57,7 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
 
             if (valueSupplier != null) {
                 try {
-                    v = valueSupplier.apply(e);
+                    v = valueSupplier.invoke(e);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     observer.onError(new CompositeException(e, ex));

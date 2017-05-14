@@ -14,19 +14,19 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.observers.BasicFuseableObserver;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
 public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservableWithUpstream<T, T> {
 
-    final Function<? super T, K> keySelector;
+    final Function1<? super T, K> keySelector;
 
     final Function2<? super K, ? super K, Boolean> comparer;
 
-    public ObservableDistinctUntilChanged(ObservableSource<T> source, Function<? super T, K> keySelector, Function2<? super K, ? super K, Boolean> comparer) {
+    public ObservableDistinctUntilChanged(ObservableSource<T> source, Function1<? super T, K> keySelector, Function2<? super K, ? super K, Boolean> comparer) {
         super(source);
         this.keySelector = keySelector;
         this.comparer = comparer;
@@ -39,7 +39,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
 
     static final class DistinctUntilChangedObserver<T, K> extends BasicFuseableObserver<T, T> {
 
-        final Function<? super T, K> keySelector;
+        final Function1<? super T, K> keySelector;
 
         final Function2<? super K, ? super K, Boolean> comparer;
 
@@ -48,7 +48,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
         boolean hasValue;
 
         DistinctUntilChangedObserver(Observer<? super T> actual,
-                                     Function<? super T, K> keySelector,
+                                     Function1<? super T, K> keySelector,
                                      Function2<? super K, ? super K, Boolean> comparer) {
             super(actual);
             this.keySelector = keySelector;
@@ -68,7 +68,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
             K key;
 
             try {
-                key = keySelector.apply(t);
+                key = keySelector.invoke(t);
                 if (hasValue) {
                     boolean equal = comparer.invoke(last, key);
                     last = key;
@@ -100,7 +100,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                 if (v == null) {
                     return null;
                 }
-                K key = keySelector.apply(v);
+                K key = keySelector.invoke(v);
                 if (!hasValue) {
                     hasValue = true;
                     last = key;

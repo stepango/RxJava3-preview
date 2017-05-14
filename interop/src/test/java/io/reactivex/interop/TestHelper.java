@@ -41,7 +41,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -953,7 +952,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeMaybe(Function<Maybe<T>, ? extends MaybeSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeMaybe(Function1<Maybe<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -979,7 +978,7 @@ public enum TestHelper {
                 }
             };
 
-            MaybeSource<R> out = transform.apply(source);
+            MaybeSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1007,7 +1006,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeMaybeToSingle(Function<Maybe<T>, ? extends SingleSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeMaybeToSingle(Function1<Maybe<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1033,7 +1032,7 @@ public enum TestHelper {
                 }
             };
 
-            SingleSource<R> out = transform.apply(source);
+            SingleSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1061,7 +1060,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeMaybeToObservable(Function<Maybe<T>, ? extends ObservableSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeMaybeToObservable(Function1<Maybe<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1087,7 +1086,7 @@ public enum TestHelper {
                 }
             };
 
-            ObservableSource<R> out = transform.apply(source);
+            ObservableSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1115,7 +1114,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeMaybeToFlowable(Function<Maybe<T>, ? extends Publisher<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeMaybeToFlowable(Function1<Maybe<T>, ? extends Publisher<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1141,7 +1140,7 @@ public enum TestHelper {
                 }
             };
 
-            Publisher<R> out = transform.apply(source);
+            Publisher<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1169,7 +1168,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeSingleToMaybe(Function<Single<T>, ? extends MaybeSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeSingleToMaybe(Function1<Single<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1195,7 +1194,7 @@ public enum TestHelper {
                 }
             };
 
-            MaybeSource<R> out = transform.apply(source);
+            MaybeSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1223,7 +1222,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeSingleToObservable(Function<Single<T>, ? extends ObservableSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeSingleToObservable(Function1<Single<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1249,7 +1248,7 @@ public enum TestHelper {
                 }
             };
 
-            ObservableSource<R> out = transform.apply(source);
+            ObservableSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1276,7 +1275,7 @@ public enum TestHelper {
      * @param <T> the input value type
      * @param transform the transform to drive an operator
      */
-    public static <T> void checkDoubleOnSubscribeMaybeToCompletable(Function<Maybe<T>, ? extends CompletableSource> transform) {
+    public static <T> void checkDoubleOnSubscribeMaybeToCompletable(Function1<Maybe<T>, ? extends CompletableSource> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1302,7 +1301,7 @@ public enum TestHelper {
                 }
             };
 
-            CompletableSource out = transform.apply(source);
+            CompletableSource out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1330,7 +1329,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeSingle(Function<Single<T>, ? extends SingleSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeSingle(Function1<Single<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1356,7 +1355,7 @@ public enum TestHelper {
                 }
             };
 
-            SingleSource<R> out = transform.apply(source);
+            SingleSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1384,7 +1383,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeFlowable(Function<Flowable<T>, ? extends Publisher<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeFlowable(Function1<Flowable<T>, ? extends Publisher<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1410,7 +1409,7 @@ public enum TestHelper {
                 }
             };
 
-            Publisher<R> out = transform.apply(source);
+            Publisher<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1438,7 +1437,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeObservable(Function<Observable<T>, ? extends ObservableSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeObservable(Function1<Observable<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1464,7 +1463,7 @@ public enum TestHelper {
                 }
             };
 
-            ObservableSource<R> out = transform.apply(source);
+            ObservableSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1492,7 +1491,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeObservableToSingle(Function<Observable<T>, ? extends SingleSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeObservableToSingle(Function1<Observable<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1518,7 +1517,7 @@ public enum TestHelper {
                 }
             };
 
-            SingleSource<R> out = transform.apply(source);
+            SingleSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1546,7 +1545,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeObservableToMaybe(Function<Observable<T>, ? extends MaybeSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeObservableToMaybe(Function1<Observable<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1572,7 +1571,7 @@ public enum TestHelper {
                 }
             };
 
-            MaybeSource<R> out = transform.apply(source);
+            MaybeSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1599,7 +1598,7 @@ public enum TestHelper {
      * @param <T> the input value type
      * @param transform the transform to drive an operator
      */
-    public static <T> void checkDoubleOnSubscribeObservableToCompletable(Function<Observable<T>, ? extends CompletableSource> transform) {
+    public static <T> void checkDoubleOnSubscribeObservableToCompletable(Function1<Observable<T>, ? extends CompletableSource> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1625,7 +1624,7 @@ public enum TestHelper {
                 }
             };
 
-            CompletableSource out = transform.apply(source);
+            CompletableSource out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1653,7 +1652,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeFlowableToObservable(Function<Flowable<T>, ? extends ObservableSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeFlowableToObservable(Function1<Flowable<T>, ? extends ObservableSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1679,7 +1678,7 @@ public enum TestHelper {
                 }
             };
 
-            ObservableSource<R> out = transform.apply(source);
+            ObservableSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1707,7 +1706,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeFlowableToSingle(Function<Flowable<T>, ? extends SingleSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeFlowableToSingle(Function1<Flowable<T>, ? extends SingleSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1733,7 +1732,7 @@ public enum TestHelper {
                 }
             };
 
-            SingleSource<R> out = transform.apply(source);
+            SingleSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1761,7 +1760,7 @@ public enum TestHelper {
      * @param <R> the output value type
      * @param transform the transform to drive an operator
      */
-    public static <T, R> void checkDoubleOnSubscribeFlowableToMaybe(Function<Flowable<T>, ? extends MaybeSource<R>> transform) {
+    public static <T, R> void checkDoubleOnSubscribeFlowableToMaybe(Function1<Flowable<T>, ? extends MaybeSource<R>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1787,7 +1786,7 @@ public enum TestHelper {
                 }
             };
 
-            MaybeSource<R> out = transform.apply(source);
+            MaybeSource<R> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1814,7 +1813,7 @@ public enum TestHelper {
      * @param <T> the input value type
      * @param transform the transform to drive an operator
      */
-    public static <T> void checkDoubleOnSubscribeFlowableToCompletable(Function<Flowable<T>, ? extends Completable> transform) {
+    public static <T> void checkDoubleOnSubscribeFlowableToCompletable(Function1<Flowable<T>, ? extends Completable> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1840,7 +1839,7 @@ public enum TestHelper {
                 }
             };
 
-            Completable out = transform.apply(source);
+            Completable out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1866,7 +1865,7 @@ public enum TestHelper {
      * RxJavaPlugins.
      * @param transform the transform to drive an operator
      */
-    public static void checkDoubleOnSubscribeCompletable(Function<Completable, ? extends CompletableSource> transform) {
+    public static void checkDoubleOnSubscribeCompletable(Function1<Completable, ? extends CompletableSource> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1892,7 +1891,7 @@ public enum TestHelper {
                 }
             };
 
-            CompletableSource out = transform.apply(source);
+            CompletableSource out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1919,7 +1918,7 @@ public enum TestHelper {
      * @param <T> the output value tye
      * @param transform the transform to drive an operator
      */
-    public static <T> void checkDoubleOnSubscribeCompletableToMaybe(Function<Completable, ? extends MaybeSource<T>> transform) {
+    public static <T> void checkDoubleOnSubscribeCompletableToMaybe(Function1<Completable, ? extends MaybeSource<T>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1945,7 +1944,7 @@ public enum TestHelper {
                 }
             };
 
-            MaybeSource<T> out = transform.apply(source);
+            MaybeSource<T> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -1972,7 +1971,7 @@ public enum TestHelper {
      * @param <T> the output value tye
      * @param transform the transform to drive an operator
      */
-    public static <T> void checkDoubleOnSubscribeCompletableToSingle(Function<Completable, ? extends SingleSource<T>> transform) {
+    public static <T> void checkDoubleOnSubscribeCompletableToSingle(Function1<Completable, ? extends SingleSource<T>> transform) {
         List<Throwable> errors = trackPluginErrors();
         try {
             final Boolean[] b = { null, null };
@@ -1998,7 +1997,7 @@ public enum TestHelper {
                 }
             };
 
-            SingleSource<T> out = transform.apply(source);
+            SingleSource<T> out = transform.invoke(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 
@@ -2025,13 +2024,13 @@ public enum TestHelper {
      * @param <U> the output value type
      * @param composer the function to apply an operator to the provided Maybe source
      */
-    public static <T, U> void checkDisposedMaybe(Function<Maybe<T>, ? extends MaybeSource<U>> composer) {
+    public static <T, U> void checkDisposedMaybe(Function1<Maybe<T>, ? extends MaybeSource<U>> composer) {
         MaybeSubject<T> pp = MaybeSubject.create();
 
         TestSubscriber<U> ts = new TestSubscriber<U>();
 
         try {
-            new MaybeToFlowable<U>(composer.apply(pp)).subscribe(ts);
+            new MaybeToFlowable<U>(composer.invoke(pp)).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -2047,13 +2046,13 @@ public enum TestHelper {
      * Check if the operator applied to a Completable source propagates dispose properly.
      * @param composer the function to apply an operator to the provided Completable source
      */
-    public static void checkDisposedCompletable(Function<Completable, ? extends CompletableSource> composer) {
+    public static void checkDisposedCompletable(Function1<Completable, ? extends CompletableSource> composer) {
         CompletableSubject pp = CompletableSubject.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         try {
-            new CompletableToFlowable<Integer>(composer.apply(pp)).subscribe(ts);
+            new CompletableToFlowable<Integer>(composer.invoke(pp)).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -2071,13 +2070,13 @@ public enum TestHelper {
      * @param <U> the output value type
      * @param composer the function to apply an operator to the provided Maybe source
      */
-    public static <T, U> void checkDisposedMaybeToSingle(Function<Maybe<T>, ? extends SingleSource<U>> composer) {
+    public static <T, U> void checkDisposedMaybeToSingle(Function1<Maybe<T>, ? extends SingleSource<U>> composer) {
         MaybeSubject<T> pp = MaybeSubject.create();
 
         TestSubscriber<U> ts = new TestSubscriber<U>();
 
         try {
-            new SingleToFlowable<U>(composer.apply(pp)).subscribe(ts);
+            new SingleToFlowable<U>(composer.invoke(pp)).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -2363,8 +2362,8 @@ public enum TestHelper {
      * @param goodValue the good value to emit before turning bad, if not null
      * @param expected the expected resulting values, null to ignore values received
      */
-    public static <T> void checkBadSourceObservable(Function<Observable<T>, Object> mapper,
-            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+    public static <T> void checkBadSourceObservable(Function1<Observable<T>, Object> mapper,
+                                                    final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Observable<T> bad = new Observable<T>() {
@@ -2396,7 +2395,7 @@ public enum TestHelper {
                 }
             };
 
-            Object o = mapper.apply(bad);
+            Object o = mapper.invoke(bad);
 
             if (o instanceof ObservableSource) {
                 ObservableSource<?> os = (ObservableSource<?>) o;
@@ -2528,8 +2527,8 @@ public enum TestHelper {
      * @param goodValue the good value to emit before turning bad, if not null
      * @param expected the expected resulting values, null to ignore values received
      */
-    public static <T> void checkBadSourceFlowable(Function<Flowable<T>, Object> mapper,
-            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+    public static <T> void checkBadSourceFlowable(Function1<Flowable<T>, Object> mapper,
+                                                  final boolean error, final T goodValue, final T badValue, final Object... expected) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Flowable<T> bad = new Flowable<T>() {
@@ -2555,7 +2554,7 @@ public enum TestHelper {
                 }
             };
 
-            Object o = mapper.apply(bad);
+            Object o = mapper.invoke(bad);
 
             if (o instanceof ObservableSource) {
                 ObservableSource<?> os = (ObservableSource<?>) o;

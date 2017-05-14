@@ -22,7 +22,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.ParallelFailureHandling;
@@ -93,9 +92,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithError() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, ParallelFailureHandling.ERROR)
@@ -108,9 +107,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithStop() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, ParallelFailureHandling.STOP)
@@ -123,10 +122,10 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithRetry() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             int count;
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 if (count++ == 1) {
                     return -1;
                 }
@@ -142,9 +141,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithRetryLimited() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
@@ -162,9 +161,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithSkip() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, ParallelFailureHandling.SKIP)
@@ -178,9 +177,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailHandlerThrows() {
         TestSubscriber<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
@@ -223,9 +222,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithErrorConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, ParallelFailureHandling.ERROR)
@@ -239,9 +238,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithStopConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, ParallelFailureHandling.STOP)
@@ -255,10 +254,10 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithRetryConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             int count;
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 if (count++ == 1) {
                     return -1;
                 }
@@ -275,9 +274,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithRetryLimitedConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
@@ -296,9 +295,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailWithSkipConditional() {
         Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, ParallelFailureHandling.SKIP)
@@ -313,9 +312,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
     public void mapFailHandlerThrowsConditional() {
         TestSubscriber<Integer> ts = Flowable.range(0, 2)
         .parallel(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return 1 / v;
             }
         }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {

@@ -13,26 +13,44 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.CrashingIterable;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableFromIterableTest {
 
@@ -553,9 +571,9 @@ public class FlowableFromIterableTest {
         TestSubscriber<Integer> to = new TestSubscriber<Integer>();
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
-        new Function<Integer, Flowable  <Integer>>() {
+                new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.range(v, 2);
             }
         }).subscribe(to);

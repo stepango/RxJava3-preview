@@ -14,19 +14,22 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
+import kotlin.jvm.functions.Function1;
 
 public final class CompletableResumeNext extends Completable {
 
     final CompletableSource source;
 
-    final Function<? super Throwable, ? extends CompletableSource> errorMapper;
+    final Function1<? super Throwable, ? extends CompletableSource> errorMapper;
 
     public CompletableResumeNext(CompletableSource source,
-            Function<? super Throwable, ? extends CompletableSource> errorMapper) {
+                                 Function1<? super Throwable, ? extends CompletableSource> errorMapper) {
         this.source = source;
         this.errorMapper = errorMapper;
     }
@@ -61,7 +64,7 @@ public final class CompletableResumeNext extends Completable {
             CompletableSource c;
 
             try {
-                c = errorMapper.apply(e);
+                c = errorMapper.invoke(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.onError(new CompositeException(ex, e));

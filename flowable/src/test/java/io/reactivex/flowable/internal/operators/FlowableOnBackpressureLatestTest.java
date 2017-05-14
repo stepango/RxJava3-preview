@@ -13,18 +13,20 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.reactivestreams.Publisher;
-
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableOnBackpressureLatestTest {
     @Test
@@ -133,9 +135,9 @@ public class FlowableOnBackpressureLatestTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> f) {
                 return f.onBackpressureLatest();
             }
         });

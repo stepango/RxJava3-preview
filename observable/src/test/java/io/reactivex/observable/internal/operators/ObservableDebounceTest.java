@@ -14,23 +14,37 @@
 package io.reactivex.observable.internal.operators;
 
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.mockito.InOrder;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableDebounceTest {
 
@@ -158,10 +172,10 @@ public class ObservableDebounceTest {
     public void debounceSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> debouncer = PublishSubject.create();
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> debounceSel = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return debouncer;
             }
         };
@@ -194,10 +208,10 @@ public class ObservableDebounceTest {
     @Test
     public void debounceSelectorFuncThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> debounceSel = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -216,10 +230,10 @@ public class ObservableDebounceTest {
     @Test
     public void debounceSelectorObservableThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> debounceSel = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return Observable.error(new TestException());
             }
         };
@@ -256,10 +270,10 @@ public class ObservableDebounceTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> debouncer = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> debounceSel = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> debounceSel = new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return debouncer;
             }
         };
@@ -343,24 +357,24 @@ public class ObservableDebounceTest {
 
     @Test
     public void badSourceSelector() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return o.debounce(new Function<Integer, ObservableSource<Long>>() {
+            public Object invoke(Observable<Integer> o) {
+                return o.debounce(new Function1<Integer, ObservableSource<Long>>() {
                     @Override
-                    public ObservableSource<Long> apply(Integer v) throws Exception {
+                    public ObservableSource<Long> invoke(Integer v) {
                         return Observable.timer(1, TimeUnit.SECONDS);
                     }
                 });
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(final Observable<Integer> o) throws Exception {
-                return Observable.just(1).debounce(new Function<Integer, ObservableSource<Integer>>() {
+            public Object invoke(final Observable<Integer> o) {
+                return Observable.just(1).debounce(new Function1<Integer, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                    public ObservableSource<Integer> invoke(Integer v) {
                         return o;
                     }
                 });

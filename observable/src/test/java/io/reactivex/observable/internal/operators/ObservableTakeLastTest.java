@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -132,12 +131,12 @@ public class ObservableTakeLastTest {
         assertEquals(Observable.bufferSize() * 4, ts.valueCount());
     }
 
-    private Function<Integer, Integer> newSlowProcessor() {
-        return new Function<Integer, Integer>() {
+    private Function1<Integer, Integer> newSlowProcessor() {
+        return new Function1<Integer, Integer>() {
             int c;
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 if (c++ < 100) {
                     try {
                         Thread.sleep(1);
@@ -199,9 +198,9 @@ public class ObservableTakeLastTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.takeLast(5);
             }
         });

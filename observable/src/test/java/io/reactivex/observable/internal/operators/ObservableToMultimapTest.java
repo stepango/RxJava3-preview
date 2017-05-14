@@ -13,18 +13,30 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
-
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableToMultimapTest {
     Observer<Object> objectObserver;
@@ -36,15 +48,15 @@ public class ObservableToMultimapTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+    Function1<String, Integer> lengthFunc = new Function1<String, Integer>() {
         @Override
-        public Integer apply(String t1) {
+        public Integer invoke(String t1) {
             return t1.length();
         }
     };
-    Function<String, String> duplicate = new Function<String, String>() {
+    Function1<String, String> duplicate = new Function1<String, String>() {
         @Override
-        public String apply(String t1) {
+        public String invoke(String t1) {
             return t1 + t1;
         }
     };
@@ -102,18 +114,18 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
                 lengthFunc, identity,
-                mapFactory, new Function<Integer, Collection<String>>() {
+                mapFactory, new Function1<Integer, Collection<String>>() {
                     @Override
-                    public Collection<String> apply(Integer v) {
+                    public Collection<String> invoke(Integer v) {
                         return new ArrayList<String>();
                     }
                 }).toObservable();
@@ -133,9 +145,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithCollectionFactoryObservable() {
         Observable<String> source = Observable.just("cc", "dd", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
+        Function1<Integer, Collection<String>> collectionFactory = new Function1<Integer, Collection<String>>() {
             @Override
-            public Collection<String> apply(Integer t1) {
+            public Collection<String> invoke(Integer t1) {
                 if (t1 == 2) {
                     return new ArrayList<String>();
                 } else {
@@ -144,9 +156,9 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
@@ -175,9 +187,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithErrorObservable() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFuncErr = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 if ("b".equals(t1)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -202,9 +214,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithErrorInValueSelectorObservable() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
+        Function1<String, String> duplicateErr = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 if ("b".equals(t1)) {
                     throw new RuntimeException("Forced failure");
                 }
@@ -237,9 +249,9 @@ public class ObservableToMultimapTest {
         };
 
         Observable<Map<Integer, Collection<String>>> mapped = source
-                .toMultimap(lengthFunc, new Function<String, String>() {
+                .toMultimap(lengthFunc, new Function1<String, String>() {
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         return v;
                     }
                 }, mapFactory).toObservable();
@@ -259,9 +271,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithThrowingCollectionFactoryObservable() {
         Observable<String> source = Observable.just("cc", "cc", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
+        Function1<Integer, Collection<String>> collectionFactory = new Function1<Integer, Collection<String>>() {
             @Override
-            public Collection<String> apply(Integer t1) {
+            public Collection<String> invoke(Integer t1) {
                 if (t1 == 2) {
                     throw new RuntimeException("Forced failure");
                 } else {
@@ -270,9 +282,9 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
@@ -350,18 +362,18 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
 
         Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(
                 lengthFunc, identity,
-                mapFactory, new Function<Integer, Collection<String>>() {
+                mapFactory, new Function1<Integer, Collection<String>>() {
                     @Override
-                    public Collection<String> apply(Integer v) {
+                    public Collection<String> invoke(Integer v) {
                         return new ArrayList<String>();
                     }
                 });
@@ -380,9 +392,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithCollectionFactory() {
         Observable<String> source = Observable.just("cc", "dd", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
+        Function1<Integer, Collection<String>> collectionFactory = new Function1<Integer, Collection<String>>() {
             @Override
-            public Collection<String> apply(Integer t1) {
+            public Collection<String> invoke(Integer t1) {
                 if (t1 == 2) {
                     return new ArrayList<String>();
                 } else {
@@ -391,9 +403,9 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };
@@ -421,9 +433,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithError() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
-        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+        Function1<String, Integer> lengthFuncErr = new Function1<String, Integer>() {
             @Override
-            public Integer apply(String t1) {
+            public Integer invoke(String t1) {
                 if ("b".equals(t1)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -447,9 +459,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithErrorInValueSelector() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
-        Function<String, String> duplicateErr = new Function<String, String>() {
+        Function1<String, String> duplicateErr = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 if ("b".equals(t1)) {
                     throw new RuntimeException("Forced failure");
                 }
@@ -481,9 +493,9 @@ public class ObservableToMultimapTest {
         };
 
         Single<Map<Integer, Collection<String>>> mapped = source
-                .toMultimap(lengthFunc, new Function<String, String>() {
+                .toMultimap(lengthFunc, new Function1<String, String>() {
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         return v;
                     }
                 }, mapFactory);
@@ -502,9 +514,9 @@ public class ObservableToMultimapTest {
     public void testToMultimapWithThrowingCollectionFactory() {
         Observable<String> source = Observable.just("cc", "cc", "eee", "eee");
 
-        Function<Integer, Collection<String>> collectionFactory = new Function<Integer, Collection<String>>() {
+        Function1<Integer, Collection<String>> collectionFactory = new Function1<Integer, Collection<String>>() {
             @Override
-            public Collection<String> apply(Integer t1) {
+            public Collection<String> invoke(Integer t1) {
                 if (t1 == 2) {
                     throw new RuntimeException("Forced failure");
                 } else {
@@ -513,9 +525,9 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Function<String, String> identity = new Function<String, String>() {
+        Function1<String, String> identity = new Function1<String, String>() {
             @Override
-            public String apply(String v) {
+            public String invoke(String v) {
                 return v;
             }
         };

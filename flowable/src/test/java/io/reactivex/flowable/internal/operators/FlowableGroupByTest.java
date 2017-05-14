@@ -36,7 +36,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.GroupedFlowable;
@@ -62,9 +61,9 @@ import static org.mockito.Mockito.verify;
 
 public class FlowableGroupByTest {
 
-    final Function<String, Integer> length = new Function<String, Integer>() {
+    final Function1<String, Integer> length = new Function1<String, Integer>() {
         @Override
-        public Integer apply(String s) {
+        public Integer invoke(String s) {
             return s.length();
         }
     };
@@ -130,15 +129,15 @@ public class FlowableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        grouped.flatMap(new Function<GroupedFlowable<Integer, String>, Flowable<String>>() {
+        grouped.flatMap(new Function1<GroupedFlowable<Integer, String>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, String> o) {
+            public Flowable<String> invoke(final GroupedFlowable<Integer, String> o) {
                 groupCounter.incrementAndGet();
-                return o.map(new Function<String, String>() {
+                return o.map(new Function1<String, String>() {
 
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         return "Event => key: " + o.getKey() + " value: " + v;
                     }
                 });
@@ -234,23 +233,23 @@ public class FlowableGroupByTest {
 
         });
 
-        es.groupBy(new Function<Event, Integer>() {
+        es.groupBy(new Function1<Event, Integer>() {
 
             @Override
-            public Integer apply(Event e) {
+            public Integer invoke(Event e) {
                 return e.source;
             }
-        }).flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
+        }).flatMap(new Function1<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+            public Flowable<String> invoke(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
                 System.out.println("GroupedFlowable Key: " + eventGroupedFlowable.getKey());
                 groupCounter.incrementAndGet();
 
-                return eventGroupedFlowable.map(new Function<Event, String>() {
+                return eventGroupedFlowable.map(new Function1<Event, String>() {
 
                     @Override
-                    public String apply(Event event) {
+                    public String invoke(Event event) {
                         return "Source: " + event.source + "  Message: " + event.message;
                     }
                 });
@@ -312,27 +311,27 @@ public class FlowableGroupByTest {
         final AtomicInteger groupCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        es.groupBy(new Function<Event, Integer>() {
+        es.groupBy(new Function1<Event, Integer>() {
 
             @Override
-            public Integer apply(Event e) {
+            public Integer invoke(Event e) {
                 return e.source;
             }
         })
                 .take(1) // we want only the first group
-                .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                    public Flowable<String> invoke(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
                         System.out.println("testUnsubscribe => GroupedFlowable Key: " + eventGroupedFlowable.getKey());
                         groupCounter.incrementAndGet();
 
                         return eventGroupedFlowable
                                 .take(20) // limit to only 20 events on this group
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -376,24 +375,24 @@ public class FlowableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
 
         SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Function<Event, Integer>() {
+                .groupBy(new Function1<Event, Integer>() {
 
                     @Override
-                    public Integer apply(Event e) {
+                    public Integer invoke(Event e) {
                         return e.source;
                     }
                 })
                 // take 2 of the 4 groups
                 .take(2)
-                .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                    public Flowable<String> invoke(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
                         return eventGroupedFlowable
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -423,19 +422,19 @@ public class FlowableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
 
         SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Function<Event, Integer>() {
+                .groupBy(new Function1<Event, Integer>() {
 
                     @Override
-                    public Integer apply(Event e) {
+                    public Integer invoke(Event e) {
                         return e.source;
                     }
                 })
                 // take 2 of the 4 groups
                 .take(2)
-                .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                    public Flowable<String> invoke(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
                         int numToTake = 0;
                         if (eventGroupedFlowable.getKey() == 1) {
                             numToTake = 10;
@@ -444,10 +443,10 @@ public class FlowableGroupByTest {
                         }
                         return eventGroupedFlowable
                                 .take(numToTake)
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -475,21 +474,21 @@ public class FlowableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         Flowable.range(0, 100)
-                .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer i) {
+                    public Integer invoke(Integer i) {
                         return i % 2;
                     }
                 })
-                .flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
 
                     @Override
-                    public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> group) {
+                    public Flowable<Integer> invoke(GroupedFlowable<Integer, Integer> group) {
                         if (group.getKey() == 0) {
-                            return group.delay(100, TimeUnit.MILLISECONDS).map(new Function<Integer, Integer>() {
+                            return group.delay(100, TimeUnit.MILLISECONDS).map(new Function1<Integer, Integer>() {
                                 @Override
-                                public Integer apply(Integer t) {
+                                public Integer invoke(Integer t) {
                                     return t * 10;
                                 }
 
@@ -532,10 +531,10 @@ public class FlowableGroupByTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();
         Flowable.range(0, 100)
-                .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer i) {
+                    public Integer invoke(Integer i) {
                         return i % 2;
                     }
                 })
@@ -571,17 +570,17 @@ public class FlowableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
 
         SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Function<Event, Integer>() {
+                .groupBy(new Function1<Event, Integer>() {
 
                     @Override
-                    public Integer apply(Event e) {
+                    public Integer invoke(Event e) {
                         return e.source;
                     }
                 })
-                .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                    public Flowable<String> invoke(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
                         Flowable<Event> eventStream = eventGroupedFlowable;
                         if (eventGroupedFlowable.getKey() >= 2) {
                             // filter these
@@ -594,10 +593,10 @@ public class FlowableGroupByTest {
                         }
 
                         return eventStream
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -644,22 +643,22 @@ public class FlowableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
+        }).flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, Integer> group) {
+            public Flowable<String> invoke(final GroupedFlowable<Integer, Integer> group) {
                 if (group.getKey() < 3) {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "first groups: " + t1;
                         }
 
@@ -675,10 +674,10 @@ public class FlowableGroupByTest {
 
                             });
                 } else {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "last group: " + t1;
                         }
 
@@ -725,22 +724,22 @@ public class FlowableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
+        }).flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, Integer> group) {
+            public Flowable<String> invoke(final GroupedFlowable<Integer, Integer> group) {
                 if (group.getKey() < 3) {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "first groups: " + t1;
                         }
 
@@ -756,10 +755,10 @@ public class FlowableGroupByTest {
 
                             });
                 } else {
-                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function<Integer, String>() {
+                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "last group: " + t1;
                         }
 
@@ -821,22 +820,22 @@ public class FlowableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
+        }).flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, Integer> group) {
+            public Flowable<String> invoke(final GroupedFlowable<Integer, Integer> group) {
                 if (group.getKey() < 3) {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "first groups: " + t1;
                         }
 
@@ -852,10 +851,10 @@ public class FlowableGroupByTest {
 
                             });
                 } else {
-                    return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function<Integer, String>() {
+                    return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "last group: " + t1;
                         }
 
@@ -892,21 +891,21 @@ public class FlowableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
+        }).flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, Integer> group) {
-                return group.subscribeOn(Schedulers.newThread()).map(new Function<Integer, String>() {
+            public Flowable<String> invoke(final GroupedFlowable<Integer, Integer> group) {
+                return group.subscribeOn(Schedulers.newThread()).map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer t1) {
+                    public String invoke(Integer t1) {
                         System.out.println("Received: " + t1 + " on group : " + group.getKey());
                         return "first groups: " + t1;
                     }
@@ -951,21 +950,21 @@ public class FlowableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
+        }).flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, Integer> group) {
-                return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function<Integer, String>() {
+            public Flowable<String> invoke(final GroupedFlowable<Integer, Integer> group) {
+                return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer t1) {
+                    public String invoke(Integer t1) {
                         return "first groups: " + t1;
                     }
 
@@ -1047,18 +1046,18 @@ public class FlowableGroupByTest {
         verify(o2, never()).onError(Mockito.<Throwable> any());
     }
 
-    private static Function<Long, Boolean> IS_EVEN = new Function<Long, Boolean>() {
+    private static Function1<Long, Boolean> IS_EVEN = new Function1<Long, Boolean>() {
 
         @Override
-        public Boolean apply(Long n) {
+        public Boolean invoke(Long n) {
             return n % 2 == 0;
         }
     };
 
-    private static Function<Integer, Boolean> IS_EVEN2 = new Function<Integer, Boolean>() {
+    private static Function1<Integer, Boolean> IS_EVEN2 = new Function1<Integer, Boolean>() {
 
         @Override
-        public Boolean apply(Integer n) {
+        public Boolean invoke(Integer n) {
             return n % 2 == 0;
         }
     };
@@ -1070,14 +1069,14 @@ public class FlowableGroupByTest {
 
         Flowable.range(1, 4000)
                 .groupBy(IS_EVEN2)
-                .flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
-                        return g.observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+                    public Flowable<String> invoke(final GroupedFlowable<Boolean, Integer> g) {
+                        return g.observeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
                             @Override
-                            public String apply(Integer l) {
+                            public String invoke(Integer l) {
                                 if (g.getKey()) {
                                     try {
                                         Thread.sleep(1);
@@ -1097,42 +1096,42 @@ public class FlowableGroupByTest {
         ts.assertNoErrors();
     }
 
-    <T, R> Function<T, R> just(final R value) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> just(final R value) {
+        return new Function1<T, R>() {
             @Override
-            public R apply(T t1) {
+            public R invoke(T t1) {
                 return value;
             }
         };
     }
 
-    <T> Function<Integer, T> fail(T dummy) {
-        return new Function<Integer, T>() {
+    <T> Function1<Integer, T> fail(T dummy) {
+        return new Function1<Integer, T>() {
             @Override
-            public T apply(Integer t1) {
+            public T invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
     }
 
-    <T, R> Function<T, R> fail2(R dummy2) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> fail2(R dummy2) {
+        return new Function1<T, R>() {
             @Override
-            public R apply(T t1) {
+            public R invoke(T t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
     }
 
-    Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+    Function1<Integer, Integer> dbl = new Function1<Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1) {
+        public Integer invoke(Integer t1) {
             return t1 * 2;
         }
     };
-    Function<Integer, Integer> identity = new Function<Integer, Integer>() {
+    Function1<Integer, Integer> identity = new Function1<Integer, Integer>() {
         @Override
-        public Integer apply(Integer v) {
+        public Integer invoke(Integer v) {
             return v;
         }
     };
@@ -1161,30 +1160,30 @@ public class FlowableGroupByTest {
          * qux
          *
          */
-        Function<String, String> keysel = new Function<String, String>() {
+        Function1<String, String> keysel = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1.trim().toLowerCase();
             }
         };
-        Function<String, String> valuesel = new Function<String, String>() {
+        Function1<String, String> valuesel = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1 + t1;
             }
         };
 
         Flowable<String> m = source.groupBy(keysel, valuesel)
-        .flatMap(new Function<GroupedFlowable<String, String>, Publisher<String>>() {
+                .flatMap(new Function1<GroupedFlowable<String, String>, Publisher<String>>() {
             @Override
-            public Publisher<String> apply(final GroupedFlowable<String, String> g) {
+            public Publisher<String> invoke(final GroupedFlowable<String, String> g) {
                 System.out.println("-----------> NEXT: " + g.getKey());
-                return g.take(2).map(new Function<String, String>() {
+                return g.take(2).map(new Function1<String, String>() {
 
                     int count;
 
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         System.out.println(v);
                         return g.getKey() + "-" + count++;
                     }
@@ -1291,10 +1290,10 @@ public class FlowableGroupByTest {
     public void testgroupByBackpressure() throws InterruptedException {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
-        Flowable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
+        Flowable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function1<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
+            public Flowable<String> invoke(final GroupedFlowable<Boolean, Integer> g) {
                 return g.doOnComplete(new Function0() {
 
                     @Override
@@ -1303,12 +1302,12 @@ public class FlowableGroupByTest {
                         return Unit.INSTANCE;
                     }
 
-                }).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+                }).observeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
                     int c;
 
                     @Override
-                    public String apply(Integer l) {
+                    public String invoke(Integer l) {
                         if (g.getKey()) {
                             if (c++ < 400) {
                                 try {
@@ -1359,14 +1358,14 @@ public class FlowableGroupByTest {
                     return Unit.INSTANCE;
                 }
             })
-            .groupBy(IS_EVEN2).flatMap(new Function<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
+                .groupBy(IS_EVEN2).flatMap(new Function1<GroupedFlowable<Boolean, Integer>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
-                return g.take(2).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+            public Flowable<String> invoke(final GroupedFlowable<Boolean, Integer> g) {
+                return g.take(2).observeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer l) {
+                    public String invoke(Integer l) {
                         if (g.getKey()) {
                             try {
                                 Thread.sleep(1);
@@ -1386,10 +1385,10 @@ public class FlowableGroupByTest {
         ts.assertNoErrors();
     }
 
-    static Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+    static Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>> FLATTEN_INTEGER = new Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
 
         @Override
-        public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> t) {
+        public Flowable<Integer> invoke(GroupedFlowable<Integer, Integer> t) {
             return t;
         }
 
@@ -1399,10 +1398,10 @@ public class FlowableGroupByTest {
     public void testGroupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
         final List<String> values = new ArrayList<String>();
-        Flowable.just("a", "b", "c").groupBy(new Function<String, String>() {
+        Flowable.just("a", "b", "c").groupBy(new Function1<String, String>() {
 
             @Override
-            public String apply(String value) {
+            public String invoke(String value) {
                 return null;
             }
         }).subscribe(new Function1<GroupedFlowable<String, String>, Unit>() {
@@ -1438,10 +1437,10 @@ public class FlowableGroupByTest {
         );
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
-        o.groupBy(new Function<Integer, Integer>() {
+        o.groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer integer) {
+            public Integer invoke(Integer integer) {
                 return null;
             }
         }).subscribe(ts);
@@ -1487,10 +1486,10 @@ public class FlowableGroupByTest {
                         subscriber.onError(e);
                     }
                 }
-        ).groupBy(new Function<Integer, Integer>() {
+        ).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 return i % 2;
             }
         }).subscribe(outer);
@@ -1505,16 +1504,16 @@ public class FlowableGroupByTest {
         Flowable
                 .just(1, 2, 3)
                 // group into one group
-                .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         return 1;
                     }
                 })
                 // flatten
-                .concatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+                .concatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> g) {
+                    public Flowable<Integer> invoke(GroupedFlowable<Integer, Integer> g) {
                         return g;
                     }
                 })
@@ -1558,9 +1557,9 @@ public class FlowableGroupByTest {
         for (int j = 0; j < 1000; j++) {
             Flowable.merge(
                     Flowable.range(0, 500)
-                    .groupBy(new Function<Integer, Object>() {
+                            .groupBy(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer i) {
+                        public Object invoke(Integer i) {
                             return i % (Flowable.bufferSize() + 2);
                         }
                     })
@@ -1577,9 +1576,9 @@ public class FlowableGroupByTest {
         TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(0L);
 
         Flowable.fromArray(1, 2)
-                .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) {
+                    public Integer invoke(Integer v) {
                         return v;
                     }
                 })
@@ -1605,9 +1604,9 @@ public class FlowableGroupByTest {
         final TestSubscriber<Object> ts2 = new TestSubscriber<Object>(0L);
 
         Flowable.range(1, Flowable.bufferSize() * 2)
-        .groupBy(new Function<Integer, Object>() {
+                .groupBy(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return 1;
             }
         })
@@ -1651,14 +1650,14 @@ public class FlowableGroupByTest {
 
         final TestSubscriber<GroupedFlowable<Integer, Integer>> ts2 = SubscriberFusion.newTest(FusedQueueSubscription.ANY);
 
-        Flowable.range(1, 10).groupBy(new Function<Integer, Integer>() {
+        Flowable.range(1, 10).groupBy(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 return 1;
             }
-        }, new Function<Integer, Integer>() {
+        }, new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 return v + 1;
             }
         })
@@ -1689,9 +1688,9 @@ public class FlowableGroupByTest {
     public void keySelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), true)
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Flowable<Integer> invoke(GroupedFlowable<Integer, Integer> g) {
                 return g;
             }
         })
@@ -1703,9 +1702,9 @@ public class FlowableGroupByTest {
     public void keyAndValueSelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Flowable<Integer> invoke(GroupedFlowable<Integer, Integer> g) {
                 return g;
             }
         })
@@ -1799,9 +1798,9 @@ public class FlowableGroupByTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> f) throws Exception {
+            public Object invoke(Flowable<Object> f) {
                 return f.groupBy(Functions.justFunction(1));
             }
         }, false, 1, 1, (Object[])null);
@@ -1815,9 +1814,9 @@ public class FlowableGroupByTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<GroupedFlowable<Integer, Object>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<GroupedFlowable<Integer, Object>>>() {
             @Override
-            public Publisher<GroupedFlowable<Integer, Object>> apply(Flowable<Object> f) throws Exception {
+            public Publisher<GroupedFlowable<Integer, Object>> invoke(Flowable<Object> f) {
                 return f.groupBy(Functions.justFunction(1));
             }
         });
@@ -1826,15 +1825,15 @@ public class FlowableGroupByTest {
     @Test
     public void nullKeyTakeInner() {
         Flowable.just(1)
-        .groupBy(new Function<Integer, Object>() {
+                .groupBy(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 return null;
             }
         })
-        .flatMap(new Function<GroupedFlowable<Object, Integer>, Publisher<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Object, Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(GroupedFlowable<Object, Integer> g) throws Exception {
+            public Publisher<Integer> invoke(GroupedFlowable<Object, Integer> g) {
                 return g.take(1);
             }
         })
@@ -1870,9 +1869,9 @@ public class FlowableGroupByTest {
     public void groupError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .groupBy(Functions.justFunction(1), true)
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Publisher<Integer> invoke(GroupedFlowable<Integer, Integer> g) {
                 return g.hide();
             }
         })
@@ -1884,9 +1883,9 @@ public class FlowableGroupByTest {
     public void groupComplete() {
         Flowable.just(1)
         .groupBy(Functions.justFunction(1), true)
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Publisher<Integer> invoke(GroupedFlowable<Integer, Integer> g) {
                 return g.hide();
             }
         })

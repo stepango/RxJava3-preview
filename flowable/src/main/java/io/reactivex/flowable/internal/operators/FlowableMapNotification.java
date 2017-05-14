@@ -13,26 +13,26 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
-
 import org.reactivestreams.Subscriber;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscribers.SinglePostCompleteSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends R> onNextMapper;
-    final Function<? super Throwable, ? extends R> onErrorMapper;
+    final Function1<? super T, ? extends R> onNextMapper;
+    final Function1<? super Throwable, ? extends R> onErrorMapper;
     final Callable<? extends R> onCompleteSupplier;
 
     public FlowableMapNotification(
             Flowable<T> source,
-            Function<? super T, ? extends R> onNextMapper,
-            Function<? super Throwable, ? extends R> onErrorMapper,
+            Function1<? super T, ? extends R> onNextMapper,
+            Function1<? super Throwable, ? extends R> onErrorMapper,
             Callable<? extends R> onCompleteSupplier) {
         super(source);
         this.onNextMapper = onNextMapper;
@@ -49,14 +49,14 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
     extends SinglePostCompleteSubscriber<T, R> {
 
         private static final long serialVersionUID = 2757120512858778108L;
-        final Function<? super T, ? extends R> onNextMapper;
-        final Function<? super Throwable, ? extends R> onErrorMapper;
+        final Function1<? super T, ? extends R> onNextMapper;
+        final Function1<? super Throwable, ? extends R> onErrorMapper;
         final Callable<? extends R> onCompleteSupplier;
 
         MapNotificationSubscriber(Subscriber<? super R> actual,
-                Function<? super T, ? extends R> onNextMapper,
-                Function<? super Throwable, ? extends R> onErrorMapper,
-                Callable<? extends R> onCompleteSupplier) {
+                                  Function1<? super T, ? extends R> onNextMapper,
+                                  Function1<? super Throwable, ? extends R> onErrorMapper,
+                                  Callable<? extends R> onCompleteSupplier) {
             super(actual);
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
@@ -68,7 +68,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
             R p;
 
             try {
-                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext publisher returned is null");
+                p = ObjectHelper.requireNonNull(onNextMapper.invoke(t), "The onNext publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
@@ -84,7 +84,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
             R p;
 
             try {
-                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
+                p = ObjectHelper.requireNonNull(onErrorMapper.invoke(t), "The onError publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

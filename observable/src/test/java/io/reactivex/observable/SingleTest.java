@@ -34,10 +34,10 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.disposables.SerialDisposable;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.internal.operators.SingleInternalHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
@@ -81,9 +81,9 @@ public class SingleTest {
     public void testMap() {
         TestObserver<String> ts = new TestObserver<String>();
         Single.just("A")
-                .map(new Function<String, String>() {
+                .map(new Function1<String, String>() {
                     @Override
-                    public String apply(String s) {
+                    public String invoke(String s) {
                         return s + "B";
                     }
                 })
@@ -174,17 +174,17 @@ public class SingleTest {
         TestObserver<String> ts = new TestObserver<String>();
         Single.just("Hello")
                 .subscribeOn(Schedulers.io())
-                .map(new Function<String, String>() {
+                .map(new Function1<String, String>() {
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         System.out.println("SubscribeOn Thread: " + Thread.currentThread());
                         return v;
                     }
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<String, String>() {
+                .map(new Function1<String, String>() {
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         System.out.println("ObserveOn Thread: " + Thread.currentThread());
                         return v;
                     }
@@ -197,9 +197,9 @@ public class SingleTest {
     @Test
     public void testFlatMap() {
         TestObserver<String> ts = new TestObserver<String>();
-        Single.just("Hello").flatMap(new Function<String, Single<String>>() {
+        Single.just("Hello").flatMap(new Function1<String, Single<String>>() {
             @Override
-            public Single<String> apply(String s) {
+            public Single<String> invoke(String s) {
                 return Single.just(s + " World!").subscribeOn(Schedulers.computation());
             }
         }
@@ -533,9 +533,9 @@ public class SingleTest {
     public void zipIterableObject() {
         @SuppressWarnings("unchecked")
         final List<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(4));
-        Single.zip(singles, new Function<Object[], Object>() {
+        Single.zip(singles, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] o) throws Exception {
+            public Object invoke(final Object[] o) {
                 int sum = 0;
                 for (Object i : o) {
                     sum += (Integer) i;
@@ -547,9 +547,9 @@ public class SingleTest {
 
     @Test
     public void to() {
-        assertEquals(1, Single.just(1).to(new Function<Single<Integer>, Integer>() {
+        assertEquals(1, Single.just(1).to(new Function1<Single<Integer>, Integer>() {
             @Override
-            public Integer apply(Single<Integer> v) throws Exception {
+            public Integer invoke(Single<Integer> v) {
                 return 1;
             }
         }).intValue());

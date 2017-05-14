@@ -13,21 +13,32 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.Mockito;
-
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableOperator;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableOnErrorResumeNextViaFunctionTest {
 
@@ -46,10 +57,10 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
             }
         });
 
-        Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
+        Function1<Throwable, Observable<String>> resume = new Function1<Throwable, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Throwable t1) {
+            public Observable<String> invoke(Throwable t1) {
                 receivedException.set(t1);
                 return Observable.just("twoResume", "threeResume");
             }
@@ -76,10 +87,10 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Disposable s = mock(Disposable.class);
         TestObservable w = new TestObservable(s, "one");
-        Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
+        Function1<Throwable, Observable<String>> resume = new Function1<Throwable, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Throwable t1) {
+            public Observable<String> invoke(Throwable t1) {
                 receivedException.set(t1);
                 return Observable.just("twoResume", "threeResume");
             }
@@ -114,10 +125,10 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     public void testFunctionThrowsError() {
         Disposable s = mock(Disposable.class);
         TestObservable w = new TestObservable(s, "one");
-        Function<Throwable, Observable<String>> resume = new Function<Throwable, Observable<String>>() {
+        Function1<Throwable, Observable<String>> resume = new Function1<Throwable, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Throwable t1) {
+            public Observable<String> invoke(Throwable t1) {
                 throw new RuntimeException("exception from function");
             }
 
@@ -157,10 +168,10 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
                 throw new RuntimeException("failed");
             }
 
-        }).onErrorResumeNext(new Function<Throwable, Observable<String>>() {
+        }).onErrorResumeNext(new Function1<Throwable, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Throwable t1) {
+            public Observable<String> invoke(Throwable t1) {
                 if (t1.getMessage().equals("failed")) {
                     return Observable.just("success");
                 } else {
@@ -212,10 +223,10 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
                 };
             }
 
-        }).onErrorResumeNext(new Function<Throwable, Observable<String>>() {
+        }).onErrorResumeNext(new Function1<Throwable, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Throwable t1) {
+            public Observable<String> invoke(Throwable t1) {
                 if (t1.getMessage().equals("failed")) {
                     return Observable.just("success");
                 } else {
@@ -237,9 +248,9 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
-        w = w.map(new Function<String, String>() {
+        w = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -248,10 +259,10 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
             }
         });
 
-        Observable<String> o = w.onErrorResumeNext(new Function<Throwable, Observable<String>>() {
+        Observable<String> o = w.onErrorResumeNext(new Function1<Throwable, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(Throwable t1) {
+            public Observable<String> invoke(Throwable t1) {
                 return Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
             }
 
@@ -314,20 +325,20 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     public void testBackpressure() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.range(0, 100000)
-                .onErrorResumeNext(new Function<Throwable, Observable<Integer>>() {
+                .onErrorResumeNext(new Function1<Throwable, Observable<Integer>>() {
 
                     @Override
-                    public Observable<Integer> apply(Throwable t1) {
+                    public Observable<Integer> invoke(Throwable t1) {
                         return Observable.just(1);
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     int c;
 
                     @Override
-                    public Integer apply(Integer t1) {
+                    public Integer invoke(Integer t1) {
                         if (c++ <= 1) {
                             // slow
                             try {
@@ -347,9 +358,9 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void badOtherSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
+            public Object invoke(Observable<Integer> o) {
                 return Observable.error(new IOException())
                         .onErrorResumeNext(Functions.justFunction(o));
             }

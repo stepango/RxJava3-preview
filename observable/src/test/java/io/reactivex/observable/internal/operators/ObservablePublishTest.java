@@ -29,7 +29,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.ConnectableObservable;
 import io.reactivex.observable.Observable;
@@ -120,11 +119,11 @@ public class ObservablePublishTest {
             }
         });
 
-        Observable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
+        Observable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function1<Integer, Integer>() {
             int c;
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 if (c == 0) {
                     try {
                         Thread.sleep(500);
@@ -167,10 +166,10 @@ public class ObservablePublishTest {
 
         });
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        xs.publish(new Function<Observable<Integer>, Observable<Integer>>() {
+        xs.publish(new Function1<Observable<Integer>, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Observable<Integer> xs) {
+            public Observable<Integer> invoke(Observable<Integer> xs) {
                 return xs.takeUntil(xs.skipWhile(new Function1<Integer, Boolean>() {
 
                     @Override
@@ -460,9 +459,9 @@ public class ObservablePublishTest {
 
     @Test
     public void selectorCrash() {
-        Observable.just(1).publish(new Function<Observable<Integer>, ObservableSource<Object>>() {
+        Observable.just(1).publish(new Function1<Observable<Integer>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Integer> v) {
                 throw new TestException();
             }
         })
@@ -675,9 +674,9 @@ public class ObservablePublishTest {
     public void selectorDisconnectsIndependentSource() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        ps.publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+        ps.publish(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return Observable.range(1, 2);
             }
         })
@@ -690,9 +689,9 @@ public class ObservablePublishTest {
     @Test(timeout = 5000)
     public void selectorLatecommer() {
         Observable.range(1, 5)
-        .publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .publish(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v.concatWith(v);
             }
         })
@@ -712,9 +711,9 @@ public class ObservablePublishTest {
     public void selectorInnerError() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        ps.publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+        ps.publish(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return Observable.error(new TestException());
             }
         })

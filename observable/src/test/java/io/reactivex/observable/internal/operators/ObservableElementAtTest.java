@@ -13,19 +13,26 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class ObservableElementAtTest {
 
@@ -184,23 +191,23 @@ public class ObservableElementAtTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.elementAt(0).toObservable();
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function1<Observable<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
+            public MaybeSource<Object> invoke(Observable<Object> o) {
                 return o.elementAt(0);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+            public SingleSource<Object> invoke(Observable<Object> o) {
                 return o.elementAt(0, 1);
             }
         });

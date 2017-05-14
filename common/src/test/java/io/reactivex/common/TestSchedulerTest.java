@@ -13,20 +13,26 @@
 
 package io.reactivex.common;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-import org.mockito.*;
-
 import io.reactivex.common.Scheduler.Worker;
-import io.reactivex.common.TestScheduler.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.TestScheduler.TestWorker;
+import io.reactivex.common.TestScheduler.TimedRunnable;
 import io.reactivex.common.internal.utils.ExceptionHelper;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class TestSchedulerTest {
 
@@ -34,7 +40,7 @@ public class TestSchedulerTest {
     // mocking is unchecked, unfortunately
     @Test
     public final void testPeriodicScheduling() throws Exception {
-        final Function<Long, Void> calledOp = mock(Function.class);
+        final Function1<Long, Void> calledOp = mock(Function1.class);
 
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
@@ -45,36 +51,36 @@ public class TestSchedulerTest {
                 public void run() {
                     System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
                     try {
-                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                        calledOp.invoke(scheduler.now(TimeUnit.MILLISECONDS));
                     } catch (Throwable ex) {
                         ExceptionHelper.wrapOrThrow(ex);
                     }
                 }
             }, 1, 2, TimeUnit.SECONDS);
 
-            verify(calledOp, never()).apply(anyLong());
+            verify(calledOp, never()).invoke(anyLong());
 
             InOrder inOrder = Mockito.inOrder(calledOp);
 
             scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, never()).apply(anyLong());
+            inOrder.verify(calledOp, never()).invoke(anyLong());
 
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, times(1)).apply(1000L);
+            inOrder.verify(calledOp, times(1)).invoke(1000L);
 
             scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, never()).apply(3000L);
+            inOrder.verify(calledOp, never()).invoke(3000L);
 
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, times(1)).apply(3000L);
+            inOrder.verify(calledOp, times(1)).invoke(3000L);
 
             scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
-            inOrder.verify(calledOp, times(1)).apply(5000L);
-            inOrder.verify(calledOp, times(1)).apply(7000L);
+            inOrder.verify(calledOp, times(1)).invoke(5000L);
+            inOrder.verify(calledOp, times(1)).invoke(7000L);
 
             inner.dispose();
             scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
-            inOrder.verify(calledOp, never()).apply(anyLong());
+            inOrder.verify(calledOp, never()).invoke(anyLong());
         } finally {
             inner.dispose();
         }
@@ -84,7 +90,7 @@ public class TestSchedulerTest {
     // mocking is unchecked, unfortunately
     @Test
     public final void testPeriodicSchedulingUnsubscription() throws Exception {
-        final Function<Long, Void> calledOp = mock(Function.class);
+        final Function1<Long, Void> calledOp = mock(Function1.class);
 
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
@@ -95,36 +101,36 @@ public class TestSchedulerTest {
                 public void run() {
                     System.out.println(scheduler.now(TimeUnit.MILLISECONDS));
                     try {
-                        calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
+                        calledOp.invoke(scheduler.now(TimeUnit.MILLISECONDS));
                     } catch (Throwable ex) {
                         ExceptionHelper.wrapOrThrow(ex);
                     }
                 }
             }, 1, 2, TimeUnit.SECONDS);
 
-            verify(calledOp, never()).apply(anyLong());
+            verify(calledOp, never()).invoke(anyLong());
 
             InOrder inOrder = Mockito.inOrder(calledOp);
 
             scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, never()).apply(anyLong());
+            inOrder.verify(calledOp, never()).invoke(anyLong());
 
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, times(1)).apply(1000L);
+            inOrder.verify(calledOp, times(1)).invoke(1000L);
 
             scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, never()).apply(3000L);
+            inOrder.verify(calledOp, never()).invoke(3000L);
 
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-            inOrder.verify(calledOp, times(1)).apply(3000L);
+            inOrder.verify(calledOp, times(1)).invoke(3000L);
 
             scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
-            inOrder.verify(calledOp, times(1)).apply(5000L);
-            inOrder.verify(calledOp, times(1)).apply(7000L);
+            inOrder.verify(calledOp, times(1)).invoke(5000L);
+            inOrder.verify(calledOp, times(1)).invoke(7000L);
 
             subscription.dispose();
             scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
-            inOrder.verify(calledOp, never()).apply(anyLong());
+            inOrder.verify(calledOp, never()).invoke(anyLong());
         } finally {
             inner.dispose();
         }

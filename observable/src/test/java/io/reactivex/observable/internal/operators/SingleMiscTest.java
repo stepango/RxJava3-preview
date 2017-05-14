@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
 import io.reactivex.observable.SingleSource;
@@ -91,9 +90,9 @@ public class SingleMiscTest {
         .compose(new SingleTransformer<Integer, Object>() {
             @Override
             public SingleSource<Object> apply(Single<Integer> f) {
-                return f.map(new Function<Integer, Object>() {
+                return f.map(new Function1<Integer, Object>() {
                     @Override
-                    public Object apply(Integer v) throws Exception {
+                    public Object invoke(Integer v) {
                         return v + 1;
                     }
                 });

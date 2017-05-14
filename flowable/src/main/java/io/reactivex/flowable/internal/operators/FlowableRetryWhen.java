@@ -13,22 +13,26 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.operators.FlowableRepeatWhen.*;
+import io.reactivex.flowable.internal.operators.FlowableRepeatWhen.WhenReceiver;
+import io.reactivex.flowable.internal.operators.FlowableRepeatWhen.WhenSourceSubscriber;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
-import io.reactivex.flowable.processors.*;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
 import io.reactivex.flowable.subscribers.SerializedSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, T> {
-    final Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler;
+    final Function1<? super Flowable<Throwable>, ? extends Publisher<?>> handler;
 
     public FlowableRetryWhen(Flowable<T> source,
-            Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
+                             Function1<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
         super(source);
         this.handler = handler;
     }
@@ -42,7 +46,7 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
         Publisher<?> when;
 
         try {
-            when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
+            when = ObjectHelper.requireNonNull(handler.invoke(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);

@@ -30,7 +30,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -84,9 +83,9 @@ public class FlowableDoOnEachTest {
     @Test
     public void testDoOnEachWithError() {
         Flowable<String> base = Flowable.just("one", "fail", "two", "three", "fail");
-        Flowable<String> errs = base.map(new Function<String, String>() {
+        Flowable<String> errs = base.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -755,9 +754,9 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.doOnEach(new TestSubscriber<Object>());
             }
         });

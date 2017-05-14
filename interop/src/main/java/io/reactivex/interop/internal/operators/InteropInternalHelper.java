@@ -18,8 +18,8 @@ package io.reactivex.interop.internal.operators;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 public final class InteropInternalHelper {
 
@@ -28,18 +28,18 @@ public final class InteropInternalHelper {
     }
 
     @SuppressWarnings("rawtypes")
-    enum ToFlowable implements Function<SingleSource, Publisher> {
+    enum ToFlowable implements Function1<SingleSource, Publisher> {
         INSTANCE;
         @SuppressWarnings("unchecked")
         @Override
-        public Publisher apply(SingleSource v) {
+        public Publisher invoke(SingleSource v) {
             return new SingleToFlowable(v);
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<SingleSource<? extends T>, Publisher<? extends T>> toFlowable() {
-        return (Function)ToFlowable.INSTANCE;
+    public static <T> Function1<SingleSource<? extends T>, Publisher<? extends T>> toFlowable() {
+        return (Function1) ToFlowable.INSTANCE;
     }
 
 }

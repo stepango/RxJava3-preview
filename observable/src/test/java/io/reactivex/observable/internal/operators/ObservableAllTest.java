@@ -23,7 +23,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -142,9 +141,9 @@ public class ObservableAllTest {
                     return false;
                 }
             }).toObservable()
-            .flatMap(new Function<Boolean, Observable<Integer>>() {
+                .flatMap(new Function1<Boolean, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Boolean t1) {
+                public Observable<Integer> invoke(Boolean t1) {
                     return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -274,9 +273,9 @@ public class ObservableAllTest {
                     return false;
                 }
             })
-            .flatMapObservable(new Function<Boolean, Observable<Integer>>() {
+                .flatMapObservable(new Function1<Boolean, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Boolean t1) {
+                public Observable<Integer> invoke(Boolean t1) {
                     return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });

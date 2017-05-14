@@ -40,7 +40,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -233,10 +232,10 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function1.class, Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Flowable.class, 1, ParamMode.ANY, "replay", Function1.class, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function1.class, Integer.TYPE, Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Flowable.class, 2, ParamMode.ANY, "replay", Function1.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // zero retry is allowed
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
@@ -473,10 +472,10 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "replay", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function.class, Long.TYPE, TimeUnit.class, Scheduler.class));
-        addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class));
-        addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function1.class, Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Observable.class, 1, ParamMode.ANY, "replay", Function1.class, Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function1.class, Integer.TYPE, Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Observable.class, 2, ParamMode.ANY, "replay", Function1.class, Integer.TYPE, Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // zero retry is allowed
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.NON_NEGATIVE, "retry", Long.TYPE));
@@ -579,7 +578,7 @@ public class ParamValidationCheckerTest {
 
         addIgnore(new ParamIgnore(Completable.class, "unsafeCreate", CompletableSource.class));
 
-        addIgnore(new ParamIgnore(RxJava3Interop.class, "when", Scheduler.class, Function.class));
+        addIgnore(new ParamIgnore(RxJava3Interop.class, "when", Scheduler.class, Function1.class));
 
         // -----------------------------------------------------------------------------------
 
@@ -604,7 +603,7 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Runnable.class, Functions.EMPTY_RUNNABLE);
         defaultValues.put(Function1.class, Functions.emptyConsumer());
         defaultValues.put(Function1.class, Functions.EMPTY_LONG_CONSUMER);
-        defaultValues.put(Function.class, Functions.justFunction(1));
+        defaultValues.put(Function1.class, Functions.justFunction(1));
         defaultValues.put(Callable.class, Functions.justCallable(1));
         defaultValues.put(Iterable.class, Collections.emptyList());
         defaultValues.put(Object.class, 1);

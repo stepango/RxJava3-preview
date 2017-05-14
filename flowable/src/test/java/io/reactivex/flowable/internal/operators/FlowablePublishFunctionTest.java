@@ -28,7 +28,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -47,9 +46,9 @@ public class FlowablePublishFunctionTest {
     public void concatTakeFirstLastCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        Flowable.range(1, 3).publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        Flowable.range(1, 3).publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return Flowable.concat(o.take(5), o.takeLast(5));
             }
         }).subscribe(ts);
@@ -63,9 +62,9 @@ public class FlowablePublishFunctionTest {
     public void concatTakeFirstLastBackpressureCompletes() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
 
-        Flowable.range(1, 6).publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        Flowable.range(1, 6).publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return Flowable.concat(o.take(5), o.takeLast(5));
             }
         }).subscribe(ts);
@@ -94,9 +93,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return Flowable.concat(o.take(5), o.takeLast(5));
             }
         }).subscribe(ts);
@@ -130,9 +129,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o.take(1);
             }
         }).subscribe(ts);
@@ -161,9 +160,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o.take(1);
             }
         }).subscribe(ts);
@@ -177,9 +176,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o.take(1);
             }
         }).subscribe(ts);
@@ -199,9 +198,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o;
             }
         }).subscribe(ts);
@@ -222,9 +221,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o;
             }
         }).subscribe(ts);
@@ -248,9 +247,9 @@ public class FlowablePublishFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        new FlowablePublishMulticast<Integer, Integer>(ps, new Function<Flowable<Integer>, Flowable<Integer>>() {
+        new FlowablePublishMulticast<Integer, Integer>(ps, new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o;
             }
         }, Flowable.bufferSize(), true).subscribe(ts);
@@ -282,9 +281,9 @@ public class FlowablePublishFunctionTest {
     public void independentlyMapped() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+        TestSubscriber<Integer> ts = pp.publish(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return Flowable.range(1, 5);
             }
         }).test(0);
@@ -304,9 +303,9 @@ public class FlowablePublishFunctionTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.publish(Functions.<Flowable<Integer>>identity());
             }
         }, false, 1, 1, 1);
@@ -331,9 +330,9 @@ public class FlowablePublishFunctionTest {
     @Test
     public void errorResubscribe() {
         Flowable.error(new TestException())
-        .publish(new Function<Flowable<Object>, Publisher<Object>>() {
+                .publish(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> f) {
                 return f.onErrorResumeNext(f);
             }
         })
@@ -344,9 +343,9 @@ public class FlowablePublishFunctionTest {
     @Test
     public void fusedInputCrash() {
         Flowable.just(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -407,9 +406,9 @@ public class FlowablePublishFunctionTest {
     @Test
     public void inputOutputSubscribeRace() {
         Flowable<Integer> source = Flowable.just(1)
-                .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                .publish(new Function1<Flowable<Integer>, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                    public Publisher<Integer> invoke(Flowable<Integer> f) {
                         return f.subscribeOn(Schedulers.single());
                     }
                 });
@@ -439,9 +438,9 @@ public class FlowablePublishFunctionTest {
             final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(0L);
 
             Flowable.just(1)
-            .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                    .publish(new Function1<Flowable<Integer>, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(final Flowable<Integer> f) throws Exception {
+                public Publisher<Integer> invoke(final Flowable<Integer> f) {
                     Runnable r1 = new Runnable() {
                         @Override
                         public void run() {
@@ -471,10 +470,10 @@ public class FlowablePublishFunctionTest {
     @Test
     public void longFlow() {
         Flowable.range(1, 1000000)
-        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                .publish(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @SuppressWarnings("unchecked")
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return Flowable.mergeArray(
                         v.filter(new Function1<Integer, Boolean>() {
                             @Override
@@ -498,10 +497,10 @@ public class FlowablePublishFunctionTest {
     @Test
     public void longFlow2() {
         Flowable.range(1, 100000)
-        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                .publish(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @SuppressWarnings("unchecked")
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return Flowable.mergeArray(
                         v.filter(new Function1<Integer, Boolean>() {
                             @Override
@@ -526,10 +525,10 @@ public class FlowablePublishFunctionTest {
     @Test
     public void longFlowHidden() {
         Flowable.range(1, 1000000).hide()
-        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                .publish(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @SuppressWarnings("unchecked")
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return Flowable.mergeArray(
                         v.filter(new Function1<Integer, Boolean>() {
                             @Override

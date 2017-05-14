@@ -25,7 +25,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleObserver;
@@ -40,16 +39,16 @@ import static org.junit.Assert.assertTrue;
 
 public class SingleUsingTest {
 
-    Function<Disposable, Single<Integer>> mapper = new Function<Disposable, Single<Integer>>() {
+    Function1<Disposable, Single<Integer>> mapper = new Function1<Disposable, Single<Integer>>() {
         @Override
-        public Single<Integer> apply(Disposable d) throws Exception {
+        public Single<Integer> invoke(Disposable d) {
             return Single.just(1);
         }
     };
 
-    Function<Disposable, Single<Integer>> mapperThrows = new Function<Disposable, Single<Integer>>() {
+    Function1<Disposable, Single<Integer>> mapperThrows = new Function1<Disposable, Single<Integer>>() {
         @Override
-        public Single<Integer> apply(Disposable d) throws Exception {
+        public Single<Integer> invoke(Disposable d) {
             throw new TestException("Mapper");
         }
     };
@@ -193,9 +192,9 @@ public class SingleUsingTest {
     @Test
     public void errorAndDisposerThrowsEager() {
         TestObserver<Integer> ts = Single.using(Functions.justCallable(Disposables.empty()),
-        new Function<Disposable, SingleSource<Integer>>() {
+                new Function1<Disposable, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Disposable v) throws Exception {
+            public SingleSource<Integer> invoke(Disposable v) {
                 return Single.<Integer>error(new TestException("Mapper-run"));
             }
         }, disposerThrows)
@@ -213,9 +212,9 @@ public class SingleUsingTest {
 
         try {
             Single.using(Functions.justCallable(Disposables.empty()),
-            new Function<Disposable, SingleSource<Integer>>() {
+                    new Function1<Disposable, SingleSource<Integer>>() {
                 @Override
-                public SingleSource<Integer> apply(Disposable v) throws Exception {
+                public SingleSource<Integer> invoke(Disposable v) {
                     return Single.<Integer>error(new TestException("Mapper-run"));
                 }
             }, disposerThrows, false)
@@ -234,9 +233,9 @@ public class SingleUsingTest {
 
             Disposable d = Disposables.empty();
 
-            final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
+            final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function1<Disposable, SingleSource<Integer>>() {
                 @Override
-                public SingleSource<Integer> apply(Disposable v) throws Exception {
+                public SingleSource<Integer> invoke(Disposable v) {
                     return pp.single(-99);
                 }
             }, disposer)
@@ -268,9 +267,9 @@ public class SingleUsingTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
 
         try {
-            Single.using(Functions.justCallable(1), new Function<Integer, SingleSource<Integer>>() {
+            Single.using(Functions.justCallable(1), new Function1<Integer, SingleSource<Integer>>() {
                 @Override
-                public SingleSource<Integer> apply(Integer v) throws Exception {
+                public SingleSource<Integer> invoke(Integer v) {
                     return new Single<Integer>() {
                         @Override
                         protected void subscribeActual(SingleObserver<? super Integer> observer) {
@@ -309,9 +308,9 @@ public class SingleUsingTest {
 
             Disposable d = Disposables.empty();
 
-            final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
+            final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function1<Disposable, SingleSource<Integer>>() {
                 @Override
-                public SingleSource<Integer> apply(Disposable v) throws Exception {
+                public SingleSource<Integer> invoke(Disposable v) {
                     return pp.single(-99);
                 }
             }, disposer)

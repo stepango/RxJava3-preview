@@ -13,24 +13,39 @@
 
 package io.reactivex.flowable.processors;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.*;
-import org.mockito.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> {
 
@@ -252,10 +267,10 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
             src.firstElement()
-                .flatMap(new Function<String, Flowable<String>>() {
+                    .flatMap(new Function1<String, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(String t1) {
+                    public Flowable<String> invoke(String t1) {
                         return Flowable.just(t1 + ", " + t1);
                     }
                 })

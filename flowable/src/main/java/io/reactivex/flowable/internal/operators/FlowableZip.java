@@ -13,35 +13,42 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.Arrays;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableZip<T, R> extends Flowable<R> {
 
     final Publisher<? extends T>[] sources;
     final Iterable<? extends Publisher<? extends T>> sourcesIterable;
-    final Function<? super Object[], ? extends R> zipper;
+    final Function1<? super Object[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
 
     public FlowableZip(Publisher<? extends T>[] sources,
-            Iterable<? extends Publisher<? extends T>> sourcesIterable,
-                    Function<? super Object[], ? extends R> zipper,
-                    int bufferSize,
-                    boolean delayError) {
+                       Iterable<? extends Publisher<? extends T>> sourcesIterable,
+                       Function1<? super Object[], ? extends R> zipper,
+                       int bufferSize,
+                       boolean delayError) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
         this.zipper = zipper;
@@ -91,7 +98,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         final ZipSubscriber<T, R>[] subscribers;
 
-        final Function<? super Object[], ? extends R> zipper;
+        final Function1<? super Object[], ? extends R> zipper;
 
         final AtomicLong requested;
 
@@ -104,7 +111,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         final Object[] current;
 
         ZipCoordinator(Subscriber<? super R> actual,
-                Function<? super Object[], ? extends R> zipper, int n, int prefetch, boolean delayErrors) {
+                       Function1<? super Object[], ? extends R> zipper, int n, int prefetch, boolean delayErrors) {
             this.actual = actual;
             this.zipper = zipper;
             this.delayErrors = delayErrors;
@@ -239,7 +246,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                     R v;
 
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(values.clone()), "The zipper returned a null value");
+                        v = ObjectHelper.requireNonNull(zipper.invoke(values.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelAll();

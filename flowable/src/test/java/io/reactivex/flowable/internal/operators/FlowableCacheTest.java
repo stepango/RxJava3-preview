@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -399,9 +398,9 @@ public class FlowableCacheTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> f) throws Exception {
+            public Object invoke(Flowable<Object> f) {
                 return f.cache();
             }
         }, false, 1, 1, 1);

@@ -13,14 +13,16 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertFalse;
-
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.CompletableSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
 
 public class CompletableHideTest {
 
@@ -56,9 +58,9 @@ public class CompletableHideTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposedCompletable(new Function<Completable, CompletableSource>() {
+        TestHelper.checkDisposedCompletable(new Function1<Completable, CompletableSource>() {
             @Override
-            public CompletableSource apply(Completable m) throws Exception {
+            public CompletableSource invoke(Completable m) {
                 return m.hide();
             }
         });
@@ -73,9 +75,9 @@ public class CompletableHideTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, Completable>() {
+        TestHelper.checkDoubleOnSubscribeCompletable(new Function1<Completable, Completable>() {
             @Override
-            public Completable apply(Completable f) throws Exception {
+            public Completable invoke(Completable f) {
                 return f.hide();
             }
         });

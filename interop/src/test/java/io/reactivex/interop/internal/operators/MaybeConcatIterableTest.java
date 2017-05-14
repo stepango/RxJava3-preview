@@ -13,20 +13,24 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.*;
-
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import io.reactivex.interop.RxJava3Interop;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeEmitter;
+import io.reactivex.observable.MaybeOnSubscribe;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
 
 public class MaybeConcatIterableTest {
 
@@ -91,9 +95,9 @@ public class MaybeConcatIterableTest {
 
     @Test
     public void hasNextThrows() {
-        RxJava3Interop.concatMaybeIterable(new CrashingMappedIterable<Maybe<Integer>>(100, 1, 100, new Function<Integer, Maybe<Integer>>() {
+        RxJava3Interop.concatMaybeIterable(new CrashingMappedIterable<Maybe<Integer>>(100, 1, 100, new Function1<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
+            public Maybe<Integer> invoke(Integer v) {
                 return Maybe.just(1);
             }
         }))
@@ -103,9 +107,9 @@ public class MaybeConcatIterableTest {
 
     @Test
     public void nextThrows() {
-        RxJava3Interop.concatMaybeIterable(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 1, new Function<Integer, Maybe<Integer>>() {
+        RxJava3Interop.concatMaybeIterable(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 1, new Function1<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
+            public Maybe<Integer> invoke(Integer v) {
                 return Maybe.just(1);
             }
         }))
@@ -115,9 +119,9 @@ public class MaybeConcatIterableTest {
 
     @Test
     public void nextReturnsNull() {
-        RxJava3Interop.concatMaybeIterable(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 100, new Function<Integer, Maybe<Integer>>() {
+        RxJava3Interop.concatMaybeIterable(new CrashingMappedIterable<Maybe<Integer>>(100, 100, 100, new Function1<Integer, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Integer v) throws Exception {
+            public Maybe<Integer> invoke(Integer v) {
                 return null;
             }
         }))

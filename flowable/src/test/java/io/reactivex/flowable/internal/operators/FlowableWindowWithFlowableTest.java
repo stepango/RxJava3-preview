@@ -13,24 +13,34 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import io.reactivex.flowable.processors.BehaviorProcessor;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class FlowableWindowWithFlowableTest {
 
@@ -490,24 +500,24 @@ public class FlowableWindowWithFlowableTest {
 
     @Test
     public void innerBadSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return Flowable.just(1).window(o).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            public Object invoke(Flowable<Integer> o) {
+                return Flowable.just(1).window(o).flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                    public Flowable<Integer> invoke(Flowable<Integer> v) {
                         return v;
                     }
                 });
             }
         }, false, 1, 1, (Object[])null);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return Flowable.just(1).window(Functions.justCallable(o)).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            public Object invoke(Flowable<Integer> o) {
+                return Flowable.just(1).window(Functions.justCallable(o)).flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                    public Flowable<Integer> invoke(Flowable<Integer> v) {
                         return v;
                     }
                 });
@@ -531,9 +541,9 @@ public class FlowableWindowWithFlowableTest {
         };
 
         ps.window(BehaviorProcessor.createDefault(1))
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })
@@ -572,9 +582,9 @@ public class FlowableWindowWithFlowableTest {
                 return Flowable.never();
             }
         })
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })
@@ -589,12 +599,12 @@ public class FlowableWindowWithFlowableTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
-                return o.window(Flowable.never()).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+            public Object invoke(Flowable<Object> o) {
+                return o.window(Flowable.never()).flatMap(new Function1<Flowable<Object>, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Flowable<Object> v) throws Exception {
+                    public Flowable<Object> invoke(Flowable<Object> v) {
                         return v;
                     }
                 });
@@ -604,12 +614,12 @@ public class FlowableWindowWithFlowableTest {
 
     @Test
     public void badSourceCallable() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
-                return o.window(Functions.justCallable(Flowable.never())).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+            public Object invoke(Flowable<Object> o) {
+                return o.window(Functions.justCallable(Flowable.never())).flatMap(new Function1<Flowable<Object>, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Flowable<Object> v) throws Exception {
+                    public Flowable<Object> invoke(Flowable<Object> v) {
                         return v;
                     }
                 });

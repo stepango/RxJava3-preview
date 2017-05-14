@@ -42,7 +42,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -102,7 +101,7 @@ public class FlowableZipTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCollectionSizeDifferentThanFunction() {
-        Function<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
+        Function1<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
         //Function3<String, Integer, int[], String>
 
         /* define a Subscriber to receive aggregated events */
@@ -1001,9 +1000,9 @@ public class FlowableZipTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> o = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> o = Flowable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] args) {
+            public Object invoke(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;
             }
@@ -1025,9 +1024,9 @@ public class FlowableZipTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> o = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> o = Flowable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] args) {
+            public Object invoke(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;
             }
@@ -1373,7 +1372,7 @@ public class FlowableZipTest {
      * Implements all Function types which return a String concatenating their inputs.
      */
     @SuppressWarnings("rawtypes")
-    public enum ArgsToString implements Function, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+    public enum ArgsToString implements Function1, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
         INSTANCE;
 
         @Override
@@ -1420,7 +1419,7 @@ public class FlowableZipTest {
         }
 
         @Override
-        public Object apply(Object t1) throws Exception {
+        public Object invoke(Object t1) {
             return "" + t1;
         }
     }
@@ -1635,9 +1634,9 @@ public class FlowableZipTest {
 
         Arrays.fill(arr, Flowable.just(1));
 
-        Flowable.zip(Arrays.asList(arr), new Function<Object[], Object>() {
+        Flowable.zip(Arrays.asList(arr), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1741,9 +1740,9 @@ public class FlowableZipTest {
 
     @Test
     public void fusedInputThrows() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+        Flowable.zip(Flowable.just(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
@@ -1758,9 +1757,9 @@ public class FlowableZipTest {
 
     @Test
     public void fusedInputThrowsDelayError() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+        Flowable.zip(Flowable.just(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
@@ -1775,9 +1774,9 @@ public class FlowableZipTest {
 
     @Test
     public void fusedInputThrowsBackpressured() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+        Flowable.zip(Flowable.just(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
@@ -1792,9 +1791,9 @@ public class FlowableZipTest {
 
     @Test
     public void fusedInputThrowsDelayErrorBackpressured() {
-        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+        Flowable.zip(Flowable.just(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
@@ -1811,15 +1810,15 @@ public class FlowableZipTest {
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
             TestSubscriber<List<Object>> ts = Flowable.zip(
-                    Flowable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                    Flowable.just(1).observeOn(Schedulers.single()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),
-                    Flowable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                    Flowable.just(1).observeOn(Schedulers.computation()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),

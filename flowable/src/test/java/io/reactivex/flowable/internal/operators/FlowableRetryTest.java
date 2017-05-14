@@ -36,7 +36,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.GroupedFlowable;
 import io.reactivex.flowable.TestHelper;
@@ -87,15 +86,15 @@ public class FlowableRetryTest {
 
         });
         TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
-        producer.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
+        producer.retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
 
             @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> attempts) {
+            public Flowable<Object> invoke(Flowable<? extends Throwable> attempts) {
                 // Worker w = Schedulers.computation().createWorker();
                 return attempts
-                    .map(new Function<Throwable, Tuple>() {
+                        .map(new Function1<Throwable, Tuple>() {
                         @Override
-                        public Tuple apply(Throwable n) {
+                        public Tuple invoke(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
                     .scan(new BiFunction<Tuple, Tuple, Tuple>() {
@@ -103,9 +102,9 @@ public class FlowableRetryTest {
                         public Tuple apply(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
                         }})
-                    .flatMap(new Function<Tuple, Flowable<Object>>() {
+                        .flatMap(new Function1<Tuple, Flowable<Object>>() {
                         @Override
-                        public Flowable<Object> apply(Tuple t) {
+                        public Flowable<Object> invoke(Tuple t) {
                             System.out.println("Retry # " + t.count);
                             return t.count > 20 ?
                                 Flowable.<Object>error(t.n) :
@@ -160,12 +159,12 @@ public class FlowableRetryTest {
         int NUM_RETRIES = 2;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
+        origin.retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
-                return t1.observeOn(Schedulers.computation()).map(new Function<Throwable, Integer>() {
+            public Flowable<Object> invoke(Flowable<? extends Throwable> t1) {
+                return t1.observeOn(Schedulers.computation()).map(new Function1<Throwable, Integer>() {
                     @Override
-                    public Integer apply(Throwable t1) {
+                    public Integer invoke(Throwable t1) {
                         return 1;
                     }
                 }).startWith(1).cast(Object.class);
@@ -198,13 +197,13 @@ public class FlowableRetryTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         int NUM_RETRIES = 2;
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
+        origin.retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
-                return t1.map(new Function<Throwable, Integer>() {
+            public Flowable<Object> invoke(Flowable<? extends Throwable> t1) {
+                return t1.map(new Function1<Throwable, Integer>() {
 
                     @Override
-                    public Integer apply(Throwable t1) {
+                    public Integer invoke(Throwable t1) {
                         return 0;
                     }
                 }).startWith(0).cast(Object.class);
@@ -228,9 +227,9 @@ public class FlowableRetryTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(1));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
+        origin.retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
+            public Flowable<Object> invoke(Flowable<? extends Throwable> t1) {
                 return Flowable.empty();
             }
         }).subscribe(subscriber);
@@ -248,9 +247,9 @@ public class FlowableRetryTest {
     public void testOnErrorFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(2));
-        origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
+        origin.retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
+            public Flowable<Object> invoke(Flowable<? extends Throwable> t1) {
                 return Flowable.error(new RuntimeException());
             }
         }).subscribe(observer);
@@ -278,9 +277,9 @@ public class FlowableRetryTest {
         };
 
         int first = Flowable.unsafeCreate(onSubscribe)
-                .retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
+                .retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Flowable<? extends Throwable> attempt) {
+                    public Flowable<Object> invoke(Flowable<? extends Throwable> attempt) {
                         return attempt.zipWith(Flowable.just(1), new BiFunction<Throwable, Integer, Object>() {
                             @Override
                             public Object apply(Throwable o, Integer integer) {
@@ -866,23 +865,23 @@ public class FlowableRetryTest {
         final AtomicInteger count = new AtomicInteger();
 
         Flowable<String> origin = Flowable.range(0, NUM_MSG)
-                .map(new Function<Integer, String>() {
+                .map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer t1) {
+                    public String invoke(Integer t1) {
                         return "msg: " + count.incrementAndGet();
                     }
                 });
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
+                .groupBy(new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedFlowable<String,String>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<String, String>, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(GroupedFlowable<String, String> t1) {
+            public Flowable<String> invoke(GroupedFlowable<String, String> t1) {
                 return t1.take(1);
             }
         })
@@ -918,15 +917,15 @@ public class FlowableRetryTest {
         });
 
         origin.retry()
-        .groupBy(new Function<String, String>() {
+                .groupBy(new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1;
             }
         })
-        .flatMap(new Function<GroupedFlowable<String,String>, Flowable<String>>() {
+                .flatMap(new Function1<GroupedFlowable<String, String>, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(GroupedFlowable<String, String> t1) {
+            public Flowable<String> invoke(GroupedFlowable<String, String> t1) {
                 return t1.take(1);
             }
         })
@@ -951,9 +950,9 @@ public class FlowableRetryTest {
 
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
-        .retryWhen((Function)new Function<Flowable, Flowable>() {
+                .retryWhen((Function1) new Function1<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
+            public Flowable invoke(Flowable o) {
                 return o.take(2);
             }
         }).subscribe(ts);
@@ -972,9 +971,9 @@ public class FlowableRetryTest {
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
         .subscribeOn(Schedulers.trampoline())
-        .retryWhen((Function)new Function<Flowable, Flowable>() {
+                .retryWhen((Function1) new Function1<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
+            public Flowable invoke(Flowable o) {
                 return o.take(2);
             }
         }).subscribe(ts);
@@ -1032,12 +1031,12 @@ public class FlowableRetryTest {
     public void shouldDisposeInnerObservable() {
       final PublishProcessor<Object> subject = PublishProcessor.create();
       final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
-          .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
+              .retryWhen(new Function1<Flowable<Throwable>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Throwable> errors) throws Exception {
-                return errors.switchMap(new Function<Throwable, Flowable<Object>>() {
+            public Flowable<Object> invoke(Flowable<Throwable> errors) {
+                return errors.switchMap(new Function1<Throwable, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Throwable ignore) throws Exception {
+                    public Flowable<Object> invoke(Throwable ignore) {
                         return subject;
                     }
                 });

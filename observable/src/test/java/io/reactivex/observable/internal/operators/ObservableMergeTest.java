@@ -36,7 +36,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -802,10 +801,10 @@ public class ObservableMergeTest {
     @Test(timeout = 5000)
     public void testBackpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
-        Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Function<Integer, Observable<Integer>>() {
+        Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return Observable.just(1, 2, 3);
             }
 
@@ -941,10 +940,10 @@ public class ObservableMergeTest {
 
     private Observable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
         Observable<Observable<Integer>> os = Observable.range(1, outerSize)
-        .map(new Function<Integer, Observable<Integer>>() {
+                .map(new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer i) {
+            public Observable<Integer> invoke(Integer i) {
                 return Observable.range(1, innerSize).subscribeOn(Schedulers.computation());
             }
 
@@ -999,10 +998,10 @@ public class ObservableMergeTest {
 
     private Observable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
         Observable<Observable<Integer>> os = Observable.range(1, outerSize)
-        .map(new Function<Integer, Observable<Integer>>() {
+                .map(new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(Integer i) {
+            public Observable<Integer> invoke(Integer i) {
                 return Observable.range(1, innerSize);
             }
 
@@ -1039,10 +1038,10 @@ public class ObservableMergeTest {
     public void mergeManyAsyncSingle() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable<Observable<Integer>> os = Observable.range(1, 10000)
-        .map(new Function<Integer, Observable<Integer>>() {
+                .map(new Function1<Integer, Observable<Integer>>() {
 
             @Override
-            public Observable<Integer> apply(final Integer i) {
+            public Observable<Integer> invoke(final Integer i) {
                 return Observable.unsafeCreate(new ObservableSource<Integer>() {
 
                     @Override
@@ -1069,22 +1068,22 @@ public class ObservableMergeTest {
         assertEquals(10000, ts.values().size());
     }
 
-    Function<Integer, Observable<Integer>> toScalar = new Function<Integer, Observable<Integer>>() {
+    Function1<Integer, Observable<Integer>> toScalar = new Function1<Integer, Observable<Integer>>() {
         @Override
-        public Observable<Integer> apply(Integer v) {
+        public Observable<Integer> invoke(Integer v) {
             return Observable.just(v);
         }
     };
 
-    Function<Integer, Observable<Integer>> toHiddenScalar = new Function<Integer, Observable<Integer>>() {
+    Function1<Integer, Observable<Integer>> toHiddenScalar = new Function1<Integer, Observable<Integer>>() {
         @Override
-        public Observable<Integer> apply(Integer t) {
+        public Observable<Integer> invoke(Integer t) {
             return Observable.just(t).hide();
         }
     };
     ;
 
-    void runMerge(Function<Integer, Observable<Integer>> func, TestObserver<Integer> ts) {
+    void runMerge(Function1<Integer, Observable<Integer>> func, TestObserver<Integer> ts) {
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < 1000; i++) {
             list.add(i);

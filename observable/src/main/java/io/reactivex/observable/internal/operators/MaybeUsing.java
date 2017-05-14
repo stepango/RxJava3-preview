@@ -20,7 +20,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.Maybe;
@@ -40,14 +39,14 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
     final Callable<? extends D> resourceSupplier;
 
-    final Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier;
+    final Function1<? super D, ? extends MaybeSource<? extends T>> sourceSupplier;
 
     final Function1<? super D, kotlin.Unit> resourceDisposer;
 
     final boolean eager;
 
     public MaybeUsing(Callable<? extends D> resourceSupplier,
-                      Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
+                      Function1<? super D, ? extends MaybeSource<? extends T>> sourceSupplier,
                       Function1<? super D, kotlin.Unit> resourceDisposer,
                       boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -71,7 +70,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
         MaybeSource<? extends T> source;
 
         try {
-            source = ObjectHelper.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null MaybeSource");
+            source = ObjectHelper.requireNonNull(sourceSupplier.invoke(resource), "The sourceSupplier returned a null MaybeSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (eager) {

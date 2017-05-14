@@ -40,7 +40,6 @@ import io.reactivex.common.exceptions.ProtocolViolationException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import kotlin.Unit;
@@ -207,7 +206,7 @@ public class RxJavaCommonPluginsTest {
                     return null;
                 }
             };
-            Function f1 = Functions.identity();
+            Function1 f1 = Functions.identity();
             BiFunction f2 = new BiFunction() {
                 @Override
                 public Object apply(Object t1, Object t2) {
@@ -243,8 +242,7 @@ public class RxJavaCommonPluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Callable.class)) {
                             m.invoke(null, f0);
-                        } else
-                        if (paramType.isAssignableFrom(Function.class)) {
+                        } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, f1);
                         } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, a1);
@@ -292,9 +290,9 @@ public class RxJavaCommonPluginsTest {
         }
     }
 
-    Function<Scheduler, Scheduler> replaceWithImmediate = new Function<Scheduler, Scheduler>() {
+    Function1<Scheduler, Scheduler> replaceWithImmediate = new Function1<Scheduler, Scheduler>() {
         @Override
-        public Scheduler apply(Scheduler t) {
+        public Scheduler invoke(Scheduler t) {
             return ImmediateThinScheduler.INSTANCE;
         }
     };
@@ -351,9 +349,9 @@ public class RxJavaCommonPluginsTest {
         assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.newThread());
     }
 
-    Function<Callable<Scheduler>, Scheduler> initReplaceWithImmediate = new Function<Callable<Scheduler>, Scheduler>() {
+    Function1<Callable<Scheduler>, Scheduler> initReplaceWithImmediate = new Function1<Callable<Scheduler>, Scheduler>() {
         @Override
-        public Scheduler apply(Callable<Scheduler> t) {
+        public Scheduler invoke(Callable<Scheduler> t) {
             return ImmediateThinScheduler.INSTANCE;
         }
     };
@@ -645,9 +643,9 @@ public class RxJavaCommonPluginsTest {
                 final AtomicInteger value = new AtomicInteger();
                 final CountDownLatch cdl = new CountDownLatch(1);
 
-                RxJavaCommonPlugins.setScheduleHandler(new Function<Runnable, Runnable>() {
+                RxJavaCommonPlugins.setScheduleHandler(new Function1<Runnable, Runnable>() {
                     @Override
-                    public Runnable apply(Runnable t) {
+                    public Runnable invoke(Runnable t) {
                         return new Runnable() {
                             @Override
                             public void run() {
@@ -882,21 +880,26 @@ public class RxJavaCommonPluginsTest {
             Function1<? super Throwable, Unit> errorHandler1 = RxJavaCommonPlugins.getErrorHandler();
             assertSame(errorHandler, errorHandler1);
 
-            Function<? super Scheduler, ? extends Scheduler> scheduler2scheduler = new Function<Scheduler, Scheduler>() {
+            Function1<? super Scheduler, ? extends Scheduler> scheduler2scheduler = new Function1<Scheduler, Scheduler>() {
                 @Override
-                public Scheduler apply(Scheduler scheduler) throws Exception {
+                public Scheduler invoke(Scheduler scheduler) {
                     return scheduler;
                 }
             };
-            Function<? super Callable<Scheduler>, ? extends Scheduler> callable2scheduler = new Function<Callable<Scheduler>, Scheduler>() {
+            Function1<? super Callable<Scheduler>, ? extends Scheduler> callable2scheduler = new Function1<Callable<Scheduler>, Scheduler>() {
                 @Override
-                public Scheduler apply(Callable<Scheduler> schedulerCallable) throws Exception {
-                    return schedulerCallable.call();
+                public Scheduler invoke(Callable<Scheduler> schedulerCallable) {
+                    try {
+                        return schedulerCallable.call();
+                    } catch (Exception e) {
+                        if (e instanceof RuntimeException) throw ((RuntimeException) e);
+                        else throw new RuntimeException(e);
+                    }
                 }
             };
-            Function<? super Runnable, ? extends Runnable> runnable2runnable = new Function<Runnable, Runnable>() {
+            Function1<? super Runnable, ? extends Runnable> runnable2runnable = new Function1<Runnable, Runnable>() {
                 @Override
-                public Runnable apply(Runnable runnable) throws Exception {
+                public Runnable invoke(Runnable runnable) {
                     return runnable;
                 }
             };
@@ -1312,9 +1315,9 @@ public class RxJavaCommonPluginsTest {
         };
 
         final Scheduler customScheduler = RxJavaCommonPlugins.createComputationScheduler(factory);
-        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setComputationSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler scheduler) throws Exception {
+            public Scheduler invoke(Scheduler scheduler) {
                 return customScheduler;
             }
         });
@@ -1338,9 +1341,9 @@ public class RxJavaCommonPluginsTest {
         };
 
         final Scheduler customScheduler = RxJavaCommonPlugins.createIoScheduler(factory);
-        RxJavaCommonPlugins.setIoSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setIoSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler scheduler) throws Exception {
+            public Scheduler invoke(Scheduler scheduler) {
                 return customScheduler;
             }
         });
@@ -1364,9 +1367,9 @@ public class RxJavaCommonPluginsTest {
         };
 
         final Scheduler customScheduler = RxJavaCommonPlugins.createNewThreadScheduler(factory);
-        RxJavaCommonPlugins.setNewThreadSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setNewThreadSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler scheduler) throws Exception {
+            public Scheduler invoke(Scheduler scheduler) {
                 return customScheduler;
             }
         });
@@ -1391,9 +1394,9 @@ public class RxJavaCommonPluginsTest {
 
         final Scheduler customScheduler = RxJavaCommonPlugins.createSingleScheduler(factory);
 
-        RxJavaCommonPlugins.setSingleSchedulerHandler(new Function<Scheduler, Scheduler>() {
+        RxJavaCommonPlugins.setSingleSchedulerHandler(new Function1<Scheduler, Scheduler>() {
             @Override
-            public Scheduler apply(Scheduler scheduler) throws Exception {
+            public Scheduler invoke(Scheduler scheduler) {
                 return customScheduler;
             }
         });

@@ -13,10 +13,11 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.ParallelFlowable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Flattens the generated Publishers on each rail.
@@ -28,7 +29,7 @@ public final class ParallelFlatMap<T, R> extends ParallelFlowable<R> {
 
     final ParallelFlowable<T> source;
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
     final boolean delayError;
 
@@ -38,7 +39,7 @@ public final class ParallelFlatMap<T, R> extends ParallelFlowable<R> {
 
     public ParallelFlatMap(
             ParallelFlowable<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
+            Function1<? super T, ? extends Publisher<? extends R>> mapper,
             boolean delayError,
             int maxConcurrency,
             int prefetch) {

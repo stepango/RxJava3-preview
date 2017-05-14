@@ -30,7 +30,6 @@ import java.util.concurrent.Callable;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.operators.FlowableRange;
 import io.reactivex.flowable.internal.operators.ParallelFromPublisher;
@@ -196,7 +195,7 @@ public class RxJavaFlowablePluginsTest {
                     return null;
                 }
             };
-            Function f1 = Functions.identity();
+            Function1 f1 = Functions.identity();
             BiFunction f2 = new BiFunction() {
                 @Override
                 public Object apply(Object t1, Object t2) {
@@ -232,8 +231,7 @@ public class RxJavaFlowablePluginsTest {
                         } else
                         if (paramType.isAssignableFrom(Callable.class)) {
                             m.invoke(null, f0);
-                        } else
-                        if (paramType.isAssignableFrom(Function.class)) {
+                        } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, f1);
                         } else if (paramType.isAssignableFrom(Function1.class)) {
                             m.invoke(null, a1);
@@ -285,9 +283,9 @@ public class RxJavaFlowablePluginsTest {
     @Test
     public void flowableCreate() {
         try {
-            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function<Flowable, Flowable>() {
+            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function1<Flowable, Flowable>() {
                 @Override
-                public Flowable apply(Flowable t) {
+                public Flowable invoke(Flowable t) {
                     return new FlowableRange(1, 2);
                 }
             });
@@ -446,15 +444,15 @@ public class RxJavaFlowablePluginsTest {
     public void onErrorWithSuper() throws Exception {
         try {
 
-            Function<? super ConnectableFlowable, ? extends ConnectableFlowable> connectableFlowable2ConnectableFlowable = new Function<ConnectableFlowable, ConnectableFlowable>() {
+            Function1<? super ConnectableFlowable, ? extends ConnectableFlowable> connectableFlowable2ConnectableFlowable = new Function1<ConnectableFlowable, ConnectableFlowable>() {
                 @Override
-                public ConnectableFlowable apply(ConnectableFlowable connectableFlowable) throws Exception {
+                public ConnectableFlowable invoke(ConnectableFlowable connectableFlowable) {
                     return connectableFlowable;
                 }
             };
-            Function<? super Flowable, ? extends Flowable> flowable2Flowable = new Function<Flowable, Flowable>() {
+            Function1<? super Flowable, ? extends Flowable> flowable2Flowable = new Function1<Flowable, Flowable>() {
                 @Override
-                public Flowable apply(Flowable flowable) throws Exception {
+                public Flowable invoke(Flowable flowable) {
                     return flowable;
                 }
             };
@@ -464,9 +462,9 @@ public class RxJavaFlowablePluginsTest {
                     return subscriber;
                 }
             };
-            Function<? super ParallelFlowable, ? extends ParallelFlowable> parallelFlowable2parallelFlowable = new Function<ParallelFlowable, ParallelFlowable>() {
+            Function1<? super ParallelFlowable, ? extends ParallelFlowable> parallelFlowable2parallelFlowable = new Function1<ParallelFlowable, ParallelFlowable>() {
                 @Override
-                public ParallelFlowable apply(ParallelFlowable parallelFlowable) throws Exception {
+                public ParallelFlowable invoke(ParallelFlowable parallelFlowable) {
                     return parallelFlowable;
                 }
             };
@@ -831,9 +829,9 @@ public class RxJavaFlowablePluginsTest {
     @Test
     public void overrideConnectableFlowable() {
         try {
-            RxJavaFlowablePlugins.setOnConnectableFlowableAssembly(new Function<ConnectableFlowable, ConnectableFlowable>() {
+            RxJavaFlowablePlugins.setOnConnectableFlowableAssembly(new Function1<ConnectableFlowable, ConnectableFlowable>() {
                 @Override
-                public ConnectableFlowable apply(ConnectableFlowable co) throws Exception {
+                public ConnectableFlowable invoke(ConnectableFlowable co) {
                     return new ConnectableFlowable() {
 
                         @Override
@@ -873,9 +871,9 @@ public class RxJavaFlowablePluginsTest {
     @Test
     public void assemblyHookCrashes() {
         try {
-            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function<Flowable, Flowable>() {
+            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function1<Flowable, Flowable>() {
                 @Override
-                public Flowable apply(Flowable f) throws Exception {
+                public Flowable invoke(Flowable f) {
                     throw new IllegalArgumentException();
                 }
             });
@@ -887,9 +885,9 @@ public class RxJavaFlowablePluginsTest {
                 // expected
             }
 
-            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function<Flowable, Flowable>() {
+            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function1<Flowable, Flowable>() {
                 @Override
-                public Flowable apply(Flowable f) throws Exception {
+                public Flowable invoke(Flowable f) {
                     throw new InternalError();
                 }
             });
@@ -901,10 +899,10 @@ public class RxJavaFlowablePluginsTest {
                 // expected
             }
 
-            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function<Flowable, Flowable>() {
+            RxJavaFlowablePlugins.setOnFlowableAssembly(new Function1<Flowable, Flowable>() {
                 @Override
-                public Flowable apply(Flowable f) throws Exception {
-                    throw new IOException();
+                public Flowable invoke(Flowable f) {
+                    throw new TestException();
                 }
             });
 
@@ -912,7 +910,7 @@ public class RxJavaFlowablePluginsTest {
                 Flowable.empty();
                 fail("Should have thrown!");
             } catch (RuntimeException ex) {
-                if (!(ex.getCause() instanceof IOException)) {
+                if (!(ex instanceof TestException)) {
                     fail(ex.getCause().toString() + ": Should have thrown RuntimeException(IOException)");
                 }
             }
@@ -982,9 +980,9 @@ public class RxJavaFlowablePluginsTest {
     @Test
     public void onParallelAssembly() {
         try {
-            RxJavaFlowablePlugins.setOnParallelAssembly(new Function<ParallelFlowable, ParallelFlowable>() {
+            RxJavaFlowablePlugins.setOnParallelAssembly(new Function1<ParallelFlowable, ParallelFlowable>() {
                 @Override
-                public ParallelFlowable apply(ParallelFlowable pf) throws Exception {
+                public ParallelFlowable invoke(ParallelFlowable pf) {
                     return new ParallelFromPublisher<Integer>(Flowable.just(2), 2, 2);
                 }
             });

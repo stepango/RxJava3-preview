@@ -13,27 +13,61 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.BackpressureStrategy;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableEmitter;
+import io.reactivex.flowable.FlowableOnSubscribe;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
-import io.reactivex.flowable.processors.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.processors.FlowableProcessor;
+import io.reactivex.flowable.processors.PublishProcessor;
+import io.reactivex.flowable.processors.UnicastProcessor;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableConcatTest {
 
@@ -613,9 +647,9 @@ public class FlowableConcatTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        Flowable<Flowable<Integer>> source = Flowable.range(0, n).map(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Flowable<Integer>> source = Flowable.range(0, n).map(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         });
@@ -637,9 +671,9 @@ public class FlowableConcatTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        Flowable<Flowable<Integer>> source = Flowable.range(0, n).map(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Flowable<Integer>> source = Flowable.range(0, n).map(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         });
@@ -728,9 +762,9 @@ public class FlowableConcatTest {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
-        Function<Integer, Flowable<Integer>> func = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> func = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 Flowable<Integer> observable = Flowable.just(t)
                         .subscribeOn(sch)
                 ;
@@ -813,9 +847,9 @@ public class FlowableConcatTest {
             }
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Flowable.range(0, 1000)
-            .concatMap(new Function<Integer, Flowable<Integer>>() {
+                    .concatMap(new Function1<Integer, Flowable<Integer>>() {
                 @Override
-                public Flowable<Integer> apply(Integer t) {
+                public Flowable<Integer> invoke(Integer t) {
                     return Flowable.fromIterable(Arrays.asList(t));
                 }
             })
@@ -941,7 +975,7 @@ public class FlowableConcatTest {
     public void concatMapJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).concatMap((Function)Functions.identity()).subscribe(ts);
+        Flowable.just(Flowable.just(1)).concatMap((Function1) Functions.identity()).subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -953,7 +987,7 @@ public class FlowableConcatTest {
     public void concatMapJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).concatMap((Function)Functions.identity()).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5)).concatMap((Function1) Functions.identity()).subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
@@ -965,7 +999,7 @@ public class FlowableConcatTest {
     public void concatMapDelayErrorJustJust() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.just(1)).concatMapDelayError((Function)Functions.identity()).subscribe(ts);
+        Flowable.just(Flowable.just(1)).concatMapDelayError((Function1) Functions.identity()).subscribe(ts);
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -977,7 +1011,7 @@ public class FlowableConcatTest {
     public void concatMapDelayErrorJustRange() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.just(Flowable.range(1, 5)).concatMapDelayError((Function)Functions.identity()).subscribe(ts);
+        Flowable.just(Flowable.range(1, 5)).concatMapDelayError((Function1) Functions.identity()).subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNoErrors();
@@ -1157,9 +1191,9 @@ public class FlowableConcatTest {
     @Test
     public void concatMapIterableBufferSize() {
 
-        Flowable.just(1, 2).concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        Flowable.just(1, 2).concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1, 2, 3, 4, 5);
             }
         }, 1)
@@ -1182,9 +1216,9 @@ public class FlowableConcatTest {
     @Test
     public void concatMapDelayErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Object, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Object v) throws Exception {
+                    public Flowable<Integer> invoke(Object v) {
                         return Flowable.just(1);
                     }
                 }, 16, true));
@@ -1193,9 +1227,9 @@ public class FlowableConcatTest {
     @Test
     public void concatMapDelayErrorJustSource() {
         Flowable.just(0)
-        .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Object, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Object v) throws Exception {
+            public Flowable<Integer> invoke(Object v) {
                 return Flowable.just(1);
             }
         }, 16, true)
@@ -1219,9 +1253,9 @@ public class FlowableConcatTest {
     @Test
     public void concatMapErrorEmptySource() {
         assertSame(Flowable.empty(), Flowable.<Object>empty()
-                .concatMap(new Function<Object, Flowable<Integer>>() {
+                .concatMap(new Function1<Object, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Object v) throws Exception {
+                    public Flowable<Integer> invoke(Object v) {
                         return Flowable.just(1);
                     }
                 }, 16));
@@ -1230,9 +1264,9 @@ public class FlowableConcatTest {
     @Test
     public void concatMapJustSource() {
         Flowable.just(0).hide()
-        .concatMap(new Function<Object, Flowable<Integer>>() {
+                .concatMap(new Function1<Object, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Object v) throws Exception {
+            public Flowable<Integer> invoke(Object v) {
                 return Flowable.just(1);
             }
         }, 16)
@@ -1243,9 +1277,9 @@ public class FlowableConcatTest {
     @Test
     public void concatMapJustSourceDelayError() {
         Flowable.just(0).hide()
-        .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Object, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Object v) throws Exception {
+            public Flowable<Integer> invoke(Object v) {
                 return Flowable.just(1);
             }
         }, 16, false)
@@ -1303,15 +1337,15 @@ public class FlowableConcatTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Integer> invoke(Flowable<Object> f) {
                 return f.concatMap(Functions.justFunction(Flowable.just(2)));
             }
         });
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Object> f) throws Exception {
+            public Publisher<Integer> invoke(Flowable<Object> f) {
                 return f.concatMapDelayError(Functions.justFunction(Flowable.just(2)));
             }
         });
@@ -1383,9 +1417,9 @@ public class FlowableConcatTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.concatMap(Functions.justFunction(Flowable.just(1).hide()));
             }
         }, true, 1, 1, 1);
@@ -1445,9 +1479,9 @@ public class FlowableConcatTest {
 
     @Test
     public void badSourceDelayError() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.concatMap(Functions.justFunction(Flowable.just(1).hide()));
             }
         }, true, 1, 1, 1);
@@ -1456,9 +1490,11 @@ public class FlowableConcatTest {
     @Test
     public void fusedCrash() {
         Flowable.range(1, 2)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
+            public Object invoke(Integer v) {
+                throw new TestException();
+            }
         })
         .concatMap(Functions.justFunction(Flowable.just(1)))
         .test()
@@ -1468,9 +1504,11 @@ public class FlowableConcatTest {
     @Test
     public void fusedCrashDelayError() {
         Flowable.range(1, 2)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
+            public Object invoke(Integer v) {
+                throw new TestException();
+            }
         })
         .concatMapDelayError(Functions.justFunction(Flowable.just(1)))
         .test()
@@ -1531,9 +1569,9 @@ public class FlowableConcatTest {
     @Test
     public void mapperThrows() {
         Flowable.range(1, 2)
-        .concatMap(new Function<Integer, Publisher<Object>>() {
+                .concatMap(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) throws Exception {
+            public Publisher<Object> invoke(Integer v) {
                 throw new TestException();
             }
         })

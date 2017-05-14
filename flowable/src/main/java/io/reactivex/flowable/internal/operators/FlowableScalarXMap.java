@@ -13,15 +13,18 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import java.util.concurrent.Callable;
 
-import org.reactivestreams.*;
-
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.RxJavaFlowablePlugins;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
@@ -44,8 +47,8 @@ public final class FlowableScalarXMap {
      */
     @SuppressWarnings("unchecked")
     public static <T, R> boolean tryScalarXMapSubscribe(Publisher<T> source,
-            Subscriber<? super R> subscriber,
-            Function<? super T, ? extends Publisher<? extends R>> mapper) {
+                                                        Subscriber<? super R> subscriber,
+                                                        Function1<? super T, ? extends Publisher<? extends R>> mapper) {
         if (source instanceof Callable) {
             T t;
 
@@ -65,7 +68,7 @@ public final class FlowableScalarXMap {
             Publisher<? extends R> r;
 
             try {
-                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                r = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, subscriber);
@@ -107,7 +110,7 @@ public final class FlowableScalarXMap {
      * a Publisher that gets streamed
      * @return the new Flowable instance
      */
-    public static <T, U> Flowable<U> scalarXMap(final T value, final Function<? super T, ? extends Publisher<? extends U>> mapper) {
+    public static <T, U> Flowable<U> scalarXMap(final T value, final Function1<? super T, ? extends Publisher<? extends U>> mapper) {
         return RxJavaFlowablePlugins.onAssembly(new ScalarXMapFlowable<T, U>(value, mapper));
     }
 
@@ -121,10 +124,10 @@ public final class FlowableScalarXMap {
 
         final T value;
 
-        final Function<? super T, ? extends Publisher<? extends R>> mapper;
+        final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
         ScalarXMapFlowable(T value,
-                Function<? super T, ? extends Publisher<? extends R>> mapper) {
+                           Function1<? super T, ? extends Publisher<? extends R>> mapper) {
             this.value = value;
             this.mapper = mapper;
         }
@@ -134,7 +137,7 @@ public final class FlowableScalarXMap {
         public void subscribeActual(Subscriber<? super R> s) {
             Publisher<? extends R> other;
             try {
-                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
+                other = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 EmptySubscription.error(e, s);
                 return;

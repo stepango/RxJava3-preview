@@ -13,32 +13,39 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.Iterator;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.queues.SpscArrayQueue;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends Iterable<? extends R>> mapper;
+    final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
     final int prefetch;
 
     public FlowableFlattenIterable(Flowable<T> source,
-            Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
+                                   Function1<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
         super(source);
         this.mapper = mapper;
         this.prefetch = prefetch;
@@ -66,7 +73,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             Iterator<? extends R> it;
 
             try {
-                Iterable<? extends R> iterable = mapper.apply(v);
+                Iterable<? extends R> iterable = mapper.invoke(v);
 
                 it = iterable.iterator();
             } catch (Throwable ex) {
@@ -91,7 +98,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         final Subscriber<? super R> actual;
 
-        final Function<? super T, ? extends Iterable<? extends R>> mapper;
+        final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
         final int prefetch;
 
@@ -116,7 +123,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
         int fusionMode;
 
         FlattenIterableSubscriber(Subscriber<? super R> actual,
-                Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
+                                  Function1<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
             this.actual = actual;
             this.mapper = mapper;
             this.prefetch = prefetch;
@@ -264,7 +271,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         boolean b;
 
                         try {
-                            iterable = mapper.apply(t);
+                            iterable = mapper.invoke(t);
 
                             it = iterable.iterator();
 
@@ -430,7 +437,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         return null;
                     }
 
-                    it = mapper.apply(v).iterator();
+                    it = mapper.invoke(v).iterator();
 
                     if (!it.hasNext()) {
                         it = null;

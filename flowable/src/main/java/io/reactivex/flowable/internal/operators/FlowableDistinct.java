@@ -13,28 +13,28 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Subscriber;
+
 import java.util.Collection;
 import java.util.concurrent.Callable;
-
-import org.reactivestreams.Subscriber;
 
 import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T, T> {
 
-    final Function<? super T, K> keySelector;
+    final Function1<? super T, K> keySelector;
 
     final Callable<? extends Collection<? super K>> collectionSupplier;
 
-    public FlowableDistinct(Flowable<T> source, Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
+    public FlowableDistinct(Flowable<T> source, Function1<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         super(source);
         this.keySelector = keySelector;
         this.collectionSupplier = collectionSupplier;
@@ -59,9 +59,9 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
         final Collection<? super K> collection;
 
-        final Function<? super T, K> keySelector;
+        final Function1<? super T, K> keySelector;
 
-        DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, K> keySelector, Collection<? super K> collection) {
+        DistinctSubscriber(Subscriber<? super T> actual, Function1<? super T, K> keySelector, Collection<? super K> collection) {
             super(actual);
             this.keySelector = keySelector;
             this.collection = collection;
@@ -77,7 +77,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 boolean b;
 
                 try {
-                    key = ObjectHelper.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
+                    key = ObjectHelper.requireNonNull(keySelector.invoke(value), "The keySelector returned a null key");
                     b = collection.add(key);
                 } catch (Throwable ex) {
                     fail(ex);
@@ -125,7 +125,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             for (;;) {
                 T v = qs.poll();
 
-                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
+                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.invoke(v), "The keySelector returned a null key"))) {
                     return v;
                 } else {
                     if (sourceMode == FusedQueueSubscription.ASYNC) {

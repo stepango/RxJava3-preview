@@ -13,25 +13,35 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import io.reactivex.observable.subjects.BehaviorSubject;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.Subject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ObservableWindowWithObservableTest {
 
@@ -457,24 +467,24 @@ public class ObservableWindowWithObservableTest {
 
     @Test
     public void innerBadSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return Observable.just(1).window(o).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            public Object invoke(Observable<Integer> o) {
+                return Observable.just(1).window(o).flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                    public ObservableSource<Integer> invoke(Observable<Integer> v) {
                         return v;
                     }
                 });
             }
         }, false, 1, 1, (Object[])null);
 
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
-                return Observable.just(1).window(Functions.justCallable(o)).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            public Object invoke(Observable<Integer> o) {
+                return Observable.just(1).window(Functions.justCallable(o)).flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                    public ObservableSource<Integer> invoke(Observable<Integer> v) {
                         return v;
                     }
                 });
@@ -498,9 +508,9 @@ public class ObservableWindowWithObservableTest {
         };
 
         ps.window(BehaviorSubject.createDefault(1))
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })
@@ -539,9 +549,9 @@ public class ObservableWindowWithObservableTest {
                 return Observable.never();
             }
         })
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })
@@ -556,12 +566,12 @@ public class ObservableWindowWithObservableTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.window(Observable.never()).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
+            public Object invoke(Observable<Object> o) {
+                return o.window(Observable.never()).flatMap(new Function1<Observable<Object>, ObservableSource<Object>>() {
                     @Override
-                    public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
+                    public ObservableSource<Object> invoke(Observable<Object> v) {
                         return v;
                     }
                 });
@@ -571,12 +581,12 @@ public class ObservableWindowWithObservableTest {
 
     @Test
     public void badSourceCallable() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
-                return o.window(Functions.justCallable(Observable.never())).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
+            public Object invoke(Observable<Object> o) {
+                return o.window(Functions.justCallable(Observable.never())).flatMap(new Function1<Observable<Object>, ObservableSource<Object>>() {
                     @Override
-                    public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
+                    public ObservableSource<Object> invoke(Observable<Object> v) {
                         return v;
                     }
                 });

@@ -16,16 +16,24 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -33,22 +41,23 @@ import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.processors.UnicastProcessor;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends AbstractFlowableWithUpstream<TLeft, R> {
 
     final Publisher<? extends TRight> other;
 
-    final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
+    final Function1<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
 
-    final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
+    final Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
 
     final BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector;
 
     public FlowableGroupJoin(
             Flowable<TLeft> source,
             Publisher<? extends TRight> other,
-            Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
-            Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
+            Function1<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
+            Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
             BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector) {
         super(source);
         this.other = other;
@@ -107,9 +116,9 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         final AtomicReference<Throwable> error;
 
-        final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
+        final Function1<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
 
-        final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
+        final Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
 
         final BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector;
 
@@ -129,9 +138,9 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         static final Integer RIGHT_CLOSE = 4;
 
-        GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
-                Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-                        BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector) {
+        GroupJoinSubscription(Subscriber<? super R> actual, Function1<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
+                              Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
+                              BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector) {
             this.actual = actual;
             this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
@@ -249,7 +258,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         Publisher<TLeftEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
+                            p = ObjectHelper.requireNonNull(leftEnd.invoke(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -301,7 +310,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         Publisher<TRightEnd> p;
 
                         try {
-                            p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
+                            p = ObjectHelper.requireNonNull(rightEnd.invoke(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;

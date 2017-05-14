@@ -13,21 +13,23 @@
 
 package io.reactivex.interop.internal.operators;
 
+import org.reactivestreams.Subscriber;
+
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a success value into an Iterable and streams it back as a Flowable.
@@ -39,10 +41,10 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
     final MaybeSource<T> source;
 
-    final Function<? super T, ? extends Iterable<? extends R>> mapper;
+    final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
     public MaybeFlatMapIterableFlowable(MaybeSource<T> source,
-            Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                        Function1<? super T, ? extends Iterable<? extends R>> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -60,7 +62,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
         final Subscriber<? super R> actual;
 
-        final Function<? super T, ? extends Iterable<? extends R>> mapper;
+        final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
         final AtomicLong requested;
 
@@ -73,7 +75,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
         boolean outputFused;
 
         FlatMapIterableObserver(Subscriber<? super R> actual,
-                Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                Function1<? super T, ? extends Iterable<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
             this.requested = new AtomicLong();
@@ -93,7 +95,7 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
             Iterator<? extends R> iterator;
             boolean has;
             try {
-                iterator = mapper.apply(value).iterator();
+                iterator = mapper.invoke(value).iterator();
 
                 has = iterator.hasNext();
             } catch (Throwable ex) {

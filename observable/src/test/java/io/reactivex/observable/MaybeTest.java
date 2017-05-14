@@ -15,7 +15,6 @@ package io.reactivex.observable;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
@@ -43,7 +42,6 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -343,9 +341,9 @@ public class MaybeTest {
 
     @Test
     public void to() {
-        Maybe.just(1).to(new Function<Maybe<Integer>, Observable<Integer>>() {
+        Maybe.just(1).to(new Function1<Maybe<Integer>, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Maybe<Integer> v) throws Exception {
+            public Observable<Integer> invoke(Maybe<Integer> v) {
                 return v.toObservable();
             }
         })
@@ -363,9 +361,9 @@ public class MaybeTest {
         Maybe.just(1).compose(new MaybeTransformer<Integer, Integer>() {
             @Override
             public MaybeSource<Integer> apply(Maybe<Integer> m) {
-                return m.map(new Function<Integer, Integer>() {
+                return m.map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer w) throws Exception {
+                    public Integer invoke(Integer w) {
                         return w + 1;
                     }
                 });
@@ -387,9 +385,9 @@ public class MaybeTest {
 
     @Test
     public void mapReturnNull() {
-        Maybe.just(1).map(new Function<Integer, Object>() {
+        Maybe.just(1).map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).test().assertFailure(NullPointerException.class);
@@ -397,19 +395,19 @@ public class MaybeTest {
 
     @Test
     public void mapThrows() {
-        Maybe.just(1).map(new Function<Integer, Object>() {
+        Maybe.just(1).map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
-                throw new IOException();
+            public Object invoke(Integer v) {
+                throw new TestException();
             }
-        }).test().assertFailure(IOException.class);
+        }).test().assertFailure(TestException.class);
     }
 
     @Test
     public void map() {
-        Maybe.just(1).map(new Function<Integer, String>() {
+        Maybe.just(1).map(new Function1<Integer, String>() {
             @Override
-            public String apply(Integer v) throws Exception {
+            public String invoke(Integer v) {
                 return v.toString();
             }
         }).test().assertResult("1");
@@ -517,9 +515,9 @@ public class MaybeTest {
         String main = Thread.currentThread().getName();
         Maybe.just(1)
         .observeOn(Schedulers.single())
-        .map(new Function<Integer, String>() {
+                .map(new Function1<Integer, String>() {
             @Override
-            public String apply(Integer v) throws Exception {
+            public String invoke(Integer v) {
                 return v + ": " + Thread.currentThread().getName();
             }
         })
@@ -556,9 +554,9 @@ public class MaybeTest {
 
     @Test
     public void observeOnDoubleSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> m) {
                 return m.observeOn(Schedulers.single());
             }
         });
@@ -1008,9 +1006,9 @@ public class MaybeTest {
 
     @Test
     public void flatMap() {
-        Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.just(1).flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v * 10);
             }
         })
@@ -1020,9 +1018,9 @@ public class MaybeTest {
 
     @Test
     public void concatMap() {
-        Maybe.just(1).concatMap(new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.just(1).concatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v * 10);
             }
         })
@@ -1032,9 +1030,9 @@ public class MaybeTest {
 
     @Test
     public void flatMapEmpty() {
-        Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.just(1).flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.empty();
             }
         })
@@ -1044,9 +1042,9 @@ public class MaybeTest {
 
     @Test
     public void flatMapError() {
-        Maybe.just(1).flatMap(new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.just(1).flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.error(new TestException());
             }
         })
@@ -1057,15 +1055,15 @@ public class MaybeTest {
     @Test
     public void flatMapNotifySuccess() {
         Maybe.just(1)
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v * 10);
             }
         },
-        new Function<Throwable, MaybeSource<Integer>>() {
+                        new Function1<Throwable, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Throwable v) throws Exception {
+            public MaybeSource<Integer> invoke(Throwable v) {
                 return Maybe.just(100);
             }
         },
@@ -1083,15 +1081,15 @@ public class MaybeTest {
     @Test
     public void flatMapNotifyError() {
         Maybe.<Integer>error(new TestException())
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v * 10);
             }
         },
-        new Function<Throwable, MaybeSource<Integer>>() {
+                        new Function1<Throwable, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Throwable v) throws Exception {
+            public MaybeSource<Integer> invoke(Throwable v) {
                 return Maybe.just(100);
             }
         },
@@ -1109,15 +1107,15 @@ public class MaybeTest {
     @Test
     public void flatMapNotifyComplete() {
         Maybe.<Integer>empty()
-        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+                .flatMap(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v * 10);
             }
         },
-        new Function<Throwable, MaybeSource<Integer>>() {
+                        new Function1<Throwable, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Throwable v) throws Exception {
+            public MaybeSource<Integer> invoke(Throwable v) {
                 return Maybe.just(100);
             }
         },
@@ -2644,49 +2642,49 @@ public class MaybeTest {
 
     @Test
     public void flatMapContinuation() {
-        Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
+        Maybe.just(1).flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 return Completable.complete();
             }
         })
         .test().assertResult();
 
-        Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
+        Maybe.just(1).flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 return Completable.error(new TestException());
             }
         })
         .test().assertFailure(TestException.class);
 
-        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+        Maybe.just(1).flatMapObservable(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(1, 5);
             }
         })
         .test().assertResult(1, 2, 3, 4, 5);
 
-        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+        Maybe.just(1).flatMapObservable(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.error(new TestException());
             }
         })
         .test().assertFailure(TestException.class);
 
-        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+        Maybe.just(1).flatMapObservable(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(1, 5);
             }
         })
         .test().assertResult(1, 2, 3, 4, 5);
 
-        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+        Maybe.just(1).flatMapObservable(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.error(new TestException());
             }
         })
@@ -2697,9 +2695,9 @@ public class MaybeTest {
     public void using() {
         final AtomicInteger disposeCount = new AtomicInteger();
 
-        Maybe.using(Functions.justCallable(1), new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.using(Functions.justCallable(1), new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         }, new Function1<Integer, kotlin.Unit>() {
@@ -2709,9 +2707,9 @@ public class MaybeTest {
                 return Unit.INSTANCE;
             }
         })
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public String apply(Integer v) throws Exception {
+            public String invoke(Integer v) {
                 return "" + disposeCount.get() + v * 10;
             }
         })
@@ -2723,9 +2721,9 @@ public class MaybeTest {
     public void usingNonEager() {
         final AtomicInteger disposeCount = new AtomicInteger();
 
-        Maybe.using(Functions.justCallable(1), new Function<Integer, MaybeSource<Integer>>() {
+        Maybe.using(Functions.justCallable(1), new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         }, new Function1<Integer, kotlin.Unit>() {
@@ -2735,9 +2733,9 @@ public class MaybeTest {
                 return Unit.INSTANCE;
             }
         }, false)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public String apply(Integer v) throws Exception {
+            public String invoke(Integer v) {
                 return "" + disposeCount.get() + v * 10;
             }
         })
@@ -2747,9 +2745,9 @@ public class MaybeTest {
         assertEquals(1, disposeCount.get());
     }
 
-    Function<Object[], String> arrayToString = new Function<Object[], String>() {
+    Function1<Object[], String> arrayToString = new Function1<Object[], String>() {
         @Override
-        public String apply(Object[] a) throws Exception {
+        public String invoke(Object[] a) {
             return Arrays.toString(a);
         }
     };
@@ -2780,7 +2778,7 @@ public class MaybeTest {
      * Implements all Function types which return a String concatenating their inputs.
      */
     @SuppressWarnings("rawtypes")
-    public enum ArgsToString implements Function, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+    public enum ArgsToString implements Function1, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
         INSTANCE;
 
         @Override
@@ -2827,7 +2825,7 @@ public class MaybeTest {
         }
 
         @Override
-        public Object apply(Object t1) throws Exception {
+        public Object invoke(Object t1) {
             return "" + t1;
         }
     }
@@ -2982,9 +2980,9 @@ public class MaybeTest {
     public void zipIterableObject() {
         @SuppressWarnings("unchecked")
         final List<Maybe<Integer>> maybes = Arrays.asList(Maybe.just(1), Maybe.just(4));
-        Maybe.zip(maybes, new Function<Object[], Object>() {
+        Maybe.zip(maybes, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] o) throws Exception {
+            public Object invoke(final Object[] o) {
                 int sum = 0;
                 for (Object i : o) {
                     sum += (Integer) i;
@@ -3076,9 +3074,9 @@ public class MaybeTest {
             }
         }).take(5).test().assertResult(1, 1, 1, 1, 1);
 
-        Maybe.just(1).repeatWhen(new Function<Observable<Object>, Observable<Object>>() {
+        Maybe.just(1).repeatWhen(new Function1<Observable<Object>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<Object> v) throws Exception {
+            public Observable<Object> invoke(Observable<Object> v) {
                 return v;
             }
         }).take(5).test().assertResult(1, 1, 1, 1, 1);
@@ -3108,10 +3106,10 @@ public class MaybeTest {
             }
         }).test().assertResult(1);
 
-        Maybe.just(1).retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
+        Maybe.just(1).retryWhen(new Function1<Observable<? extends Throwable>, Observable<Object>>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public Observable<Object> apply(Observable<? extends Throwable> v) throws Exception {
+            public Observable<Object> invoke(Observable<? extends Throwable> v) {
                 return (Observable)v;
             }
         }).test().assertResult(1);

@@ -40,7 +40,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -461,10 +460,10 @@ public class FlowableCombineLatestTest {
     @Test
     public void test1ToNSources() {
         int n = 30;
-        Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
+        Function1<Object[], List<Object>> func = new Function1<Object[], List<Object>>() {
 
             @Override
-            public List<Object> apply(Object[] args) {
+            public List<Object> invoke(Object[] args) {
                 return Arrays.asList(args);
             }
         };
@@ -492,10 +491,10 @@ public class FlowableCombineLatestTest {
     @Test(timeout = 5000)
     public void test1ToNSourcesScheduled() throws InterruptedException {
         int n = 10;
-        Function<Object[], List<Object>> func = new Function<Object[], List<Object>>() {
+        Function1<Object[], List<Object>> func = new Function1<Object[], List<Object>>() {
 
             @Override
-            public List<Object> apply(Object[] args) {
+            public List<Object> invoke(Object[] args) {
                 return Arrays.asList(args);
             }
         };
@@ -751,10 +750,10 @@ public class FlowableCombineLatestTest {
     @Test
     public void testZeroSources() {
         Flowable<Object> result = Flowable.combineLatest(
-                Collections.<Flowable<Object>>emptyList(), new Function<Object[], Object>() {
+                Collections.<Flowable<Object>>emptyList(), new Function1<Object[], Object>() {
 
                     @Override
-                    public Object apply(Object[] args) {
+                    public Object invoke(Object[] args) {
                         return args;
                     }
 
@@ -839,9 +838,9 @@ public class FlowableCombineLatestTest {
         @SuppressWarnings("unchecked")
         List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4),
                 Flowable.fromArray(5, 6, 7, 8));
-        Flowable<Integer> o = Flowable.combineLatest(sources, new Function<Object[], Integer>() {
+        Flowable<Integer> o = Flowable.combineLatest(sources, new Function1<Object[], Integer>() {
             @Override
-            public Integer apply(Object[] args) {
+            public Integer invoke(Object[] args) {
                 return (Integer) args[0];
             }
         });
@@ -873,9 +872,9 @@ public class FlowableCombineLatestTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
-    private static final Function<Object[], Integer> THROW_NON_FATAL = new Function<Object[], Integer>() {
+    private static final Function1<Object[], Integer> THROW_NON_FATAL = new Function1<Object[], Integer>() {
         @Override
-        public Integer apply(Object[] args) {
+        public Integer invoke(Object[] args) {
             throw new RuntimeException();
         }
 
@@ -916,9 +915,9 @@ public class FlowableCombineLatestTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.combineLatest(sources, new Function<Object[], Integer>() {
+        Flowable.combineLatest(sources, new Function1<Object[], Integer>() {
             @Override
-            public Integer apply(Object[] args) {
+            public Integer invoke(Object[] args) {
                 int sum = 0;
                 for (Object o : args) {
                     if (o == null) {
@@ -942,9 +941,9 @@ public class FlowableCombineLatestTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.combineLatest(Arrays.asList(source, source),
-                new Function<Object[], Integer>() {
+                new Function1<Object[], Integer>() {
                     @Override
-                    public Integer apply(Object[] args) {
+                    public Integer invoke(Object[] args) {
                         return (Integer) args[0] + (Integer) args[1];
                     }
                 })
@@ -970,9 +969,9 @@ public class FlowableCombineLatestTest {
 
         TestSubscriber<String> ts = TestSubscriber.create();
 
-        Flowable.combineLatest(sources, new Function<Object[], String>() {
+        Flowable.combineLatest(sources, new Function1<Object[], String>() {
             @Override
-            public String apply(Object[] args) {
+            public String invoke(Object[] args) {
                 StringBuilder b = new StringBuilder();
                 for (Object o : args) {
                     b.append(o);
@@ -993,9 +992,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(1), Flowable.<Integer>error(new TestException())),
-                new Function<Object[], Integer>() {
+                new Function1<Object[], Integer>() {
                     @Override
-                    public Integer apply(Object[] args) {
+                    public Integer invoke(Object[] args) {
                         return ((Integer) args[0]) + ((Integer) args[1]);
                     }
                 }
@@ -1013,9 +1012,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.<Integer>error(new TestException()), Flowable.just(1)),
-                new Function<Object[], Integer>() {
+                new Function1<Object[], Integer>() {
                     @Override
-                    public Integer apply(Object[] args) {
+                    public Integer invoke(Object[] args) {
                         return ((Integer) args[0]) + ((Integer) args[1]);
                     }
                 }
@@ -1033,9 +1032,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException())), Flowable.just(1)),
-                new Function<Object[], Integer>() {
+                new Function1<Object[], Integer>() {
                     @Override
-                    public Integer apply(Object[] args) {
+                    public Integer invoke(Object[] args) {
                         return ((Integer) args[0]) + ((Integer) args[1]);
                     }
                 }
@@ -1053,9 +1052,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(1), Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException()))),
-                new Function<Object[], Integer>() {
+                new Function1<Object[], Integer>() {
                     @Override
-                    public Integer apply(Object[] args) {
+                    public Integer invoke(Object[] args) {
                         return ((Integer) args[0]) + ((Integer) args[1]);
                     }
                 }
@@ -1074,9 +1073,9 @@ public class FlowableCombineLatestTest {
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
                         Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException()))),
-                new Function<Object[], Integer>() {
+                new Function1<Object[], Integer>() {
                     @Override
-                    public Integer apply(Object[] args) {
+                    public Integer invoke(Object[] args) {
                         return ((Integer) args[0]) + ((Integer) args[1]);
                     }
                 }
@@ -1141,18 +1140,18 @@ public class FlowableCombineLatestTest {
                 expected.add(1);
             }
 
-            Flowable.combineLatest(sources, new Function<Object[], List<Object>>() {
+            Flowable.combineLatest(sources, new Function1<Object[], List<Object>>() {
                 @Override
-                public List<Object> apply(Object[] t) throws Exception {
+                public List<Object> invoke(Object[] t) {
                     return Arrays.asList(t);
                 }
             })
                     .test()
                     .assertResult(expected);
 
-            Flowable.combineLatestDelayError(sources, new Function<Object[], List<Object>>() {
+            Flowable.combineLatestDelayError(sources, new Function1<Object[], List<Object>>() {
                 @Override
-                public List<Object> apply(Object[] t) throws Exception {
+                public List<Object> invoke(Object[] t) {
                     return Arrays.asList(t);
                 }
             })
@@ -1167,9 +1166,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatest(new Flowable[]{
                 Flowable.just(1), Flowable.just(2)
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1183,9 +1182,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(new Flowable[]{
                 Flowable.just(1), Flowable.just(2)
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1199,9 +1198,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(new Flowable[]{
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1215,9 +1214,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(Arrays.asList(
                 Flowable.just(1), Flowable.just(2)
-        ), new Function<Object[], Object>() {
+        ), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1231,9 +1230,9 @@ public class FlowableCombineLatestTest {
 
         Flowable.combineLatestDelayError(Arrays.asList(
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
-        ), new Function<Object[], Object>() {
+        ), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return Arrays.toString(a);
             }
         })
@@ -1376,9 +1375,9 @@ public class FlowableCombineLatestTest {
     @Test
     public void errorDelayed() {
         Flowable.combineLatestDelayError(
-                new Function<Object[], Object>() {
+                new Function1<Object[], Object>() {
                     @Override
-                    public Object apply(Object[] a) throws Exception {
+                    public Object invoke(Object[] a) {
                         return a;
                     }
                 },
@@ -1394,9 +1393,9 @@ public class FlowableCombineLatestTest {
     @Test
     public void errorDelayed2() {
         Flowable.combineLatestDelayError(
-                new Function<Object[], Object>() {
+                new Function1<Object[], Object>() {
                     @Override
-                    public Object apply(Object[] a) throws Exception {
+                    public Object invoke(Object[] a) {
                         return a;
                     }
                 },
@@ -1458,9 +1457,9 @@ public class FlowableCombineLatestTest {
                                         }
                                     })
                     ),
-                    new Function<Object[], Object>() {
+                    new Function1<Object[], Object>() {
                         @Override
-                        public Object apply(Object[] a) throws Exception {
+                        public Object invoke(Object[] a) {
                             return 0;
                         }
                     })
@@ -1485,16 +1484,16 @@ public class FlowableCombineLatestTest {
             TestScheduler testScheduler = new TestScheduler();
 
             Flowable<Integer> emptyFlowable = Flowable.timer(10, TimeUnit.MILLISECONDS, testScheduler)
-                    .flatMap(new Function<Long, Publisher<Integer>>() {
+                    .flatMap(new Function1<Long, Publisher<Integer>>() {
                         @Override
-                        public Publisher<Integer> apply(Long aLong) throws Exception {
+                        public Publisher<Integer> invoke(Long aLong) {
                             return Flowable.error(new Exception());
                         }
                     });
-            Flowable<Object> errorFlowable = Flowable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(new Function<Long, Object>() {
+            Flowable<Object> errorFlowable = Flowable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(new Function1<Long, Object>() {
                 @Override
-                public Object apply(Long aLong) throws Exception {
-                    throw new Exception();
+                public Object invoke(Long aLong) {
+                    throw new TestException();
                 }
             });
 
@@ -1530,9 +1529,9 @@ public class FlowableCombineLatestTest {
                                             return Unit.INSTANCE;
                                         }
                                     })),
-                    new Function<Object[], Object>() {
+                    new Function1<Object[], Object>() {
                         @Override
-                        public Object apply(Object[] objects) throws Exception {
+                        public Object invoke(Object[] objects) {
                             return 0;
                         }
                     }

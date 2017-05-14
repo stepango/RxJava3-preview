@@ -31,7 +31,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.flowable.BackpressureStrategy;
@@ -125,11 +124,11 @@ public class FlowablePublishTest {
             }
         });
 
-        Flowable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function<Integer, Integer>() {
+        Flowable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Function1<Integer, Integer>() {
             int c;
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 if (c == 0) {
                     try {
                         Thread.sleep(500);
@@ -172,10 +171,10 @@ public class FlowablePublishTest {
 
         });
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        xs.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        xs.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> xs) {
+            public Flowable<Integer> invoke(Flowable<Integer> xs) {
                 return xs.takeUntil(xs.skipWhile(new Function1<Integer, Boolean>() {
 
                     @Override
@@ -745,9 +744,9 @@ public class FlowablePublishTest {
     public void selectorDisconnectsIndependentSource() {
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return Flowable.range(1, 2);
             }
         })
@@ -760,9 +759,9 @@ public class FlowablePublishTest {
     @Test(timeout = 5000)
     public void selectorLatecommer() {
         Flowable.range(1, 5)
-        .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v.concatWith(v);
             }
         })
@@ -782,9 +781,9 @@ public class FlowablePublishTest {
     public void selectorInnerError() {
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        ps.publish(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return Flowable.error(new TestException());
             }
         })
@@ -832,9 +831,9 @@ public class FlowablePublishTest {
 
     @Test
     public void selectorCrash() {
-        Flowable.just(1).publish(new Function<Flowable<Integer>, Flowable<Object>>() {
+        Flowable.just(1).publish(new Function1<Flowable<Integer>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Object> invoke(Flowable<Integer> v) {
                 throw new TestException();
             }
         })
@@ -845,9 +844,9 @@ public class FlowablePublishTest {
     @Test
     public void pollThrows() {
         Flowable.just(1)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -869,9 +868,9 @@ public class FlowablePublishTest {
         };
 
         Flowable.range(1, 10)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 if (v == 2) {
                     throw new TestException();
                 }

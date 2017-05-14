@@ -13,15 +13,18 @@
 
 package io.reactivex.interop.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
@@ -30,7 +33,9 @@ import io.reactivex.flowable.internal.operators.AbstractFlowableWithUpstream;
 import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps upstream values into SingleSources and merges their signals into one sequence.
@@ -39,14 +44,14 @@ import io.reactivex.observable.*;
  */
 public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+    final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
     final boolean delayErrors;
 
     final int maxConcurrency;
 
-    public FlowableFlatMapSingle(Flowable<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper,
-            boolean delayError, int maxConcurrency) {
+    public FlowableFlatMapSingle(Flowable<T> source, Function1<? super T, ? extends SingleSource<? extends R>> mapper,
+                                 boolean delayError, int maxConcurrency) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayError;
@@ -78,7 +83,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
 
         final AtomicThrowable errors;
 
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+        final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
         final AtomicReference<SpscLinkedArrayQueue<R>> queue;
 
@@ -87,7 +92,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
         volatile boolean cancelled;
 
         FlatMapSingleSubscriber(Subscriber<? super R> actual,
-                Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
+                                Function1<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
             this.actual = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
@@ -120,7 +125,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
             SingleSource<? extends R> ms;
 
             try {
-                ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
+                ms = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

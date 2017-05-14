@@ -14,15 +14,16 @@
 package io.reactivex.observable.internal.operators;
 
 
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class SingleObserveOnTest {
 
@@ -33,9 +34,9 @@ public class SingleObserveOnTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function1<Single<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
+            public SingleSource<Object> invoke(Single<Object> s) {
                 return s.observeOn(Schedulers.single());
             }
         });

@@ -16,10 +16,12 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeFilterSingleTest {
 
@@ -38,9 +40,9 @@ public class MaybeFilterSingleTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function1<Single<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Single<Object> v) throws Exception {
+            public MaybeSource<Object> invoke(Single<Object> v) {
                 return v.filter(Functions.alwaysTrue());
             }
         });

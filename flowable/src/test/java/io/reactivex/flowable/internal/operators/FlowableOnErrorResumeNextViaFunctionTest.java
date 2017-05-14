@@ -13,26 +13,35 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.Mockito;
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.FlowableOperator;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableOnErrorResumeNextViaFunctionTest {
 
@@ -51,10 +60,10 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
             }
         });
 
-        Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
+        Function1<Throwable, Flowable<String>> resume = new Function1<Throwable, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Throwable t1) {
+            public Flowable<String> invoke(Throwable t1) {
                 receivedException.set(t1);
                 return Flowable.just("twoResume", "threeResume");
             }
@@ -81,10 +90,10 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
-        Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
+        Function1<Throwable, Flowable<String>> resume = new Function1<Throwable, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Throwable t1) {
+            public Flowable<String> invoke(Throwable t1) {
                 receivedException.set(t1);
                 return Flowable.just("twoResume", "threeResume");
             }
@@ -119,10 +128,10 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     public void testFunctionThrowsError() {
         Subscription s = mock(Subscription.class);
         TestFlowable w = new TestFlowable(s, "one");
-        Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
+        Function1<Throwable, Flowable<String>> resume = new Function1<Throwable, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Throwable t1) {
+            public Flowable<String> invoke(Throwable t1) {
                 throw new RuntimeException("exception from function");
             }
 
@@ -162,10 +171,10 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
                 throw new RuntimeException("failed");
             }
 
-        }).onErrorResumeNext(new Function<Throwable, Flowable<String>>() {
+        }).onErrorResumeNext(new Function1<Throwable, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Throwable t1) {
+            public Flowable<String> invoke(Throwable t1) {
                 if (t1.getMessage().equals("failed")) {
                     return Flowable.just("success");
                 } else {
@@ -217,10 +226,10 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
                 };
             }
 
-        }).onErrorResumeNext(new Function<Throwable, Flowable<String>>() {
+        }).onErrorResumeNext(new Function1<Throwable, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Throwable t1) {
+            public Flowable<String> invoke(Throwable t1) {
                 if (t1.getMessage().equals("failed")) {
                     return Flowable.just("success");
                 } else {
@@ -242,9 +251,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaFlowable)
-        w = w.map(new Function<String, String>() {
+        w = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -253,10 +262,10 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
             }
         });
 
-        Flowable<String> observable = w.onErrorResumeNext(new Function<Throwable, Flowable<String>>() {
+        Flowable<String> observable = w.onErrorResumeNext(new Function1<Throwable, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Throwable t1) {
+            public Flowable<String> invoke(Throwable t1) {
                 return Flowable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
             }
 
@@ -319,20 +328,20 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     public void testBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000)
-                .onErrorResumeNext(new Function<Throwable, Flowable<Integer>>() {
+                .onErrorResumeNext(new Function1<Throwable, Flowable<Integer>>() {
 
                     @Override
-                    public Flowable<Integer> apply(Throwable t1) {
+                    public Flowable<Integer> invoke(Throwable t1) {
                         return Flowable.just(1);
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     int c;
 
                     @Override
-                    public Integer apply(Integer t1) {
+                    public Integer invoke(Integer t1) {
                         if (c++ <= 1) {
                             // slow
                             try {
@@ -356,9 +365,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.onErrorResumeNext(new Function<Throwable, Flowable<Integer>>() {
+        ps.onErrorResumeNext(new Function1<Throwable, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Throwable v) {
+            public Flowable<Integer> invoke(Throwable v) {
                 return Flowable.range(3, 2);
             }
         }).subscribe(ts);
@@ -382,9 +391,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void badOtherSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
+            public Object invoke(Flowable<Integer> o) {
                 return Flowable.error(new IOException())
                         .onErrorResumeNext(Functions.justFunction(o));
             }

@@ -13,15 +13,15 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
 import io.reactivex.observable.extensions.HasUpstreamMaybeSource;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.toFlowable;
+import static org.junit.Assert.assertSame;
 
 public class MaybeToFlowableTest {
 
@@ -34,9 +34,9 @@ public class MaybeToFlowableTest {
 
     @Test
     public void doubleOnSubscribe() {
-        io.reactivex.interop.TestHelper.checkDoubleOnSubscribeMaybeToFlowable(new Function<Maybe<Object>, Publisher<Object>>() {
+        io.reactivex.interop.TestHelper.checkDoubleOnSubscribeMaybeToFlowable(new Function1<Maybe<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Maybe<Object> m) throws Exception {
+            public Publisher<Object> invoke(Maybe<Object> m) {
                 return toFlowable(m);
             }
         });

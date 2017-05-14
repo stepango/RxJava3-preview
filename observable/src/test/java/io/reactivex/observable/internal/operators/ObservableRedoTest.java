@@ -16,9 +16,10 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableRedoTest {
 
@@ -27,13 +28,13 @@ public class ObservableRedoTest {
         final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.just(1)
-        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+                .repeatWhen(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
-                return o.map(new Function<Object, Object>() {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
+                return o.map(new Function1<Object, Object>() {
                     int count;
                     @Override
-                    public Object apply(Object v) throws Exception {
+                    public Object invoke(Object v) {
                         if (++count == 1) {
                             to.cancel();
                         }
@@ -48,9 +49,9 @@ public class ObservableRedoTest {
     @Test
     public void managerThrows() {
         Observable.just(1)
-        .retryWhen(new Function<Observable<Throwable>, ObservableSource<Object>>() {
+                .retryWhen(new Function1<Observable<Throwable>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Throwable> v) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Throwable> v) {
                 throw new TestException();
             }
         })

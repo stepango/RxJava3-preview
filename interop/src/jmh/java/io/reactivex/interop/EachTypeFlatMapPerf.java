@@ -13,15 +13,26 @@
 
 package io.reactivex.interop;
 
-import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.flowable.Flowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Single;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -49,36 +60,36 @@ public class EachTypeFlatMapPerf {
         bpRange = Flowable.range(1, times);
         nbpRange = Observable.range(1, times);
 
-        bpRangeMapJust = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
+        bpRangeMapJust = bpRange.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         });
-        nbpRangeMapJust = nbpRange.flatMap(new Function<Integer, Observable<Integer>>() {
+        nbpRangeMapJust = nbpRange.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(v);
             }
         });
 
-        bpRangeMapRange = bpRange.flatMap(new Function<Integer, Publisher<Integer>>() {
+        bpRangeMapRange = bpRange.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.range(v, 2);
             }
         });
-        nbpRangeMapRange = nbpRange.flatMap(new Function<Integer, Observable<Integer>>() {
+        nbpRangeMapRange = nbpRange.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         });
 
         singleJust = Single.just(1);
-        singleJustMapJust = singleJust.flatMap(new Function<Integer, Single<Integer>>() {
+        singleJustMapJust = singleJust.flatMap(new Function1<Integer, Single<Integer>>() {
             @Override
-            public Single<Integer> apply(Integer v) {
+            public Single<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         });

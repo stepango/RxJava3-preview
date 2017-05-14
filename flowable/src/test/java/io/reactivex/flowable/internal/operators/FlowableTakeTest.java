@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -85,9 +84,9 @@ public class FlowableTakeTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         }).blockingSingle();
@@ -96,9 +95,9 @@ public class FlowableTakeTest {
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
         Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3))
-                .take(2).map(new Function<Integer, Integer>() {
+                .take(2).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -112,9 +111,9 @@ public class FlowableTakeTest {
 
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
-        Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function<Integer, Integer>() {
+        Flowable<Integer> w = Flowable.fromIterable(Arrays.asList(1, 2, 3)).take(1).map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -488,9 +487,9 @@ public class FlowableTakeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.take(2);
             }
         });

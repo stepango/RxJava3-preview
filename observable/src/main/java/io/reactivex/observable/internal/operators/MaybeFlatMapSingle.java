@@ -18,10 +18,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps the success value of the source MaybeSource into a Single.
@@ -32,9 +36,9 @@ public final class MaybeFlatMapSingle<T, R> extends Single<R> {
 
     final MaybeSource<T> source;
 
-    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+    final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
-    public MaybeFlatMapSingle(MaybeSource<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public MaybeFlatMapSingle(MaybeSource<T> source, Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -52,9 +56,9 @@ public final class MaybeFlatMapSingle<T, R> extends Single<R> {
 
         final SingleObserver<? super R> actual;
 
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+        final Function1<? super T, ? extends SingleSource<? extends R>> mapper;
 
-        FlatMapMaybeObserver(SingleObserver<? super R> actual, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        FlatMapMaybeObserver(SingleObserver<? super R> actual, Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -81,7 +85,7 @@ public final class MaybeFlatMapSingle<T, R> extends Single<R> {
             SingleSource<? extends R> ss;
 
             try {
-                ss = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null SingleSource");
+                ss = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onError(ex);

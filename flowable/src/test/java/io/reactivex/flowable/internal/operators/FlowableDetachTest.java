@@ -15,16 +15,19 @@
  */
 package io.reactivex.flowable.internal.operators;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 
 public class FlowableDetachTest {
@@ -167,9 +170,9 @@ public class FlowableDetachTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.onTerminateDetach();
             }
         });

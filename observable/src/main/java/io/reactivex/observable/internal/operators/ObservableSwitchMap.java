@@ -13,26 +13,29 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstream<T, R> {
-    final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
+    final Function1<? super T, ? extends ObservableSource<? extends R>> mapper;
     final int bufferSize;
 
     final boolean delayErrors;
 
     public ObservableSwitchMap(ObservableSource<T> source,
-                               Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
-                                       boolean delayErrors) {
+                               Function1<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
+                               boolean delayErrors) {
         super(source);
         this.mapper = mapper;
         this.bufferSize = bufferSize;
@@ -53,7 +56,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         private static final long serialVersionUID = -3491074160481096299L;
         final Observer<? super R> actual;
-        final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
+        final Function1<? super T, ? extends ObservableSource<? extends R>> mapper;
         final int bufferSize;
 
         final boolean delayErrors;
@@ -77,8 +80,8 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         volatile long unique;
 
         SwitchMapObserver(Observer<? super R> actual,
-                Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
-                        boolean delayErrors) {
+                          Function1<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
+                          boolean delayErrors) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
@@ -106,7 +109,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
             ObservableSource<? extends R> p;
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The ObservableSource returned is null");
+                p = ObjectHelper.requireNonNull(mapper.invoke(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();

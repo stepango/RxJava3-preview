@@ -16,18 +16,20 @@ package io.reactivex.observable.internal.operators;
 import java.util.Arrays;
 
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.operators.MaybeZipArray.ZipCoordinator;
+import kotlin.jvm.functions.Function1;
 
 public final class MaybeZipIterable<T, R> extends Maybe<R> {
 
     final Iterable<? extends MaybeSource<? extends T>> sources;
 
-    final Function<? super Object[], ? extends R> zipper;
+    final Function1<? super Object[], ? extends R> zipper;
 
-    public MaybeZipIterable(Iterable<? extends MaybeSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+    public MaybeZipIterable(Iterable<? extends MaybeSource<? extends T>> sources, Function1<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }
@@ -78,10 +80,10 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
         }
     }
 
-    final class SingletonArrayFunc implements Function<T, R> {
+    final class SingletonArrayFunc implements Function1<T, R> {
         @Override
-        public R apply(T t) throws Exception {
-            return zipper.apply(new Object[] { t });
+        public R invoke(T t) {
+            return zipper.invoke(new Object[]{t});
         }
     }
 }

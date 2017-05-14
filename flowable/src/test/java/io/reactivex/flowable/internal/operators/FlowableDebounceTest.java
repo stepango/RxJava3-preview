@@ -13,25 +13,38 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableDebounceTest {
 
@@ -159,10 +172,10 @@ public class FlowableDebounceTest {
     public void debounceSelectorNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> debouncer = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> debounceSel = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return debouncer;
             }
         };
@@ -195,10 +208,10 @@ public class FlowableDebounceTest {
     @Test
     public void debounceSelectorFuncThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> debounceSel = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -217,10 +230,10 @@ public class FlowableDebounceTest {
     @Test
     public void debounceSelectorFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> debounceSel = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.error(new TestException());
             }
         };
@@ -257,10 +270,10 @@ public class FlowableDebounceTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> debouncer = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> debounceSel = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return debouncer;
             }
         };
@@ -357,24 +370,24 @@ public class FlowableDebounceTest {
 
     @Test
     public void badSourceSelector() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.debounce(new Function<Integer, Flowable<Long>>() {
+            public Object invoke(Flowable<Integer> o) {
+                return o.debounce(new Function1<Integer, Flowable<Long>>() {
                     @Override
-                    public Flowable<Long> apply(Integer v) throws Exception {
+                    public Flowable<Long> invoke(Integer v) {
                         return Flowable.timer(1, TimeUnit.SECONDS);
                     }
                 });
             }
         }, false, 1, 1, 1);
 
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(final Flowable<Integer> o) throws Exception {
-                return Flowable.just(1).debounce(new Function<Integer, Flowable<Integer>>() {
+            public Object invoke(final Flowable<Integer> o) {
+                return Flowable.just(1).debounce(new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
+                    public Flowable<Integer> invoke(Integer v) {
                         return o;
                     }
                 });

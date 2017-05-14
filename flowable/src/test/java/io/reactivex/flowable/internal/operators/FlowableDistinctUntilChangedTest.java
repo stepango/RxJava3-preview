@@ -28,7 +28,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -54,9 +53,9 @@ public class FlowableDistinctUntilChangedTest {
     Subscriber<String> w2;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
+    final Function1<String, String> TO_UPPER_WITH_EXCEPTION = new Function1<String, String>() {
         @Override
-        public String apply(String s) {
+        public String invoke(String s) {
             if (s.equals("x")) {
                 return "xx";
             }
@@ -223,9 +222,9 @@ public class FlowableDistinctUntilChangedTest {
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
 
-    private static final Function<String, String> THROWS_NON_FATAL = new Function<String, String>() {
+    private static final Function1<String, String> THROWS_NON_FATAL = new Function1<String, String>() {
         @Override
-        public String apply(String s) {
+        public String invoke(String s) {
             throw new RuntimeException();
         }
     };
@@ -368,9 +367,9 @@ public class FlowableDistinctUntilChangedTest {
 
         PublishProcessor<Mutable> pp = PublishProcessor.create();
 
-        TestSubscriber<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
+        TestSubscriber<Mutable> ts = pp.distinctUntilChanged(new Function1<Mutable, Object>() {
             @Override
-            public Object apply(Mutable m) throws Exception {
+            public Object invoke(Mutable m) {
                 return m.value;
             }
         })
@@ -493,9 +492,9 @@ public class FlowableDistinctUntilChangedTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return f.distinctUntilChanged().filter(Functions.alwaysTrue());
             }
         }, false, 1, 1, 1);

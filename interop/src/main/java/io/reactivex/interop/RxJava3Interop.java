@@ -33,7 +33,6 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ArrayListSupplier;
@@ -302,14 +301,14 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> flatMapSingle(Flowable<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+    public static <T, R> Flowable<R> flatMapSingle(Flowable<T> source, Function1<? super T, ? extends SingleSource<? extends R>> mapper) {
         return flatMapSingle(source, mapper, false, Flowable.bufferSize());
     }
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> flatMapSingle(Flowable<T> source,
-            Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayError, int maxConcurrency) {
+                                                   Function1<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayError, int maxConcurrency) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
@@ -319,7 +318,7 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> flatMapMaybe(Flowable<T> source,
-            Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+                                                  Function1<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return flatMapMaybe(source, mapper, false, Flowable.bufferSize());
@@ -328,7 +327,7 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> flatMapMaybe(Flowable<T> source,
-            Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayError, int maxConcurrency) {
+                                                  Function1<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayError, int maxConcurrency) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
@@ -338,14 +337,14 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable flatMapCompletable(Flowable<T> source,
-            Function<? super T, ? extends CompletableSource> mapper) {
+                                                     Function1<? super T, ? extends CompletableSource> mapper) {
         return flatMapCompletable(source, mapper, false, Flowable.bufferSize());
     }
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Completable flatMapCompletable(Flowable<T> source,
-            Function<? super T, ? extends CompletableSource> mapper, boolean delayError, int prefetch) {
+                                                     Function1<? super T, ? extends CompletableSource> mapper, boolean delayError, int prefetch) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -354,20 +353,20 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> flatMapPublisher(Single<T> source, Function<? super T, ? extends Publisher<? extends R>> mapper) {
+    public static <T, R> Flowable<R> flatMapPublisher(Single<T> source, Function1<? super T, ? extends Publisher<? extends R>> mapper) {
         return toFlowable(source).flatMap(mapper);
     }
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Flowable<R> flatMapPublisher(Maybe<T> source, Function<? super T, ? extends Publisher<? extends R>> mapper) {
+    public static <T, R> Flowable<R> flatMapPublisher(Maybe<T> source, Function1<? super T, ? extends Publisher<? extends R>> mapper) {
         return toFlowable(source).flatMap(mapper);
     }
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> flattenAsFlowable(Single<T> source,
-            Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                                       Function1<? super T, ? extends Iterable<? extends R>> mapper) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaFlowablePlugins.onAssembly(new SingleFlatMapIterableFlowable<T, R>(source, mapper));
@@ -376,7 +375,7 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> flattenAsFlowable(Maybe<T> source,
-            Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                                       Function1<? super T, ? extends Iterable<? extends R>> mapper) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaFlowablePlugins.onAssembly(new MaybeFlatMapIterableFlowable<T, R>(source, mapper));
@@ -636,7 +635,7 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, K> Single<Map<K, T>> toMap(Flowable<T> source, final Function<? super T, ? extends K> keySelector) {
+    public static <T, K> Single<Map<K, T>> toMap(Flowable<T> source, final Function1<? super T, ? extends K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         return collect(source, HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
     }
@@ -672,7 +671,7 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, K, V> Single<Map<K, V>> toMap(Flowable<T> source, final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
+    public static <T, K, V> Single<Map<K, V>> toMap(Flowable<T> source, final Function1<? super T, ? extends K> keySelector, final Function1<? super T, ? extends V> valueSelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         return collect(source, HashMapSupplier.<K, V>asCallable(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
@@ -709,9 +708,9 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, K, V> Single<Map<K, V>> toMap(Flowable<T> source, final Function<? super T, ? extends K> keySelector,
-            final Function<? super T, ? extends V> valueSelector,
-            final Callable<? extends Map<K, V>> mapSupplier) {
+    public static <T, K, V> Single<Map<K, V>> toMap(Flowable<T> source, final Function1<? super T, ? extends K> keySelector,
+                                                    final Function1<? super T, ? extends V> valueSelector,
+                                                    final Callable<? extends Map<K, V>> mapSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         return (Single<Map<K, V>>)collect(source, mapSupplier, Functions.toMapKeyValueSelector(keySelector, valueSelector));
@@ -741,10 +740,10 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, K> Single<Map<K, Collection<T>>> toMultimap(Flowable<T> source, Function<? super T, ? extends K> keySelector) {
-        Function<T, T> valueSelector = Functions.identity();
+    public static <T, K> Single<Map<K, Collection<T>>> toMultimap(Flowable<T> source, Function1<? super T, ? extends K> keySelector) {
+        Function1<T, T> valueSelector = Functions.identity();
         Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
-        Function<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
+        Function1<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(source, keySelector, valueSelector, mapSupplier, collectionFactory);
     }
 
@@ -777,9 +776,9 @@ public final class RxJava3Interop {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, K, V> Single<Map<K, Collection<V>>> toMultimap(Flowable<T> source, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
+    public static <T, K, V> Single<Map<K, Collection<V>>> toMultimap(Flowable<T> source, Function1<? super T, ? extends K> keySelector, Function1<? super T, ? extends V> valueSelector) {
         Callable<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asCallable();
-        Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
+        Function1<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(source, keySelector, valueSelector, mapSupplier, collectionFactory);
     }
 
@@ -819,10 +818,10 @@ public final class RxJava3Interop {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, K, V> Single<Map<K, Collection<V>>> toMultimap(
             Flowable<T> source,
-            final Function<? super T, ? extends K> keySelector,
-            final Function<? super T, ? extends V> valueSelector,
+            final Function1<? super T, ? extends K> keySelector,
+            final Function1<? super T, ? extends V> valueSelector,
             final Callable<? extends Map<K, Collection<V>>> mapSupplier,
-            final Function<? super K, ? extends Collection<? super V>> collectionFactory) {
+            final Function1<? super K, ? extends Collection<? super V>> collectionFactory) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         ObjectHelper.requireNonNull(mapSupplier, "mapSupplier is null");
@@ -863,8 +862,8 @@ public final class RxJava3Interop {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, K, V> Single<Map<K, Collection<V>>> toMultimap(
             Flowable<T> source,
-            Function<? super T, ? extends K> keySelector,
-            Function<? super T, ? extends V> valueSelector,
+            Function1<? super T, ? extends K> keySelector,
+            Function1<? super T, ? extends V> valueSelector,
             Callable<Map<K, Collection<V>>> mapSupplier
             ) {
         return toMultimap(source, keySelector, valueSelector, mapSupplier, ArrayListSupplier.<V, K>asFunction());
@@ -1074,7 +1073,7 @@ public final class RxJava3Interop {
     @SuppressWarnings("unchecked")
     @Experimental
     @NonNull
-    public static <S extends Scheduler & Disposable> S when(Scheduler scheduler, @NonNull Function<Flowable<Flowable<Completable>>, Completable> combine) {
+    public static <S extends Scheduler & Disposable> S when(Scheduler scheduler, @NonNull Function1<Flowable<Flowable<Completable>>, Completable> combine) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(combine, "combine is null");
         return (S) new SchedulerWhen(combine, scheduler);
@@ -1171,7 +1170,7 @@ public final class RxJava3Interop {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> concatMaybeIterableDelayError(Iterable<? extends MaybeSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return Flowable.fromIterable(sources).concatMapDelayError((Function)MaybeToPublisher.instance());
+        return Flowable.fromIterable(sources).concatMapDelayError((Function1) MaybeToPublisher.instance());
     }
 
     @CheckReturnValue

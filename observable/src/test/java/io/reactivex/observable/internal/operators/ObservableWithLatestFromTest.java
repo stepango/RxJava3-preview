@@ -13,24 +13,37 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
+import io.reactivex.common.functions.Function3;
+import io.reactivex.common.functions.Function4;
+import io.reactivex.common.functions.Function5;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ObservableWithLatestFromTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
@@ -260,9 +273,9 @@ public class ObservableWithLatestFromTest {
     }
 
 
-    static final Function<Object[], String> toArray = new Function<Object[], String>() {
+    static final Function1<Object[], String> toArray = new Function1<Object[], String>() {
         @Override
-        public String apply(Object[] args) {
+        public String invoke(Object[] args) {
             return Arrays.toString(args);
         }
     };
@@ -566,14 +579,14 @@ public class ObservableWithLatestFromTest {
     @Test
     public void manyIteratorThrows() {
         Observable.just(1)
-        .withLatestFrom(new CrashingMappedIterable<Observable<Integer>>(1, 100, 100, new Function<Integer, Observable<Integer>>() {
+                .withLatestFrom(new CrashingMappedIterable<Observable<Integer>>(1, 100, 100, new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(2);
             }
-        }), new Function<Object[], Object>() {
+                }), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) throws Exception {
+            public Object invoke(Object[] a) {
                 return a;
             }
         })
@@ -638,9 +651,9 @@ public class ObservableWithLatestFromTest {
     @Test
     public void combineToNull2() {
         Observable.just(1)
-        .withLatestFrom(Arrays.asList(Observable.just(2), Observable.just(3)), new Function<Object[], Object>() {
+                .withLatestFrom(Arrays.asList(Observable.just(2), Observable.just(3)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] o) throws Exception {
+            public Object invoke(Object[] o) {
                 return null;
             }
         })

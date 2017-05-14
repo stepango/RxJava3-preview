@@ -20,12 +20,12 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,9 +61,9 @@ public class SingleDoFinallyTest implements Function0 {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, Single<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function1<Single<Object>, Single<Object>>() {
             @Override
-            public Single<Object> apply(Single<Object> f) throws Exception {
+            public Single<Object> invoke(Single<Object> f) {
                 return f.doFinally(SingleDoFinallyTest.this);
             }
         });

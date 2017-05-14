@@ -13,31 +13,43 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ObservableFlatMapSingleTest {
 
     @Test
     public void normal() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         })
@@ -48,9 +60,9 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void normalDelayError() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         }, true)
@@ -61,9 +73,9 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void normalAsync() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v).subscribeOn(Schedulers.computation());
             }
         })
@@ -80,9 +92,9 @@ public class ObservableFlatMapSingleTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -102,9 +114,9 @@ public class ObservableFlatMapSingleTest {
         PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = ps
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return null;
             }
         })
@@ -122,9 +134,9 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void normalDelayErrorAll() {
         TestObserver<Integer> to = Observable.range(1, 10).concatWith(Observable.<Integer>error(new TestException()))
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.error(new TestException());
             }
         }, true)
@@ -141,9 +153,9 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void takeAsync() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v).subscribeOn(Schedulers.computation());
             }
         })
@@ -160,9 +172,9 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void take() {
         Observable.range(1, 10)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         })
@@ -173,9 +185,9 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void middleError() {
-        Observable.fromArray(new String[]{"1","a","2"}).flatMapSingle(new Function<String, SingleSource<Integer>>() {
+        Observable.fromArray(new String[]{"1", "a", "2"}).flatMapSingle(new Function1<String, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(final String s) throws NumberFormatException {
+            public SingleSource<Integer> invoke(final String s) {
                 //return Single.just(Integer.valueOf(s)); //This works
                 return Single.fromCallable(new Callable<Integer>() {
                     @Override
@@ -192,9 +204,9 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void asyncFlatten() {
         Observable.range(1, 1000)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(1).subscribeOn(Schedulers.computation());
             }
         })
@@ -212,9 +224,9 @@ public class ObservableFlatMapSingleTest {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = Observable.range(1, 2)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 if (v == 2) {
                     return ps.singleOrError();
                 }
@@ -232,9 +244,9 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.<Integer>just(1);
             }
         }));
@@ -256,9 +268,9 @@ public class ObservableFlatMapSingleTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Object> f) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Object> f) {
                 return f.flatMapSingle(Functions.justFunction(Single.just(2)));
             }
         });
@@ -325,9 +337,9 @@ public class ObservableFlatMapSingleTest {
         };
 
         Observable.just(ps1, ps2)
-                .flatMapSingle(new Function<PublishSubject<Integer>, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<PublishSubject<Integer>, SingleSource<Integer>>() {
                     @Override
-                    public SingleSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
+                    public SingleSource<Integer> invoke(PublishSubject<Integer> v) {
                         return v.singleOrError();
                     }
                 })
@@ -343,9 +355,9 @@ public class ObservableFlatMapSingleTest {
     public void disposeInner() {
         final TestObserver<Object> to = new TestObserver<Object>();
 
-        Observable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
+        Observable.just(1).flatMapSingle(new Function1<Integer, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Integer v) throws Exception {
+            public SingleSource<Object> invoke(Integer v) {
                 return new Single<Object>() {
                     @Override
                     protected void subscribeActual(SingleObserver<? super Object> observer) {

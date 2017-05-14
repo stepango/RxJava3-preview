@@ -13,30 +13,38 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.*;
-
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.GroupedFlowable;
 import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream<T, GroupedFlowable<K, V>> {
-    final Function<? super T, ? extends K> keySelector;
-    final Function<? super T, ? extends V> valueSelector;
+    final Function1<? super T, ? extends K> keySelector;
+    final Function1<? super T, ? extends V> valueSelector;
     final int bufferSize;
     final boolean delayError;
 
-    public FlowableGroupBy(Flowable<T> source, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+    public FlowableGroupBy(Flowable<T> source, Function1<? super T, ? extends K> keySelector, Function1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
         super(source);
         this.keySelector = keySelector;
         this.valueSelector = valueSelector;
@@ -56,8 +64,8 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         private static final long serialVersionUID = -3688291656102519502L;
 
         final Subscriber<? super GroupedFlowable<K, V>> actual;
-        final Function<? super T, ? extends K> keySelector;
-        final Function<? super T, ? extends V> valueSelector;
+        final Function1<? super T, ? extends K> keySelector;
+        final Function1<? super T, ? extends V> valueSelector;
         final int bufferSize;
         final boolean delayError;
         final Map<Object, GroupedUnicast<K, V>> groups;
@@ -78,7 +86,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         boolean outputFused;
 
-        public GroupBySubscriber(Subscriber<? super GroupedFlowable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+        public GroupBySubscriber(Subscriber<? super GroupedFlowable<K, V>> actual, Function1<? super T, ? extends K> keySelector, Function1<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
@@ -107,7 +115,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
             K key;
             try {
-                key = keySelector.apply(t);
+                key = keySelector.invoke(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();
@@ -135,7 +143,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The valueSelector returned null");
+                v = ObjectHelper.requireNonNull(valueSelector.invoke(t), "The valueSelector returned null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

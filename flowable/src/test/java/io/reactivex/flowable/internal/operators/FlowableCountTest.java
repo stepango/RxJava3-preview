@@ -13,10 +13,12 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableCountTest {
     @Test
@@ -49,9 +51,9 @@ public class FlowableCountTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Long>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Long>>() {
             @Override
-            public Flowable<Long> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Long> invoke(Flowable<Object> o) {
                 return o.count();
             }
         });

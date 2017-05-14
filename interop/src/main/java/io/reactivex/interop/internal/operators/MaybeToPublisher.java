@@ -15,22 +15,22 @@ package io.reactivex.interop.internal.operators;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Helper function to merge/concat values of each MaybeSource provided by a Publisher.
  */
-public enum MaybeToPublisher implements Function<MaybeSource<Object>, Publisher<Object>> {
+public enum MaybeToPublisher implements Function1<MaybeSource<Object>, Publisher<Object>> {
     INSTANCE;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<MaybeSource<T>, Publisher<T>> instance() {
-        return (Function)INSTANCE;
+    public static <T> Function1<MaybeSource<T>, Publisher<T>> instance() {
+        return (Function1) INSTANCE;
     }
 
     @Override
-    public Publisher<Object> apply(MaybeSource<Object> t) throws Exception {
+    public Publisher<Object> invoke(MaybeSource<Object> t) {
         return new MaybeToFlowable<Object>(t);
     }
 }

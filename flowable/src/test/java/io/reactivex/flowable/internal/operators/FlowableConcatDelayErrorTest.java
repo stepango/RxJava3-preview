@@ -13,17 +13,20 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableConcatDelayErrorTest {
 
@@ -33,9 +36,9 @@ public class FlowableConcatDelayErrorTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+        source.concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.range(v, 2);
             }
         }).subscribe(ts);
@@ -55,9 +58,9 @@ public class FlowableConcatDelayErrorTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        source.concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+        source.concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.range(v, 2);
             }
         }).subscribe(ts);
@@ -78,9 +81,9 @@ public class FlowableConcatDelayErrorTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.range(1, 3).concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+        Flowable.range(1, 3).concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return inner;
             }
         }).subscribe(ts);
@@ -98,9 +101,9 @@ public class FlowableConcatDelayErrorTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return inner;
             }
         }).subscribe(ts);
@@ -116,9 +119,9 @@ public class FlowableConcatDelayErrorTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return null;
             }
         }).subscribe(ts);
@@ -134,9 +137,9 @@ public class FlowableConcatDelayErrorTest {
 
         Flowable.just(1)
         .hide() // prevent scalar optimization
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 throw new TestException();
             }
         }).subscribe(ts);
@@ -151,9 +154,9 @@ public class FlowableConcatDelayErrorTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return v == 2 ? Flowable.<Integer>empty() : Flowable.range(1, 2);
             }
         }).subscribe(ts);
@@ -168,9 +171,9 @@ public class FlowableConcatDelayErrorTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 3)
-        .concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return v == 2 ? Flowable.just(3) : Flowable.range(1, 2);
             }
         }).subscribe(ts);
@@ -184,9 +187,9 @@ public class FlowableConcatDelayErrorTest {
     public void backpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        Flowable.range(1, 3).concatMapDelayError(new Function<Integer, Flowable<Integer>>() {
+        Flowable.range(1, 3).concatMapDelayError(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.range(v, 2);
             }
         }).subscribe(ts);

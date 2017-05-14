@@ -13,18 +13,25 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeDelayOtherTest {
 
@@ -205,9 +212,9 @@ public class MaybeDelayOtherTest {
 
     @Test
     public void withCompletableDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function1<Completable, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Completable c) throws Exception {
+            public MaybeSource<Integer> invoke(Completable c) {
                 return c.andThen(Maybe.just(1));
             }
         });

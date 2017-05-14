@@ -14,11 +14,12 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.operators.FlowableMap.MapSubscriber;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Map working with an arbitrary Publisher source.
@@ -31,8 +32,9 @@ public final class FlowableMapPublisher<T, U> extends Flowable<U> {
 
     final Publisher<T> source;
 
-    final Function<? super T, ? extends U> mapper;
-    public FlowableMapPublisher(Publisher<T> source, Function<? super T, ? extends U> mapper) {
+    final Function1<? super T, ? extends U> mapper;
+
+    public FlowableMapPublisher(Publisher<T> source, Function1<? super T, ? extends U> mapper) {
         this.source = source;
         this.mapper = mapper;
     }

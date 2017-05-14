@@ -32,7 +32,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -98,9 +97,9 @@ public class FlowableUsingTest {
             }
         };
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
+        Function1<Resource, Flowable<String>> observableFactory = new Function1<Resource, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(Resource res) {
+            public Flowable<String> invoke(Resource res) {
                 return Flowable.fromArray(res.getTextFromWeb().split(" "));
             }
         };
@@ -158,9 +157,9 @@ public class FlowableUsingTest {
             }
         };
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
+        Function1<Resource, Flowable<String>> observableFactory = new Function1<Resource, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(Resource res) {
+            public Flowable<String> invoke(Resource res) {
                     return Flowable.fromArray(res.getTextFromWeb().split(" "));
             }
         };
@@ -202,9 +201,9 @@ public class FlowableUsingTest {
             }
         };
 
-        Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
+        Function1<Disposable, Flowable<Integer>> observableFactory = new Function1<Disposable, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Disposable s) {
+            public Flowable<Integer> invoke(Disposable s) {
                 return Flowable.empty();
             }
         };
@@ -232,9 +231,9 @@ public class FlowableUsingTest {
             }
         };
 
-        Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
+        Function1<Disposable, Flowable<Integer>> observableFactory = new Function1<Disposable, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Disposable subscription) {
+            public Flowable<Integer> invoke(Disposable subscription) {
                 throw new TestException();
             }
         };
@@ -270,9 +269,9 @@ public class FlowableUsingTest {
             }
         };
 
-        Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
+        Function1<Disposable, Flowable<Integer>> observableFactory = new Function1<Disposable, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Disposable subscription) {
+            public Flowable<Integer> invoke(Disposable subscription) {
                 return Flowable.unsafeCreate(new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> t1) {
@@ -302,9 +301,9 @@ public class FlowableUsingTest {
         final Function0 completion = createOnCompletedAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
+        Function1<Resource, Flowable<String>> observableFactory = new Function1<Resource, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(Resource resource) {
+            public Flowable<String> invoke(Resource resource) {
                 return Flowable.fromArray(resource.getTextFromWeb().split(" "));
             }
         };
@@ -329,9 +328,9 @@ public class FlowableUsingTest {
         final Function0 completion = createOnCompletedAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
+        Function1<Resource, Flowable<String>> observableFactory = new Function1<Resource, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(Resource resource) {
+            public Flowable<String> invoke(Resource resource) {
                 return Flowable.fromArray(resource.getTextFromWeb().split(" "));
             }
         };
@@ -358,9 +357,9 @@ public class FlowableUsingTest {
         final Function1<Throwable, kotlin.Unit> onError = createOnErrorAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
+        Function1<Resource, Flowable<String>> observableFactory = new Function1<Resource, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(Resource resource) {
+            public Flowable<String> invoke(Resource resource) {
                 return Flowable.fromArray(resource.getTextFromWeb().split(" "))
                         .concatWith(Flowable.<String>error(new RuntimeException()));
             }
@@ -386,9 +385,9 @@ public class FlowableUsingTest {
         final Function1<Throwable, kotlin.Unit> onError = createOnErrorAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
+        Function1<Resource, Flowable<String>> observableFactory = new Function1<Resource, Flowable<String>>() {
             @Override
-            public Flowable<String> apply(Resource resource) {
+            public Flowable<String> invoke(Resource resource) {
                 return Flowable.fromArray(resource.getTextFromWeb().split(" "))
                         .concatWith(Flowable.<String>error(new RuntimeException()));
             }
@@ -470,9 +469,9 @@ public class FlowableUsingTest {
                         return 1;
                     }
                 },
-                new Function<Integer, Flowable<Integer>>() {
+                new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) {
+                    public Flowable<Integer> invoke(Integer v) {
                         throw new TestException("forced failure");
                     }
                 },
@@ -505,9 +504,9 @@ public class FlowableUsingTest {
                         return 1;
                     }
                 },
-                new Function<Integer, Flowable<Integer>>() {
+                new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) {
+                    public Flowable<Integer> invoke(Integer v) {
                         return Flowable.just(v);
                     }
                 },
@@ -537,9 +536,9 @@ public class FlowableUsingTest {
                         return 1;
                     }
                 },
-                new Function<Object, Flowable<Object>>() {
+                new Function1<Object, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Object v) throws Exception {
+                    public Flowable<Object> invoke(Object v) {
                         return Flowable.never();
                     }
                 },
@@ -554,9 +553,9 @@ public class FlowableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, Flowable<Object>>() {
+        }, new Function1<Object, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Object v) throws Exception {
+            public Flowable<Object> invoke(Object v) {
                 throw new TestException("First");
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -581,9 +580,9 @@ public class FlowableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, Flowable<Object>>() {
+        }, new Function1<Object, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Object v) throws Exception {
+            public Flowable<Object> invoke(Object v) {
                 return Flowable.error(new TestException("First"));
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -608,9 +607,9 @@ public class FlowableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, Flowable<Object>>() {
+        }, new Function1<Object, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Object v) throws Exception {
+            public Flowable<Object> invoke(Object v) {
                 return Flowable.empty();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -632,9 +631,9 @@ public class FlowableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, Flowable<Object>>() {
+            }, new Function1<Object, Flowable<Object>>() {
                 @Override
-                public Flowable<Object> apply(Object v) throws Exception {
+                public Flowable<Object> invoke(Object v) {
                     return Flowable.empty();
                 }
             }, new Function1<Object, kotlin.Unit>() {

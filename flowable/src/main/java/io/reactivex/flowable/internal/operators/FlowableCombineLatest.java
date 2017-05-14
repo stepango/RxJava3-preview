@@ -13,23 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.Iterator;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.annotations.*;
+import io.reactivex.common.annotations.NonNull;
+import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.operators.FlowableMap.MapSubscriber;
 import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.BasicIntFusedQueueSubscription;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Combines the latest values from multiple sources through a function.
@@ -46,15 +52,15 @@ extends Flowable<R> {
     @Nullable
     final Iterable<? extends Publisher<? extends T>> iterable;
 
-    final Function<? super Object[], ? extends R> combiner;
+    final Function1<? super Object[], ? extends R> combiner;
 
     final int bufferSize;
 
     final boolean delayErrors;
 
     public FlowableCombineLatest(@NonNull Publisher<? extends T>[] array,
-                    @NonNull Function<? super Object[], ? extends R> combiner,
-                    int bufferSize, boolean delayErrors) {
+                                 @NonNull Function1<? super Object[], ? extends R> combiner,
+                                 int bufferSize, boolean delayErrors) {
         this.array = array;
         this.iterable = null;
         this.combiner = combiner;
@@ -63,8 +69,8 @@ extends Flowable<R> {
     }
 
     public FlowableCombineLatest(@NonNull Iterable<? extends Publisher<? extends T>> iterable,
-                    @NonNull Function<? super Object[], ? extends R> combiner,
-                    int bufferSize, boolean delayErrors) {
+                                 @NonNull Function1<? super Object[], ? extends R> combiner,
+                                 int bufferSize, boolean delayErrors) {
         this.array = null;
         this.iterable = iterable;
         this.combiner = combiner;
@@ -155,7 +161,7 @@ extends Flowable<R> {
 
         final Subscriber<? super R> actual;
 
-        final Function<? super Object[], ? extends R> combiner;
+        final Function1<? super Object[], ? extends R> combiner;
 
         final CombineLatestInnerSubscriber<T>[] subscribers;
 
@@ -180,8 +186,8 @@ extends Flowable<R> {
         final AtomicReference<Throwable> error;
 
         CombineLatestCoordinator(Subscriber<? super R> actual,
-                Function<? super Object[], ? extends R> combiner, int n,
-                int bufferSize, boolean delayErrors) {
+                                 Function1<? super Object[], ? extends R> combiner, int n,
+                                 int bufferSize, boolean delayErrors) {
             this.actual = actual;
             this.combiner = combiner;
             @SuppressWarnings("unchecked")
@@ -363,7 +369,7 @@ extends Flowable<R> {
                     R w;
 
                     try {
-                        w = ObjectHelper.requireNonNull(combiner.apply(va), "The combiner returned a null value");
+                        w = ObjectHelper.requireNonNull(combiner.invoke(va), "The combiner returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
 
@@ -476,7 +482,7 @@ extends Flowable<R> {
                 return null;
             }
             T[] a = (T[])queue.poll();
-            R r = combiner.apply(a);
+            R r = combiner.invoke(a);
             ((CombineLatestInnerSubscriber<T>)e).requestOne();
             return r;
         }
@@ -555,10 +561,10 @@ extends Flowable<R> {
         }
     }
 
-    final class SingletonArrayFunc implements Function<T, R> {
+    final class SingletonArrayFunc implements Function1<T, R> {
         @Override
-        public R apply(T t) throws Exception {
-            return combiner.apply(new Object[] { t });
+        public R invoke(T t) {
+            return combiner.invoke(new Object[]{t});
         }
     }
 }

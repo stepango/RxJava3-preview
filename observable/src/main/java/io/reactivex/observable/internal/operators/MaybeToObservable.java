@@ -14,11 +14,14 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.extensions.HasUpstreamMaybeSource;
 import io.reactivex.observable.internal.observers.DeferredScalarDisposable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Wraps a MaybeSource and exposes it as an Observable, relaying signals in a backpressure-aware manner
@@ -88,15 +91,15 @@ implements HasUpstreamMaybeSource<T> {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Function<MaybeSource<T>, Observable<T>> instance() {
-        return (Function)MaybeToObservableConverter.INSTANCE;
+    public static <T> Function1<MaybeSource<T>, Observable<T>> instance() {
+        return (Function1) MaybeToObservableConverter.INSTANCE;
     }
 
-    public enum MaybeToObservableConverter implements Function<MaybeSource<Object>, Observable<Object>> {
+    public enum MaybeToObservableConverter implements Function1<MaybeSource<Object>, Observable<Object>> {
         INSTANCE;
 
         @Override
-        public Observable<Object> apply(MaybeSource<Object> t) {
+        public Observable<Object> invoke(MaybeSource<Object> t) {
             return new MaybeToObservable<Object>(t);
         }
     }

@@ -14,17 +14,19 @@
 package io.reactivex.observable.internal.operators;
 
 
+import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-
 import io.reactivex.common.Disposables;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.internal.operators.ObservableMapNotification.MapNotificationObserver;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableMapNotificationTest {
     @Test
@@ -32,15 +34,15 @@ public class ObservableMapNotificationTest {
         TestObserver<Object> ts = new TestObserver<Object>();
         Observable.just(1)
         .flatMap(
-                new Function<Integer, Observable<Object>>() {
+                new Function1<Integer, Observable<Object>>() {
                     @Override
-                    public Observable<Object> apply(Integer item) {
+                    public Observable<Object> invoke(Integer item) {
                         return Observable.just((Object)(item + 1));
                     }
                 },
-                new Function<Throwable, Observable<Object>>() {
+                new Function1<Throwable, Observable<Object>>() {
                     @Override
-                    public Observable<Object> apply(Throwable e) {
+                    public Observable<Object> invoke(Throwable e) {
                         return Observable.error(e);
                     }
                 },
@@ -76,9 +78,9 @@ public class ObservableMapNotificationTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Object> o) {
                 return o.flatMap(
                         Functions.justFunction(Observable.just(1)),
                         Functions.justFunction(Observable.just(2)),

@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -234,9 +233,9 @@ public class FlowableAnyTest {
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source =
-            RxJava3Interop.flatMapPublisher(RxJava3Interop.isEmpty(Flowable.just(1)), new Function<Boolean, Publisher<Integer>>() {
+                RxJava3Interop.flatMapPublisher(RxJava3Interop.isEmpty(Flowable.just(1)), new Function1<Boolean, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Boolean t1) {
+                public Publisher<Integer> invoke(Boolean t1) {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -305,9 +304,9 @@ public class FlowableAnyTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function1<Flowable<Object>, Single<Boolean>>() {
             @Override
-            public Single<Boolean> apply(Flowable<Object> o) throws Exception {
+            public Single<Boolean> invoke(Flowable<Object> o) {
                 return RxJava3Interop.any(o, Functions.alwaysTrue());
             }
         });

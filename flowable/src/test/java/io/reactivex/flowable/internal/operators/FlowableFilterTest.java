@@ -29,7 +29,6 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -402,9 +401,9 @@ public class FlowableFilterTest {
                     s.onComplete();
                 }
             })
-            .map(new Function<Integer, Integer>() {
+                    .map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer v) throws Exception {
+                public Integer invoke(Integer v) {
                     throw new TestException();
                 }
             })
@@ -563,9 +562,9 @@ public class FlowableFilterTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.filter(Functions.alwaysTrue());
             }
         });

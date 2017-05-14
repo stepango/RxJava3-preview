@@ -13,23 +13,39 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.*;
-import org.mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.subscribers.*;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.flowable.ConnectableFlowable;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableTimerTest {
     @Mock
@@ -349,9 +365,9 @@ public class FlowableTimerTest {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
                 TestSubscriber<Long> ts = Flowable.timer(1, TimeUnit.MILLISECONDS, s)
-                .map(new Function<Long, Long>() {
+                        .map(new Function1<Long, Long>() {
                     @Override
-                    public Long apply(Long v) throws Exception {
+                    public Long invoke(Long v) {
                         try {
                         Thread.sleep(3000);
                         } catch (InterruptedException ex) {

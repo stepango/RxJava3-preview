@@ -16,8 +16,11 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class SingleFlatMapMaybeTest {
     @Test(expected = NullPointerException.class)
@@ -28,8 +31,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void flatMapMaybeValue() {
-        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override public MaybeSource<Integer> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> invoke(final Integer integer) {
                 if (integer == 1) {
                     return Maybe.just(2);
                 }
@@ -43,8 +47,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void flatMapMaybeValueDifferentType() {
-        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<String>>() {
-            @Override public MaybeSource<String> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<String>>() {
+            @Override
+            public MaybeSource<String> invoke(final Integer integer) {
                 if (integer == 1) {
                     return Maybe.just("2");
                 }
@@ -58,8 +63,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void flatMapMaybeValueNull() {
-        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override public MaybeSource<Integer> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> invoke(final Integer integer) {
                 return null;
             }
         })
@@ -71,8 +77,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void flatMapMaybeValueErrorThrown() {
-        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
-            @Override public MaybeSource<Integer> apply(final Integer integer) throws Exception {
+        Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> invoke(final Integer integer) {
                 throw new RuntimeException("something went terribly wrong!");
             }
         })
@@ -86,8 +93,9 @@ public class SingleFlatMapMaybeTest {
     public void flatMapMaybeError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Single.error(exception).flatMapMaybe(new Function<Object, MaybeSource<Object>>() {
-            @Override public MaybeSource<Object> apply(final Object integer) throws Exception {
+        Single.error(exception).flatMapMaybe(new Function1<Object, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> invoke(final Object integer) {
                 return Maybe.just(new Object());
             }
         })
@@ -97,9 +105,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        TestHelper.checkDisposed(Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(1);
             }
         }));
@@ -107,12 +115,12 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Integer>, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function1<Single<Integer>, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Single<Integer> v) throws Exception {
-                return v.flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            public MaybeSource<Integer> invoke(Single<Integer> v) {
+                return v.flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
                     @Override
-                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    public MaybeSource<Integer> invoke(Integer v) {
                         return Maybe.just(1);
                     }
                 });
@@ -122,9 +130,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void mapsToError() {
-        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.error(new TestException());
             }
         })
@@ -134,9 +142,9 @@ public class SingleFlatMapMaybeTest {
 
     @Test
     public void mapsToEmpty() {
-        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        Single.just(1).flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.empty();
             }
         })

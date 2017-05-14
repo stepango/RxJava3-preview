@@ -13,15 +13,25 @@
 
 package io.reactivex.interop;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
-
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Observable;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -47,16 +57,16 @@ public class FlattenCrossMapPerf {
 
         final Iterable<Integer> list = Arrays.asList(arrayInner);
 
-        flowable = Flowable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        flowable = Flowable.fromArray(array).flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return list;
             }
         });
 
-        observable = Observable.fromArray(array).flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        observable = Observable.fromArray(array).flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return list;
             }
         });

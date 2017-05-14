@@ -14,30 +14,33 @@
 package io.reactivex.observable.internal.operators;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableZip<T, R> extends Observable<R> {
 
     final ObservableSource<? extends T>[] sources;
     final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
-    final Function<? super Object[], ? extends R> zipper;
+    final Function1<? super Object[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
 
     public ObservableZip(ObservableSource<? extends T>[] sources,
-            Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
-            Function<? super Object[], ? extends R> zipper,
-            int bufferSize,
-            boolean delayError) {
+                         Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
+                         Function1<? super Object[], ? extends R> zipper,
+                         int bufferSize,
+                         boolean delayError) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
         this.zipper = zipper;
@@ -77,7 +80,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         private static final long serialVersionUID = 2983708048395377667L;
         final Observer<? super R> actual;
-        final Function<? super Object[], ? extends R> zipper;
+        final Function1<? super Object[], ? extends R> zipper;
         final ZipObserver<T, R>[] observers;
         final T[] row;
         final boolean delayError;
@@ -86,8 +89,8 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         @SuppressWarnings("unchecked")
         ZipCoordinator(Observer<? super R> actual,
-                Function<? super Object[], ? extends R> zipper,
-                int count, boolean delayError) {
+                       Function1<? super Object[], ? extends R> zipper,
+                       int count, boolean delayError) {
             this.actual = actual;
             this.zipper = zipper;
             this.observers = new ZipObserver[count];
@@ -195,7 +198,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
+                        v = ObjectHelper.requireNonNull(zipper.invoke(os.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancel();

@@ -24,7 +24,6 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -708,7 +707,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(Callable<R> resourceSupplier,
-                                        Function<? super R, ? extends CompletableSource> completableFunction,
+                                        Function1<? super R, ? extends CompletableSource> completableFunction,
                                         Function1<? super R, Unit> disposer) {
         return using(resourceSupplier, completableFunction, disposer, true);
     }
@@ -737,7 +736,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(
             final Callable<R> resourceSupplier,
-            final Function<? super R, ? extends CompletableSource> completableFunction,
+            final Function1<? super R, ? extends CompletableSource> completableFunction,
             final Function1<? super R, Unit> disposer,
             final boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
@@ -1347,7 +1346,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable onErrorResumeNext(final Function<? super Throwable, ? extends CompletableSource> errorMapper) {
+    public final Completable onErrorResumeNext(final Function1<? super Throwable, ? extends CompletableSource> errorMapper) {
         ObjectHelper.requireNonNull(errorMapper, "errorMapper is null");
         return RxJavaObservablePlugins.onAssembly(new CompletableResumeNext(this, errorMapper));
     }
@@ -1414,7 +1413,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable repeatWhen(Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
+    public final Completable repeatWhen(Function1<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         return fromObservable(toObservable().repeatWhen(handler));
     }
 
@@ -1499,7 +1498,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable retryWhen(Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
+    public final Completable retryWhen(Function1<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
         return fromObservable(toObservable().retryWhen(handler));
     }
 
@@ -1832,9 +1831,9 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> U to(Function<? super Completable, U> converter) {
+    public final <U> U to(Function1<? super Completable, U> converter) {
         try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
+            return ObjectHelper.requireNonNull(converter, "converter is null").invoke(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);

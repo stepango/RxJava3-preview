@@ -13,14 +13,24 @@
 
 package io.reactivex.interop;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
-
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -47,9 +57,9 @@ public class ObservableFlatMapPerf {
         Observable<Integer> outer = Observable.fromArray(mainArray);
         final Observable<Integer> inner = Observable.fromArray(innerArray);
 
-        source = outer.flatMap(new Function<Integer, Observable<Integer>>() {
+        source = outer.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t) {
+            public Observable<Integer> invoke(Integer t) {
                 return inner;
             }
         });

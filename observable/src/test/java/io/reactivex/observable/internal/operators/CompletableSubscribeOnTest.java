@@ -13,18 +13,23 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.TestScheduler;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertTrue;
 
 public class CompletableSubscribeOnTest {
 
@@ -55,9 +60,9 @@ public class CompletableSubscribeOnTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
+        TestHelper.checkDoubleOnSubscribeCompletable(new Function1<Completable, CompletableSource>() {
             @Override
-            public CompletableSource apply(Completable c) throws Exception {
+            public CompletableSource invoke(Completable c) {
                 return c.subscribeOn(Schedulers.single());
             }
         });

@@ -13,13 +13,15 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.HasUpstreamMaybeSource;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertSame;
 
 public class MaybeToCompletableTest {
 
@@ -46,9 +48,9 @@ public class MaybeToCompletableTest {
 
     @Test
     public void doubleSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(new Function<Maybe<Object>, CompletableSource>() {
+        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(new Function1<Maybe<Object>, CompletableSource>() {
             @Override
-            public CompletableSource apply(Maybe<Object> m) throws Exception {
+            public CompletableSource invoke(Maybe<Object> m) {
                 return m.ignoreElement();
             }
         });

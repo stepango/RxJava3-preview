@@ -29,7 +29,6 @@ import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -162,7 +161,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper) {
+    public final <R> ParallelFlowable<R> map(@NonNull Function1<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper");
         return RxJavaFlowablePlugins.onAssembly(new ParallelMap<T, R>(this, mapper));
     }
@@ -182,7 +181,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @Experimental
     @NonNull
-    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
+    public final <R> ParallelFlowable<R> map(@NonNull Function1<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
         ObjectHelper.requireNonNull(mapper, "mapper");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelMapTry<T, R>(this, mapper, errorHandler));
@@ -204,7 +203,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @Experimental
     @NonNull
-    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final <R> ParallelFlowable<R> map(@NonNull Function1<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(mapper, "mapper");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelMapTry<T, R>(this, mapper, errorHandler));
@@ -788,9 +787,9 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final <U> U to(@NonNull Function<? super ParallelFlowable<T>, U> converter) {
+    public final <U> U to(@NonNull Function1<? super ParallelFlowable<T>, U> converter) {
         try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
+            return ObjectHelper.requireNonNull(converter, "converter is null").invoke(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);
@@ -822,7 +821,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final <R> ParallelFlowable<R> flatMap(@NonNull Function<? super T, ? extends Publisher<? extends R>> mapper) {
+    public final <R> ParallelFlowable<R> flatMap(@NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper) {
         return flatMap(mapper, false, Integer.MAX_VALUE, Flowable.bufferSize());
     }
 
@@ -839,7 +838,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> flatMap(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayError) {
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper, boolean delayError) {
         return flatMap(mapper, delayError, Integer.MAX_VALUE, Flowable.bufferSize());
     }
 
@@ -858,7 +857,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> flatMap(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayError, int maxConcurrency) {
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper, boolean delayError, int maxConcurrency) {
         return flatMap(mapper, delayError, maxConcurrency, Flowable.bufferSize());
     }
 
@@ -877,7 +876,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> flatMap(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper,
             boolean delayError, int maxConcurrency, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
@@ -897,7 +896,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> concatMap(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper) {
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper) {
         return concatMap(mapper, 2);
     }
 
@@ -914,8 +913,8 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> concatMap(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
-                    int prefetch) {
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper,
+            int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaFlowablePlugins.onAssembly(new ParallelConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
@@ -935,8 +934,8 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> concatMapDelayError(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
-                    boolean tillTheEnd) {
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper,
+            boolean tillTheEnd) {
         return concatMapDelayError(mapper, 2, tillTheEnd);
     }
 
@@ -954,8 +953,8 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> ParallelFlowable<R> concatMapDelayError(
-            @NonNull Function<? super T, ? extends Publisher<? extends R>> mapper,
-                    int prefetch, boolean tillTheEnd) {
+            @NonNull Function1<? super T, ? extends Publisher<? extends R>> mapper,
+            int prefetch, boolean tillTheEnd) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaFlowablePlugins.onAssembly(new ParallelConcatMap<T, R>(

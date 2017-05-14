@@ -13,21 +13,25 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static org.junit.Assert.*;
-
-import static io.reactivex.interop.RxJava3Interop.*;
-import java.util.concurrent.TimeoutException;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.concurrent.TimeoutException;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.MaybeSubject;
+import kotlin.jvm.functions.Function1;
+
+import static io.reactivex.interop.RxJava3Interop.timeout;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeTimeoutPublisherTest {
 
@@ -226,9 +230,9 @@ public class MaybeTimeoutPublisherTest {
 
     @Test
     public void badSourceOther() {
-        io.reactivex.interop.TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        io.reactivex.interop.TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> f) throws Exception {
+            public Object invoke(Flowable<Integer> f) {
                 return timeout(Maybe.<Integer>never(), f, Maybe.just(1));
             }
         }, false, null, 1, 1);

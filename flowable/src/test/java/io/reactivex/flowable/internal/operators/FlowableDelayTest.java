@@ -32,7 +32,6 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -139,9 +138,9 @@ public class FlowableDelayTest {
     @Test
     public void testDelayWithError() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler)
-        .map(new Function<Long, Long>() {
+                .map(new Function1<Long, Long>() {
             @Override
-            public Long apply(Long value) {
+            public Long invoke(Long value) {
                 if (value == 1L) {
                     throw new RuntimeException("error!");
                 }
@@ -258,9 +257,9 @@ public class FlowableDelayTest {
             delays.add(delay);
         }
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delays.get(t1);
             }
         };
@@ -288,10 +287,10 @@ public class FlowableDelayTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -314,10 +313,10 @@ public class FlowableDelayTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -339,10 +338,10 @@ public class FlowableDelayTest {
     public void testDelayWithFlowableDelayFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -363,10 +362,10 @@ public class FlowableDelayTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -387,10 +386,10 @@ public class FlowableDelayTest {
     public void testDelayWithFlowableSubscriptionNormal() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -422,10 +421,10 @@ public class FlowableDelayTest {
                 throw new TestException();
             }
         };
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -456,10 +455,10 @@ public class FlowableDelayTest {
                 return delay;
             }
         };
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -484,10 +483,10 @@ public class FlowableDelayTest {
     public void testDelayWithFlowableEmptyDelayer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.empty();
             }
         };
@@ -516,10 +515,10 @@ public class FlowableDelayTest {
                 return sdelay;
             }
         };
-        Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> delayFunc = new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return delay;
             }
         };
@@ -547,9 +546,9 @@ public class FlowableDelayTest {
 
         final Flowable<Long> delayer = Flowable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
 
-        Function<Long, Flowable<Long>> delayFunc = new Function<Long, Flowable<Long>>() {
+        Function1<Long, Flowable<Long>> delayFunc = new Function1<Long, Flowable<Long>>() {
             @Override
-            public Flowable<Long> apply(Long t1) {
+            public Flowable<Long> invoke(Long t1) {
                 return delayer;
             }
         };
@@ -601,10 +600,10 @@ public class FlowableDelayTest {
             subjects.add(PublishProcessor.<Integer> create());
         }
 
-        Flowable<Integer> result = source.delay(new Function<Integer, Flowable<Integer>>() {
+        Flowable<Integer> result = source.delay(new Function1<Integer, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return subjects.get(t1);
             }
         });
@@ -658,12 +657,12 @@ public class FlowableDelayTest {
         Flowable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -687,12 +686,12 @@ public class FlowableDelayTest {
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -713,21 +712,21 @@ public class FlowableDelayTest {
     public void testBackpressureWithSelectorDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
-                .delay(new Function<Integer, Flowable<Long>>() {
+                .delay(new Function1<Integer, Flowable<Long>>() {
 
                     @Override
-                    public Flowable<Long> apply(Integer i) {
+                    public Flowable<Long> invoke(Integer i) {
                         return Flowable.timer(100, TimeUnit.MILLISECONDS);
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -754,21 +753,21 @@ public class FlowableDelayTest {
                     public Flowable<Long> call() {
                         return Flowable.timer(500, TimeUnit.MILLISECONDS);
                     }
-                }), new Function<Integer, Flowable<Long>>() {
+                }), new Function1<Integer, Flowable<Long>>() {
 
                     @Override
-                    public Flowable<Long> apply(Integer i) {
+                    public Flowable<Long> invoke(Integer i) {
                         return Flowable.timer(100, TimeUnit.MILLISECONDS);
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
 
                     int c;
 
                     @Override
-                    public Integer apply(Integer t) {
+                    public Integer invoke(Integer t) {
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);
@@ -968,16 +967,16 @@ public class FlowableDelayTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.delay(1, TimeUnit.SECONDS);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.delay(Functions.justFunction(Flowable.never()));
             }
         });

@@ -24,9 +24,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
 import static io.reactivex.common.internal.utils.TestingHelper.addToList;
@@ -313,9 +313,9 @@ public final class FlowableCollectTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<ArrayList<Integer>>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Integer>, Flowable<ArrayList<Integer>>>() {
             @Override
-            public Flowable<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
+            public Flowable<ArrayList<Integer>> invoke(Flowable<Integer> f) {
                 return f.collect(Functions.justCallable(new ArrayList<Integer>()),
                         new Function2<ArrayList<Integer>, Integer, kotlin.Unit>() {
                             @Override

@@ -24,13 +24,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.TestHelper;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
 import static io.reactivex.common.internal.utils.TestingHelper.addToList;
@@ -330,9 +330,9 @@ public final class ObservableCollectTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Integer>, SingleSource<List<Integer>>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Integer>, SingleSource<List<Integer>>>() {
             @Override
-            public SingleSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
+            public SingleSource<List<Integer>> invoke(Observable<Integer> o) {
                 return o.collect(new Callable<List<Integer>>() {
                     @Override
                     public List<Integer> call() throws Exception {
@@ -348,9 +348,9 @@ public final class ObservableCollectTest {
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<List<Integer>>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Integer>, ObservableSource<List<Integer>>>() {
             @Override
-            public ObservableSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
+            public ObservableSource<List<Integer>> invoke(Observable<Integer> o) {
                 return o.collect(new Callable<List<Integer>>() {
                     @Override
                     public List<Integer> call() throws Exception {
@@ -369,9 +369,9 @@ public final class ObservableCollectTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> o) throws Exception {
+            public Object invoke(Observable<Integer> o) {
                 return o.collect(new Callable<List<Integer>>() {
                     @Override
                     public List<Integer> call() throws Exception {

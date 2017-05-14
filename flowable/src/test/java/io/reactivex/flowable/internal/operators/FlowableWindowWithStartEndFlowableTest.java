@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -83,9 +82,9 @@ public class FlowableWindowWithStartEndFlowableTest {
             }
         });
 
-        Function<Object, Flowable<Object>> closer = new Function<Object, Flowable<Object>>() {
+        Function1<Object, Flowable<Object>> closer = new Function1<Object, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Object opening) {
+            public Flowable<Object> invoke(Object opening) {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
                     public void subscribe(Subscriber<? super Object> observer) {
@@ -217,9 +216,9 @@ public class FlowableWindowWithStartEndFlowableTest {
 
         TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
 
-        source.window(open, new Function<Integer, Flowable<Integer>>() {
+        source.window(open, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return close;
             }
         }).subscribe(ts);
@@ -254,9 +253,9 @@ public class FlowableWindowWithStartEndFlowableTest {
 
         TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
 
-        source.window(open, new Function<Integer, Flowable<Integer>>() {
+        source.window(open, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return close;
             }
         }).subscribe(ts);
@@ -295,9 +294,9 @@ public class FlowableWindowWithStartEndFlowableTest {
         };
 
         ps.window(BehaviorProcessor.createDefault(1), Functions.justFunction(Flowable.never()))
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })
@@ -312,9 +311,9 @@ public class FlowableWindowWithStartEndFlowableTest {
 
     @Test
     public void badSourceCallable() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> o) throws Exception {
+            public Object invoke(Flowable<Object> o) {
                 return o.window(Flowable.just(1), Functions.justFunction(Flowable.never()));
             }
         }, false, 1, 1, (Object[])null);
@@ -326,9 +325,9 @@ public class FlowableWindowWithStartEndFlowableTest {
         PublishProcessor<Integer> start = PublishProcessor.create();
         final PublishProcessor<Integer> end = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = source.window(start, new Function<Integer, Flowable<Integer>>() {
+        TestSubscriber<Integer> to = source.window(start, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return end;
             }
         })
@@ -362,9 +361,9 @@ public class FlowableWindowWithStartEndFlowableTest {
         PublishProcessor<Integer> start = PublishProcessor.create();
         final PublishProcessor<Integer> end = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = source.window(start, new Function<Integer, Flowable<Integer>>() {
+        TestSubscriber<Integer> to = source.window(start, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return end;
             }
         })
@@ -386,9 +385,9 @@ public class FlowableWindowWithStartEndFlowableTest {
         PublishProcessor<Integer> start = PublishProcessor.create();
         final PublishProcessor<Integer> end = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = source.window(start, new Function<Integer, Flowable<Integer>>() {
+        TestSubscriber<Integer> to = source.window(start, new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return end;
             }
         })

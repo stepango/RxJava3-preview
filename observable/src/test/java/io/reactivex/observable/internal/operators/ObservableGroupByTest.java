@@ -33,7 +33,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.GroupedObservable;
 import io.reactivex.observable.Observable;
@@ -59,9 +58,9 @@ import static org.mockito.Mockito.verify;
 
 public class ObservableGroupByTest {
 
-    final Function<String, Integer> length = new Function<String, Integer>() {
+    final Function1<String, Integer> length = new Function1<String, Integer>() {
         @Override
-        public Integer apply(String s) {
+        public Integer invoke(String s) {
             return s.length();
         }
     };
@@ -127,15 +126,15 @@ public class ObservableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        grouped.flatMap(new Function<GroupedObservable<Integer, String>, Observable<String>>() {
+        grouped.flatMap(new Function1<GroupedObservable<Integer, String>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Integer, String> o) {
+            public Observable<String> invoke(final GroupedObservable<Integer, String> o) {
                 groupCounter.incrementAndGet();
-                return o.map(new Function<String, String>() {
+                return o.map(new Function1<String, String>() {
 
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         return "Event => key: " + o.getKey() + " value: " + v;
                     }
                 });
@@ -231,23 +230,23 @@ public class ObservableGroupByTest {
 
         });
 
-        es.groupBy(new Function<Event, Integer>() {
+        es.groupBy(new Function1<Event, Integer>() {
 
             @Override
-            public Integer apply(Event e) {
+            public Integer invoke(Event e) {
                 return e.source;
             }
-        }).flatMap(new Function<GroupedObservable<Integer, Event>, Observable<String>>() {
+        }).flatMap(new Function1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
+            public Observable<String> invoke(GroupedObservable<Integer, Event> eventGroupedObservable) {
                 System.out.println("GroupedObservable Key: " + eventGroupedObservable.getKey());
                 groupCounter.incrementAndGet();
 
-                return eventGroupedObservable.map(new Function<Event, String>() {
+                return eventGroupedObservable.map(new Function1<Event, String>() {
 
                     @Override
-                    public String apply(Event event) {
+                    public String invoke(Event event) {
                         return "Source: " + event.source + "  Message: " + event.message;
                     }
                 });
@@ -309,27 +308,27 @@ public class ObservableGroupByTest {
         final AtomicInteger groupCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        es.groupBy(new Function<Event, Integer>() {
+        es.groupBy(new Function1<Event, Integer>() {
 
             @Override
-            public Integer apply(Event e) {
+            public Integer invoke(Event e) {
                 return e.source;
             }
         })
                 .take(1) // we want only the first group
-                .flatMap(new Function<GroupedObservable<Integer, Event>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                    public Observable<String> invoke(GroupedObservable<Integer, Event> eventGroupedObservable) {
                         System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
                         groupCounter.incrementAndGet();
 
                         return eventGroupedObservable
                                 .take(20) // limit to only 20 events on this group
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -373,24 +372,24 @@ public class ObservableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
 
         SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Function<Event, Integer>() {
+                .groupBy(new Function1<Event, Integer>() {
 
                     @Override
-                    public Integer apply(Event e) {
+                    public Integer invoke(Event e) {
                         return e.source;
                     }
                 })
                 // take 2 of the 4 groups
                 .take(2)
-                .flatMap(new Function<GroupedObservable<Integer, Event>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                    public Observable<String> invoke(GroupedObservable<Integer, Event> eventGroupedObservable) {
                         return eventGroupedObservable
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -420,19 +419,19 @@ public class ObservableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
 
         SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Function<Event, Integer>() {
+                .groupBy(new Function1<Event, Integer>() {
 
                     @Override
-                    public Integer apply(Event e) {
+                    public Integer invoke(Event e) {
                         return e.source;
                     }
                 })
                 // take 2 of the 4 groups
                 .take(2)
-                .flatMap(new Function<GroupedObservable<Integer, Event>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                    public Observable<String> invoke(GroupedObservable<Integer, Event> eventGroupedObservable) {
                         int numToTake = 0;
                         if (eventGroupedObservable.getKey() == 1) {
                             numToTake = 10;
@@ -441,10 +440,10 @@ public class ObservableGroupByTest {
                         }
                         return eventGroupedObservable
                                 .take(numToTake)
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -472,21 +471,21 @@ public class ObservableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         Observable.range(0, 100)
-                .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer i) {
+                    public Integer invoke(Integer i) {
                         return i % 2;
                     }
                 })
-                .flatMap(new Function<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
 
                     @Override
-                    public Observable<Integer> apply(GroupedObservable<Integer, Integer> group) {
+                    public Observable<Integer> invoke(GroupedObservable<Integer, Integer> group) {
                         if (group.getKey() == 0) {
-                            return group.delay(100, TimeUnit.MILLISECONDS).map(new Function<Integer, Integer>() {
+                            return group.delay(100, TimeUnit.MILLISECONDS).map(new Function1<Integer, Integer>() {
                                 @Override
-                                public Integer apply(Integer t) {
+                                public Integer invoke(Integer t) {
                                     return t * 10;
                                 }
 
@@ -529,10 +528,10 @@ public class ObservableGroupByTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger eventCounter = new AtomicInteger();
         Observable.range(0, 100)
-                .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer i) {
+                    public Integer invoke(Integer i) {
                         return i % 2;
                     }
                 })
@@ -568,17 +567,17 @@ public class ObservableGroupByTest {
         final AtomicInteger eventCounter = new AtomicInteger();
 
         SYNC_INFINITE_OBSERVABLE_OF_EVENT(4, subscribeCounter, sentEventCounter)
-                .groupBy(new Function<Event, Integer>() {
+                .groupBy(new Function1<Event, Integer>() {
 
                     @Override
-                    public Integer apply(Event e) {
+                    public Integer invoke(Event e) {
                         return e.source;
                     }
                 })
-                .flatMap(new Function<GroupedObservable<Integer, Event>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
+                    public Observable<String> invoke(GroupedObservable<Integer, Event> eventGroupedObservable) {
                         Observable<Event> eventStream = eventGroupedObservable;
                         if (eventGroupedObservable.getKey() >= 2) {
                             // filter these
@@ -591,10 +590,10 @@ public class ObservableGroupByTest {
                         }
 
                         return eventStream
-                                .map(new Function<Event, String>() {
+                                .map(new Function1<Event, String>() {
 
                                     @Override
-                                    public String apply(Event event) {
+                                    public String invoke(Event event) {
                                         return "testUnsubscribe => Source: " + event.source + "  Message: " + event.message;
                                     }
                                 });
@@ -641,22 +640,22 @@ public class ObservableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedObservable<Integer, Integer>, Observable<String>>() {
+        }).flatMap(new Function1<GroupedObservable<Integer, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Integer, Integer> group) {
+            public Observable<String> invoke(final GroupedObservable<Integer, Integer> group) {
                 if (group.getKey() < 3) {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "first groups: " + t1;
                         }
 
@@ -672,10 +671,10 @@ public class ObservableGroupByTest {
 
                             });
                 } else {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "last group: " + t1;
                         }
 
@@ -722,22 +721,22 @@ public class ObservableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedObservable<Integer, Integer>, Observable<String>>() {
+        }).flatMap(new Function1<GroupedObservable<Integer, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Integer, Integer> group) {
+            public Observable<String> invoke(final GroupedObservable<Integer, Integer> group) {
                 if (group.getKey() < 3) {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "first groups: " + t1;
                         }
 
@@ -753,10 +752,10 @@ public class ObservableGroupByTest {
 
                             });
                 } else {
-                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function<Integer, String>() {
+                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "last group: " + t1;
                         }
 
@@ -818,22 +817,22 @@ public class ObservableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedObservable<Integer, Integer>, Observable<String>>() {
+        }).flatMap(new Function1<GroupedObservable<Integer, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Integer, Integer> group) {
+            public Observable<String> invoke(final GroupedObservable<Integer, Integer> group) {
                 if (group.getKey() < 3) {
-                    return group.map(new Function<Integer, String>() {
+                    return group.map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "first groups: " + t1;
                         }
 
@@ -849,10 +848,10 @@ public class ObservableGroupByTest {
 
                             });
                 } else {
-                    return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function<Integer, String>() {
+                    return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function1<Integer, String>() {
 
                         @Override
-                        public String apply(Integer t1) {
+                        public String invoke(Integer t1) {
                             return "last group: " + t1;
                         }
 
@@ -889,21 +888,21 @@ public class ObservableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedObservable<Integer, Integer>, Observable<String>>() {
+        }).flatMap(new Function1<GroupedObservable<Integer, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Integer, Integer> group) {
-                return group.subscribeOn(Schedulers.newThread()).map(new Function<Integer, String>() {
+            public Observable<String> invoke(final GroupedObservable<Integer, Integer> group) {
+                return group.subscribeOn(Schedulers.newThread()).map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer t1) {
+                    public String invoke(Integer t1) {
                         System.out.println("Received: " + t1 + " on group : " + group.getKey());
                         return "first groups: " + t1;
                     }
@@ -948,21 +947,21 @@ public class ObservableGroupByTest {
                 sub.onComplete();
             }
 
-        }).groupBy(new Function<Integer, Integer>() {
+        }).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t) {
+            public Integer invoke(Integer t) {
                 return t;
             }
 
-        }).flatMap(new Function<GroupedObservable<Integer, Integer>, Observable<String>>() {
+        }).flatMap(new Function1<GroupedObservable<Integer, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Integer, Integer> group) {
-                return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function<Integer, String>() {
+            public Observable<String> invoke(final GroupedObservable<Integer, Integer> group) {
+                return group.observeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer t1) {
+                    public String invoke(Integer t1) {
                         return "first groups: " + t1;
                     }
 
@@ -1044,18 +1043,18 @@ public class ObservableGroupByTest {
         verify(o2, never()).onError(Mockito.<Throwable> any());
     }
 
-    private static Function<Long, Boolean> IS_EVEN = new Function<Long, Boolean>() {
+    private static Function1<Long, Boolean> IS_EVEN = new Function1<Long, Boolean>() {
 
         @Override
-        public Boolean apply(Long n) {
+        public Boolean invoke(Long n) {
             return n % 2 == 0;
         }
     };
 
-    private static Function<Integer, Boolean> IS_EVEN2 = new Function<Integer, Boolean>() {
+    private static Function1<Integer, Boolean> IS_EVEN2 = new Function1<Integer, Boolean>() {
 
         @Override
-        public Boolean apply(Integer n) {
+        public Boolean invoke(Integer n) {
             return n % 2 == 0;
         }
     };
@@ -1067,14 +1066,14 @@ public class ObservableGroupByTest {
 
         Observable.range(1, 4000)
                 .groupBy(IS_EVEN2)
-                .flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(final GroupedObservable<Boolean, Integer> g) {
-                        return g.observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+                    public Observable<String> invoke(final GroupedObservable<Boolean, Integer> g) {
+                        return g.observeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
                             @Override
-                            public String apply(Integer l) {
+                            public String invoke(Integer l) {
                                 if (g.getKey()) {
                                     try {
                                         Thread.sleep(1);
@@ -1094,42 +1093,42 @@ public class ObservableGroupByTest {
         ts.assertNoErrors();
     }
 
-    <T, R> Function<T, R> just(final R value) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> just(final R value) {
+        return new Function1<T, R>() {
             @Override
-            public R apply(T t1) {
+            public R invoke(T t1) {
                 return value;
             }
         };
     }
 
-    <T> Function<Integer, T> fail(T dummy) {
-        return new Function<Integer, T>() {
+    <T> Function1<Integer, T> fail(T dummy) {
+        return new Function1<Integer, T>() {
             @Override
-            public T apply(Integer t1) {
+            public T invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
     }
 
-    <T, R> Function<T, R> fail2(R dummy2) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> fail2(R dummy2) {
+        return new Function1<T, R>() {
             @Override
-            public R apply(T t1) {
+            public R invoke(T t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
     }
 
-    Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+    Function1<Integer, Integer> dbl = new Function1<Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1) {
+        public Integer invoke(Integer t1) {
             return t1 * 2;
         }
     };
-    Function<Integer, Integer> identity = new Function<Integer, Integer>() {
+    Function1<Integer, Integer> identity = new Function1<Integer, Integer>() {
         @Override
-        public Integer apply(Integer v) {
+        public Integer invoke(Integer v) {
             return v;
         }
     };
@@ -1158,30 +1157,30 @@ public class ObservableGroupByTest {
          * qux
          *
          */
-        Function<String, String> keysel = new Function<String, String>() {
+        Function1<String, String> keysel = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1.trim().toLowerCase();
             }
         };
-        Function<String, String> valuesel = new Function<String, String>() {
+        Function1<String, String> valuesel = new Function1<String, String>() {
             @Override
-            public String apply(String t1) {
+            public String invoke(String t1) {
                 return t1 + t1;
             }
         };
 
         Observable<String> m = source.groupBy(keysel, valuesel)
-        .flatMap(new Function<GroupedObservable<String, String>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<String, String>, Observable<String>>() {
             @Override
-            public Observable<String> apply(final GroupedObservable<String, String> g) {
+            public Observable<String> invoke(final GroupedObservable<String, String> g) {
                 System.out.println("-----------> NEXT: " + g.getKey());
-                return g.take(2).map(new Function<String, String>() {
+                return g.take(2).map(new Function1<String, String>() {
 
                     int count;
 
                     @Override
-                    public String apply(String v) {
+                    public String invoke(String v) {
                         System.out.println(v);
                         return g.getKey() + "-" + count++;
                     }
@@ -1288,10 +1287,10 @@ public class ObservableGroupByTest {
     public void testgroupByBackpressure() throws InterruptedException {
         TestObserver<String> ts = new TestObserver<String>();
 
-        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Boolean, Integer> g) {
+            public Observable<String> invoke(final GroupedObservable<Boolean, Integer> g) {
                 return g.doOnComplete(new Function0() {
 
                     @Override
@@ -1300,12 +1299,12 @@ public class ObservableGroupByTest {
                         return Unit.INSTANCE;
                     }
 
-                }).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+                }).observeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
                     int c;
 
                     @Override
-                    public String apply(Integer l) {
+                    public String invoke(Integer l) {
                         if (g.getKey()) {
                             if (c++ < 400) {
                                 try {
@@ -1348,14 +1347,14 @@ public class ObservableGroupByTest {
 
         TestObserver<String> ts = new TestObserver<String>();
 
-        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Function1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final GroupedObservable<Boolean, Integer> g) {
-                return g.take(2).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+            public Observable<String> invoke(final GroupedObservable<Boolean, Integer> g) {
+                return g.take(2).observeOn(Schedulers.computation()).map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer l) {
+                    public String invoke(Integer l) {
                         if (g.getKey()) {
                             try {
                                 Thread.sleep(1);
@@ -1375,10 +1374,10 @@ public class ObservableGroupByTest {
         ts.assertNoErrors();
     }
 
-    static Function<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = new Function<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+    static Function1<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = new Function1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
 
         @Override
-        public Observable<Integer> apply(GroupedObservable<Integer, Integer> t) {
+        public Observable<Integer> invoke(GroupedObservable<Integer, Integer> t) {
             return t;
         }
 
@@ -1388,10 +1387,10 @@ public class ObservableGroupByTest {
     public void testGroupByWithNullKey() {
         final String[] key = new String[]{"uninitialized"};
         final List<String> values = new ArrayList<String>();
-        Observable.just("a", "b", "c").groupBy(new Function<String, String>() {
+        Observable.just("a", "b", "c").groupBy(new Function1<String, String>() {
 
             @Override
-            public String apply(String value) {
+            public String invoke(String value) {
                 return null;
             }
         }).subscribe(new Function1<GroupedObservable<String, String>, Unit>() {
@@ -1427,10 +1426,10 @@ public class ObservableGroupByTest {
         );
         TestObserver<Object> ts = new TestObserver<Object>();
 
-        o.groupBy(new Function<Integer, Integer>() {
+        o.groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer integer) {
+            public Integer invoke(Integer integer) {
                 return null;
             }
         }).subscribe(ts);
@@ -1476,10 +1475,10 @@ public class ObservableGroupByTest {
                         observer.onError(e);
                     }
                 }
-        ).groupBy(new Function<Integer, Integer>() {
+        ).groupBy(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer i) {
+            public Integer invoke(Integer i) {
                 return i % 2;
             }
         }).subscribe(outer);
@@ -1492,9 +1491,9 @@ public class ObservableGroupByTest {
     public void keySelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), true)
-        .flatMap(new Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(GroupedObservable<Integer, Integer> g) throws Exception {
+            public ObservableSource<Integer> invoke(GroupedObservable<Integer, Integer> g) {
                 return g;
             }
         })
@@ -1506,9 +1505,9 @@ public class ObservableGroupByTest {
     public void keyAndValueSelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
         .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
-        .flatMap(new Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(GroupedObservable<Integer, Integer> g) throws Exception {
+            public ObservableSource<Integer> invoke(GroupedObservable<Integer, Integer> g) {
                 return g;
             }
         })

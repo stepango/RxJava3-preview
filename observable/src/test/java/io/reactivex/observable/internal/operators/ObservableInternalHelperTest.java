@@ -12,11 +12,12 @@
  */
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import io.reactivex.common.TestCommonHelper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ObservableInternalHelperTest {
 
@@ -30,12 +31,15 @@ public class ObservableInternalHelperTest {
         assertNotNull(ObservableInternalHelper.MapToInt.values()[0]);
         assertNotNull(ObservableInternalHelper.MapToInt.valueOf("INSTANCE"));
 
-        assertNotNull(ObservableInternalHelper.ErrorMapperFilter.values()[0]);
-        assertNotNull(ObservableInternalHelper.ErrorMapperFilter.valueOf("INSTANCE"));
+        assertNotNull(ObservableInternalHelper.ErrorMapper.values()[0]);
+        assertNotNull(ObservableInternalHelper.ErrorMapper.valueOf("INSTANCE"));
+
+        assertNotNull(ObservableInternalHelper.FilterMapper.values()[0]);
+        assertNotNull(ObservableInternalHelper.FilterMapper.valueOf("INSTANCE"));
     }
 
     @Test
     public void mapToInt() throws Exception {
-        assertEquals(0, ObservableInternalHelper.MapToInt.INSTANCE.apply(null));
+        assertEquals(0, ObservableInternalHelper.MapToInt.INSTANCE.invoke(null));
     }
 }

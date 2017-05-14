@@ -35,7 +35,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -60,9 +59,9 @@ public class FlowableFlatMapTest {
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
+        Function1<Integer, List<Integer>> func = new Function1<Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1) {
+            public List<Integer> invoke(Integer t1) {
                 return list;
             }
         };
@@ -91,9 +90,9 @@ public class FlowableFlatMapTest {
     public void testCollectionFunctionThrows() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
+        Function1<Integer, List<Integer>> func = new Function1<Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1) {
+            public List<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -120,9 +119,9 @@ public class FlowableFlatMapTest {
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
+        Function1<Integer, List<Integer>> func = new Function1<Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1) {
+            public List<Integer> invoke(Integer t1) {
                 return list;
             }
         };
@@ -147,9 +146,9 @@ public class FlowableFlatMapTest {
     public void testMergeError() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        Function<Integer, Flowable<Integer>> func = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> func = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.error(new TestException());
             }
         };
@@ -170,11 +169,11 @@ public class FlowableFlatMapTest {
         verify(o).onError(any(TestException.class));
     }
 
-    <T, R> Function<T, R> just(final R value) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> just(final R value) {
+        return new Function1<T, R>() {
 
             @Override
-            public R apply(T t1) {
+            public R invoke(T t1) {
                 return value;
             }
         };
@@ -247,10 +246,10 @@ public class FlowableFlatMapTest {
         };
     }
 
-    <T, R> Function<T, R> funcThrow(T t, R r) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> funcThrow(T t, R r) {
+        return new Function1<T, R>() {
             @Override
-            public R apply(T t) {
+            public R invoke(T t) {
                 throw new TestException();
             }
         };
@@ -350,9 +349,9 @@ public class FlowableFlatMapTest {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> source = Flowable.range(1, 10)
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return composer(Flowable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
             }
@@ -375,9 +374,9 @@ public class FlowableFlatMapTest {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Flowable<Integer> source = Flowable.range(1, 10)
-            .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return composer(Flowable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
             }
@@ -436,8 +435,8 @@ public class FlowableFlatMapTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
 
-        Function<Integer, Flowable<Integer>> just = just(onNext);
-        Function<Throwable, Flowable<Integer>> just2 = just(onError);
+        Function1<Integer, Flowable<Integer>> just = just(onNext);
+        Function1<Throwable, Flowable<Integer>> just2 = just(onError);
         Callable<Flowable<Integer>> just0 = just0(onComplete);
         source.flatMap(just, just2, just0, m).subscribe(ts);
 
@@ -464,9 +463,9 @@ public class FlowableFlatMapTest {
             }
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Flowable.range(0, 1000)
-            .flatMap(new Function<Integer, Flowable<Integer>>() {
+                    .flatMap(new Function1<Integer, Flowable<Integer>>() {
                 @Override
-                public Flowable<Integer> apply(Integer t) {
+                public Flowable<Integer> invoke(Integer t) {
                     return Flowable.just(t);
                 }
             })
@@ -501,10 +500,10 @@ public class FlowableFlatMapTest {
             }
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Flowable.range(0, 1000)
-            .flatMap(new Function<Integer, Flowable<Integer>>() {
+                    .flatMap(new Function1<Integer, Flowable<Integer>>() {
                 final Random rnd = new Random();
                 @Override
-                public Flowable<Integer> apply(Integer t) {
+                public Flowable<Integer> invoke(Integer t) {
                     Flowable<Integer> r = Flowable.just(t);
                     if (rnd.nextBoolean()) {
                         r = r.hide();
@@ -539,9 +538,9 @@ public class FlowableFlatMapTest {
         for (int i = 0;i < 1000; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            Flowable.range(1, 1000).flatMap(new Function<Integer, Flowable<Integer>>() {
+            Flowable.range(1, 1000).flatMap(new Function1<Integer, Flowable<Integer>>() {
                 @Override
-                public Flowable<Integer> apply(Integer t) {
+                public Flowable<Integer> invoke(Integer t) {
                     return Flowable.just(1).subscribeOn(Schedulers.computation());
                 }
             }).subscribe(ts);
@@ -557,9 +556,9 @@ public class FlowableFlatMapTest {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            Flowable.just(1, 2).flatMap(new Function<Integer, Flowable<Integer>>() {
+            Flowable.just(1, 2).flatMap(new Function1<Integer, Flowable<Integer>>() {
                 @Override
-                public Flowable<Integer> apply(Integer t) {
+                public Flowable<Integer> invoke(Integer t) {
                     return Flowable.range(1, n);
                 }
             }).subscribe(ts);
@@ -576,9 +575,9 @@ public class FlowableFlatMapTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v);
             }
         })
@@ -601,9 +600,9 @@ public class FlowableFlatMapTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2);
             }
         })
@@ -628,9 +627,9 @@ public class FlowableFlatMapTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.just(v);
             }
         }, 16)
@@ -653,9 +652,9 @@ public class FlowableFlatMapTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(0, 4 * Flowable.bufferSize())
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return (v & 1) == 0 ? Flowable.<Integer>empty() : Flowable.range(v, 2);
             }
         }, 16)
@@ -682,9 +681,9 @@ public class FlowableFlatMapTest {
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        ps.flatMap(new Function<Integer, Publisher<Integer>>() {
+        ps.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 throw new TestException();
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -706,9 +705,9 @@ public class FlowableFlatMapTest {
     @Test
     public void flatMapBiMapper() {
         Flowable.just(1)
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v * 10);
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -724,9 +723,9 @@ public class FlowableFlatMapTest {
     @Test
     public void flatMapBiMapperWithError() {
         Flowable.just(1)
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException()));
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -742,9 +741,9 @@ public class FlowableFlatMapTest {
     @Test
     public void flatMapBiMapperMaxConcurrency() {
         Flowable.just(1, 2)
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v * 10);
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -759,9 +758,9 @@ public class FlowableFlatMapTest {
 
     @Test
     public void flatMapEmpty() {
-        assertSame(Flowable.empty(), Flowable.empty().flatMap(new Function<Object, Publisher<Object>>() {
+        assertSame(Flowable.empty(), Flowable.empty().flatMap(new Function1<Object, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Object v) throws Exception {
+            public Publisher<Object> invoke(Object v) {
                 return Flowable.just(v);
             }
         }));
@@ -875,12 +874,12 @@ public class FlowableFlatMapTest {
     @Test
     public void fusedInnerThrows() {
         Flowable.just(1).hide()
-        .flatMap(new Function<Integer, Flowable<Object>>() {
+                .flatMap(new Function1<Integer, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Integer v) throws Exception {
-                return Flowable.range(1, 2).map(new Function<Integer, Object>() {
+            public Flowable<Object> invoke(Integer v) {
+                return Flowable.range(1, 2).map(new Function1<Integer, Object>() {
                     @Override
-                    public Object apply(Integer w) throws Exception {
+                    public Object invoke(Integer w) {
                         throw new TestException();
                     }
                 });
@@ -893,12 +892,12 @@ public class FlowableFlatMapTest {
     @Test
     public void fusedInnerThrows2() {
         TestSubscriber<Integer> to = Flowable.range(1, 2).hide()
-        .flatMap(new Function<Integer, Flowable<Integer>>() {
+                .flatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.range(1, 2).map(new Function<Integer, Integer>() {
+            public Flowable<Integer> invoke(Integer v) {
+                return Flowable.range(1, 2).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer w) throws Exception {
+                    public Integer invoke(Integer w) {
                         throw new TestException();
                     }
                 });
@@ -926,15 +925,15 @@ public class FlowableFlatMapTest {
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
             TestSubscriber<Object> ts = Flowable.merge(
-                    Flowable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                    Flowable.just(1).observeOn(Schedulers.single()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),
-                    Flowable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                    Flowable.just(1).observeOn(Schedulers.computation()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     })

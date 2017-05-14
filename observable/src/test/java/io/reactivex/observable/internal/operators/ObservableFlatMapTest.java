@@ -33,7 +33,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -60,9 +59,9 @@ public class ObservableFlatMapTest {
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
+        Function1<Integer, List<Integer>> func = new Function1<Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1) {
+            public List<Integer> invoke(Integer t1) {
                 return list;
             }
         };
@@ -91,9 +90,9 @@ public class ObservableFlatMapTest {
     public void testCollectionFunctionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
+        Function1<Integer, List<Integer>> func = new Function1<Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1) {
+            public List<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -120,9 +119,9 @@ public class ObservableFlatMapTest {
 
         final List<Integer> list = Arrays.asList(1, 2, 3);
 
-        Function<Integer, List<Integer>> func = new Function<Integer, List<Integer>>() {
+        Function1<Integer, List<Integer>> func = new Function1<Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1) {
+            public List<Integer> invoke(Integer t1) {
                 return list;
             }
         };
@@ -147,9 +146,9 @@ public class ObservableFlatMapTest {
     public void testMergeError() {
         Observer<Object> o = TestHelper.mockObserver();
 
-        Function<Integer, Observable<Integer>> func = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> func = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return Observable.error(new TestException());
             }
         };
@@ -170,11 +169,11 @@ public class ObservableFlatMapTest {
         verify(o).onError(any(TestException.class));
     }
 
-    <T, R> Function<T, R> just(final R value) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> just(final R value) {
+        return new Function1<T, R>() {
 
             @Override
-            public R apply(T t1) {
+            public R invoke(T t1) {
                 return value;
             }
         };
@@ -247,10 +246,10 @@ public class ObservableFlatMapTest {
         };
     }
 
-    <T, R> Function<T, R> funcThrow(T t, R r) {
-        return new Function<T, R>() {
+    <T, R> Function1<T, R> funcThrow(T t, R r) {
+        return new Function1<T, R>() {
             @Override
-            public R apply(T t) {
+            public R invoke(T t) {
                 throw new TestException();
             }
         };
@@ -350,9 +349,9 @@ public class ObservableFlatMapTest {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
-        .flatMap(new Function<Integer, Observable<Integer>>() {
+                .flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
             }
@@ -375,9 +374,9 @@ public class ObservableFlatMapTest {
         final int m = 4;
         final AtomicInteger subscriptionCount = new AtomicInteger();
         Observable<Integer> source = Observable.range(1, 10)
-            .flatMap(new Function<Integer, Observable<Integer>>() {
+                .flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
             }
@@ -436,7 +435,7 @@ public class ObservableFlatMapTest {
         Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> ts = new TestObserver<Object>(o);
 
-        Function<Throwable, Observable<Integer>> just = just(onError);
+        Function1<Throwable, Observable<Integer>> just = just(onError);
         source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(ts);
 
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
@@ -462,9 +461,9 @@ public class ObservableFlatMapTest {
             }
             TestObserver<Integer> ts = new TestObserver<Integer>();
             Observable.range(0, 1000)
-            .flatMap(new Function<Integer, Observable<Integer>>() {
+                    .flatMap(new Function1<Integer, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer t) {
+                public Observable<Integer> invoke(Integer t) {
                     return Observable.just(t);
                 }
             })
@@ -499,10 +498,10 @@ public class ObservableFlatMapTest {
             }
             TestObserver<Integer> ts = new TestObserver<Integer>();
             Observable.range(0, 1000)
-            .flatMap(new Function<Integer, Observable<Integer>>() {
+                    .flatMap(new Function1<Integer, Observable<Integer>>() {
                 final Random rnd = new Random();
                 @Override
-                public Observable<Integer> apply(Integer t) {
+                public Observable<Integer> invoke(Integer t) {
                     Observable<Integer> r = Observable.just(t);
                     if (rnd.nextBoolean()) {
                         r = r.hide();
@@ -537,9 +536,9 @@ public class ObservableFlatMapTest {
         for (int i = 0;i < 1000; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
 
-            Observable.range(1, 1000).flatMap(new Function<Integer, Observable<Integer>>() {
+            Observable.range(1, 1000).flatMap(new Function1<Integer, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer t) {
+                public Observable<Integer> invoke(Integer t) {
                     return Observable.just(1).subscribeOn(Schedulers.computation());
                 }
             }).subscribe(ts);
@@ -555,9 +554,9 @@ public class ObservableFlatMapTest {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
 
-            Observable.just(1, 2).flatMap(new Function<Integer, Observable<Integer>>() {
+            Observable.just(1, 2).flatMap(new Function1<Integer, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer t) {
+                public Observable<Integer> invoke(Integer t) {
                     return Observable.range(1, n);
                 }
             }).subscribe(ts);
@@ -572,9 +571,9 @@ public class ObservableFlatMapTest {
     @Test
     public void flatMapBiMapper() {
         Observable.just(1)
-        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.just(v * 10);
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -590,9 +589,9 @@ public class ObservableFlatMapTest {
     @Test
     public void flatMapBiMapperWithError() {
         Observable.just(1)
-        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException()));
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -608,9 +607,9 @@ public class ObservableFlatMapTest {
     @Test
     public void flatMapBiMapperMaxConcurrency() {
         Observable.just(1, 2)
-        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.just(v * 10);
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -625,9 +624,9 @@ public class ObservableFlatMapTest {
 
     @Test
     public void flatMapEmpty() {
-        assertSame(Observable.empty(), Observable.empty().flatMap(new Function<Object, ObservableSource<Object>>() {
+        assertSame(Observable.empty(), Observable.empty().flatMap(new Function1<Object, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
+            public ObservableSource<Object> invoke(Object v) {
                 return Observable.just(v);
             }
         }));
@@ -740,12 +739,12 @@ public class ObservableFlatMapTest {
     @Test
     public void fusedInnerThrows() {
         Observable.just(1).hide()
-        .flatMap(new Function<Integer, ObservableSource<Object>>() {
+                .flatMap(new Function1<Integer, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Integer v) throws Exception {
-                return Observable.range(1, 2).map(new Function<Integer, Object>() {
+            public ObservableSource<Object> invoke(Integer v) {
+                return Observable.range(1, 2).map(new Function1<Integer, Object>() {
                     @Override
-                    public Object apply(Integer w) throws Exception {
+                    public Object invoke(Integer w) {
                         throw new TestException();
                     }
                 });
@@ -758,12 +757,12 @@ public class ObservableFlatMapTest {
     @Test
     public void fusedInnerThrows2() {
         TestObserver<Integer> to = Observable.range(1, 2).hide()
-        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.range(1, 2).map(new Function<Integer, Integer>() {
+            public ObservableSource<Integer> invoke(Integer v) {
+                return Observable.range(1, 2).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer w) throws Exception {
+                    public Integer invoke(Integer w) {
                         throw new TestException();
                     }
                 });
@@ -783,15 +782,15 @@ public class ObservableFlatMapTest {
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
             TestObserver<Object> ts = Observable.merge(
-                    Observable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                    Observable.just(1).observeOn(Schedulers.single()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),
-                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function1<Integer, Object>() {
                         @Override
-                        public Object apply(Integer v) throws Exception {
+                        public Object invoke(Integer v) {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     })

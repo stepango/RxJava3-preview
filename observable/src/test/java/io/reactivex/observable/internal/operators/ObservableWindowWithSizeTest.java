@@ -24,7 +24,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -42,9 +41,9 @@ public class ObservableWindowWithSizeTest {
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<List<T>>();
-        Observable.concat(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
+        Observable.concat(observables.map(new Function1<Observable<T>, Observable<List<T>>>() {
             @Override
-            public Observable<List<T>> apply(Observable<T> xs) {
+            public Observable<List<T>> invoke(Observable<T> xs) {
                 return xs.toList().toObservable();
             }
         }))
@@ -249,9 +248,9 @@ public class ObservableWindowWithSizeTest {
         hotStream()
         .window(10)
         .take(2)
-        .flatMap(new Function<Observable<Integer>, Observable<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Observable<Integer> w) {
+            public Observable<Integer> invoke(Observable<Integer> w) {
                 return w.startWith(indicator);
             }
         }).subscribe(ts);
@@ -272,23 +271,23 @@ public class ObservableWindowWithSizeTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Observable<Object>>>() {
             @Override
-            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Observable<Object>> invoke(Observable<Object> o) {
                 return o.window(1);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Observable<Object>>>() {
             @Override
-            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Observable<Object>> invoke(Observable<Object> o) {
                 return o.window(2, 1);
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Observable<Object>>>() {
             @Override
-            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Observable<Object>> invoke(Observable<Object> o) {
                 return o.window(1, 2);
             }
         });

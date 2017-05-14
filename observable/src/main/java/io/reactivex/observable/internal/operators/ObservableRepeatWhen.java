@@ -13,18 +13,22 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.utils.HalfSerializer;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.Subject;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Repeatedly subscribe to a source if a handler ObservableSource signals an item.
@@ -33,9 +37,9 @@ import io.reactivex.observable.subjects.*;
  */
 public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstream<T, T> {
 
-    final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler;
+    final Function1<? super Observable<Object>, ? extends ObservableSource<?>> handler;
 
-    public ObservableRepeatWhen(ObservableSource<T> source, Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
+    public ObservableRepeatWhen(ObservableSource<T> source, Function1<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         super(source);
         this.handler = handler;
     }
@@ -47,7 +51,7 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
         ObservableSource<?> other;
 
         try {
-            other = ObjectHelper.requireNonNull(handler.apply(signaller), "The handler returned a null ObservableSource");
+            other = ObjectHelper.requireNonNull(handler.invoke(signaller), "The handler returned a null ObservableSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

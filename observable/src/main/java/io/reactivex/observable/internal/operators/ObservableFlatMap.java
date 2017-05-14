@@ -13,30 +13,37 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.common.internal.utils.*;
+import io.reactivex.common.internal.utils.AtomicThrowable;
+import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.extensions.*;
-import io.reactivex.observable.internal.queues.*;
+import io.reactivex.observable.extensions.QueueDisposable;
+import io.reactivex.observable.extensions.SimplePlainQueue;
+import io.reactivex.observable.extensions.SimpleQueue;
+import io.reactivex.observable.internal.queues.SpscArrayQueue;
+import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstream<T, U> {
-    final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
+    final Function1<? super T, ? extends ObservableSource<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;
     final int bufferSize;
 
     public ObservableFlatMap(ObservableSource<T> source,
-            Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+                             Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
+                             boolean delayErrors, int maxConcurrency, int bufferSize) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayErrors;
@@ -59,7 +66,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         private static final long serialVersionUID = -2117620485640801370L;
 
         final Observer<? super U> actual;
-        final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
+        final Function1<? super T, ? extends ObservableSource<? extends U>> mapper;
         final boolean delayErrors;
         final int maxConcurrency;
         final int bufferSize;
@@ -88,8 +95,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         int wip;
 
-        MergeObserver(Observer<? super U> actual, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
-                boolean delayErrors, int maxConcurrency, int bufferSize) {
+        MergeObserver(Observer<? super U> actual, Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
+                      boolean delayErrors, int maxConcurrency, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
@@ -117,7 +124,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
             ObservableSource<? extends U> p;
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                p = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();

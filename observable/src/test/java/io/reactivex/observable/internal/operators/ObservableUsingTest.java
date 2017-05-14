@@ -28,7 +28,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -96,9 +95,9 @@ public class ObservableUsingTest {
             }
         };
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
+        Function1<Resource, Observable<String>> observableFactory = new Function1<Resource, Observable<String>>() {
             @Override
-            public Observable<String> apply(Resource res) {
+            public Observable<String> invoke(Resource res) {
                 return Observable.fromArray(res.getTextFromWeb().split(" "));
             }
         };
@@ -156,9 +155,9 @@ public class ObservableUsingTest {
             }
         };
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
+        Function1<Resource, Observable<String>> observableFactory = new Function1<Resource, Observable<String>>() {
             @Override
-            public Observable<String> apply(Resource res) {
+            public Observable<String> invoke(Resource res) {
                     return Observable.fromArray(res.getTextFromWeb().split(" "));
             }
         };
@@ -200,9 +199,9 @@ public class ObservableUsingTest {
             }
         };
 
-        Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
+        Function1<Disposable, Observable<Integer>> observableFactory = new Function1<Disposable, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Disposable s) {
+            public Observable<Integer> invoke(Disposable s) {
                 return Observable.empty();
             }
         };
@@ -230,9 +229,9 @@ public class ObservableUsingTest {
             }
         };
 
-        Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
+        Function1<Disposable, Observable<Integer>> observableFactory = new Function1<Disposable, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Disposable subscription) {
+            public Observable<Integer> invoke(Disposable subscription) {
                 throw new TestException();
             }
         };
@@ -268,9 +267,9 @@ public class ObservableUsingTest {
             }
         };
 
-        Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
+        Function1<Disposable, Observable<Integer>> observableFactory = new Function1<Disposable, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Disposable subscription) {
+            public Observable<Integer> invoke(Disposable subscription) {
                 return Observable.unsafeCreate(new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> t1) {
@@ -300,9 +299,9 @@ public class ObservableUsingTest {
         final Function0 completion = createOnCompletedAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
+        Function1<Resource, Observable<String>> observableFactory = new Function1<Resource, Observable<String>>() {
             @Override
-            public Observable<String> apply(Resource resource) {
+            public Observable<String> invoke(Resource resource) {
                 return Observable.fromArray(resource.getTextFromWeb().split(" "));
             }
         };
@@ -327,9 +326,9 @@ public class ObservableUsingTest {
         final Function0 completion = createOnCompletedAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
+        Function1<Resource, Observable<String>> observableFactory = new Function1<Resource, Observable<String>>() {
             @Override
-            public Observable<String> apply(Resource resource) {
+            public Observable<String> invoke(Resource resource) {
                 return Observable.fromArray(resource.getTextFromWeb().split(" "));
             }
         };
@@ -356,9 +355,9 @@ public class ObservableUsingTest {
         final Function1<Throwable, kotlin.Unit> onError = createOnErrorAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
+        Function1<Resource, Observable<String>> observableFactory = new Function1<Resource, Observable<String>>() {
             @Override
-            public Observable<String> apply(Resource resource) {
+            public Observable<String> invoke(Resource resource) {
                 return Observable.fromArray(resource.getTextFromWeb().split(" "))
                         .concatWith(Observable.<String>error(new RuntimeException()));
             }
@@ -384,9 +383,9 @@ public class ObservableUsingTest {
         final Function1<Throwable, kotlin.Unit> onError = createOnErrorAction(events);
         final Function0 unsub = createUnsubAction(events);
 
-        Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
+        Function1<Resource, Observable<String>> observableFactory = new Function1<Resource, Observable<String>>() {
             @Override
-            public Observable<String> apply(Resource resource) {
+            public Observable<String> invoke(Resource resource) {
                 return Observable.fromArray(resource.getTextFromWeb().split(" "))
                         .concatWith(Observable.<String>error(new RuntimeException()));
             }
@@ -463,9 +462,9 @@ public class ObservableUsingTest {
                         return 1;
                     }
                 },
-                new Function<Object, ObservableSource<Object>>() {
+                new Function1<Object, ObservableSource<Object>>() {
                     @Override
-                    public ObservableSource<Object> apply(Object v) throws Exception {
+                    public ObservableSource<Object> invoke(Object v) {
                         return Observable.never();
                     }
                 },
@@ -480,9 +479,9 @@ public class ObservableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, ObservableSource<Object>>() {
+        }, new Function1<Object, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
+            public ObservableSource<Object> invoke(Object v) {
                 throw new TestException("First");
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -507,9 +506,9 @@ public class ObservableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, ObservableSource<Object>>() {
+        }, new Function1<Object, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
+            public ObservableSource<Object> invoke(Object v) {
                 return Observable.error(new TestException("First"));
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -534,9 +533,9 @@ public class ObservableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, ObservableSource<Object>>() {
+        }, new Function1<Object, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Object v) throws Exception {
+            public ObservableSource<Object> invoke(Object v) {
                 return Observable.empty();
             }
         }, new Function1<Object, kotlin.Unit>() {
@@ -558,9 +557,9 @@ public class ObservableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, ObservableSource<Object>>() {
+            }, new Function1<Object, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Object v) throws Exception {
+                public ObservableSource<Object> invoke(Object v) {
                     return Observable.empty();
                 }
             }, new Function1<Object, kotlin.Unit>() {

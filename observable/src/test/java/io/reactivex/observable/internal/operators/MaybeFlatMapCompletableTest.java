@@ -16,16 +16,18 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeFlatMapCompletableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
+        TestHelper.checkDisposed(Maybe.just(1).flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 return Completable.complete();
             }
         }));
@@ -34,9 +36,9 @@ public class MaybeFlatMapCompletableTest {
     @Test
     public void mapperThrows() {
         Maybe.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
+                .flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -47,9 +49,9 @@ public class MaybeFlatMapCompletableTest {
     @Test
     public void mapperReturnsNull() {
         Maybe.just(1)
-        .flatMapCompletable(new Function<Integer, Completable>() {
+                .flatMapCompletable(new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) throws Exception {
+            public Completable invoke(Integer v) {
                 return null;
             }
         })

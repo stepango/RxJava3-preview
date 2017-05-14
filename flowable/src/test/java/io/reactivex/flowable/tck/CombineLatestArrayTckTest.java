@@ -16,8 +16,8 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class CombineLatestArrayTckTest extends BaseTck<Long> {
@@ -27,9 +27,9 @@ public class CombineLatestArrayTckTest extends BaseTck<Long> {
     public Publisher<Long> createPublisher(long elements) {
         return
             Flowable.combineLatest(
-                new Function<Object[], Long>() {
+                    new Function1<Object[], Long>() {
                     @Override
-                    public Long apply(Object[] a) throws Exception {
+                    public Long invoke(Object[] a) {
                         return (Long)a[0];
                     }
                 },

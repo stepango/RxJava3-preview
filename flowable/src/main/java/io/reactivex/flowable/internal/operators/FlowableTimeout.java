@@ -13,31 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscribers.FullArbiterSubscriber;
-import io.reactivex.flowable.internal.subscriptions.*;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.internal.subscriptions.FullArbiter;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.flowable.subscribers.DisposableSubscriber;
+import io.reactivex.flowable.subscribers.SerializedSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream<T, T> {
     final Publisher<U> firstTimeoutIndicator;
-    final Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
+    final Function1<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
     final Publisher<? extends T> other;
 
     public FlowableTimeout(
             Flowable<T> source,
             Publisher<U> firstTimeoutIndicator,
-            Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator,
+            Function1<? super T, ? extends Publisher<V>> itemTimeoutIndicator,
             Publisher<? extends T> other) {
         super(source);
         this.firstTimeoutIndicator = firstTimeoutIndicator;
@@ -60,7 +65,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
     static final class TimeoutSubscriber<T, U, V> implements RelaxedSubscriber<T>, Subscription, OnTimeout {
         final Subscriber<? super T> actual;
         final Publisher<U> firstTimeoutIndicator;
-        final Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
+        final Function1<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
 
         Subscription s;
 
@@ -71,8 +76,8 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
 
         TimeoutSubscriber(Subscriber<? super T> actual,
-                Publisher<U> firstTimeoutIndicator,
-                Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator) {
+                          Publisher<U> firstTimeoutIndicator,
+                          Function1<? super T, ? extends Publisher<V>> itemTimeoutIndicator) {
             this.actual = actual;
             this.firstTimeoutIndicator = firstTimeoutIndicator;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
@@ -120,7 +125,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             Publisher<V> p;
 
             try {
-                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The publisher returned is null");
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.invoke(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -218,7 +223,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
     static final class TimeoutOtherSubscriber<T, U, V> implements RelaxedSubscriber<T>, Disposable, OnTimeout {
         final Subscriber<? super T> actual;
         final Publisher<U> firstTimeoutIndicator;
-        final Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
+        final Function1<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
         final Publisher<? extends T> other;
         final FullArbiter<T> arbiter;
 
@@ -233,8 +238,8 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
 
         TimeoutOtherSubscriber(Subscriber<? super T> actual,
-                Publisher<U> firstTimeoutIndicator,
-                Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator, Publisher<? extends T> other) {
+                               Publisher<U> firstTimeoutIndicator,
+                               Function1<? super T, ? extends Publisher<V>> itemTimeoutIndicator, Publisher<? extends T> other) {
             this.actual = actual;
             this.firstTimeoutIndicator = firstTimeoutIndicator;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
@@ -288,7 +293,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             Publisher<V> p;
 
             try {
-                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The publisher returned is null");
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.invoke(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

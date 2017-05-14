@@ -13,13 +13,13 @@
 
 package io.reactivex.flowable.tck;
 
-import java.util.Collections;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
+import java.util.Collections;
+
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class ConcatMapIterableTckTest extends BaseTck<Integer> {
@@ -28,9 +28,9 @@ public class ConcatMapIterableTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                        .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Integer v) throws Exception {
+                    public Iterable<Integer> invoke(Integer v) {
                         return Collections.singletonList(v);
                     }
                 })

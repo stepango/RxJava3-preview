@@ -29,7 +29,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.observable.GroupedObservable;
 import io.reactivex.observable.Observable;
@@ -259,9 +258,9 @@ public class ExceptionsTest {
     public void testOnErrorExceptionIsThrownFromGroupBy() throws Exception {
         Observable
             .just(1)
-            .groupBy(new Function<Integer, Integer>() {
+                .groupBy(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer integer) {
+                public Integer invoke(Integer integer) {
                     throw new RuntimeException();
                 }
             })

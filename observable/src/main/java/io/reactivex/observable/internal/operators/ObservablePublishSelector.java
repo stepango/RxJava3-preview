@@ -17,12 +17,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Shares a source Observable for the duration of a selector function.
@@ -31,10 +33,10 @@ import io.reactivex.observable.subjects.PublishSubject;
  */
 public final class ObservablePublishSelector<T, R> extends AbstractObservableWithUpstream<T, R> {
 
-    final Function<? super Observable<T>, ? extends ObservableSource<R>> selector;
+    final Function1<? super Observable<T>, ? extends ObservableSource<R>> selector;
 
     public ObservablePublishSelector(final ObservableSource<T> source,
-                                              final Function<? super Observable<T>, ? extends ObservableSource<R>> selector) {
+                                     final Function1<? super Observable<T>, ? extends ObservableSource<R>> selector) {
         super(source);
         this.selector = selector;
     }
@@ -46,7 +48,7 @@ public final class ObservablePublishSelector<T, R> extends AbstractObservableWit
         ObservableSource<? extends R> target;
 
         try {
-            target = ObjectHelper.requireNonNull(selector.apply(subject), "The selector returned a null ObservableSource");
+            target = ObjectHelper.requireNonNull(selector.invoke(subject), "The selector returned a null ObservableSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

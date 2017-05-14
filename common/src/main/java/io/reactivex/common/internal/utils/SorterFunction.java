@@ -13,11 +13,13 @@
 
 package io.reactivex.common.internal.utils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-import io.reactivex.common.functions.Function;
+import kotlin.jvm.functions.Function1;
 
-public final class SorterFunction<T> implements Function<List<T>, List<T>> {
+public final class SorterFunction<T> implements Function1<List<T>, List<T>> {
 
     final Comparator<? super T> comparator;
 
@@ -26,7 +28,7 @@ public final class SorterFunction<T> implements Function<List<T>, List<T>> {
     }
 
     @Override
-    public List<T> apply(List<T> t) throws Exception {
+    public List<T> invoke(List<T> t) {
         Collections.sort(t, comparator);
         return t;
     }

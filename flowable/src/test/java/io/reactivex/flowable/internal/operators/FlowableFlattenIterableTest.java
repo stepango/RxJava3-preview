@@ -13,24 +13,36 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FlowableFlattenIterableTest {
 
@@ -47,9 +59,9 @@ public class FlowableFlattenIterableTest {
             }
         })
 
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -60,9 +72,9 @@ public class FlowableFlattenIterableTest {
         .assertComplete();
     }
 
-    final Function<Integer, Iterable<Integer>> mapper = new Function<Integer, Iterable<Integer>>() {
+    final Function1<Integer, Iterable<Integer>> mapper = new Function1<Integer, Iterable<Integer>>() {
         @Override
-        public Iterable<Integer> apply(Integer v) {
+        public Iterable<Integer> invoke(Integer v) {
             return Arrays.asList(v, v + 1);
         }
     };
@@ -141,9 +153,9 @@ public class FlowableFlattenIterableTest {
 
         int n = 1000 * 1000;
 
-        Flowable.range(1, n).concatMapIterable(mapper).concatMap(new Function<Integer, Flowable<Integer>>() {
+        Flowable.range(1, n).concatMapIterable(mapper).concatMap(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         })
@@ -230,9 +242,9 @@ public class FlowableFlattenIterableTest {
         };
 
         Flowable.range(1, 2)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return it;
             }
         })
@@ -270,9 +282,9 @@ public class FlowableFlattenIterableTest {
         };
 
         Flowable.just(1)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return it;
             }
         })
@@ -314,9 +326,9 @@ public class FlowableFlattenIterableTest {
         };
 
         Flowable.range(1, 2)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return it;
             }
         })
@@ -354,9 +366,9 @@ public class FlowableFlattenIterableTest {
         };
 
         Flowable.range(1, 2)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return it;
             }
         })
@@ -396,9 +408,9 @@ public class FlowableFlattenIterableTest {
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
         ps
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return it;
             }
         })
@@ -418,9 +430,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.range(0, 1000)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return (v % 2) == 0 ? Collections.singleton(1) : Collections.<Integer>emptySet();
             }
         })
@@ -436,9 +448,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
 
         Flowable.range(1, 2)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return v == 2 ? Collections.singleton(1) : Collections.<Integer>emptySet();
             }
         })
@@ -454,9 +466,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1);
 
         Flowable.range(1, 1000)
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return v == 1000 ? Collections.singleton(1) : Collections.<Integer>emptySet();
             }
         })
@@ -499,9 +511,9 @@ public class FlowableFlattenIterableTest {
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
         ps
-        .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return it;
             }
         })
@@ -535,9 +547,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Flowable.range(1, 5)
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.singletonList(1);
             }
         }, new BiFunction<Integer, Integer, Integer>() {
@@ -557,9 +569,9 @@ public class FlowableFlattenIterableTest {
     @Test
     public void flatMapIterablePrefetch() {
         Flowable.just(1, 2)
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer t) throws Exception {
+            public Iterable<Integer> invoke(Integer t) {
                 return Arrays.asList(t * 10);
             }
         }, 1)
@@ -569,9 +581,9 @@ public class FlowableFlattenIterableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishProcessor.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
+        TestHelper.checkDisposed(PublishProcessor.create().flatMapIterable(new Function1<Object, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Object v) throws Exception {
+            public Iterable<Integer> invoke(Object v) {
                 return Arrays.asList(10, 20);
             }
         }));
@@ -579,12 +591,12 @@ public class FlowableFlattenIterableTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.flatMapIterable(new Function<Object, Iterable<Integer>>() {
+            public Object invoke(Flowable<Integer> o) {
+                return o.flatMapIterable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return Arrays.asList(10, 20);
                     }
                 });
@@ -673,9 +685,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = SubscriberFusion.newTest(FusedQueueSubscription.ANY);
 
         Flowable.just(1, 2, 3)
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 if ((v & 1) == 0) {
                     return Collections.emptyList();
                 }
@@ -693,9 +705,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = SubscriberFusion.newTest(FusedQueueSubscription.ANY);
 
         Flowable.just(1, 2, 3)
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 if ((v & 1) == 1) {
                     return Collections.emptyList();
                 }
@@ -713,9 +725,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = SubscriberFusion.newTest(FusedQueueSubscription.ANY);
 
         Flowable.just(1, 2, 3).hide()
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1, 2);
             }
         })
@@ -728,9 +740,9 @@ public class FlowableFlattenIterableTest {
     @Test
     public void fusedIsEmptyWithEmptySource() {
         Flowable.just(1, 2, 3)
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 if ((v & 1) == 0) {
                     return Collections.emptyList();
                 }
@@ -777,9 +789,9 @@ public class FlowableFlattenIterableTest {
     @Test
     public void fusedSourceCrash() {
         Flowable.range(1, 3)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception {
+            public Object invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -827,9 +839,9 @@ public class FlowableFlattenIterableTest {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.range(1, 3).hide()
-        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+                .flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new Iterable<Integer>() {
                     int count;
                     @Override

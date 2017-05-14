@@ -13,16 +13,19 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeSwitchIfEmptyTest {
 
@@ -87,9 +90,9 @@ public class MaybeSwitchIfEmptyTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, Maybe<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Integer>, Maybe<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Maybe<Integer> f) throws Exception {
+            public Maybe<Integer> invoke(Maybe<Integer> f) {
                 return f.switchIfEmpty(Maybe.just(2));
             }
         });

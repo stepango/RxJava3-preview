@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Scheduler;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.TrampolineScheduler;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.AsyncSubscription;
@@ -123,15 +122,15 @@ public abstract class AbstractSchedulerTests {
 
         Flowable<Integer> ids = Flowable.fromIterable(Arrays.asList(1, 2)).subscribeOn(getScheduler());
 
-        Flowable<String> m = ids.flatMap(new Function<Integer, Flowable<String>>() {
+        Flowable<String> m = ids.flatMap(new Function1<Integer, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(Integer id) {
+            public Flowable<String> invoke(Integer id) {
                 return Flowable.fromIterable(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
-                        .map(new Function<String, String>() {
+                        .map(new Function1<String, String>() {
 
                             @Override
-                            public String apply(String s) {
+                            public String invoke(String s) {
                                 return "names=>" + s;
                             }
                         });
@@ -445,10 +444,10 @@ public abstract class AbstractSchedulerTests {
         final Scheduler scheduler = getScheduler();
 
         Flowable<String> o = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
-                .flatMap(new Function<String, Flowable<String>>() {
+                .flatMap(new Function1<String, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(final String v) {
+                    public Flowable<String> invoke(final String v) {
                         return Flowable.unsafeCreate(new Publisher<String>() {
 
                             @Override

@@ -20,7 +20,6 @@ import org.reactivestreams.Publisher;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Single;
@@ -135,9 +134,9 @@ public class FlowableAllTest {
                 public Boolean invoke(Integer t1) {
                     return false;
                 }
-            }), new Function<Boolean, Publisher<Integer>>() {
+                }), new Function1<Boolean, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Boolean t1) {
+                public Publisher<Integer> invoke(Boolean t1) {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });

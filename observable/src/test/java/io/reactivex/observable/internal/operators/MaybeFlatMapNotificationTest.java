@@ -14,17 +14,19 @@
 package io.reactivex.observable.internal.operators;
 
 
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeFlatMapNotificationTest {
 
@@ -37,9 +39,9 @@ public class MaybeFlatMapNotificationTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Integer>, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
+            public MaybeSource<Integer> invoke(Maybe<Integer> m) {
                 return m
                         .flatMap(Functions.justFunction(Maybe.just(1)),
                                 Functions.justFunction(Maybe.just(1)), Functions.justCallable(Maybe.just(1)));

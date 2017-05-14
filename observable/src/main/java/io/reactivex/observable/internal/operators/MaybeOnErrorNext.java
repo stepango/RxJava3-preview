@@ -16,11 +16,13 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Subscribes to the MaybeSource returned by a function if the main source signals an onError.
@@ -29,13 +31,13 @@ import io.reactivex.observable.*;
  */
 public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
+    final Function1<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
 
     final boolean allowFatal;
 
     public MaybeOnErrorNext(MaybeSource<T> source,
-            Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
-                    boolean allowFatal) {
+                            Function1<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
+                            boolean allowFatal) {
         super(source);
         this.resumeFunction = resumeFunction;
         this.allowFatal = allowFatal;
@@ -55,13 +57,13 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
         final MaybeObserver<? super T> actual;
 
-        final Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
+        final Function1<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
 
         final boolean allowFatal;
 
         OnErrorNextMaybeObserver(MaybeObserver<? super T> actual,
-                Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
-                        boolean allowFatal) {
+                                 Function1<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
+                                 boolean allowFatal) {
             this.actual = actual;
             this.resumeFunction = resumeFunction;
             this.allowFatal = allowFatal;
@@ -98,7 +100,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
             MaybeSource<? extends T> m;
 
             try {
-                m = ObjectHelper.requireNonNull(resumeFunction.apply(e), "The resumeFunction returned a null MaybeSource");
+                m = ObjectHelper.requireNonNull(resumeFunction.invoke(e), "The resumeFunction returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(new CompositeException(e, ex));

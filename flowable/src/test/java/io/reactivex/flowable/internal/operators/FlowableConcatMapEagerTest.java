@@ -36,7 +36,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -55,9 +54,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void normal() {
         Flowable.range(1, 5)
-        .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEager(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 return Flowable.range(t, 2);
             }
         })
@@ -68,9 +67,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void normalBackpressured() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
-        .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEager(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 return Flowable.range(t, 2);
             }
         })
@@ -94,9 +93,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void normalDelayBoundary() {
         Flowable.range(1, 5)
-        .concatMapEagerDelayError(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEagerDelayError(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 return Flowable.range(t, 2);
             }
         }, false)
@@ -107,9 +106,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void normalDelayBoundaryBackpressured() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
-        .concatMapEagerDelayError(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEagerDelayError(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 return Flowable.range(t, 2);
             }
         }, false)
@@ -133,9 +132,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void normalDelayEnd() {
         Flowable.range(1, 5)
-        .concatMapEagerDelayError(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEagerDelayError(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 return Flowable.range(t, 2);
             }
         }, true)
@@ -146,9 +145,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void normalDelayEndBackpressured() {
         TestSubscriber<Integer> ts = Flowable.range(1, 5)
-        .concatMapEagerDelayError(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEagerDelayError(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer t) {
+            public Publisher<Integer> invoke(Integer t) {
                 return Flowable.range(t, 2);
             }
         }, true)
@@ -175,9 +174,9 @@ public class FlowableConcatMapEagerTest {
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = main.concatMapEagerDelayError(
-                new Function<Integer, Publisher<Integer>>() {
+                new Function1<Integer, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Integer t) {
+                    public Publisher<Integer> invoke(Integer t) {
                         return inner;
                     }
                 }, false).test();
@@ -204,9 +203,9 @@ public class FlowableConcatMapEagerTest {
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = main.concatMapEagerDelayError(
-                new Function<Integer, Publisher<Integer>>() {
+                new Function1<Integer, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Integer t) {
+                    public Publisher<Integer> invoke(Integer t) {
                         return inner;
                     }
                 }, true).test();
@@ -234,9 +233,9 @@ public class FlowableConcatMapEagerTest {
         final PublishProcessor<Integer> inner = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = main.concatMapEager(
-                new Function<Integer, Publisher<Integer>>() {
+                new Function1<Integer, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(Integer t) {
+                    public Publisher<Integer> invoke(Integer t) {
                         return inner;
                     }
                 }).test();
@@ -262,9 +261,9 @@ public class FlowableConcatMapEagerTest {
     public void longEager() {
 
         Flowable.range(1, 2 * Flowable.bufferSize())
-        .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEager(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(1);
             }
         })
@@ -277,16 +276,16 @@ public class FlowableConcatMapEagerTest {
     TestSubscriber<Object> ts;
     TestSubscriber<Object> tsBp;
 
-    Function<Integer, Flowable<Integer>> toJust = new Function<Integer, Flowable<Integer>>() {
+    Function1<Integer, Flowable<Integer>> toJust = new Function1<Integer, Flowable<Integer>>() {
         @Override
-        public Flowable<Integer> apply(Integer t) {
+        public Flowable<Integer> invoke(Integer t) {
             return Flowable.just(t);
         }
     };
 
-    Function<Integer, Flowable<Integer>> toRange = new Function<Integer, Flowable<Integer>>() {
+    Function1<Integer, Flowable<Integer>> toRange = new Function1<Integer, Flowable<Integer>>() {
         @Override
-        public Flowable<Integer> apply(Integer t) {
+        public Flowable<Integer> invoke(Integer t) {
             return Flowable.range(t, 2);
         }
     };
@@ -554,9 +553,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void testMapperThrows() {
-        Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.just(1).concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 throw new TestException();
             }
         }).subscribe(ts);
@@ -598,9 +597,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void testAsynchronousRun() {
-        Flowable.range(1, 2).concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.range(1, 2).concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return Flowable.range(1, 1000).subscribeOn(Schedulers.computation());
             }
         }).observeOn(Schedulers.single())
@@ -617,9 +616,9 @@ public class FlowableConcatMapEagerTest {
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        subject.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        subject.concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return Flowable.just(t);
             }
         })
@@ -647,9 +646,9 @@ public class FlowableConcatMapEagerTest {
 
         TestSubscriber<Object> ts = TestSubscriber.create(0);
 
-        Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.just(1).concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return Flowable.range(1, Flowable.bufferSize() * 2)
                         .doOnNext(new Function1<Integer, kotlin.Unit>() {
                             @Override
@@ -670,9 +669,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     @Ignore("Null values are not allowed in RS")
     public void testInnerNull() {
-        Flowable.just(1).concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.just(1).concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t) {
+            public Flowable<Integer> invoke(Integer t) {
                 return Flowable.just(null);
             }
         }).subscribe(ts);
@@ -786,7 +785,7 @@ public class FlowableConcatMapEagerTest {
     public void mappingBadCapacityHint() throws Exception {
         Flowable<Integer> source = Flowable.just(1);
         try {
-            Flowable.just(source, source, source).concatMapEager((Function)Functions.identity(), 10, -99);
+            Flowable.just(source, source, source).concatMapEager((Function1) Functions.identity(), 10, -99);
         } catch (IllegalArgumentException ex) {
             assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
         }
@@ -850,9 +849,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void empty() {
-        Flowable.<Integer>empty().hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.<Integer>empty().hide().concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.range(1, 2);
             }
         })
@@ -862,9 +861,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(1).hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        TestHelper.checkDisposed(Flowable.just(1).hide().concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.range(1, 2);
             }
         }));
@@ -872,9 +871,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void innerError() {
-        Flowable.<Integer>just(1).hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.<Integer>just(1).hide().concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.error(new TestException());
             }
         })
@@ -890,9 +889,9 @@ public class FlowableConcatMapEagerTest {
                 final PublishProcessor<Integer> ps1 = PublishProcessor.create();
                 final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
-                TestSubscriber<Integer> to = ps1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                TestSubscriber<Integer> to = ps1.concatMapEager(new Function1<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
+                    public Flowable<Integer> invoke(Integer v) {
                         return ps2;
                     }
                 }).test();
@@ -939,9 +938,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void innerErrorMaxConcurrency() {
-        Flowable.<Integer>just(1).hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.<Integer>just(1).hide().concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.error(new TestException());
             }
         }, 1, 128)
@@ -951,9 +950,9 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void innerCallableThrows() {
-        Flowable.<Integer>just(1).hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.<Integer>just(1).hide().concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.fromCallable(new Callable<Integer>() {
                     @Override
                     public Integer call() throws Exception {
@@ -980,9 +979,9 @@ public class FlowableConcatMapEagerTest {
         };
 
         Flowable.<Integer>just(1).hide()
-        .concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                .concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return us;
             }
         }, 1, 128)
@@ -997,9 +996,9 @@ public class FlowableConcatMapEagerTest {
         for (int i = 0; i < 500; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+            final TestSubscriber<Integer> to = ps1.concatMapEager(new Function1<Integer, Flowable<Integer>>() {
                 @Override
-                public Flowable<Integer> apply(Integer v) throws Exception {
+                public Flowable<Integer> invoke(Integer v) {
                     return Flowable.never();
                 }
             }).test();
@@ -1028,9 +1027,9 @@ public class FlowableConcatMapEagerTest {
         final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
 
         Flowable.just(1).hide()
-        .concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                .concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 to.cancel();
                 return Flowable.never();
             }
@@ -1042,12 +1041,12 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void innerErrorFused() {
-        Flowable.<Integer>just(1).hide().concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        Flowable.<Integer>just(1).hide().concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
-                return Flowable.range(1, 2).map(new Function<Integer, Integer>() {
+            public Flowable<Integer> invoke(Integer v) {
+                return Flowable.range(1, 2).map(new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer v) throws Exception {
+                    public Integer invoke(Integer v) {
                         throw new TestException();
                     }
                 });
@@ -1064,9 +1063,9 @@ public class FlowableConcatMapEagerTest {
         us.onNext(1);
         us.onComplete();
 
-        us.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        us.concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer v) throws Exception {
+            public Flowable<Integer> invoke(Integer v) {
                 return Flowable.just(1);
             }
         })
@@ -1077,12 +1076,12 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.concatMapEager(new Function<Object, Flowable<Object>>() {
+            public Flowable<Object> invoke(Flowable<Object> o) {
+                return o.concatMapEager(new Function1<Object, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Object v) throws Exception {
+                    public Flowable<Object> invoke(Object v) {
                         return Flowable.just(v);
                     }
                 });
@@ -1123,9 +1122,9 @@ public class FlowableConcatMapEagerTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-            .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+                    .concatMapEager(new Function1<Integer, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Integer v) throws Exception {
+                public Publisher<Integer> invoke(Integer v) {
                     return new Flowable<Integer>() {
                         @Override
                         protected void subscribeActual(Subscriber<? super Integer> s) {
@@ -1150,9 +1149,9 @@ public class FlowableConcatMapEagerTest {
     public void unboundedIn() {
         int n = Flowable.bufferSize() * 2;
         Flowable.range(1, n)
-        .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+                .concatMapEager(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(1);
             }
         }, Integer.MAX_VALUE, 16)
@@ -1207,9 +1206,9 @@ public class FlowableConcatMapEagerTest {
     @Test
     public void oneDelayed() {
         Flowable.just(1, 2, 3, 4, 5)
-        .concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                .concatMapEager(new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer i) throws Exception {
+            public Flowable<Integer> invoke(Integer i) {
                 return i == 3 ? Flowable.just(i) : Flowable
                         .just(i)
                         .delay(1, TimeUnit.MILLISECONDS, Schedulers.io());

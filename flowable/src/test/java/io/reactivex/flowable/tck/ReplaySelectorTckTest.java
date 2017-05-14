@@ -16,9 +16,9 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class ReplaySelectorTckTest extends BaseTck<Integer> {
@@ -27,7 +27,7 @@ public class ReplaySelectorTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return
-                Flowable.range(0, (int)elements).replay((Function)Functions.identity())
+                Flowable.range(0, (int) elements).replay((Function1) Functions.identity())
         ;
     }
 }

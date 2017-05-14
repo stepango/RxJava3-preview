@@ -13,17 +13,23 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.AtomicThrowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.MaybeObserver;
+import io.reactivex.observable.MaybeSource;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps upstream values into MaybeSources and merges their signals into one sequence.
@@ -32,12 +38,12 @@ import io.reactivex.observable.internal.queues.SpscLinkedArrayQueue;
  */
 public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
+    final Function1<? super T, ? extends MaybeSource<? extends R>> mapper;
 
     final boolean delayErrors;
 
-    public ObservableFlatMapMaybe(ObservableSource<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper,
-            boolean delayError) {
+    public ObservableFlatMapMaybe(ObservableSource<T> source, Function1<? super T, ? extends MaybeSource<? extends R>> mapper,
+                                  boolean delayError) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayError;
@@ -64,7 +70,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         final AtomicThrowable errors;
 
-        final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
+        final Function1<? super T, ? extends MaybeSource<? extends R>> mapper;
 
         final AtomicReference<SpscLinkedArrayQueue<R>> queue;
 
@@ -73,7 +79,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         volatile boolean cancelled;
 
         FlatMapMaybeObserver(Observer<? super R> actual,
-                Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors) {
+                             Function1<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors) {
             this.actual = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
@@ -97,7 +103,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
             MaybeSource<? extends R> ms;
 
             try {
-                ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null MaybeSource");
+                ms = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 d.dispose();

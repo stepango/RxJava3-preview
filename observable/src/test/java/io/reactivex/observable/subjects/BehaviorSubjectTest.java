@@ -13,22 +13,39 @@
 
 package io.reactivex.observable.subjects;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.*;
-import org.mockito.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class BehaviorSubjectTest {
 
@@ -246,10 +263,10 @@ public class BehaviorSubjectTest {
             System.out.printf("Turn: %d%n", i);
             src.firstElement()
                 .toObservable()
-                .flatMap(new Function<String, Observable<String>>() {
+                    .flatMap(new Function1<String, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(String t1) {
+                    public Observable<String> invoke(String t1) {
                         return Observable.just(t1 + ", " + t1);
                     }
                 })

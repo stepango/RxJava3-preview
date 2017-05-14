@@ -16,7 +16,7 @@ package io.reactivex.common.internal.utils;
 import java.util.Iterator;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
+import kotlin.jvm.functions.Function1;
 
 /**
  * An Iterable and Iterator that crashes with TestException after the given number
@@ -31,9 +31,9 @@ public final class CrashingMappedIterable<T> implements Iterable<T> {
 
     final int crashOnNext;
 
-    final Function<Integer, T> mapper;
+    final Function1<Integer, T> mapper;
 
-    public CrashingMappedIterable(int crashOnIterator, int crashOnHasNext, int crashOnNext, Function<Integer, T> mapper) {
+    public CrashingMappedIterable(int crashOnIterator, int crashOnHasNext, int crashOnNext, Function1<Integer, T> mapper) {
         this.crashOnIterator = crashOnIterator;
         this.crashOnHasNext = crashOnHasNext;
         this.crashOnNext = crashOnNext;
@@ -55,9 +55,9 @@ public final class CrashingMappedIterable<T> implements Iterable<T> {
 
         int count;
 
-        final Function<Integer, T> mapper;
+        final Function1<Integer, T> mapper;
 
-        CrashingMapperIterator(int crashOnHasNext, int crashOnNext, Function<Integer, T> mapper) {
+        CrashingMapperIterator(int crashOnHasNext, int crashOnNext, Function1<Integer, T> mapper) {
             this.crashOnHasNext = crashOnHasNext;
             this.crashOnNext = crashOnNext;
             this.mapper = mapper;
@@ -77,7 +77,7 @@ public final class CrashingMappedIterable<T> implements Iterable<T> {
                 throw new TestException("next()");
             }
             try {
-                return mapper.apply(count++);
+                return mapper.invoke(count++);
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }

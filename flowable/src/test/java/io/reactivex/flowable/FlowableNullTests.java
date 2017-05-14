@@ -40,7 +40,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.processors.AsyncProcessor;
 import io.reactivex.flowable.processors.BehaviorProcessor;
@@ -102,9 +101,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, (Publisher<Object>[])null);
@@ -113,9 +112,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsOneIsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, Flowable.never(), null).blockingLast();
@@ -123,9 +122,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableNull() {
-        Flowable.combineLatestDelayError((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError((Iterable<Publisher<Object>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         });
@@ -138,9 +137,9 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }).blockingLast();
@@ -149,9 +148,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableOneIsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }).blockingLast();
@@ -166,9 +165,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return null;
             }
         }, just1).blockingLast();
@@ -183,9 +182,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return null;
             }
         }).blockingLast();
@@ -627,9 +626,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void usingResourceSupplierNull() {
-        Flowable.using(null, new Function<Object, Publisher<Integer>>() {
+        Flowable.using(null, new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object d) {
+            public Publisher<Integer> invoke(Object d) {
                 return just1;
             }
         }, Functions.emptyConsumer());
@@ -652,9 +651,9 @@ public class FlowableNullTests {
             public Object call() {
                 return 1;
             }
-        }, new Function<Object, Publisher<Object>>() {
+        }, new Function1<Object, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Object d) {
+            public Publisher<Object> invoke(Object d) {
                 return null;
             }
         }, Functions.emptyConsumer()).blockingLast();
@@ -667,9 +666,9 @@ public class FlowableNullTests {
             public Object call() {
                 return 1;
             }
-        }, new Function<Object, Publisher<Integer>>() {
+        }, new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object d) {
+            public Publisher<Integer> invoke(Object d) {
                 return just1;
             }
         }, null);
@@ -677,9 +676,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterableNull() {
-        Flowable.zip((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.zip((Iterable<Publisher<Object>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         });
@@ -692,9 +691,9 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }).blockingLast();
@@ -709,9 +708,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterableFunctionReturnsNull() {
-        Flowable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
+        Flowable.zip(Arrays.asList(just1, just1), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return null;
             }
         }).blockingLast();
@@ -719,9 +718,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipPublisherNull() {
-        Flowable.zip((Publisher<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.zip((Publisher<Publisher<Object>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return 1;
             }
         });
@@ -734,9 +733,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipPublisherFunctionReturnsNull() {
-        Flowable.zip((Flowable.just(just1)), new Function<Object[], Object>() {
+        Flowable.zip((Flowable.just(just1)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return null;
             }
         }).blockingLast();
@@ -744,9 +743,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Flowable.zipIterable((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
+        Flowable.zipIterable((Iterable<Publisher<Object>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return 1;
             }
         }, true, 128);
@@ -759,9 +758,9 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return 1;
             }
         }, true, 128).blockingLast();
@@ -776,9 +775,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
-        Flowable.zipIterable(Arrays.asList(just1, just1), new Function<Object[], Object>() {
+        Flowable.zipIterable(Arrays.asList(just1, just1), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return null;
             }
         }, true, 128).blockingLast();
@@ -845,9 +844,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferOpenCloseOpenNull() {
-        just1.buffer(null, new Function<Object, Publisher<Integer>>() {
+        just1.buffer(null, new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object o) {
+            public Publisher<Integer> invoke(Object o) {
                 return just1;
             }
         });
@@ -855,14 +854,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void bufferOpenCloseCloseNull() {
-        just1.buffer(just1, (Function<Integer, Publisher<Object>>)null);
+        just1.buffer(just1, (Function1<Integer, Publisher<Object>>) null);
     }
 
     @Test(expected = NullPointerException.class)
     public void bufferOpenCloseCloseReturnsNull() {
-        just1.buffer(just1, new Function<Integer, Publisher<Object>>() {
+        just1.buffer(just1, new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -995,9 +994,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void concatMapReturnsNull() {
-        just1.concatMap(new Function<Integer, Publisher<Object>>() {
+        just1.concatMap(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1010,9 +1009,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void concatMapIterableReturnNull() {
-        just1.concatMapIterable(new Function<Integer, Iterable<Object>>() {
+        just1.concatMapIterable(new Function1<Integer, Iterable<Object>>() {
             @Override
-            public Iterable<Object> apply(Integer v) {
+            public Iterable<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1020,9 +1019,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void concatMapIterableIteratorNull() {
-        just1.concatMapIterable(new Function<Integer, Iterable<Object>>() {
+        just1.concatMapIterable(new Function1<Integer, Iterable<Object>>() {
             @Override
-            public Iterable<Object> apply(Integer v) {
+            public Iterable<Object> invoke(Integer v) {
                 return new Iterable<Object>() {
                     @Override
                     public Iterator<Object> iterator() {
@@ -1050,9 +1049,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void debounceFunctionReturnsNull() {
-        just1.debounce(new Function<Integer, Publisher<Object>>() {
+        just1.debounce(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1080,9 +1079,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delayWithFunctionReturnsNull() {
-        just1.delay(new Function<Integer, Publisher<Object>>() {
+        just1.delay(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1120,9 +1119,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delayBothInitialSupplierNull() {
-        just1.delay(null, new Function<Integer, Publisher<Integer>>() {
+        just1.delay(null, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         });
@@ -1130,9 +1129,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delayBothInitialSupplierReturnsNull() {
-        just1.delay(null, new Function<Integer, Publisher<Integer>>() {
+        just1.delay(null, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         }).blockingSubscribe();
@@ -1145,9 +1144,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierReturnsNull() {
-        just1.delay(just1, new Function<Integer, Publisher<Object>>() {
+        just1.delay(just1, new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1160,9 +1159,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctSupplierNull() {
-        just1.distinct(new Function<Integer, Object>() {
+        just1.distinct(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, null);
@@ -1170,9 +1169,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctSupplierReturnsNull() {
-        just1.distinct(new Function<Integer, Object>() {
+        just1.distinct(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, new Callable<Collection<Object>>() {
@@ -1185,9 +1184,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctFunctionReturnsNull() {
-        just1.distinct(new Function<Integer, Object>() {
+        just1.distinct(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1195,7 +1194,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctUntilChangedFunctionNull() {
-        just1.distinctUntilChanged((Function<Integer, Integer>)null);
+        just1.distinctUntilChanged((Function1<Integer, Integer>) null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1205,9 +1204,9 @@ public class FlowableNullTests {
 
     @Test
     public void distinctUntilChangedFunctionReturnsNull() {
-        Flowable.range(1, 2).distinctUntilChanged(new Function<Integer, Object>() {
+        Flowable.range(1, 2).distinctUntilChanged(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).test().assertResult(1);
@@ -1330,9 +1329,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapFunctionReturnsNull() {
-        just1.flatMap(new Function<Integer, Publisher<Object>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1340,9 +1339,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapNotificationOnNextNull() {
-        just1.flatMap(null, new Function<Throwable, Publisher<Integer>>() {
+        just1.flatMap(null, new Function1<Throwable, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Throwable e) {
+            public Publisher<Integer> invoke(Throwable e) {
                 return just1;
             }
         }, new Callable<Publisher<Integer>>() {
@@ -1355,14 +1354,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapNotificationOnNextReturnsNull() {
-        just1.flatMap(new Function<Integer, Publisher<Integer>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return null;
             }
-        }, new Function<Throwable, Publisher<Integer>>() {
+        }, new Function1<Throwable, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Throwable e) {
+            public Publisher<Integer> invoke(Throwable e) {
                 return just1;
             }
         }, new Callable<Publisher<Integer>>() {
@@ -1375,9 +1374,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapNotificationOnErrorNull() {
-        just1.flatMap(new Function<Integer, Publisher<Integer>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         }, null, new Callable<Publisher<Integer>>() {
@@ -1390,14 +1389,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapNotificationOnErrorReturnsNull() {
-        Flowable.error(new TestException()).flatMap(new Function<Object, Publisher<Integer>>() {
+        Flowable.error(new TestException()).flatMap(new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object v) {
+            public Publisher<Integer> invoke(Object v) {
                 return just1;
             }
-        }, new Function<Throwable, Publisher<Integer>>() {
+        }, new Function1<Throwable, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Throwable e) {
+            public Publisher<Integer> invoke(Throwable e) {
                 return null;
             }
         }, new Callable<Publisher<Integer>>() {
@@ -1410,14 +1409,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapNotificationOnCompleteNull() {
-        just1.flatMap(new Function<Integer, Publisher<Integer>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
-        }, new Function<Throwable, Publisher<Integer>>() {
+        }, new Function1<Throwable, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Throwable e) {
+            public Publisher<Integer> invoke(Throwable e) {
                 return just1;
             }
         }, null);
@@ -1425,14 +1424,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapNotificationOnCompleteReturnsNull() {
-        just1.flatMap(new Function<Integer, Publisher<Integer>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
-        }, new Function<Throwable, Publisher<Integer>>() {
+        }, new Function1<Throwable, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Throwable e) {
+            public Publisher<Integer> invoke(Throwable e) {
                 return just1;
             }
         }, new Callable<Publisher<Integer>>() {
@@ -1455,9 +1454,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapCombinerMapperReturnsNull() {
-        just1.flatMap(new Function<Integer, Publisher<Object>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }, new BiFunction<Integer, Object, Object>() {
@@ -1470,9 +1469,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapCombinerCombinerNull() {
-        just1.flatMap(new Function<Integer, Publisher<Integer>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         }, null);
@@ -1480,9 +1479,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapCombinerCombinerReturnsNull() {
-        just1.flatMap(new Function<Integer, Publisher<Integer>>() {
+        just1.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         }, new BiFunction<Integer, Integer, Object>() {
@@ -1500,9 +1499,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapIterableMapperReturnsNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Object>>() {
+        just1.flatMapIterable(new Function1<Integer, Iterable<Object>>() {
             @Override
-            public Iterable<Object> apply(Integer v) {
+            public Iterable<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1510,9 +1509,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapIterableMapperIteratorNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Object>>() {
+        just1.flatMapIterable(new Function1<Integer, Iterable<Object>>() {
             @Override
-            public Iterable<Object> apply(Integer v) {
+            public Iterable<Object> invoke(Integer v) {
                 return new Iterable<Object>() {
                     @Override
                     public Iterator<Object> iterator() {
@@ -1525,9 +1524,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapIterableMapperIterableOneNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        just1.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1, null);
             }
         }).blockingSubscribe();
@@ -1535,9 +1534,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapIterableCombinerNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        just1.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1);
             }
         }, null);
@@ -1545,9 +1544,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapIterableCombinerReturnsNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        just1.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1);
             }
         }, new BiFunction<Integer, Integer, Object>() {
@@ -1599,9 +1598,9 @@ public class FlowableNullTests {
     }
 
     public void groupByKeyNull() {
-        just1.groupBy(new Function<Integer, Object>() {
+        just1.groupBy(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1609,9 +1608,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void groupByValueNull() {
-        just1.groupBy(new Function<Integer, Object>() {
+        just1.groupBy(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, null);
@@ -1619,14 +1618,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void groupByValueReturnsNull() {
-        just1.groupBy(new Function<Integer, Object>() {
+        just1.groupBy(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1659,9 +1658,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mapReturnsNull() {
-        just1.map(new Function<Integer, Object>() {
+        just1.map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1694,14 +1693,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextFunctionNull() {
-        just1.onErrorResumeNext((Function<Throwable, Publisher<Integer>>)null);
+        just1.onErrorResumeNext((Function1<Throwable, Publisher<Integer>>) null);
     }
 
     @Test(expected = NullPointerException.class)
     public void onErrorResumeNextFunctionReturnsNull() {
-        Flowable.error(new TestException()).onErrorResumeNext(new Function<Throwable, Publisher<Object>>() {
+        Flowable.error(new TestException()).onErrorResumeNext(new Function1<Throwable, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Throwable e) {
+            public Publisher<Object> invoke(Throwable e) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1725,9 +1724,9 @@ public class FlowableNullTests {
     @Test
     public void onErrorReturnFunctionReturnsNull() {
         try {
-            Flowable.error(new TestException()).onErrorReturn(new Function<Throwable, Object>() {
+            Flowable.error(new TestException()).onErrorReturn(new Function1<Throwable, Object>() {
                 @Override
-                public Object apply(Throwable e) {
+                public Object invoke(Throwable e) {
                     return null;
                 }
             }).blockingSubscribe();
@@ -1752,9 +1751,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void publishFunctionReturnsNull() {
-        just1.publish(new Function<Flowable<Integer>, Publisher<Object>>() {
+        just1.publish(new Function1<Flowable<Integer>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Integer> v) {
+            public Publisher<Object> invoke(Flowable<Integer> v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1837,9 +1836,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void repeatWhenFunctionReturnsNull() {
-        just1.repeatWhen(new Function<Flowable<Object>, Publisher<Object>>() {
+        just1.repeatWhen(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> v) {
+            public Publisher<Object> invoke(Flowable<Object> v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1847,14 +1846,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replaySelectorNull() {
-        just1.replay((Function<Flowable<Integer>, Flowable<Integer>>)null);
+        just1.replay((Function1<Flowable<Integer>, Flowable<Integer>>) null);
     }
 
     @Test(expected = NullPointerException.class)
     public void replaySelectorReturnsNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Object>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Integer> o) {
+            public Publisher<Object> invoke(Flowable<Integer> o) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1862,14 +1861,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replayBoundedSelectorNull() {
-        just1.replay((Function<Flowable<Integer>, Flowable<Integer>>)null, 1, 1, TimeUnit.SECONDS);
+        just1.replay((Function1<Flowable<Integer>, Flowable<Integer>>) null, 1, 1, TimeUnit.SECONDS);
     }
 
     @Test(expected = NullPointerException.class)
     public void replayBoundedSelectorReturnsNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Object>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Integer> v) {
+            public Publisher<Object> invoke(Flowable<Integer> v) {
                 return null;
             }
         }, 1, 1, TimeUnit.SECONDS).blockingSubscribe();
@@ -1882,9 +1881,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replayBoundedUnitNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Integer>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         }, 1, 1, null).blockingSubscribe();
@@ -1892,9 +1891,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replayBoundedSchedulerNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Integer>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         }, 1, 1, TimeUnit.SECONDS, null).blockingSubscribe();
@@ -1907,9 +1906,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replayTimeBoundedSelectorReturnsNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Object>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Integer> v) {
+            public Publisher<Object> invoke(Flowable<Integer> v) {
                 return null;
             }
         }, 1, TimeUnit.SECONDS, Schedulers.single()).blockingSubscribe();
@@ -1917,9 +1916,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replaySelectorTimeBoundedUnitNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Integer>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         }, 1, null, Schedulers.single());
@@ -1927,9 +1926,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void replaySelectorTimeBoundedSchedulerNull() {
-        just1.replay(new Function<Flowable<Integer>, Publisher<Integer>>() {
+        just1.replay(new Function1<Flowable<Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Flowable<Integer> v) {
+            public Publisher<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         }, 1, TimeUnit.SECONDS, null);
@@ -1982,9 +1981,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void retryWhenFunctionReturnsNull() {
-        Flowable.error(new TestException()).retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
+        Flowable.error(new TestException()).retryWhen(new Function1<Flowable<? extends Throwable>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<? extends Throwable> f) {
+            public Publisher<Object> invoke(Flowable<? extends Throwable> f) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2227,9 +2226,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void switchMapFunctionReturnsNull() {
-        just1.switchMap(new Function<Integer, Publisher<Object>>() {
+        just1.switchMap(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2327,9 +2326,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutSelectorReturnsNull() {
-        just1.timeout(new Function<Integer, Publisher<Object>>() {
+        just1.timeout(new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2337,9 +2336,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutSelectorOtherNull() {
-        just1.timeout(new Function<Integer, Publisher<Integer>>() {
+        just1.timeout(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         }, null);
@@ -2362,9 +2361,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Publisher<Integer>)null, new Function<Integer, Publisher<Integer>>() {
+        just1.timeout((Publisher<Integer>) null, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) {
+            public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
         });
@@ -2377,9 +2376,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemReturnsNull() {
-        just1.timeout(just1, new Function<Integer, Publisher<Object>>() {
+        just1.timeout(just1, new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2437,9 +2436,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMapValueNull() {
-        just1.toMap(new Function<Integer, Object>() {
+        just1.toMap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, null);
@@ -2447,14 +2446,14 @@ public class FlowableNullTests {
 
     @Test
     public void toMapValueSelectorReturnsNull() {
-        just1.toMap(new Function<Integer, Object>() {
+        just1.toMap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).blockingLast();
@@ -2462,14 +2461,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMapMapSupplierNull() {
-        just1.toMap(new Function<Integer, Object>() {
+        just1.toMap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, null);
@@ -2477,14 +2476,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMapMapSupplierReturnsNull() {
-        just1.toMap(new Function<Integer, Object>() {
+        just1.toMap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, new Callable<Map<Object, Object>>() {
@@ -2502,9 +2501,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMultimapValueNull() {
-        just1.toMultimap(new Function<Integer, Object>() {
+        just1.toMultimap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, null);
@@ -2512,14 +2511,14 @@ public class FlowableNullTests {
 
     @Test
     public void toMultiMapValueSelectorReturnsNullAllowed() {
-        just1.toMap(new Function<Integer, Object>() {
+        just1.toMap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return null;
             }
         }).blockingLast();
@@ -2527,14 +2526,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMultimapMapMapSupplierNull() {
-        just1.toMultimap(new Function<Integer, Object>() {
+        just1.toMultimap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, null);
@@ -2542,14 +2541,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMultimapMapSupplierReturnsNull() {
-        just1.toMultimap(new Function<Integer, Object>() {
+        just1.toMultimap(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Object>() {
+        }, new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) {
+            public Object invoke(Integer v) {
                 return v;
             }
         }, new Callable<Map<Object, Collection<Object>>>() {
@@ -2562,14 +2561,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMultimapMapMapCollectionSupplierNull() {
-        just1.toMultimap(new Function<Integer, Integer>() {
+        just1.toMultimap(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Integer>() {
+        }, new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 return v;
             }
         }, new Callable<Map<Integer, Collection<Integer>>>() {
@@ -2582,14 +2581,14 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void toMultimapMapCollectionSupplierReturnsNull() {
-        just1.toMultimap(new Function<Integer, Integer>() {
+        just1.toMultimap(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 return v;
             }
-        }, new Function<Integer, Integer>() {
+        }, new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 return v;
             }
         }, new Callable<Map<Integer, Collection<Integer>>>() {
@@ -2597,9 +2596,9 @@ public class FlowableNullTests {
             public Map<Integer, Collection<Integer>> call() {
                 return new HashMap<Integer, Collection<Integer>>();
             }
-        }, new Function<Integer, Collection<Integer>>() {
+        }, new Function1<Integer, Collection<Integer>>() {
             @Override
-            public Collection<Integer> apply(Integer v) {
+            public Collection<Integer> invoke(Integer v) {
                 return null;
             }
         }).blockingLast();
@@ -2637,9 +2636,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void windowOpenCloseOpenNull() {
-        just1.window(null, new Function<Object, Publisher<Integer>>() {
+        just1.window(null, new Function1<Object, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Object v) {
+            public Publisher<Integer> invoke(Object v) {
                 return just1;
             }
         });
@@ -2652,9 +2651,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void windowOpenCloseCloseReturnsNull() {
-        Flowable.never().window(just1, new Function<Integer, Publisher<Object>>() {
+        Flowable.never().window(just1, new Function1<Integer, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Integer v) {
+            public Publisher<Object> invoke(Integer v) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2885,9 +2884,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return null;
             }
         }, 128).blockingLast();
@@ -2907,9 +2906,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipFlowableNull() {
-        Flowable.zip((Flowable<Flowable<Object>>)null, new Function<Object[], Object>() {
+        Flowable.zip((Flowable<Flowable<Object>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return 1;
             }
         });
@@ -2922,9 +2921,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipFlowableFunctionReturnsNull() {
-        Flowable.zip((Flowable.just(just1)), new Function<Object[], Object>() {
+        Flowable.zip((Flowable.just(just1)), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] a) {
+            public Object invoke(Object[] a) {
                 return null;
             }
         }).blockingLast();
@@ -2937,9 +2936,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorVarargsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, 128, (Flowable<Object>[])null);
@@ -2948,9 +2947,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorVarargsOneIsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, 128, Flowable.never(), null).blockingLast();
@@ -2958,9 +2957,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableNull() {
-        Flowable.combineLatestDelayError((Iterable<Flowable<Object>>)null, new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError((Iterable<Flowable<Object>>) null, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, 128);
@@ -2973,9 +2972,9 @@ public class FlowableNullTests {
             public Iterator<Flowable<Object>> iterator() {
                 return null;
             }
-        }, new Function<Object[], Object>() {
+        }, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, 128).blockingLast();
@@ -2989,9 +2988,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableOneIsNull() {
-        Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return 1;
             }
         }, 128).blockingLast();
@@ -3025,9 +3024,9 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorVarargsFunctionReturnsNull() {
-        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+        Flowable.combineLatestDelayError(new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] v) {
+            public Object invoke(Object[] v) {
                 return null;
             }
         }, 128, just1).blockingLast();

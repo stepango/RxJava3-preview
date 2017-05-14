@@ -14,19 +14,24 @@
 package io.reactivex.observable.internal.operators;
 
 
-
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.PublishSubject;
+import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableConcatMapTest {
 
@@ -34,9 +39,9 @@ public class ObservableConcatMapTest {
     public void asyncFused() {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
-        TestObserver<Integer> to = us.concatMap(new Function<Integer, ObservableSource<Integer>>() {
+        TestObserver<Integer> to = us.concatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         })
@@ -51,9 +56,9 @@ public class ObservableConcatMapTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.<Integer>just(1).hide()
-        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.error(new TestException());
             }
         }));
@@ -62,9 +67,9 @@ public class ObservableConcatMapTest {
     @Test
     public void dispose2() {
         TestHelper.checkDisposed(Observable.<Integer>just(1).hide()
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.error(new TestException());
             }
         }));
@@ -73,9 +78,9 @@ public class ObservableConcatMapTest {
     @Test
     public void mainError() {
         Observable.<Integer>error(new TestException())
-        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         })
@@ -86,9 +91,9 @@ public class ObservableConcatMapTest {
     @Test
     public void innerError() {
         Observable.<Integer>just(1).hide()
-        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.error(new TestException());
             }
         })
@@ -99,9 +104,9 @@ public class ObservableConcatMapTest {
     @Test
     public void mainErrorDelayed() {
         Observable.<Integer>error(new TestException())
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         })
@@ -112,9 +117,9 @@ public class ObservableConcatMapTest {
     @Test
     public void innerErrorDelayError() {
         Observable.<Integer>just(1).hide()
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.error(new TestException());
             }
         })
@@ -125,9 +130,9 @@ public class ObservableConcatMapTest {
     @Test
     public void innerErrorDelayError2() {
         Observable.<Integer>just(1).hide()
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.fromCallable(new Callable<Integer>() {
                     @Override
                     public Integer call() throws Exception {
@@ -156,9 +161,9 @@ public class ObservableConcatMapTest {
                     observer.onComplete();
                 }
             }
-            .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                    .concatMap(new Function1<Integer, ObservableSource<Integer>>() {
                 @Override
-                public ObservableSource<Integer> apply(Integer v) throws Exception {
+                public ObservableSource<Integer> invoke(Integer v) {
                     return Observable.range(v, 2);
                 }
             })
@@ -187,9 +192,9 @@ public class ObservableConcatMapTest {
                     observer.onComplete();
                 }
             }
-            .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                    .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
                 @Override
-                public ObservableSource<Integer> apply(Integer v) throws Exception {
+                public ObservableSource<Integer> invoke(Integer v) {
                     return Observable.range(v, 2);
                 }
             })
@@ -205,9 +210,9 @@ public class ObservableConcatMapTest {
     @Test
     public void normalDelayErrors() {
         Observable.just(1).hide()
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         })
@@ -218,9 +223,9 @@ public class ObservableConcatMapTest {
     @Test
     public void normalDelayErrorsTillTheEnd() {
         Observable.just(1).hide()
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         }, 16, true)
@@ -236,9 +241,9 @@ public class ObservableConcatMapTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserver<Integer> to = ps1.concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                TestObserver<Integer> to = ps1.concatMap(new Function1<Integer, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                    public ObservableSource<Integer> invoke(Integer v) {
                         return ps2;
                     }
                 }).test();
@@ -275,9 +280,9 @@ public class ObservableConcatMapTest {
     @Test
     public void mapperThrows() {
         Observable.just(1).hide()
-        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -288,15 +293,15 @@ public class ObservableConcatMapTest {
     @Test
     public void fusedPollThrows() {
         Observable.just(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         })
-        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         })
@@ -307,15 +312,15 @@ public class ObservableConcatMapTest {
     @Test
     public void fusedPollThrowsDelayError() {
         Observable.just(1)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         })
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         })
@@ -326,9 +331,9 @@ public class ObservableConcatMapTest {
     @Test
     public void mapperThrowsDelayError() {
         Observable.just(1).hide()
-        .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -345,9 +350,9 @@ public class ObservableConcatMapTest {
 
         try {
             Observable.just(1).hide()
-            .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                    .concatMapDelayError(new Function1<Integer, ObservableSource<Integer>>() {
                 @Override
-                public ObservableSource<Integer> apply(Integer v) throws Exception {
+                public ObservableSource<Integer> invoke(Integer v) {
                     return new Observable<Integer>() {
                         @Override
                         protected void subscribeActual(Observer<? super Integer> observer) {

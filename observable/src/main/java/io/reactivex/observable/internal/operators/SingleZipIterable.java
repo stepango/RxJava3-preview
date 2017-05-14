@@ -13,21 +13,24 @@
 
 package io.reactivex.observable.internal.operators;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.operators.SingleZipArray.ZipCoordinator;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleZipIterable<T, R> extends Single<R> {
 
     final Iterable<? extends SingleSource<? extends T>> sources;
 
-    final Function<? super Object[], ? extends R> zipper;
+    final Function1<? super Object[], ? extends R> zipper;
 
-    public SingleZipIterable(Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+    public SingleZipIterable(Iterable<? extends SingleSource<? extends T>> sources, Function1<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }
@@ -78,10 +81,10 @@ public final class SingleZipIterable<T, R> extends Single<R> {
         }
     }
 
-    final class SingletonArrayFunc implements Function<T, R> {
+    final class SingletonArrayFunc implements Function1<T, R> {
         @Override
-        public R apply(T t) throws Exception {
-            return zipper.apply(new Object[] { t });
+        public R invoke(T t) {
+            return zipper.invoke(new Object[]{t});
         }
     }
 }

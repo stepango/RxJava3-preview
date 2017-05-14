@@ -25,7 +25,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.CompletableSource;
@@ -49,9 +48,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 throw new TestException();
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.complete();
             }
         }, new Function1<Object, Unit>() {
@@ -72,9 +71,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.error(new TestException());
             }
         }, new Function1<Object, Unit>() {
@@ -95,9 +94,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.complete();
             }
         }, new Function1<Object, Unit>() {
@@ -118,9 +117,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.error(new TestException());
             }
         }, new Function1<Object, Unit>() {
@@ -141,9 +140,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.complete();
             }
         }, new Function1<Object, Unit>() {
@@ -164,9 +163,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 throw new TestException();
             }
         }, new Function1<Object, Unit>() {
@@ -187,9 +186,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 throw new TestException();
             }
         }, new Function1<Object, Unit>() {
@@ -209,9 +208,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 throw new TestException("Main");
             }
         }, new Function1<Object, Unit>() {
@@ -238,9 +237,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+            }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     throw new TestException("Main");
                 }
             }, new Function1<Object, Unit>() {
@@ -267,9 +266,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.never();
             }
         }, new Function1<Object, Unit>() {
@@ -295,9 +294,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+            }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     return Completable.never();
                 }
             }, new Function1<Object, Unit>() {
@@ -323,9 +322,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     return Completable.never();
                 }
         }, new Function1<Object, Unit>() {
@@ -343,9 +342,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.complete();
             }
         }, new Function1<Object, Unit>() {
@@ -366,9 +365,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.complete();
             }
         }, new Function1<Object, Unit>() {
@@ -388,9 +387,9 @@ public class CompletableUsingTest {
             public Object call() throws Exception {
                 return 1;
             }
-        }, new Function<Object, CompletableSource>() {
+        }, new Function1<Object, CompletableSource>() {
             @Override
-            public CompletableSource apply(Object v) throws Exception {
+            public CompletableSource invoke(Object v) {
                 return Completable.error(new TestException("Main"));
             }
         }, new Function1<Object, Unit>() {
@@ -417,9 +416,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+            }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     return Completable.wrap(new CompletableSource() {
                         @Override
                         public void subscribe(CompletableObserver s) {
@@ -460,9 +459,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+            }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     return ps.ignoreElements();
                 }
             }, new Function1<Object, Unit>() {
@@ -504,9 +503,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+            }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     return ps.ignoreElements();
                 }
             }, new Function1<Object, Unit>() {
@@ -548,9 +547,9 @@ public class CompletableUsingTest {
                 public Object call() throws Exception {
                     return 1;
                 }
-            }, new Function<Object, CompletableSource>() {
+            }, new Function1<Object, CompletableSource>() {
                 @Override
-                public CompletableSource apply(Object v) throws Exception {
+                public CompletableSource invoke(Object v) {
                     return ps.ignoreElements();
                 }
             }, new Function1<Object, Unit>() {

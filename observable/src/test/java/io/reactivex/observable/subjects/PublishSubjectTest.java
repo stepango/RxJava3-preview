@@ -26,7 +26,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.TestHelper;
@@ -223,17 +222,17 @@ public class PublishSubjectTest {
 
         final ArrayList<String> list = new ArrayList<String>();
 
-        s.flatMap(new Function<Integer, Observable<String>>() {
+        s.flatMap(new Function1<Integer, Observable<String>>() {
 
             @Override
-            public Observable<String> apply(final Integer v) {
+            public Observable<String> invoke(final Integer v) {
                 countParent.incrementAndGet();
 
                 // then subscribe to subject again (it will not receive the previous value)
-                return s.map(new Function<Integer, String>() {
+                return s.map(new Function1<Integer, String>() {
 
                     @Override
-                    public String apply(Integer v2) {
+                    public String invoke(Integer v2) {
                         countChildren.incrementAndGet();
                         return "Parent: " + v + " Child: " + v2;
                     }
@@ -318,10 +317,10 @@ public class PublishSubjectTest {
             System.out.printf("Turn: %d%n", i);
             src.firstElement()
                 .toObservable()
-                .flatMap(new Function<String, Observable<String>>() {
+                    .flatMap(new Function1<String, Observable<String>>() {
 
                     @Override
-                    public Observable<String> apply(String t1) {
+                    public Observable<String> invoke(String t1) {
                         return Observable.just(t1 + ", " + t1);
                     }
                 })

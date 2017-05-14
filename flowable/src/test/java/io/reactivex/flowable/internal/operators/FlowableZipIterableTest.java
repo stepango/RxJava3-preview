@@ -27,7 +27,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
 import io.reactivex.flowable.Flowable;
@@ -353,10 +352,10 @@ public class FlowableZipIterableTest {
         }
     };
 
-    static final class SquareStr implements Function<Integer, String> {
+    static final class SquareStr implements Function1<Integer, String> {
         final AtomicInteger counter = new AtomicInteger();
         @Override
-        public String apply(Integer t1) {
+        public String invoke(Integer t1) {
             counter.incrementAndGet();
             System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1 * t1));
             return " " + (t1 * t1);
@@ -387,9 +386,9 @@ public class FlowableZipIterableTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Integer>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Integer> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Integer> o) {
                 return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
                     @Override
                     public Object apply(Integer a, Integer b) throws Exception {

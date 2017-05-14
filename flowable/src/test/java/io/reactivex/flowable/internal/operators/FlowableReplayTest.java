@@ -37,7 +37,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
@@ -213,19 +212,19 @@ public class FlowableReplayTest {
 
     @Test
     public void testReplaySelector() {
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function1<Integer, Integer> dbl = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * 2;
             }
 
         };
 
-        Function<Flowable<Integer>, Flowable<Integer>> selector = new Function<Flowable<Integer>, Flowable<Integer>>() {
+        Function1<Flowable<Integer>, Flowable<Integer>> selector = new Function1<Flowable<Integer>, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> t1) {
+            public Flowable<Integer> invoke(Flowable<Integer> t1) {
                 return t1.map(dbl);
             }
 
@@ -275,19 +274,19 @@ public class FlowableReplayTest {
     @Test
     public void testBufferedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function1<Integer, Integer> dbl = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * 2;
             }
 
         };
 
-        Function<Flowable<Integer>, Flowable<Integer>> selector = new Function<Flowable<Integer>, Flowable<Integer>>() {
+        Function1<Flowable<Integer>, Flowable<Integer>> selector = new Function1<Flowable<Integer>, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> t1) {
+            public Flowable<Integer> invoke(Flowable<Integer> t1) {
                 return t1.map(dbl);
             }
 
@@ -335,19 +334,19 @@ public class FlowableReplayTest {
     @Test
     public void testWindowedReplaySelector() {
 
-        final Function<Integer, Integer> dbl = new Function<Integer, Integer>() {
+        final Function1<Integer, Integer> dbl = new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * 2;
             }
 
         };
 
-        Function<Flowable<Integer>, Flowable<Integer>> selector = new Function<Flowable<Integer>, Flowable<Integer>>() {
+        Function1<Flowable<Integer>, Flowable<Integer>> selector = new Function1<Flowable<Integer>, Flowable<Integer>>() {
 
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> t1) {
+            public Flowable<Integer> invoke(Flowable<Integer> t1) {
                 return t1.map(dbl);
             }
 
@@ -501,9 +500,9 @@ public class FlowableReplayTest {
         });
 
         Flowable<Integer> result = source.replay(
-        new Function<Flowable<Integer>, Flowable<Integer>>() {
+                new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
+            public Flowable<Integer> invoke(Flowable<Integer> o) {
                 return o.take(2);
             }
         });
@@ -671,10 +670,10 @@ public class FlowableReplayTest {
         when(mockScheduler.createWorker()).thenReturn(spiedWorker);
 
         // Flowable under test
-        Function<Integer, Integer> mockFunc = mock(Function.class);
+        Function1<Integer, Integer> mockFunc = mock(Function1.class);
         IllegalArgumentException illegalArgumentException = new IllegalArgumentException();
-        when(mockFunc.apply(1)).thenReturn(1);
-        when(mockFunc.apply(2)).thenThrow(illegalArgumentException);
+        when(mockFunc.invoke(1)).thenReturn(1);
+        when(mockFunc.invoke(2)).thenThrow(illegalArgumentException);
         ConnectableFlowable<Integer> replay = Flowable.just(1, 2, 3).map(mockFunc)
                 .doOnNext(sourceNext)
                 .doOnCancel(sourceUnsubscribed)

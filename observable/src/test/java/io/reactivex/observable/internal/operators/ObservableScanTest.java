@@ -27,7 +27,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -266,9 +265,9 @@ public class ObservableScanTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.scan(new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {
@@ -278,9 +277,9 @@ public class ObservableScanTest {
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.scan(0, new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {
@@ -306,9 +305,9 @@ public class ObservableScanTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
+            public Object invoke(Observable<Object> o) {
                 return o.scan(0, new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {

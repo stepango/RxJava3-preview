@@ -34,7 +34,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Burst;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.FlowableEventStream;
@@ -424,9 +423,9 @@ public class FlowableScanTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.scan(new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {
@@ -436,9 +435,9 @@ public class FlowableScanTest {
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.scan(0, new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {

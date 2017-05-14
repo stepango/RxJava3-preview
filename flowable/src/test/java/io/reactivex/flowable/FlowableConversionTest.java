@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.internal.operators.FlowableFilter;
 import io.reactivex.flowable.internal.operators.FlowableMap;
@@ -61,17 +60,17 @@ public class FlowableConversionTest {
             return x(new RobotConversionFunc<T, R>(operator));
         }
 
-        public <R, O> O x(Function<Publisher<T>, O> operator) {
+        public <R, O> O x(Function1<Publisher<T>, O> operator) {
             try {
-                return operator.apply(onSubscribe);
+                return operator.invoke(onSubscribe);
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
 
-        public <R> CylonDetectorObservable<? extends R> compose(Function<CylonDetectorObservable<? super T>, CylonDetectorObservable<? extends R>> transformer) {
+        public <R> CylonDetectorObservable<? extends R> compose(Function1<CylonDetectorObservable<? super T>, CylonDetectorObservable<? extends R>> transformer) {
             try {
-                return transformer.apply(this);
+                return transformer.invoke(this);
             } catch (Throwable ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
@@ -81,14 +80,14 @@ public class FlowableConversionTest {
             return new CylonDetectorObservable<T>(new FlowableFilter<T>(Flowable.fromPublisher(onSubscribe), predicate));
         }
 
-        public final <R> CylonDetectorObservable<R> boop(Function<? super T, ? extends R> func) {
+        public final <R> CylonDetectorObservable<R> boop(Function1<? super T, ? extends R> func) {
             return new CylonDetectorObservable<R>(new FlowableMap<T, R>(Flowable.fromPublisher(onSubscribe), func));
         }
 
         public CylonDetectorObservable<String> DESTROY() {
-            return boop(new Function<T, String>() {
+            return boop(new Function1<T, String>() {
                 @Override
-                public String apply(T t) {
+                public String invoke(T t) {
                     Object cylon = ((Jail) t).cylon;
                     throwOutTheAirlock(cylon);
                     if (t instanceof Jail) {
@@ -106,7 +105,7 @@ public class FlowableConversionTest {
         }
     }
 
-    public static class RobotConversionFunc<T, R> implements Function<Publisher<T>, CylonDetectorObservable<R>> {
+    public static class RobotConversionFunc<T, R> implements Function1<Publisher<T>, CylonDetectorObservable<R>> {
         private FlowableOperator<? extends R, ? super T> operator;
 
         public RobotConversionFunc(FlowableOperator<? extends R, ? super T> operator) {
@@ -114,7 +113,7 @@ public class FlowableConversionTest {
         }
 
         @Override
-        public CylonDetectorObservable<R> apply(final Publisher<T> onSubscribe) {
+        public CylonDetectorObservable<R> invoke(final Publisher<T> onSubscribe) {
             return CylonDetectorObservable.create(new Publisher<R>() {
                 @Override
                 public void subscribe(Subscriber<? super R> o) {
@@ -133,16 +132,16 @@ public class FlowableConversionTest {
         }
     }
 
-    public static class ConvertToCylonDetector<T> implements Function<Publisher<T>, CylonDetectorObservable<T>> {
+    public static class ConvertToCylonDetector<T> implements Function1<Publisher<T>, CylonDetectorObservable<T>> {
         @Override
-        public CylonDetectorObservable<T> apply(final Publisher<T> onSubscribe) {
+        public CylonDetectorObservable<T> invoke(final Publisher<T> onSubscribe) {
             return CylonDetectorObservable.create(onSubscribe);
         }
     }
 
-    public static class ConvertToObservable<T> implements Function<Publisher<T>, Flowable<T>> {
+    public static class ConvertToObservable<T> implements Function1<Publisher<T>, Flowable<T>> {
         @Override
-        public Flowable<T> apply(final Publisher<T> onSubscribe) {
+        public Flowable<T> invoke(final Publisher<T> onSubscribe) {
             return Flowable.fromPublisher(onSubscribe);
         }
     }
@@ -152,14 +151,14 @@ public class FlowableConversionTest {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>(null);
         final AtomicBoolean isFinished = new AtomicBoolean(false);
         ConcurrentLinkedQueue<? extends Integer> queue = Flowable.range(0,5)
-                .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
                     @Override
-                    public Publisher<Integer> apply(final Integer i) {
+                    public Publisher<Integer> invoke(final Integer i) {
                         return Flowable.range(0, 5)
                                 .observeOn(Schedulers.io())
-                                .map(new Function<Integer, Integer>() {
+                                .map(new Function1<Integer, Integer>() {
                                     @Override
-                                    public Integer apply(Integer k) {
+                                    public Integer invoke(Integer k) {
                                         try {
                                             Thread.sleep(System.currentTimeMillis() % 100);
                                         } catch (InterruptedException e) {
@@ -170,9 +169,9 @@ public class FlowableConversionTest {
                                 });
                     }
                 })
-                    .to(new Function<Flowable<Integer>, ConcurrentLinkedQueue<Integer>>() {
+                .to(new Function1<Flowable<Integer>, ConcurrentLinkedQueue<Integer>>() {
                         @Override
-                        public ConcurrentLinkedQueue<Integer> apply(Flowable<Integer> onSubscribe) {
+                        public ConcurrentLinkedQueue<Integer> invoke(Flowable<Integer> onSubscribe) {
                             final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
                             onSubscribe.subscribe(new DefaultSubscriber<Integer>() {
                                 @Override

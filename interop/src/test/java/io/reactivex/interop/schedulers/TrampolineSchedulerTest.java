@@ -26,7 +26,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.disposables.CompositeDisposable;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -51,10 +50,10 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
         Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
         Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.<Integer> merge(o1, o2).subscribeOn(Schedulers.trampoline()).map(new Function<Integer, String>() {
+        Flowable<String> o = Flowable.<Integer>merge(o1, o2).subscribeOn(Schedulers.trampoline()).map(new Function1<Integer, String>() {
 
             @Override
-            public String apply(Integer t) {
+            public String invoke(Integer t) {
                 assertTrue(Thread.currentThread().getName().equals(currentThreadName));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
@@ -120,14 +119,14 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
 
         // Spam the trampoline with actions.
         Flowable.range(0, 50)
-                .flatMap(new Function<Integer, Publisher<Disposable>>() {
+                .flatMap(new Function1<Integer, Publisher<Disposable>>() {
                     @Override
-                    public Publisher<Disposable> apply(Integer count) {
+                    public Publisher<Disposable> invoke(Integer count) {
                         return Flowable
                                 .interval(1, TimeUnit.MICROSECONDS)
-                                .map(new Function<Long, Disposable>() {
+                                .map(new Function1<Long, Disposable>() {
                                     @Override
-                                    public Disposable apply(Long ount1) {
+                                    public Disposable invoke(Long ount1) {
                                         return trampolineWorker.schedule(Functions.EMPTY_RUNNABLE);
                                     }
                                 }).take(100);

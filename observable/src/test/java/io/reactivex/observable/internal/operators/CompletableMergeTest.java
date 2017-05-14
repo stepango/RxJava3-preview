@@ -13,20 +13,33 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.subjects.CompletableSubject;
+import io.reactivex.observable.subjects.PublishSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CompletableMergeTest {
     @Test
@@ -196,9 +209,9 @@ public class CompletableMergeTest {
                 final PublishSubject<Integer> pp1 = PublishSubject.create();
                 final CompletableSubject pp2 = CompletableSubject.create();
 
-                TestObserver<Void> to = Completable.merge(pp1.map(new Function<Integer, Completable>() {
+                TestObserver<Void> to = Completable.merge(pp1.map(new Function1<Integer, Completable>() {
                     @Override
-                    public Completable apply(Integer v) throws Exception {
+                    public Completable invoke(Integer v) {
                         return pp2;
                     }
                 })).test();
@@ -249,9 +262,9 @@ public class CompletableMergeTest {
             final PublishSubject<Integer> pp1 = PublishSubject.create();
             final CompletableSubject pp2 = CompletableSubject.create();
 
-            TestObserver<Void> to = Completable.mergeDelayError(pp1.map(new Function<Integer, Completable>() {
+            TestObserver<Void> to = Completable.mergeDelayError(pp1.map(new Function1<Integer, Completable>() {
                 @Override
-                public Completable apply(Integer v) throws Exception {
+                public Completable invoke(Integer v) {
                     return pp2;
                 }
             })).test();
@@ -353,9 +366,9 @@ public class CompletableMergeTest {
         final CompletableSubject pp2 = CompletableSubject.create();
 
         TestObserver<Void> to = Completable.mergeDelayError(
-        pp0.map(new Function<Completable, Completable>() {
+                pp0.map(new Function1<Completable, Completable>() {
             @Override
-            public Completable apply(Completable v) throws Exception {
+            public Completable invoke(Completable v) {
                 return v;
             }
         }), 1)

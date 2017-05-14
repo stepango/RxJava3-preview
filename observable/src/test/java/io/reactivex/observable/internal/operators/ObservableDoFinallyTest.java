@@ -23,7 +23,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -93,15 +92,15 @@ public class ObservableDoFinallyTest implements Function0 {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<Object> f) throws Exception {
+            public Observable<Object> invoke(Observable<Object> f) {
                 return f.doFinally(ObservableDoFinallyTest.this);
             }
         });
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<Object> f) throws Exception {
+            public Observable<Object> invoke(Observable<Object> f) {
                 return f.doFinally(ObservableDoFinallyTest.this).filter(Functions.alwaysTrue());
             }
         });

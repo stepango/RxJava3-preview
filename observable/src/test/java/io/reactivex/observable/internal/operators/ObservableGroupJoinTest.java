@@ -29,7 +29,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -56,19 +55,19 @@ public class ObservableGroupJoinTest {
         }
     };
 
-    <T> Function<Integer, Observable<T>> just(final Observable<T> observable) {
-        return new Function<Integer, Observable<T>>() {
+    <T> Function1<Integer, Observable<T>> just(final Observable<T> observable) {
+        return new Function1<Integer, Observable<T>>() {
             @Override
-            public Observable<T> apply(Integer t1) {
+            public Observable<T> invoke(Integer t1) {
                 return observable;
             }
         };
     }
 
-    <T, R> Function<T, Observable<R>> just2(final Observable<R> observable) {
-        return new Function<T, Observable<R>>() {
+    <T, R> Function1<T, Observable<R>> just2(final Observable<R> observable) {
+        return new Function1<T, Observable<R>>() {
             @Override
-            public Observable<R> apply(T t1) {
+            public Observable<R> invoke(T t1) {
                 return observable;
             }
         };
@@ -77,10 +76,16 @@ public class ObservableGroupJoinTest {
     BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
         @Override
         public Observable<Integer> apply(final Integer leftValue, Observable<Integer> rightValues) {
-            return rightValues.map(new Function<Integer, Integer>() {
+            return rightValues.map(new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer rightValue) throws Exception {
-                    return add.apply(leftValue, rightValue);
+                public Integer invoke(Integer rightValue) {
+                    try {
+                        return add.apply(leftValue, rightValue);
+                    } catch (Exception e) {
+                        //TODO checked exception
+                        if (e instanceof RuntimeException) throw ((RuntimeException) e);
+                        else throw new RuntimeException(e);
+                    }
                 }
             });
         }
@@ -307,9 +312,9 @@ public class ObservableGroupJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> fail = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -331,9 +336,9 @@ public class ObservableGroupJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> fail = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> fail = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -379,15 +384,15 @@ public class ObservableGroupJoinTest {
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
+                public ObservableSource<Object> invoke(Integer left) {
                     return Observable.never();
                 }
             },
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
+                public ObservableSource<Object> invoke(Integer right) {
                     return Observable.never();
                 }
             },
@@ -405,15 +410,15 @@ public class ObservableGroupJoinTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
+                public ObservableSource<Object> invoke(Integer left) {
                     return Observable.empty();
                 }
             },
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
+                public ObservableSource<Object> invoke(Integer right) {
                     return Observable.never();
                 }
             },
@@ -434,15 +439,15 @@ public class ObservableGroupJoinTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
+                public ObservableSource<Object> invoke(Integer left) {
                     return Observable.error(new TestException());
                 }
             },
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
+                public ObservableSource<Object> invoke(Integer right) {
                     return Observable.never();
                 }
             },
@@ -463,15 +468,15 @@ public class ObservableGroupJoinTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
+                public ObservableSource<Object> invoke(Integer left) {
                     return Observable.never();
                 }
             },
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
+                public ObservableSource<Object> invoke(Integer right) {
                     return Observable.empty();
                 }
             },
@@ -492,15 +497,15 @@ public class ObservableGroupJoinTest {
         Observable.just(1)
         .groupJoin(
             Observable.just(2),
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer left) throws Exception {
+                public ObservableSource<Object> invoke(Integer left) {
                     return Observable.never();
                 }
             },
-            new Function<Integer, ObservableSource<Object>>() {
+                new Function1<Integer, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Integer right) throws Exception {
+                public ObservableSource<Object> invoke(Integer right) {
                     return Observable.error(new TestException());
                 }
             },
@@ -528,15 +533,15 @@ public class ObservableGroupJoinTest {
                 TestObserver<Observable<Integer>> to = Observable.just(1)
                 .groupJoin(
                     Observable.just(2).concatWith(Observable.<Integer>never()),
-                    new Function<Integer, ObservableSource<Object>>() {
+                        new Function1<Integer, ObservableSource<Object>>() {
                         @Override
-                        public ObservableSource<Object> apply(Integer left) throws Exception {
+                        public ObservableSource<Object> invoke(Integer left) {
                             return ps1;
                         }
                     },
-                    new Function<Integer, ObservableSource<Object>>() {
+                        new Function1<Integer, ObservableSource<Object>>() {
                         @Override
-                        public ObservableSource<Object> apply(Integer right) throws Exception {
+                        public ObservableSource<Object> invoke(Integer right) {
                             return ps2;
                         }
                     },
@@ -600,15 +605,15 @@ public class ObservableGroupJoinTest {
                 TestObserver<Object> to = ps1
                 .groupJoin(
                     ps2,
-                    new Function<Object, ObservableSource<Object>>() {
+                        new Function1<Object, ObservableSource<Object>>() {
                         @Override
-                        public ObservableSource<Object> apply(Object left) throws Exception {
+                        public ObservableSource<Object> invoke(Object left) {
                             return Observable.never();
                         }
                     },
-                    new Function<Object, ObservableSource<Object>>() {
+                        new Function1<Object, ObservableSource<Object>>() {
                         @Override
-                        public ObservableSource<Object> apply(Object right) throws Exception {
+                        public ObservableSource<Object> invoke(Object right) {
                             return Observable.never();
                         }
                     },
@@ -669,15 +674,15 @@ public class ObservableGroupJoinTest {
         TestObserver<Object> to = ps1
         .groupJoin(
             ps2,
-            new Function<Object, ObservableSource<Object>>() {
+                new Function1<Object, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Object left) throws Exception {
+                public ObservableSource<Object> invoke(Object left) {
                     return Observable.never();
                 }
             },
-            new Function<Object, ObservableSource<Object>>() {
+                new Function1<Object, ObservableSource<Object>>() {
                 @Override
-                public ObservableSource<Object> apply(Object right) throws Exception {
+                public ObservableSource<Object> invoke(Object right) {
                     return Observable.never();
                 }
             },

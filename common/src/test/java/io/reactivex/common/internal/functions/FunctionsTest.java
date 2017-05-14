@@ -108,7 +108,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -118,7 +118,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -128,7 +128,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -138,7 +138,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -148,7 +148,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -158,7 +158,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -168,7 +168,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -178,7 +178,7 @@ public class FunctionsTest {
             public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) throws Exception {
                 return null;
             }
-        }).apply(new Object[20]);
+        }).invoke(new Object[20]);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

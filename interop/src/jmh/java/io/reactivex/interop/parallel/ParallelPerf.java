@@ -13,17 +13,28 @@
 
 package io.reactivex.interop.parallel;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Publisher;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.GroupedFlowable;
 import io.reactivex.interop.PerfAsyncConsumer;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -31,7 +42,7 @@ import io.reactivex.interop.PerfAsyncConsumer;
 @Fork(value = 1,jvmArgsAppend = { "-XX:MaxInlineLevel=20" })
 @OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Thread)
-public class ParallelPerf implements Function<Integer, Integer> {
+public class ParallelPerf implements Function1<Integer, Integer> {
 
     @Param({"10000"})
     public int count;
@@ -49,7 +60,7 @@ public class ParallelPerf implements Function<Integer, Integer> {
     Flowable<Integer> parallel;
 
     @Override
-    public Integer apply(Integer t) throws Exception {
+    public Integer invoke(Integer t) {
         Blackhole.consumeCPU(compute);
         return t;
     }
@@ -64,24 +75,24 @@ public class ParallelPerf implements Function<Integer, Integer> {
 
         Flowable<Integer> source = Flowable.fromArray(ints);
 
-        flatMap = source.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flatMap = source.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v).subscribeOn(Schedulers.computation())
                         .map(ParallelPerf.this);
             }
         }, cpu);
 
-        groupBy = source.groupBy(new Function<Integer, Integer>() {
+        groupBy = source.groupBy(new Function1<Integer, Integer>() {
             int i;
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 return (i++) % cpu;
             }
         })
-        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+                .flatMap(new Function1<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+            public Publisher<Integer> invoke(GroupedFlowable<Integer, Integer> g) {
                 return g.observeOn(Schedulers.computation()).map(ParallelPerf.this);
             }
         });

@@ -13,17 +13,21 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
+import java.util.List;
+
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.MissingBackpressureException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFlowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public class ParallelJoinTest {
 
@@ -161,9 +165,9 @@ public class ParallelJoinTest {
     public void delayError() {
         TestSubscriber<Integer> flow = Flowable.range(1, 2)
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 throw new TestException();
             }
         })
@@ -295,9 +299,9 @@ public class ParallelJoinTest {
     public void failedRailIsIgnored() {
         Flowable.range(1, 4)
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 if (v == 1) {
                     throw new TestException();
                 }
@@ -313,9 +317,9 @@ public class ParallelJoinTest {
     public void failedRailIsIgnoredHidden() {
         Flowable.range(1, 4).hide()
         .parallel(2)
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) throws Exception {
+            public Integer invoke(Integer v) {
                 if (v == 1) {
                     throw new TestException();
                 }

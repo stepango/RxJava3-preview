@@ -19,19 +19,20 @@ import java.util.concurrent.Callable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 import io.reactivex.observable.internal.observers.BasicFuseableObserver;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstream<T, T> {
 
-    final Function<? super T, K> keySelector;
+    final Function1<? super T, K> keySelector;
 
     final Callable<? extends Collection<? super K>> collectionSupplier;
 
-    public ObservableDistinct(ObservableSource<T> source, Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
+    public ObservableDistinct(ObservableSource<T> source, Function1<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         super(source);
         this.keySelector = keySelector;
         this.collectionSupplier = collectionSupplier;
@@ -56,9 +57,9 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
 
         final Collection<? super K> collection;
 
-        final Function<? super T, K> keySelector;
+        final Function1<? super T, K> keySelector;
 
-        DistinctObserver(Observer<? super T> actual, Function<? super T, K> keySelector, Collection<? super K> collection) {
+        DistinctObserver(Observer<? super T> actual, Function1<? super T, K> keySelector, Collection<? super K> collection) {
             super(actual);
             this.keySelector = keySelector;
             this.collection = collection;
@@ -74,7 +75,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 boolean b;
 
                 try {
-                    key = ObjectHelper.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
+                    key = ObjectHelper.requireNonNull(keySelector.invoke(value), "The keySelector returned a null key");
                     b = collection.add(key);
                 } catch (Throwable ex) {
                     fail(ex);
@@ -120,7 +121,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             for (;;) {
                 T v = qs.poll();
 
-                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
+                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.invoke(v), "The keySelector returned a null key"))) {
                     return v;
                 }
             }

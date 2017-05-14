@@ -15,7 +15,6 @@ package io.reactivex.observable.internal.operators;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.Completable;
 import io.reactivex.observable.Observable;
 import kotlin.Unit;
@@ -37,9 +36,9 @@ public class CompletableRepeatWhenTest {
                 return Unit.INSTANCE;
             }
         })
-        .repeatWhen(new Function<Observable<Object>, Observable<Object>>() {
+                .repeatWhen(new Function1<Observable<Object>, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Observable<Object> f) throws Exception {
+            public Observable<Object> invoke(Observable<Object> f) {
                 final int[] j = { 3 };
                 return f.takeWhile(new Function1<Object, Boolean>() {
                     @Override

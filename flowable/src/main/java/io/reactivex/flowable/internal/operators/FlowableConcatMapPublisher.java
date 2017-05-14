@@ -12,25 +12,26 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.ErrorMode;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableConcatMapPublisher<T, R> extends Flowable<R> {
 
     final Publisher<T> source;
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
     final int prefetch;
 
     final ErrorMode errorMode;
 
     public FlowableConcatMapPublisher(Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int prefetch, ErrorMode errorMode) {
+                                      Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                                      int prefetch, ErrorMode errorMode) {
         this.source = source;
         this.mapper = mapper;
         this.prefetch = prefetch;

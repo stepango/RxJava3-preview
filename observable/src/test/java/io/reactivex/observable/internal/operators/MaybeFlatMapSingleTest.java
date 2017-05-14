@@ -14,14 +14,16 @@
 package io.reactivex.observable.internal.operators;
 
 
+import org.junit.Test;
 
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
-
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class MaybeFlatMapSingleTest {
     @Test(expected = NullPointerException.class)
@@ -32,8 +34,9 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void flatMapSingleValue() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Maybe.just(1).flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 if (integer == 1) {
                     return Single.just(2);
                 }
@@ -47,8 +50,9 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void flatMapSingleValueDifferentType() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<String>>() {
-            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
+        Maybe.just(1).flatMapSingle(new Function1<Integer, SingleSource<String>>() {
+            @Override
+            public SingleSource<String> invoke(final Integer integer) {
                 if (integer == 1) {
                     return Single.just("2");
                 }
@@ -62,8 +66,9 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void flatMapSingleValueNull() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Maybe.just(1).flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 return null;
             }
         })
@@ -75,8 +80,9 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void flatMapSingleValueErrorThrown() {
-        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Maybe.just(1).flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 throw new RuntimeException("something went terribly wrong!");
             }
         })
@@ -90,8 +96,9 @@ public class MaybeFlatMapSingleTest {
     public void flatMapSingleError() {
         RuntimeException exception = new RuntimeException("test");
 
-        Maybe.error(exception).flatMapSingle(new Function<Object, SingleSource<Object>>() {
-            @Override public SingleSource<Object> apply(final Object integer) throws Exception {
+        Maybe.error(exception).flatMapSingle(new Function1<Object, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> invoke(final Object integer) {
                 return Single.just(new Object());
             }
         })
@@ -101,8 +108,9 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void flatMapSingleEmpty() {
-        Maybe.<Integer>empty().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
-            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+        Maybe.<Integer>empty().flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> invoke(final Integer integer) {
                 return Single.just(2);
             }
         })
@@ -113,9 +121,9 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+        TestHelper.checkDisposed(Maybe.just(1).flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(final Integer integer) throws Exception {
+            public SingleSource<Integer> invoke(final Integer integer) {
                 return Single.just(2);
             }
         }));
@@ -123,12 +131,12 @@ public class MaybeFlatMapSingleTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Integer>, SingleSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function1<Maybe<Integer>, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Maybe<Integer> m) throws Exception {
-                return m.flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            public SingleSource<Integer> invoke(Maybe<Integer> m) {
+                return m.flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
                     @Override
-                    public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                    public SingleSource<Integer> invoke(final Integer integer) {
                         return Single.just(2);
                     }
                 });
@@ -139,9 +147,9 @@ public class MaybeFlatMapSingleTest {
     @Test
     public void singleErrors() {
         Maybe.just(1)
-        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                .flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
                     @Override
-                    public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                    public SingleSource<Integer> invoke(final Integer integer) {
                         return Single.error(new TestException());
                     }
                 })

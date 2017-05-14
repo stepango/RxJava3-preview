@@ -29,7 +29,6 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -1211,9 +1210,11 @@ public class TestObserverTest {
         ts.setInitialFusionMode(QueueDisposable.SYNC);
 
         Observable.range(1, 5)
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
+            public Object invoke(Integer v) {
+                throw new TestException();
+            }
         })
         .subscribe(ts);
 
@@ -1231,9 +1232,11 @@ public class TestObserverTest {
         UnicastSubject<Integer> up = UnicastSubject.create();
 
         up
-        .map(new Function<Integer, Object>() {
+                .map(new Function1<Integer, Object>() {
             @Override
-            public Object apply(Integer v) throws Exception { throw new TestException(); }
+            public Object invoke(Integer v) {
+                throw new TestException();
+            }
         })
         .subscribe(ts);
 

@@ -20,7 +20,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.Completable;
@@ -33,12 +32,12 @@ import kotlin.jvm.functions.Function1;
 public final class CompletableUsing<R> extends Completable {
 
     final Callable<R> resourceSupplier;
-    final Function<? super R, ? extends CompletableSource> completableFunction;
+    final Function1<? super R, ? extends CompletableSource> completableFunction;
     final Function1<? super R, Unit> disposer;
     final boolean eager;
 
     public CompletableUsing(Callable<R> resourceSupplier,
-                            Function<? super R, ? extends CompletableSource> completableFunction, Function1<? super R, Unit> disposer,
+                            Function1<? super R, ? extends CompletableSource> completableFunction, Function1<? super R, Unit> disposer,
                             boolean eager) {
         this.resourceSupplier = resourceSupplier;
         this.completableFunction = completableFunction;
@@ -62,7 +61,7 @@ public final class CompletableUsing<R> extends Completable {
         CompletableSource source;
 
         try {
-            source = ObjectHelper.requireNonNull(completableFunction.apply(resource), "The completableFunction returned a null CompletableSource");
+            source = ObjectHelper.requireNonNull(completableFunction.invoke(resource), "The completableFunction returned a null CompletableSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             if (eager) {

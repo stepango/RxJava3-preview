@@ -25,7 +25,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -83,9 +82,9 @@ public class ObservableWindowWithStartEndObservableTest {
             }
         });
 
-        Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
+        Function1<Object, Observable<Object>> closer = new Function1<Object, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Object opening) {
+            public Observable<Object> invoke(Object opening) {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> innerObserver) {
@@ -217,9 +216,9 @@ public class ObservableWindowWithStartEndObservableTest {
 
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
 
-        source.window(open, new Function<Integer, Observable<Integer>>() {
+        source.window(open, new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t) {
+            public Observable<Integer> invoke(Integer t) {
                 return close;
             }
         }).subscribe(ts);
@@ -255,9 +254,9 @@ public class ObservableWindowWithStartEndObservableTest {
 
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
 
-        source.window(open, new Function<Integer, Observable<Integer>>() {
+        source.window(open, new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t) {
+            public Observable<Integer> invoke(Integer t) {
                 return close;
             }
         }).subscribe(ts);
@@ -281,9 +280,9 @@ public class ObservableWindowWithStartEndObservableTest {
         PublishSubject<Integer> start = PublishSubject.create();
         final PublishSubject<Integer> end = PublishSubject.create();
 
-        TestObserver<Integer> to = source.window(start, new Function<Integer, ObservableSource<Integer>>() {
+        TestObserver<Integer> to = source.window(start, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return end;
             }
         })
@@ -317,9 +316,9 @@ public class ObservableWindowWithStartEndObservableTest {
         PublishSubject<Integer> start = PublishSubject.create();
         final PublishSubject<Integer> end = PublishSubject.create();
 
-        TestObserver<Integer> to = source.window(start, new Function<Integer, ObservableSource<Integer>>() {
+        TestObserver<Integer> to = source.window(start, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return end;
             }
         })
@@ -341,9 +340,9 @@ public class ObservableWindowWithStartEndObservableTest {
         PublishSubject<Integer> start = PublishSubject.create();
         final PublishSubject<Integer> end = PublishSubject.create();
 
-        TestObserver<Integer> to = source.window(start, new Function<Integer, ObservableSource<Integer>>() {
+        TestObserver<Integer> to = source.window(start, new Function1<Integer, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Integer v) throws Exception {
+            public ObservableSource<Integer> invoke(Integer v) {
                 return end;
             }
         })
@@ -381,9 +380,9 @@ public class ObservableWindowWithStartEndObservableTest {
         };
 
         ps.window(BehaviorSubject.createDefault(1), Functions.justFunction(Observable.never()))
-        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                .flatMap(new Function1<Observable<Integer>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+            public ObservableSource<Integer> invoke(Observable<Integer> v) {
                 return v;
             }
         })
@@ -398,9 +397,9 @@ public class ObservableWindowWithStartEndObservableTest {
 
     @Test
     public void badSourceCallable() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> o) throws Exception {
+            public Object invoke(Observable<Object> o) {
                 return o.window(Observable.just(1), Functions.justFunction(Observable.never()));
             }
         }, false, 1, 1, (Object[])null);

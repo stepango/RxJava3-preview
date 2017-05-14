@@ -15,10 +15,7 @@ package io.reactivex.observable.internal.operators;
 
 import org.junit.Test;
 
-import java.io.IOException;
-
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeSource;
@@ -72,13 +69,14 @@ public class MaybeOnErrorXTest {
     @Test
     public void onErrorReturnFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-        .onErrorReturn(new Function<Throwable, Object>() {
+                .onErrorReturn(new Function1<Throwable, Object>() {
             @Override
-            public Object apply(Throwable v) throws Exception {
-                throw new IOException();
+            public Object invoke(Throwable v) {
+                //TODO checked exception
+                throw new RuntimeException();
             }
         })
-        .test(), TestException.class, IOException.class);
+                .test(), TestException.class, RuntimeException.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -122,13 +120,14 @@ public class MaybeOnErrorXTest {
     @Test
     public void onErrorResumeNextFunctionThrows() {
         TestHelper.assertCompositeExceptions(Maybe.error(new TestException())
-        .onErrorResumeNext(new Function<Throwable, Maybe<Object>>() {
+                .onErrorResumeNext(new Function1<Throwable, Maybe<Object>>() {
             @Override
-            public Maybe<Object> apply(Throwable v) throws Exception {
-                throw new IOException();
+            public Maybe<Object> invoke(Throwable v) {
+                //TODO checked exception
+                throw new RuntimeException();
             }
         })
-        .test(), TestException.class, IOException.class);
+                .test(), TestException.class, RuntimeException.class);
     }
 
     @Test
@@ -154,9 +153,9 @@ public class MaybeOnErrorXTest {
 
     @Test
     public void onErrorReturnDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> v) {
                 return v.onErrorReturnItem(1);
             }
         });
@@ -185,9 +184,9 @@ public class MaybeOnErrorXTest {
 
     @Test
     public void onErrorCompleteDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> v) {
                 return v.onErrorComplete();
             }
         });
@@ -200,9 +199,9 @@ public class MaybeOnErrorXTest {
 
     @Test
     public void onErrorNextDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function1<Maybe<Object>, MaybeSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+            public MaybeSource<Object> invoke(Maybe<Object> v) {
                 return v.onErrorResumeNext(Maybe.just(1));
             }
         });

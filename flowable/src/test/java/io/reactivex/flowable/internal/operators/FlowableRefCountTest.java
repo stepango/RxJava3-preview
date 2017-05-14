@@ -33,7 +33,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
@@ -559,9 +558,9 @@ public class FlowableRefCountTest {
                                            }
                                        }
                         )
-                        .flatMap(new Function<Long, Publisher<String>>() {
+                        .flatMap(new Function1<Long, Publisher<String>>() {
                             @Override
-                            public Publisher<String> apply(Long t1) {
+                            public Publisher<String> invoke(Long t1) {
                                 return Flowable.defer(new Callable<Publisher<String>>() {
                                     @Override
                                     public Publisher<String> call() {
@@ -570,9 +569,9 @@ public class FlowableRefCountTest {
                                 });
                             }
                         })
-                        .onErrorResumeNext(new Function<Throwable, Publisher<String>>() {
+                        .onErrorResumeNext(new Function1<Throwable, Publisher<String>>() {
                             @Override
-                            public Publisher<String> apply(Throwable t1) {
+                            public Publisher<String> invoke(Throwable t1) {
                                 return Flowable.error(t1);
                             }
                         })

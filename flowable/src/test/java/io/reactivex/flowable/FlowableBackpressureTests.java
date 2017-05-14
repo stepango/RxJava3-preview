@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.subscribers.ResourceSubscriber;
@@ -111,9 +110,9 @@ public class FlowableBackpressureTests {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation()).map(
-            new Function<Integer, Integer>() {
+                new Function1<Integer, Integer>() {
                 @Override
-                public Integer apply(Integer i) {
+                public Integer invoke(Integer i) {
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
@@ -234,9 +233,9 @@ public class FlowableBackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         incrementingIntegers(c)
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer i) {
+            public Publisher<Integer> invoke(Integer i) {
                 return incrementingIntegers(new AtomicInteger()).take(10);
             }
         })
@@ -259,9 +258,9 @@ public class FlowableBackpressureTests {
 
         incrementingIntegers(c)
         .subscribeOn(Schedulers.computation())
-        .flatMap(new Function<Integer, Publisher<Integer>>() {
+                .flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer i) {
+            public Publisher<Integer> invoke(Integer i) {
                 return incrementingIntegers(new AtomicInteger())
                         .take(10)
                         .subscribeOn(Schedulers.computation());
@@ -500,9 +499,9 @@ public class FlowableBackpressureTests {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         firehose(c).observeOn(Schedulers.computation())
-        .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) {
+            public Integer invoke(Integer v) {
                 try {
                     Thread.sleep(10);
                 } catch (Exception e) {
@@ -750,10 +749,10 @@ public class FlowableBackpressureTests {
         });
     }
 
-    static final Function<Integer, Integer> SLOW_PASS_THRU = new Function<Integer, Integer>() {
+    static final Function1<Integer, Integer> SLOW_PASS_THRU = new Function1<Integer, Integer>() {
         volatile int sink;
         @Override
-        public Integer apply(Integer t1) {
+        public Integer invoke(Integer t1) {
             // be slow ... but faster than Thread.sleep(1)
             String t = "";
             int s = sink;

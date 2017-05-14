@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -49,9 +48,9 @@ public class FlowableAllTest {
                     return false;
                 }
             })
-            .flatMap(new Function<Boolean, Publisher<Integer>>() {
+                .flatMap(new Function1<Boolean, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Boolean t1) {
+                public Publisher<Integer> invoke(Boolean t1) {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
@@ -161,9 +160,9 @@ public class FlowableAllTest {
                     return false;
                 }
             })
-            .flatMap(new Function<Boolean, Publisher<Integer>>() {
+                .flatMap(new Function1<Boolean, Publisher<Integer>>() {
                 @Override
-                public Publisher<Integer> apply(Boolean t1) {
+                public Publisher<Integer> invoke(Boolean t1) {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             })
@@ -296,9 +295,9 @@ public class FlowableAllTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
+            public Object invoke(Flowable<Integer> o) {
                 return o.all(Functions.alwaysTrue());
             }
         }, false, 1, 1, true);
@@ -306,9 +305,9 @@ public class FlowableAllTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Boolean>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Boolean>>() {
             @Override
-            public Publisher<Boolean> apply(Flowable<Object> o) throws Exception {
+            public Publisher<Boolean> invoke(Flowable<Object> o) {
                 return o.all(Functions.alwaysTrue());
             }
         });

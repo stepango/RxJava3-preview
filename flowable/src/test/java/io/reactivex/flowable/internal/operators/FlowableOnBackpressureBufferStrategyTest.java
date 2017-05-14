@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.BackpressureOverflowStrategy;
 import io.reactivex.flowable.Flowable;
@@ -31,6 +30,7 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static io.reactivex.common.internal.functions.Functions.EMPTY_ACTION;
 import static io.reactivex.flowable.BackpressureOverflowStrategy.DROP_LATEST;
@@ -162,9 +162,9 @@ public class FlowableOnBackpressureBufferStrategyTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+        TestHelper.checkBadSourceFlowable(new Function1<Flowable<Object>, Object>() {
             @Override
-            public Object apply(Flowable<Object> f) throws Exception {
+            public Object invoke(Flowable<Object> f) {
                 return f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR);
             }
         }, false, 1, 1, 1);
@@ -172,9 +172,9 @@ public class FlowableOnBackpressureBufferStrategyTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> f) {
                 return f.onBackpressureBuffer(8, Functions.EMPTY_ACTION, BackpressureOverflowStrategy.ERROR);
             }
         });

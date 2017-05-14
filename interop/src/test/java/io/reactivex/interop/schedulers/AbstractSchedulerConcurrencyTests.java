@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.ResourceSubscriber;
@@ -57,9 +56,9 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
 
         Flowable.interval(50, TimeUnit.MILLISECONDS)
-                .map(new Function<Long, Long>() {
+                .map(new Function1<Long, Long>() {
                     @Override
-                    public Long apply(Long aLong) {
+                    public Long invoke(Long aLong) {
                         countGenerated.incrementAndGet();
                         return aLong;
                     }

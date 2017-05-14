@@ -13,17 +13,18 @@
 
 package io.reactivex.observable.internal.operators;
 
-
+import org.junit.Test;
 
 import java.util.List;
 
-import org.junit.Test;
-
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.TestException;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 public class SingleOnErrorXTest {
 
@@ -38,9 +39,9 @@ public class SingleOnErrorXTest {
     @Test
     public void resumeThrows() {
         TestObserver<Integer> to = Single.<Integer>error(new TestException("Outer"))
-        .onErrorReturn(new Function<Throwable, Integer>() {
+                .onErrorReturn(new Function1<Throwable, Integer>() {
             @Override
-            public Integer apply(Throwable e) throws Exception {
+            public Integer invoke(Throwable e) {
                 throw new TestException("Inner");
             }
         })
@@ -69,9 +70,9 @@ public class SingleOnErrorXTest {
 
     @Test
     public void resumeDoubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function1<Single<Object>, SingleSource<Object>>() {
             @Override
-            public SingleSource<Object> apply(Single<Object> s) throws Exception {
+            public SingleSource<Object> invoke(Single<Object> s) {
                 return s.onErrorResumeNext(Single.just(1));
             }
         });

@@ -34,7 +34,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
@@ -1117,9 +1116,9 @@ public class ObservableTest {
         Observable.just(1, 2, 3).compose(new ObservableTransformer<Integer, String>() {
             @Override
             public Observable<String> apply(Observable<Integer> t1) {
-                return t1.map(new Function<Integer, String>() {
+                return t1.map(new Function1<Integer, String>() {
                     @Override
-                    public String apply(Integer v) {
+                    public String invoke(Integer v) {
                         return String.valueOf(v);
                     }
                 });
@@ -1194,9 +1193,9 @@ public class ObservableTest {
     public void testExtend() {
         final TestObserver<Object> subscriber = new TestObserver<Object>();
         final Object value = new Object();
-        Observable.just(value).to(new Function<Observable<Object>, Object>() {
+        Observable.just(value).to(new Function1<Observable<Object>, Object>() {
             @Override
-            public Object apply(Observable<Object> onSubscribe) {
+            public Object invoke(Observable<Object> onSubscribe) {
                     onSubscribe.subscribe(subscriber);
                     subscriber.assertNoErrors();
                     subscriber.assertComplete();
@@ -1208,9 +1207,9 @@ public class ObservableTest {
 
     @Test
     public void testFlatMap() {
-        List<Integer> list = Observable.range(1, 5).flatMap(new Function<Integer, Observable<Integer>>() {
+        List<Integer> list = Observable.range(1, 5).flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(v, 2);
             }
         }).toList().blockingGet();
@@ -1236,9 +1235,9 @@ public class ObservableTest {
     public void zipIterableObject() {
         @SuppressWarnings("unchecked")
         final List<Observable<Integer>> observables = Arrays.asList(Observable.just(1, 2, 3), Observable.just(1, 2, 3));
-        Observable.zip(observables, new Function<Object[], Object>() {
+        Observable.zip(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(Object[] o) throws Exception {
+            public Object invoke(Object[] o) {
                 int sum = 0;
                 for (Object i : o) {
                     sum += (Integer) i;
@@ -1252,9 +1251,9 @@ public class ObservableTest {
     public void combineLatestObject() {
         @SuppressWarnings("unchecked")
         final List<Observable<Integer>> observables = Arrays.asList(Observable.just(1, 2, 3), Observable.just(1, 2, 3));
-        Observable.combineLatest(observables, new Function<Object[], Object>() {
+        Observable.combineLatest(observables, new Function1<Object[], Object>() {
             @Override
-            public Object apply(final Object[] o) throws Exception {
+            public Object invoke(final Object[] o) {
                 int sum = 1;
                 for (Object i : o) {
                     sum *= (Integer) i;

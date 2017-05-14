@@ -17,10 +17,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableObserver;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps the success value of the source SingleSource into a Completable.
@@ -30,9 +34,9 @@ public final class SingleFlatMapCompletable<T> extends Completable {
 
     final SingleSource<T> source;
 
-    final Function<? super T, ? extends CompletableSource> mapper;
+    final Function1<? super T, ? extends CompletableSource> mapper;
 
-    public SingleFlatMapCompletable(SingleSource<T> source, Function<? super T, ? extends CompletableSource> mapper) {
+    public SingleFlatMapCompletable(SingleSource<T> source, Function1<? super T, ? extends CompletableSource> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -52,10 +56,10 @@ public final class SingleFlatMapCompletable<T> extends Completable {
 
         final CompletableObserver actual;
 
-        final Function<? super T, ? extends CompletableSource> mapper;
+        final Function1<? super T, ? extends CompletableSource> mapper;
 
         FlatMapCompletableObserver(CompletableObserver actual,
-                Function<? super T, ? extends CompletableSource> mapper) {
+                                   Function1<? super T, ? extends CompletableSource> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -80,7 +84,7 @@ public final class SingleFlatMapCompletable<T> extends Completable {
             CompletableSource cs;
 
             try {
-                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = ObjectHelper.requireNonNull(mapper.invoke(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onError(ex);

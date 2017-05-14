@@ -13,23 +13,29 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.reactivestreams.*;
-
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.DefaultSubscriber;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableOnErrorReturnTest {
 
@@ -39,10 +45,10 @@ public class FlowableOnErrorReturnTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> observable = w.onErrorReturn(new Function1<Throwable, String>() {
 
             @Override
-            public String apply(Throwable e) {
+            public String invoke(Throwable e) {
                 capturedException.set(e);
                 return "failure";
             }
@@ -74,10 +80,10 @@ public class FlowableOnErrorReturnTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> observable = w.onErrorReturn(new Function1<Throwable, String>() {
 
             @Override
-            public String apply(Throwable e) {
+            public String invoke(Throwable e) {
                 capturedException.set(e);
                 throw new RuntimeException("exception from function");
             }
@@ -110,9 +116,9 @@ public class FlowableOnErrorReturnTest {
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaFlowable)
-        w = w.map(new Function<String, String>() {
+        w = w.map(new Function1<String, String>() {
             @Override
-            public String apply(String s) {
+            public String invoke(String s) {
                 if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
                 }
@@ -121,10 +127,10 @@ public class FlowableOnErrorReturnTest {
             }
         });
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> observable = w.onErrorReturn(new Function1<Throwable, String>() {
 
             @Override
-            public String apply(Throwable t1) {
+            public String invoke(Throwable t1) {
                 return "resume";
             }
 
@@ -148,20 +154,20 @@ public class FlowableOnErrorReturnTest {
     public void testBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(0, 100000)
-                .onErrorReturn(new Function<Throwable, Integer>() {
+                .onErrorReturn(new Function1<Throwable, Integer>() {
 
                     @Override
-                    public Integer apply(Throwable t1) {
+                    public Integer invoke(Throwable t1) {
                         return 1;
                     }
 
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Function<Integer, Integer>() {
+                .map(new Function1<Integer, Integer>() {
                     int c;
 
                     @Override
-                    public Integer apply(Integer t1) {
+                    public Integer invoke(Integer t1) {
                         if (c++ <= 1) {
                             // slow
                             try {
@@ -221,9 +227,9 @@ public class FlowableOnErrorReturnTest {
 
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
-        ps.onErrorReturn(new Function<Throwable, Integer>() {
+        ps.onErrorReturn(new Function1<Throwable, Integer>() {
             @Override
-            public Integer apply(Throwable e) {
+            public Integer invoke(Throwable e) {
                 return 3;
             }
         }).subscribe(ts);
@@ -261,9 +267,9 @@ public class FlowableOnErrorReturnTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> f) {
                 return f.onErrorReturnItem(1);
             }
         });

@@ -13,18 +13,19 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.Function;
+import java.util.concurrent.Callable;
+
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.operators.FlowableMapNotification.MapNotificationSubscriber;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
 
 public class FlowableMapNotificationTest {
     @Test
@@ -32,15 +33,15 @@ public class FlowableMapNotificationTest {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         Flowable.just(1)
         .flatMap(
-                new Function<Integer, Flowable<Object>>() {
+                new Function1<Integer, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Integer item) {
+                    public Flowable<Object> invoke(Integer item) {
                         return Flowable.just((Object)(item + 1));
                     }
                 },
-                new Function<Throwable, Flowable<Object>>() {
+                new Function1<Throwable, Flowable<Object>>() {
                     @Override
-                    public Flowable<Object> apply(Throwable e) {
+                    public Flowable<Object> invoke(Throwable e) {
                         return Flowable.error(e);
                     }
                 },
@@ -62,15 +63,15 @@ public class FlowableMapNotificationTest {
         TestSubscriber<Object> ts = TestSubscriber.create(0L);
 
         new FlowableMapNotification<Integer, Integer>(Flowable.range(1, 3),
-                new Function<Integer, Integer>() {
+                new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer item) {
+                    public Integer invoke(Integer item) {
                         return item + 1;
                     }
                 },
-                new Function<Throwable, Integer>() {
+                new Function1<Throwable, Integer>() {
                     @Override
-                    public Integer apply(Throwable e) {
+                    public Integer invoke(Throwable e) {
                         return 0;
                     }
                 },
@@ -106,15 +107,15 @@ public class FlowableMapNotificationTest {
         PublishProcessor<Integer> ps = PublishProcessor.create();
 
         new FlowableMapNotification<Integer, Integer>(ps,
-                new Function<Integer, Integer>() {
+                new Function1<Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer item) {
+                    public Integer invoke(Integer item) {
                         return item + 1;
                     }
                 },
-                new Function<Throwable, Integer>() {
+                new Function1<Throwable, Integer>() {
                     @Override
-                    public Integer apply(Throwable e) {
+                    public Integer invoke(Throwable e) {
                         return 0;
                     }
                 },
@@ -166,9 +167,9 @@ public class FlowableMapNotificationTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Object> o) {
                 return o.flatMap(
                         Functions.justFunction(Flowable.just(1)),
                         Functions.justFunction(Flowable.just(2)),

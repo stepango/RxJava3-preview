@@ -13,19 +13,24 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import java.util.concurrent.Callable;
 
-import org.junit.Test;
-import org.reactivestreams.*;
-
-import io.reactivex.common.*;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.ScalarSubscription;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FlowableScalarXMapTest {
 
@@ -73,9 +78,9 @@ public class FlowableScalarXMapTest {
     @Test
     public void tryScalarXMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new CallablePublisher(), ts, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
+            public Publisher<Integer> invoke(Integer f) {
                 return Flowable.just(1);
             }
         }));
@@ -87,9 +92,9 @@ public class FlowableScalarXMapTest {
     public void emptyXMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new EmptyCallablePublisher(), ts, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
+            public Publisher<Integer> invoke(Integer f) {
                 return Flowable.just(1);
             }
         }));
@@ -101,9 +106,9 @@ public class FlowableScalarXMapTest {
     public void mapperCrashes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
+            public Publisher<Integer> invoke(Integer f) {
                 throw new TestException();
             }
         }));
@@ -115,9 +120,9 @@ public class FlowableScalarXMapTest {
     public void mapperToJust() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
+            public Publisher<Integer> invoke(Integer f) {
                 return Flowable.just(1);
             }
         }));
@@ -129,9 +134,9 @@ public class FlowableScalarXMapTest {
     public void mapperToEmpty() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
+            public Publisher<Integer> invoke(Integer f) {
                 return Flowable.empty();
             }
         }));
@@ -143,9 +148,9 @@ public class FlowableScalarXMapTest {
     public void mapperToCrashingCallable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function<Integer, Publisher<Integer>>() {
+        assertTrue(FlowableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), ts, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer f) throws Exception {
+            public Publisher<Integer> invoke(Integer f) {
                 return new CallablePublisher();
             }
         }));
@@ -155,9 +160,9 @@ public class FlowableScalarXMapTest {
 
     @Test
     public void scalarMapToEmpty() {
-        FlowableScalarXMap.scalarXMap(1, new Function<Integer, Publisher<Integer>>() {
+        FlowableScalarXMap.scalarXMap(1, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.empty();
             }
         })
@@ -167,9 +172,9 @@ public class FlowableScalarXMapTest {
 
     @Test
     public void scalarMapToCrashingCallable() {
-        FlowableScalarXMap.scalarXMap(1, new Function<Integer, Publisher<Integer>>() {
+        FlowableScalarXMap.scalarXMap(1, new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return new CallablePublisher();
             }
         })

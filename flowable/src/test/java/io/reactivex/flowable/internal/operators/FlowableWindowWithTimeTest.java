@@ -31,7 +31,6 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -214,9 +213,9 @@ public class FlowableWindowWithTimeTest {
                 return Unit.INSTANCE;
             }
         })
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> w) {
+            public Flowable<Integer> invoke(Flowable<Integer> w) {
                 return w.startWith(indicator)
                         .doOnComplete(new Function0() {
                             @Override
@@ -595,9 +594,9 @@ public class FlowableWindowWithTimeTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })
@@ -628,9 +627,9 @@ public class FlowableWindowWithTimeTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 10, true)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })
@@ -661,9 +660,9 @@ public class FlowableWindowWithTimeTest {
         };
 
         ps.window(1, TimeUnit.MILLISECONDS, scheduler, 2, true)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })
@@ -694,9 +693,9 @@ public class FlowableWindowWithTimeTest {
         };
 
         ps.window(1, 2, TimeUnit.MILLISECONDS, scheduler)
-        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                .flatMap(new Function1<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Flowable<Integer> invoke(Flowable<Integer> v) {
                 return v;
             }
         })

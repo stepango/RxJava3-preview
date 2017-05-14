@@ -13,6 +13,7 @@
 package io.reactivex.observable;
 
 import io.reactivex.common.annotations.Nullable;
+import kotlin.jvm.functions.Function1;
 
 /**
  * An {@link Observable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.
@@ -26,7 +27,7 @@ import io.reactivex.common.annotations.Nullable;
  *            the type of the key
  * @param <T>
  *            the type of the items emitted by the {@code GroupedObservable}
- * @see Observable#groupBy(io.reactivex.common.functions.Function)
+ * @see Observable#groupBy(Function1)
  * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
  */
 public abstract class GroupedObservable<K, T> extends Observable<T> {

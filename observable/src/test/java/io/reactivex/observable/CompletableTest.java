@@ -43,7 +43,6 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -1155,9 +1154,9 @@ public class CompletableTest {
             public Integer call() {
                 return 1;
             }
-        }, new Function<Object, Completable>() {
+        }, new Function1<Object, Completable>() {
             @Override
-            public Completable apply(Object v) {
+            public Completable invoke(Object v) {
                 return normal.completable;
             }
         }, new Function1<Integer, Unit>() {
@@ -1202,9 +1201,9 @@ public class CompletableTest {
             public Integer call() {
                 return 1;
             }
-        }, new Function<Integer, Completable>() {
+        }, new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) {
+            public Completable invoke(Integer v) {
                 return normal.completable;
             }
         }, new Function1<Integer, Unit>() {
@@ -1249,9 +1248,9 @@ public class CompletableTest {
             public Integer call() {
                 return 1;
             }
-        }, new Function<Integer, Completable>() {
+        }, new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) {
+            public Completable invoke(Integer v) {
                 return error.completable;
             }
         }, new Function1<Integer, Unit>() {
@@ -1296,9 +1295,9 @@ public class CompletableTest {
             public Integer call() {
                 return 1;
             }
-        }, new Function<Integer, Completable>() {
+        }, new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer v) {
+            public Completable invoke(Integer v) {
                 return error.completable;
             }
         }, new Function1<Integer, Unit>() {
@@ -1336,9 +1335,9 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void usingResourceSupplierNull() {
-        Completable.using(null, new Function<Object, Completable>() {
+        Completable.using(null, new Function1<Object, Completable>() {
             @Override
-            public Completable apply(Object v) {
+            public Completable invoke(Object v) {
                 return normal.completable;
             }
         }, new Function1<Object, Unit>() {
@@ -1371,9 +1370,9 @@ public class CompletableTest {
             public Object call() {
                 return 1;
             }
-        }, new Function<Object, Completable>() {
+        }, new Function1<Object, Completable>() {
             @Override
-            public Completable apply(Object v) {
+            public Completable invoke(Object v) {
                 return null;
             }
         }, new Function1<Object, Unit>() {
@@ -1393,9 +1392,9 @@ public class CompletableTest {
             public Object call() {
                 return 1;
             }
-        }, new Function<Object, Completable>() {
+        }, new Function1<Object, Completable>() {
             @Override
-            public Completable apply(Object v) {
+            public Completable invoke(Object v) {
                 return normal.completable;
             }
         }, null);
@@ -1407,9 +1406,9 @@ public class CompletableTest {
             @Override
             public Object call() { throw new TestException(); }
         },
-                new Function<Object, Completable>() {
+                new Function1<Object, Completable>() {
                     @Override
-                    public Completable apply(Object v) {
+                    public Completable invoke(Object v) {
                         return normal.completable;
                     }
                 }, new Function1<Object, Unit>() {
@@ -1430,9 +1429,11 @@ public class CompletableTest {
                 return 1;
             }
         },
-                new Function<Object, Completable>() {
+                new Function1<Object, Completable>() {
                     @Override
-                    public Completable apply(Object v) { throw new TestException(); }
+                    public Completable invoke(Object v) {
+                        throw new TestException();
+                    }
                 }, new Function1<Object, Unit>() {
                     @Override
                     public Unit invoke(Object v) {
@@ -1451,9 +1452,9 @@ public class CompletableTest {
                 return 1;
             }
         },
-                new Function<Object, Completable>() {
+                new Function1<Object, Completable>() {
                     @Override
-                    public Completable apply(Object v) {
+                    public Completable invoke(Object v) {
                         return normal.completable;
                     }
                 }, new Function1<Object, Unit>() {
@@ -2116,9 +2117,9 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void onErrorResumeNextFunctionReturnsNull() {
-        Completable c = error.completable.onErrorResumeNext(new Function<Throwable, Completable>() {
+        Completable c = error.completable.onErrorResumeNext(new Function1<Throwable, Completable>() {
             @Override
-            public Completable apply(Throwable e) {
+            public Completable invoke(Throwable e) {
                 return null;
             }
         });
@@ -2133,9 +2134,11 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void onErrorResumeNextFunctionThrows() {
-        Completable c = error.completable.onErrorResumeNext(new Function<Throwable, Completable>() {
+        Completable c = error.completable.onErrorResumeNext(new Function1<Throwable, Completable>() {
             @Override
-            public Completable apply(Throwable e) { throw new TestException(); }
+            public Completable invoke(Throwable e) {
+                throw new TestException();
+            }
         });
 
         try {
@@ -2152,9 +2155,9 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void onErrorResumeNextNormal() {
-        Completable c = error.completable.onErrorResumeNext(new Function<Throwable, Completable>() {
+        Completable c = error.completable.onErrorResumeNext(new Function1<Throwable, Completable>() {
             @Override
-            public Completable apply(Throwable v) {
+            public Completable invoke(Throwable v) {
                 return normal.completable;
             }
         });
@@ -2164,9 +2167,9 @@ public class CompletableTest {
 
     @Test(timeout = 5000, expected = TestException.class)
     public void onErrorResumeNextError() {
-        Completable c = error.completable.onErrorResumeNext(new Function<Throwable, Completable>() {
+        Completable c = error.completable.onErrorResumeNext(new Function1<Throwable, Completable>() {
             @Override
-            public Completable apply(Throwable v) {
+            public Completable invoke(Throwable v) {
                 return error.completable;
             }
         });
@@ -2422,10 +2425,10 @@ public class CompletableTest {
                 }
                 return Unit.INSTANCE;
             }
-        }).retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
+        }).retryWhen(new Function1<Observable<? extends Throwable>, Observable<Object>>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public Observable<Object> apply(Observable<? extends Throwable> o) {
+            public Observable<Object> invoke(Observable<? extends Throwable> o) {
                 return (Observable)o;
             }
         });
@@ -2748,9 +2751,9 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void toNormal() {
-        Observable<Object> flow = normal.completable.to(new Function<Completable, Observable<Object>>() {
+        Observable<Object> flow = normal.completable.to(new Function1<Completable, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Completable c) {
+            public Observable<Object> invoke(Completable c) {
                 return c.toObservable();
             }
         });
@@ -3409,9 +3412,9 @@ public class CompletableTest {
                 return 1;
             }
         },
-        new Function<Integer, Completable>() {
+                new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) {
+            public Completable invoke(Integer t) {
                 return null;
             }
         }, onDispose).subscribe(ts);
@@ -3603,15 +3606,15 @@ public class CompletableTest {
         ts.assertNoErrors();
     }
 
-    private Function<Completable, Completable> onCreate;
+    private Function1<Completable, Completable> onCreate;
 
     private BiFunction<Completable, CompletableObserver, CompletableObserver> onStart;
 
     @Before
     public void setUp() throws Exception {
-        onCreate = spy(new Function<Completable, Completable>() {
+        onCreate = spy(new Function1<Completable, Completable>() {
             @Override
-            public Completable apply(Completable t) {
+            public Completable invoke(Completable t) {
                 return t;
             }
         });
@@ -3638,7 +3641,7 @@ public class CompletableTest {
         CompletableSource subscriber = mock(CompletableSource.class);
         Completable create = Completable.unsafeCreate(subscriber);
 
-        verify(onCreate, times(1)).apply(create);
+        verify(onCreate, times(1)).invoke(create);
     }
 
     @Test(timeout = 5000)
@@ -3852,9 +3855,9 @@ public class CompletableTest {
                 return 1;
             }
         },
-        new Function<Integer, Completable>() {
+                new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) {
+            public Completable invoke(Integer t) {
                 throw new TestException();
             }
         }, onDispose).subscribe(ts);
@@ -3883,9 +3886,9 @@ public class CompletableTest {
                 return 1;
             }
         },
-        new Function<Integer, Completable>() {
+                new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) {
+            public Completable invoke(Integer t) {
                 throw new TestException();
             }
         }, onDispose).subscribe(ts);
@@ -3917,9 +3920,9 @@ public class CompletableTest {
                 return 1;
             }
         },
-        new Function<Integer, Completable>() {
+                new Function1<Integer, Completable>() {
             @Override
-            public Completable apply(Integer t) {
+            public Completable invoke(Integer t) {
                 return null;
             }
         }, onDispose).subscribe(ts);

@@ -15,12 +15,14 @@ package io.reactivex.observable.internal.operators;
 
 import java.util.Iterator;
 
-import io.reactivex.common.*;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Maps a sequence into an Iterable and emits its values.
@@ -30,10 +32,10 @@ import io.reactivex.observable.*;
  */
 public final class ObservableFlattenIterable<T, R> extends AbstractObservableWithUpstream<T, R> {
 
-    final Function<? super T, ? extends Iterable<? extends R>> mapper;
+    final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
     public ObservableFlattenIterable(ObservableSource<T> source,
-            Function<? super T, ? extends Iterable<? extends R>> mapper) {
+                                     Function1<? super T, ? extends Iterable<? extends R>> mapper) {
         super(source);
         this.mapper = mapper;
     }
@@ -46,11 +48,11 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
     static final class FlattenIterableObserver<T, R> implements Observer<T>, Disposable {
         final Observer<? super R> actual;
 
-        final Function<? super T, ? extends Iterable<? extends R>> mapper;
+        final Function1<? super T, ? extends Iterable<? extends R>> mapper;
 
         Disposable d;
 
-        FlattenIterableObserver(Observer<? super R> actual, Function<? super T, ? extends Iterable<? extends R>> mapper) {
+        FlattenIterableObserver(Observer<? super R> actual, Function1<? super T, ? extends Iterable<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -73,7 +75,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
             Iterator<? extends R> it;
 
             try {
-                it = mapper.apply(value).iterator();
+                it = mapper.invoke(value).iterator();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 d.dispose();

@@ -20,7 +20,6 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.Single;
@@ -32,12 +31,12 @@ import kotlin.jvm.functions.Function1;
 public final class SingleUsing<T, U> extends Single<T> {
 
     final Callable<U> resourceSupplier;
-    final Function<? super U, ? extends SingleSource<? extends T>> singleFunction;
+    final Function1<? super U, ? extends SingleSource<? extends T>> singleFunction;
     final Function1<? super U, kotlin.Unit> disposer;
     final boolean eager;
 
     public SingleUsing(Callable<U> resourceSupplier,
-                       Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
+                       Function1<? super U, ? extends SingleSource<? extends T>> singleFunction,
                        Function1<? super U, kotlin.Unit> disposer,
                        boolean eager) {
         this.resourceSupplier = resourceSupplier;
@@ -62,7 +61,7 @@ public final class SingleUsing<T, U> extends Single<T> {
         SingleSource<? extends T> source;
 
         try {
-            source = ObjectHelper.requireNonNull(singleFunction.apply(resource), "The singleFunction returned a null SingleSource");
+            source = ObjectHelper.requireNonNull(singleFunction.invoke(resource), "The singleFunction returned a null SingleSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
 

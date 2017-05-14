@@ -13,12 +13,13 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.common.ErrorMode;
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.operators.FlowableConcatMapEager.ConcatMapEagerDelayErrorSubscriber;
+import kotlin.jvm.functions.Function1;
 
 /**
  * ConcatMapEager which works with an arbitrary Publisher source.
@@ -30,7 +31,7 @@ public final class FlowableConcatMapEagerPublisher<T, R> extends Flowable<R> {
 
     final Publisher<T> source;
 
-    final Function<? super T, ? extends Publisher<? extends R>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends R>> mapper;
 
     final int maxConcurrency;
 
@@ -39,10 +40,10 @@ public final class FlowableConcatMapEagerPublisher<T, R> extends Flowable<R> {
     final ErrorMode errorMode;
 
     public FlowableConcatMapEagerPublisher(Publisher<T> source,
-            Function<? super T, ? extends Publisher<? extends R>> mapper,
-            int maxConcurrency,
-            int prefetch,
-            ErrorMode errorMode) {
+                                           Function1<? super T, ? extends Publisher<? extends R>> mapper,
+                                           int maxConcurrency,
+                                           int prefetch,
+                                           ErrorMode errorMode) {
         this.source = source;
         this.mapper = mapper;
         this.maxConcurrency = maxConcurrency;

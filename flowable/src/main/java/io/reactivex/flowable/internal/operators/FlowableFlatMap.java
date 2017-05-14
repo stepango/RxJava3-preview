@@ -13,31 +13,42 @@
 
 package io.reactivex.flowable.internal.operators;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import hu.akarnokd.reactivestreams.extensions.FusedQueue;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.Disposable;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.exceptions.Exceptions;
+import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.common.internal.utils.*;
+import io.reactivex.common.internal.utils.AtomicThrowable;
+import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.queues.*;
+import io.reactivex.flowable.internal.queues.SimplePlainQueue;
+import io.reactivex.flowable.internal.queues.SpscArrayQueue;
+import io.reactivex.flowable.internal.queues.SpscLinkedArrayQueue;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
+import kotlin.jvm.functions.Function1;
 
 public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T, U> {
-    final Function<? super T, ? extends Publisher<? extends U>> mapper;
+    final Function1<? super T, ? extends Publisher<? extends U>> mapper;
     final boolean delayErrors;
     final int maxConcurrency;
     final int bufferSize;
 
     public FlowableFlatMap(Flowable<T> source,
-            Function<? super T, ? extends Publisher<? extends U>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+                           Function1<? super T, ? extends Publisher<? extends U>> mapper,
+                           boolean delayErrors, int maxConcurrency, int bufferSize) {
         super(source);
         this.mapper = mapper;
         this.delayErrors = delayErrors;
@@ -54,8 +65,8 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
     }
 
     public static <T, U> RelaxedSubscriber<T> subscribe(Subscriber<? super U> s,
-            Function<? super T, ? extends Publisher<? extends U>> mapper,
-            boolean delayErrors, int maxConcurrency, int bufferSize) {
+                                                        Function1<? super T, ? extends Publisher<? extends U>> mapper,
+                                                        boolean delayErrors, int maxConcurrency, int bufferSize) {
         return new MergeSubscriber<T, U>(s, mapper, delayErrors, maxConcurrency, bufferSize);
     }
 
@@ -64,7 +75,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         private static final long serialVersionUID = -2117620485640801370L;
 
         final Subscriber<? super U> actual;
-        final Function<? super T, ? extends Publisher<? extends U>> mapper;
+        final Function1<? super T, ? extends Publisher<? extends U>> mapper;
         final boolean delayErrors;
         final int maxConcurrency;
         final int bufferSize;
@@ -94,8 +105,8 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         int scalarEmitted;
         final int scalarLimit;
 
-        MergeSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends Publisher<? extends U>> mapper,
-                boolean delayErrors, int maxConcurrency, int bufferSize) {
+        MergeSubscriber(Subscriber<? super U> actual, Function1<? super T, ? extends Publisher<? extends U>> mapper,
+                        boolean delayErrors, int maxConcurrency, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
@@ -129,7 +140,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             }
             Publisher<? extends U> p;
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                p = ObjectHelper.requireNonNull(mapper.invoke(t), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();

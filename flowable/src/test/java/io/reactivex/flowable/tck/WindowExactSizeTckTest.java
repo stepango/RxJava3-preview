@@ -13,14 +13,14 @@
 
 package io.reactivex.flowable.tck;
 
-import java.util.List;
-
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.Function;
+import java.util.List;
+
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
+import kotlin.jvm.functions.Function1;
 
 @Test
 public class WindowExactSizeTckTest extends BaseTck<List<Long>> {
@@ -31,7 +31,7 @@ public class WindowExactSizeTckTest extends BaseTck<List<Long>> {
         return
             Flowable.fromIterable(iterate(elements))
             .window(2)
-            .flatMap((Function)Functions.identity())
+                    .flatMap((Function1) Functions.identity())
         ;
     }
 }

@@ -13,15 +13,27 @@
 
 package io.reactivex.interop;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.reactivestreams.Publisher;
+
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.*;
-import org.reactivestreams.Publisher;
-
-import io.reactivex.common.functions.*;
+import io.reactivex.common.functions.BiFunction;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Observable;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -57,9 +69,9 @@ public class ToFlowablePerf {
 
         flowable = RxJava3Interop.reduce(source, second);
 
-        flowableInner = source.concatMap(new Function<Integer, Publisher<Integer>>() {
+        flowableInner = source.concatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.range(1, 50).reduce(second);
             }
         });
@@ -68,9 +80,9 @@ public class ToFlowablePerf {
 
         observable = sourceObs.reduce(second).toObservable();
 
-        observableInner = sourceObs.concatMap(new Function<Integer, Observable<Integer>>() {
+        observableInner = sourceObs.concatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.range(1, 50).reduce(second).toObservable();
             }
         });

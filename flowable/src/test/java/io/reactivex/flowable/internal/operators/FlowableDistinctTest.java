@@ -13,35 +13,48 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
-import org.mockito.InOrder;
-import org.reactivestreams.*;
-
-import hu.akarnokd.reactivestreams.extensions.*;
-import io.reactivex.common.*;
+import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
+import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.UnicastProcessor;
-import io.reactivex.flowable.subscribers.*;
+import io.reactivex.flowable.subscribers.SubscriberFusion;
+import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class FlowableDistinctTest {
 
     Subscriber<String> w;
 
     // nulls lead to exceptions
-    final Function<String, String> TO_UPPER_WITH_EXCEPTION = new Function<String, String>() {
+    final Function1<String, String> TO_UPPER_WITH_EXCEPTION = new Function1<String, String>() {
         @Override
-        public String apply(String s) {
+        public String invoke(String s) {
             if (s.equals("x")) {
                 return "XX";
             }

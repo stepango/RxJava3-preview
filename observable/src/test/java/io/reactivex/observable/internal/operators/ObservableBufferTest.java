@@ -33,7 +33,6 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -225,9 +224,9 @@ public class ObservableBufferTest {
             }
         });
 
-        Function<Object, Observable<Object>> closer = new Function<Object, Observable<Object>>() {
+        Function1<Object, Observable<Object>> closer = new Function1<Object, Observable<Object>>() {
             @Override
-            public Observable<Object> apply(Object opening) {
+            public Observable<Object> invoke(Object opening) {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> observer) {
@@ -598,9 +597,9 @@ public class ObservableBufferTest {
     @Test(timeout = 2000)
     public void bufferWithStartEndBoundaryTake2() {
         Observable<Long> start = Observable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
-        Function<Long, Observable<Long>> end = new Function<Long, Observable<Long>>() {
+        Function1<Long, Observable<Long>> end = new Function1<Long, Observable<Long>>() {
             @Override
-            public Observable<Long> apply(Long t1) {
+            public Observable<Long> invoke(Long t1) {
                 return Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
             }
         };
@@ -702,9 +701,9 @@ public class ObservableBufferTest {
     public void bufferWithStartEndStartThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> end = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> end = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return Observable.never();
             }
         };
@@ -730,9 +729,9 @@ public class ObservableBufferTest {
     public void bufferWithStartEndEndFunctionThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> end = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> end = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -757,9 +756,9 @@ public class ObservableBufferTest {
     public void bufferWithStartEndEndThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
 
-        Function<Integer, Observable<Integer>> end = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> end = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t1) {
+            public Observable<Integer> invoke(Integer t1) {
                 return Observable.error(new TestException());
             }
         };

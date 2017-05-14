@@ -15,15 +15,17 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 public final class SingleMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;
 
-    final Function<? super T, ? extends R> mapper;
+    final Function1<? super T, ? extends R> mapper;
 
-    public SingleMap(SingleSource<? extends T> source, Function<? super T, ? extends R> mapper) {
+    public SingleMap(SingleSource<? extends T> source, Function1<? super T, ? extends R> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
@@ -37,9 +39,9 @@ public final class SingleMap<T, R> extends Single<R> {
 
         final SingleObserver<? super R> t;
 
-        final Function<? super T, ? extends R> mapper;
+        final Function1<? super T, ? extends R> mapper;
 
-        MapSingleObserver(SingleObserver<? super R> t, Function<? super T, ? extends R> mapper) {
+        MapSingleObserver(SingleObserver<? super R> t, Function1<? super T, ? extends R> mapper) {
             this.t = t;
             this.mapper = mapper;
         }
@@ -53,7 +55,7 @@ public final class SingleMap<T, R> extends Single<R> {
         public void onSuccess(T value) {
             R v;
             try {
-                v = mapper.apply(value);
+                v = mapper.invoke(value);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);

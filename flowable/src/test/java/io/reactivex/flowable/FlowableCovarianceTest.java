@@ -26,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -74,9 +73,9 @@ public class FlowableCovarianceTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         movies
-        .groupBy(new Function<Movie, Object>() {
+                .groupBy(new Function1<Movie, Object>() {
             @Override
-            public Object apply(Movie v) {
+            public Object invoke(Movie v) {
                 return v.getClass();
             }
         })
@@ -87,9 +86,9 @@ public class FlowableCovarianceTest {
                 return Unit.INSTANCE;
             }
         })
-        .flatMap(new Function<GroupedFlowable<Object, Movie>, Publisher<String>>() {
+                .flatMap(new Function1<GroupedFlowable<Object, Movie>, Publisher<String>>() {
             @Override
-            public Publisher<String> apply(GroupedFlowable<Object, Movie> g) {
+            public Publisher<String> invoke(GroupedFlowable<Object, Movie> g) {
                 return g
                         .doOnNext(new Function1<Movie, Unit>() {
                             @Override
@@ -105,9 +104,9 @@ public class FlowableCovarianceTest {
                             }
                         }
                                 )
-                        .map(new Function<Object, String>() {
+                        .map(new Function1<Object, String>() {
                             @Override
-                            public String apply(Object v) {
+                            public String invoke(Object v) {
                                 return v.toString();
                             }
                         });
@@ -151,9 +150,9 @@ public class FlowableCovarianceTest {
         Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<Movie, HorrorMovie>() {
             @Override
             public Publisher<HorrorMovie> apply(Flowable<Movie> t) {
-                return Flowable.just(new HorrorMovie()).map(new Function<HorrorMovie, HorrorMovie>() {
+                return Flowable.just(new HorrorMovie()).map(new Function1<HorrorMovie, HorrorMovie>() {
                     @Override
-                    public HorrorMovie apply(HorrorMovie v) {
+                    public HorrorMovie invoke(HorrorMovie v) {
                         return v;
                     }
                 });
@@ -169,9 +168,9 @@ public class FlowableCovarianceTest {
         Flowable<HorrorMovie> movie2 = movie.compose(new FlowableTransformer<HorrorMovie, HorrorMovie>() {
             @Override
             public Publisher<HorrorMovie> apply(Flowable<HorrorMovie> t1) {
-                return t1.map(new Function<HorrorMovie, HorrorMovie>() {
+                return t1.map(new Function1<HorrorMovie, HorrorMovie>() {
                     @Override
-                    public HorrorMovie apply(HorrorMovie v) {
+                    public HorrorMovie invoke(HorrorMovie v) {
                         return v;
                     }
                 });
@@ -187,9 +186,9 @@ public class FlowableCovarianceTest {
         movies.compose(deltaTransformer);
     }
 
-    static Function<List<List<Movie>>, Flowable<Movie>> calculateDelta = new Function<List<List<Movie>>, Flowable<Movie>>() {
+    static Function1<List<List<Movie>>, Flowable<Movie>> calculateDelta = new Function1<List<List<Movie>>, Flowable<Movie>>() {
         @Override
-        public Flowable<Movie> apply(List<List<Movie>> listOfLists) {
+        public Flowable<Movie> invoke(List<List<Movie>> listOfLists) {
             if (listOfLists.size() == 1) {
                 return Flowable.fromIterable(listOfLists.get(0));
             } else {

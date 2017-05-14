@@ -13,26 +13,49 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Disposables;
+import io.reactivex.common.Scheduler;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.observable.*;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableEmitter;
+import io.reactivex.observable.ObservableOnSubscribe;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
-import io.reactivex.observable.observers.*;
-import io.reactivex.observable.subjects.*;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleObserver;
+import io.reactivex.observable.TestHelper;
+import io.reactivex.observable.observers.DefaultObserver;
+import io.reactivex.observable.observers.TestObserver;
+import io.reactivex.observable.subjects.Subject;
+import io.reactivex.observable.subjects.UnicastSubject;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ObservableConcatTest {
 
@@ -602,9 +625,9 @@ public class ObservableConcatTest {
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(v);
             }
         });
@@ -626,9 +649,9 @@ public class ObservableConcatTest {
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;
-        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function<Integer, Observable<Integer>>() {
+        Observable<Observable<Integer>> source = Observable.range(0, n).map(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(v);
             }
         });
@@ -685,9 +708,9 @@ public class ObservableConcatTest {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
 
-        Function<Integer, Observable<Integer>> func = new Function<Integer, Observable<Integer>>() {
+        Function1<Integer, Observable<Integer>> func = new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer t) {
+            public Observable<Integer> invoke(Integer t) {
                 Observable<Integer> o = Observable.just(t)
                         .subscribeOn(sch)
                 ;
@@ -745,9 +768,9 @@ public class ObservableConcatTest {
             }
             TestObserver<Integer> ts = new TestObserver<Integer>();
             Observable.range(0, 1000)
-            .concatMap(new Function<Integer, Observable<Integer>>() {
+                    .concatMap(new Function1<Integer, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer t) {
+                public Observable<Integer> invoke(Integer t) {
                     return Observable.fromIterable(Arrays.asList(t));
                 }
             })
@@ -874,9 +897,9 @@ public class ObservableConcatTest {
     @Test
     public void concatMapIterableBufferSize() {
 
-        Observable.just(1, 2).concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        Observable.just(1, 2).concatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1, 2, 3, 4, 5);
             }
         }, 1)
@@ -899,9 +922,9 @@ public class ObservableConcatTest {
     @Test
     public void concatMapDelayErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Object, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                    public ObservableSource<Integer> invoke(Object v) {
                         return Observable.just(1);
                     }
                 }, 16, true));
@@ -910,9 +933,9 @@ public class ObservableConcatTest {
     @Test
     public void concatMapDelayErrorJustSource() {
         Observable.just(0)
-        .concatMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+                .concatMapDelayError(new Function1<Object, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
+            public ObservableSource<Integer> invoke(Object v) {
                 return Observable.just(1);
             }
         }, 16, true)
@@ -936,9 +959,9 @@ public class ObservableConcatTest {
     @Test
     public void concatMapErrorEmptySource() {
         assertSame(Observable.empty(), Observable.<Object>empty()
-                .concatMap(new Function<Object, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Object, ObservableSource<Integer>>() {
                     @Override
-                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                    public ObservableSource<Integer> invoke(Object v) {
                         return Observable.just(1);
                     }
                 }, 16));
@@ -947,9 +970,9 @@ public class ObservableConcatTest {
     @Test
     public void concatMapJustSource() {
         Observable.just(0)
-        .concatMap(new Function<Object, ObservableSource<Integer>>() {
+                .concatMap(new Function1<Object, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Object v) throws Exception {
+            public ObservableSource<Integer> invoke(Object v) {
                 return Observable.just(1);
             }
         }, 16)

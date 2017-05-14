@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.reactivex.common.functions.Function;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -72,9 +71,9 @@ public class ObservableCovarianceTest {
         Observable<Movie> movies = Observable.just(new HorrorMovie(), new ActionMovie(), new Movie());
         TestObserver<String> ts = new TestObserver<String>();
         movies
-        .groupBy(new Function<Movie, Object>() {
+                .groupBy(new Function1<Movie, Object>() {
             @Override
-            public Object apply(Movie v) {
+            public Object invoke(Movie v) {
                 return v.getClass();
             }
         })
@@ -85,9 +84,9 @@ public class ObservableCovarianceTest {
                 return Unit.INSTANCE;
             }
         })
-        .flatMap(new Function<GroupedObservable<Object, Movie>, Observable<String>>() {
+                .flatMap(new Function1<GroupedObservable<Object, Movie>, Observable<String>>() {
             @Override
-            public Observable<String> apply(GroupedObservable<Object, Movie> g) {
+            public Observable<String> invoke(GroupedObservable<Object, Movie> g) {
                 return g
                         .doOnNext(new Function1<Movie, Unit>() {
                     @Override
@@ -103,9 +102,9 @@ public class ObservableCovarianceTest {
                     }
                 }
                 )
-                .map(new Function<Movie, String>() {
+                        .map(new Function1<Movie, String>() {
                     @Override
-                    public String apply(Movie v) {
+                    public String invoke(Movie v) {
                         return v.toString();
                     }
                 });
@@ -149,9 +148,9 @@ public class ObservableCovarianceTest {
         Observable<HorrorMovie> movie2 = movie.compose(new ObservableTransformer<Movie, HorrorMovie>() {
             @Override
             public Observable<HorrorMovie> apply(Observable<Movie> t) {
-                return Observable.just(new HorrorMovie()).map(new Function<HorrorMovie, HorrorMovie>() {
+                return Observable.just(new HorrorMovie()).map(new Function1<HorrorMovie, HorrorMovie>() {
                     @Override
-                    public HorrorMovie apply(HorrorMovie v) {
+                    public HorrorMovie invoke(HorrorMovie v) {
                         return v;
                     }
                 });
@@ -167,9 +166,9 @@ public class ObservableCovarianceTest {
         Observable<HorrorMovie> movie2 = movie.compose(new ObservableTransformer<HorrorMovie, HorrorMovie>() {
             @Override
             public Observable<HorrorMovie> apply(Observable<HorrorMovie> t1) {
-                return t1.map(new Function<HorrorMovie, HorrorMovie>() {
+                return t1.map(new Function1<HorrorMovie, HorrorMovie>() {
                     @Override
-                    public HorrorMovie apply(HorrorMovie v) {
+                    public HorrorMovie invoke(HorrorMovie v) {
                         return v;
                     }
                 });
@@ -185,9 +184,9 @@ public class ObservableCovarianceTest {
         movies.compose(deltaTransformer);
     }
 
-    static Function<List<List<Movie>>, Observable<Movie>> calculateDelta = new Function<List<List<Movie>>, Observable<Movie>>() {
+    static Function1<List<List<Movie>>, Observable<Movie>> calculateDelta = new Function1<List<List<Movie>>, Observable<Movie>>() {
         @Override
-        public Observable<Movie> apply(List<List<Movie>> listOfLists) {
+        public Observable<Movie> invoke(List<List<Movie>> listOfLists) {
             if (listOfLists.size() == 1) {
                 return Observable.fromIterable(listOfLists.get(0));
             } else {

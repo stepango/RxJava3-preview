@@ -24,7 +24,6 @@ import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.UndeliverableException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ComputationScheduler;
 import io.reactivex.common.internal.schedulers.IoScheduler;
@@ -43,31 +42,31 @@ public final class RxJavaCommonPlugins {
     static volatile Function1<? super Throwable, Unit> errorHandler;
 
     @Nullable
-    static volatile Function<? super Runnable, ? extends Runnable> onScheduleHandler;
+    static volatile Function1<? super Runnable, ? extends Runnable> onScheduleHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitComputationHandler;
+    static volatile Function1<? super Callable<Scheduler>, ? extends Scheduler> onInitComputationHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitSingleHandler;
+    static volatile Function1<? super Callable<Scheduler>, ? extends Scheduler> onInitSingleHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitIoHandler;
+    static volatile Function1<? super Callable<Scheduler>, ? extends Scheduler> onInitIoHandler;
 
     @Nullable
-    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitNewThreadHandler;
+    static volatile Function1<? super Callable<Scheduler>, ? extends Scheduler> onInitNewThreadHandler;
 
     @Nullable
-    static volatile Function<? super Scheduler, ? extends Scheduler> onComputationHandler;
+    static volatile Function1<? super Scheduler, ? extends Scheduler> onComputationHandler;
 
     @Nullable
-    static volatile Function<? super Scheduler, ? extends Scheduler> onSingleHandler;
+    static volatile Function1<? super Scheduler, ? extends Scheduler> onSingleHandler;
 
     @Nullable
-    static volatile Function<? super Scheduler, ? extends Scheduler> onIoHandler;
+    static volatile Function1<? super Scheduler, ? extends Scheduler> onIoHandler;
 
     @Nullable
-    static volatile Function<? super Scheduler, ? extends Scheduler> onNewThreadHandler;
+    static volatile Function1<? super Scheduler, ? extends Scheduler> onNewThreadHandler;
 
     @Nullable
     static volatile Function0<Boolean> onBeforeBlocking;
@@ -130,7 +129,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Scheduler, ? extends Scheduler> getComputationSchedulerHandler() {
+    public static Function1<? super Scheduler, ? extends Scheduler> getComputationSchedulerHandler() {
         return onComputationHandler;
     }
 
@@ -148,7 +147,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitComputationSchedulerHandler() {
+    public static Function1<? super Callable<Scheduler>, ? extends Scheduler> getInitComputationSchedulerHandler() {
         return onInitComputationHandler;
     }
 
@@ -157,7 +156,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitIoSchedulerHandler() {
+    public static Function1<? super Callable<Scheduler>, ? extends Scheduler> getInitIoSchedulerHandler() {
         return onInitIoHandler;
     }
 
@@ -166,7 +165,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitNewThreadSchedulerHandler() {
+    public static Function1<? super Callable<Scheduler>, ? extends Scheduler> getInitNewThreadSchedulerHandler() {
         return onInitNewThreadHandler;
     }
 
@@ -175,7 +174,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitSingleSchedulerHandler() {
+    public static Function1<? super Callable<Scheduler>, ? extends Scheduler> getInitSingleSchedulerHandler() {
         return onInitSingleHandler;
     }
 
@@ -184,7 +183,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Scheduler, ? extends Scheduler> getIoSchedulerHandler() {
+    public static Function1<? super Scheduler, ? extends Scheduler> getIoSchedulerHandler() {
         return onIoHandler;
     }
 
@@ -193,7 +192,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Scheduler, ? extends Scheduler> getNewThreadSchedulerHandler() {
+    public static Function1<? super Scheduler, ? extends Scheduler> getNewThreadSchedulerHandler() {
         return onNewThreadHandler;
     }
 
@@ -202,7 +201,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Runnable, ? extends Runnable> getScheduleHandler() {
+    public static Function1<? super Runnable, ? extends Runnable> getScheduleHandler() {
         return onScheduleHandler;
     }
 
@@ -211,7 +210,7 @@ public final class RxJavaCommonPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<? super Scheduler, ? extends Scheduler> getSingleSchedulerHandler() {
+    public static Function1<? super Scheduler, ? extends Scheduler> getSingleSchedulerHandler() {
         return onSingleHandler;
     }
 
@@ -224,7 +223,7 @@ public final class RxJavaCommonPlugins {
     @NonNull
     public static Scheduler initComputationScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
+        Function1<? super Callable<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -240,7 +239,7 @@ public final class RxJavaCommonPlugins {
     @NonNull
     public static Scheduler initIoScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
+        Function1<? super Callable<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -256,7 +255,7 @@ public final class RxJavaCommonPlugins {
     @NonNull
     public static Scheduler initNewThreadScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
+        Function1<? super Callable<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -272,7 +271,7 @@ public final class RxJavaCommonPlugins {
     @NonNull
     public static Scheduler initSingleScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
+        Function1<? super Callable<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -286,7 +285,7 @@ public final class RxJavaCommonPlugins {
      */
     @NonNull
     public static Scheduler onComputationScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<? super Scheduler, ? extends Scheduler> f = onComputationHandler;
+        Function1<? super Scheduler, ? extends Scheduler> f = onComputationHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -376,7 +375,7 @@ public final class RxJavaCommonPlugins {
      */
     @NonNull
     public static Scheduler onIoScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<? super Scheduler, ? extends Scheduler> f = onIoHandler;
+        Function1<? super Scheduler, ? extends Scheduler> f = onIoHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -390,7 +389,7 @@ public final class RxJavaCommonPlugins {
      */
     @NonNull
     public static Scheduler onNewThreadScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<? super Scheduler, ? extends Scheduler> f = onNewThreadHandler;
+        Function1<? super Scheduler, ? extends Scheduler> f = onNewThreadHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -404,7 +403,7 @@ public final class RxJavaCommonPlugins {
      */
     @NonNull
     public static Runnable onSchedule(@NonNull Runnable run) {
-        Function<? super Runnable, ? extends Runnable> f = onScheduleHandler;
+        Function1<? super Runnable, ? extends Runnable> f = onScheduleHandler;
         if (f == null) {
             return run;
         }
@@ -418,7 +417,7 @@ public final class RxJavaCommonPlugins {
      */
     @NonNull
     public static Scheduler onSingleScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<? super Scheduler, ? extends Scheduler> f = onSingleHandler;
+        Function1<? super Scheduler, ? extends Scheduler> f = onSingleHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -452,7 +451,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setComputationSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
+    public static void setComputationSchedulerHandler(@Nullable Function1<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -474,7 +473,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitComputationSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitComputationSchedulerHandler(@Nullable Function1<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -485,7 +484,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitIoSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitIoSchedulerHandler(@Nullable Function1<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -496,7 +495,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitNewThreadSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitNewThreadSchedulerHandler(@Nullable Function1<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -507,7 +506,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitSingleSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
+    public static void setInitSingleSchedulerHandler(@Nullable Function1<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -518,7 +517,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setIoSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
+    public static void setIoSchedulerHandler(@Nullable Function1<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -529,7 +528,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setNewThreadSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
+    public static void setNewThreadSchedulerHandler(@Nullable Function1<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -540,7 +539,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setScheduleHandler(@Nullable Function<? super Runnable, ? extends Runnable> handler) {
+    public static void setScheduleHandler(@Nullable Function1<? super Runnable, ? extends Runnable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -551,7 +550,7 @@ public final class RxJavaCommonPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setSingleSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
+    public static void setSingleSchedulerHandler(@Nullable Function1<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -682,9 +681,9 @@ public final class RxJavaCommonPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, R> R apply(@NonNull Function<T, R> f, @NonNull T t) {
+    static <T, R> R apply(@NonNull Function1<T, R> f, @NonNull T t) {
         try {
-            return f.apply(t);
+            return f.invoke(t);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -735,7 +734,7 @@ public final class RxJavaCommonPlugins {
      * @throws NullPointerException if the function parameter returns null
      */
     @NonNull
-    static Scheduler applyRequireNonNull(@NonNull Function<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
+    static Scheduler applyRequireNonNull(@NonNull Function1<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
         return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Callable result can't be null");
     }
 

@@ -27,7 +27,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
 import io.reactivex.observable.Observable;
@@ -354,10 +353,10 @@ public class ObservableZipIterableTest {
         }
     };
 
-    static final class SquareStr implements Function<Integer, String> {
+    static final class SquareStr implements Function1<Integer, String> {
         final AtomicInteger counter = new AtomicInteger();
         @Override
-        public String apply(Integer t1) {
+        public String invoke(Integer t1) {
             counter.incrementAndGet();
             System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1 * t1));
             return " " + (t1 * t1);
@@ -388,9 +387,9 @@ public class ObservableZipIterableTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Integer>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Integer> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Integer> o) {
                 return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
                     @Override
                     public Object apply(Integer a, Integer b) throws Exception {

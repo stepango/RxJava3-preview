@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -30,6 +29,7 @@ import io.reactivex.common.functions.Function9;
 import io.reactivex.observable.Single;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
 
 import static org.junit.Assert.assertEquals;
 
@@ -187,9 +187,9 @@ public class SingleZipTest {
             }
         });
 
-        Single.zip(Arrays.asList(source, source), new Function<Object[], Object>() {
+        Single.zip(Arrays.asList(source, source), new Function1<Object[], Object>() {
             @Override
-            public Integer apply(Object[] o) throws Exception {
+            public Integer invoke(Object[] o) {
                 return (Integer)o[0] + (Integer)o[1];
             }
         })

@@ -15,14 +15,18 @@
  */
 package io.reactivex.observable.internal.operators;
 
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.lang.ref.WeakReference;
 
-import org.junit.*;
-
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
 
 
 public class ObservableDetachTest {
@@ -165,9 +169,9 @@ public class ObservableDetachTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
-            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Object> invoke(Observable<Object> o) {
                 return o.onTerminateDetach();
             }
         });

@@ -23,7 +23,6 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -54,9 +53,9 @@ public class FlowableDoOnLifecycleTest {
     public void doubleOnSubscribe() {
         final int[] calls = { 0, 0 };
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> o) throws Exception {
+            public Publisher<Object> invoke(Flowable<Object> o) {
                 return o
                         .doOnLifecycle(new Function1<Subscription, kotlin.Unit>() {
                     @Override

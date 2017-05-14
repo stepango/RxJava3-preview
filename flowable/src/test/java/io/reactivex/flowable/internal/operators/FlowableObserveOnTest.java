@@ -42,7 +42,6 @@ import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.functions.BiFunction;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.flowable.Flowable;
@@ -246,10 +245,10 @@ public class FlowableObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Flowable.range(1, 100000).map(new Function<Integer, Integer>() {
+        Flowable.range(1, 100000).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * _multiple;
             }
 
@@ -277,10 +276,10 @@ public class FlowableObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Flowable.range(1, 100000).map(new Function<Integer, Integer>() {
+        Flowable.range(1, 100000).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 return t1 * _multiple;
             }
 
@@ -313,10 +312,10 @@ public class FlowableObserveOnTest {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
 
-        Flowable.range(1, 10000).map(new Function<Integer, Integer>() {
+        Flowable.range(1, 10000).map(new Function1<Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1) {
+            public Integer invoke(Integer t1) {
                 if (randomIntFrom0to100() > 98) {
                     try {
                         Thread.sleep(2);
@@ -690,10 +689,10 @@ public class FlowableObserveOnTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .observeOn(Schedulers.computation())
-                .map(new Function<Long, String>() {
+                .map(new Function1<Long, String>() {
 
                     @Override
-                    public String apply(Long t1) {
+                    public String invoke(Long t1) {
                         System.out.println(t1);
                         try {
                             Thread.sleep(100);
@@ -1195,9 +1194,9 @@ public class FlowableObserveOnTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.observeOn(new TestScheduler());
             }
         });

@@ -13,17 +13,33 @@
 
 package io.reactivex.interop;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.common.functions.Function;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.flowable.Flowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Completable;
+import io.reactivex.observable.CompletableSource;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.Observable;
+import io.reactivex.observable.Single;
+import io.reactivex.observable.SingleSource;
+import kotlin.jvm.functions.Function1;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -105,131 +121,131 @@ public class XMapYPerf {
 
         Flowable<Integer> fsource = Flowable.fromArray(values);
 
-        flowFlatMapFlowable1 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapFlowable1 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v);
             }
         });
 
-        flowFlatMapFlowable0 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapFlowable0 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.empty();
             }
         });
 
-        flowFlatMapSingle1 = RxJava3Interop.flatMapSingle(fsource, new Function<Integer, SingleSource<Integer>>() {
+        flowFlatMapSingle1 = RxJava3Interop.flatMapSingle(fsource, new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         });
 
-        flowFlatMapMaybe1 = RxJava3Interop.flatMapMaybe(fsource, new Function<Integer, MaybeSource<Integer>>() {
+        flowFlatMapMaybe1 = RxJava3Interop.flatMapMaybe(fsource, new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         });
 
-        flowFlatMapMaybe0 = RxJava3Interop.flatMapMaybe(fsource, new Function<Integer, MaybeSource<Integer>>() {
+        flowFlatMapMaybe0 = RxJava3Interop.flatMapMaybe(fsource, new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.empty();
             }
         });
 
-        flowFlatMapCompletable0 = RxJava3Interop.flatMapCompletable(fsource, new Function<Integer, CompletableSource>() {
+        flowFlatMapCompletable0 = RxJava3Interop.flatMapCompletable(fsource, new Function1<Integer, CompletableSource>() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
+            public CompletableSource invoke(Integer v) {
                 return Completable.complete();
             }
         });
 
-        flowFlatMapIterable1 = fsource.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        flowFlatMapIterable1 = fsource.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.singletonList(v);
             }
         });
 
-        flowFlatMapIterable0 = fsource.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        flowFlatMapIterable0 = fsource.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.<Integer>emptyList();
             }
         });
 
 
-        flowFlatMapSingle1 = RxJava3Interop.flatMapSingle(fsource, new Function<Integer, SingleSource<Integer>>() {
+        flowFlatMapSingle1 = RxJava3Interop.flatMapSingle(fsource, new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         });
 
-        flowFlatMapMaybe1 = RxJava3Interop.flatMapMaybe(fsource, new Function<Integer, MaybeSource<Integer>>() {
+        flowFlatMapMaybe1 = RxJava3Interop.flatMapMaybe(fsource, new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         });
 
-        flowFlatMapMaybe0 = RxJava3Interop.flatMapMaybe(fsource, new Function<Integer, MaybeSource<Integer>>() {
+        flowFlatMapMaybe0 = RxJava3Interop.flatMapMaybe(fsource, new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.empty();
             }
         });
 
-        flowFlatMapCompletable0 = RxJava3Interop.flatMapCompletable(fsource, new Function<Integer, CompletableSource>() {
+        flowFlatMapCompletable0 = RxJava3Interop.flatMapCompletable(fsource, new Function1<Integer, CompletableSource>() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
+            public CompletableSource invoke(Integer v) {
                 return Completable.complete();
             }
         });
 
         // ooooooooooooooooooooooooo
 
-        flowFlatMapSingleAsFlow1 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapSingleAsFlow1 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return RxJava3Interop.toFlowable(Single.just(v));
             }
         });
 
-        flowFlatMapMaybeAsFlow1 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapMaybeAsFlow1 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return RxJava3Interop.toFlowable(Maybe.just(v));
             }
         });
 
-        flowFlatMapMaybeAsFlow0 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapMaybeAsFlow0 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return RxJava3Interop.toFlowable(Maybe.<Integer>empty());
             }
         });
 
-        flowFlatMapCompletableAsFlow0 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapCompletableAsFlow0 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return RxJava3Interop.toFlowable(Completable.complete());
             }
         });
 
-        flowFlatMapIterableAsFlow1 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapIterableAsFlow1 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.fromIterable(Collections.singletonList(v));
             }
         });
 
-        flowFlatMapIterableAsFlow0 = fsource.flatMap(new Function<Integer, Publisher<Integer>>() {
+        flowFlatMapIterableAsFlow0 = fsource.flatMap(new Function1<Integer, Publisher<Integer>>() {
             @Override
-            public Publisher<Integer> apply(Integer v) throws Exception {
+            public Publisher<Integer> invoke(Integer v) {
                 return Flowable.fromIterable(Collections.<Integer>emptyList());
             }
         });
@@ -239,103 +255,103 @@ public class XMapYPerf {
 
         Observable<Integer> osource = Observable.fromArray(values);
 
-        obsFlatMapObservable1 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapObservable1 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.just(v);
             }
         });
 
-        obsFlatMapObservable0 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapObservable0 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.empty();
             }
         });
 
-        obsFlatMapSingle1 = osource.flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+        obsFlatMapSingle1 = osource.flatMapSingle(new Function1<Integer, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Integer v) throws Exception {
+            public SingleSource<Integer> invoke(Integer v) {
                 return Single.just(v);
             }
         });
 
-        obsFlatMapMaybe1 = osource.flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        obsFlatMapMaybe1 = osource.flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(v);
             }
         });
 
-        obsFlatMapMaybe0 = osource.flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        obsFlatMapMaybe0 = osource.flatMapMaybe(new Function1<Integer, MaybeSource<Integer>>() {
             @Override
-            public MaybeSource<Integer> apply(Integer v) throws Exception {
+            public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.empty();
             }
         });
 
 
-        obsFlatMapCompletable0 = osource.flatMapCompletable(new Function<Integer, CompletableSource>() {
+        obsFlatMapCompletable0 = osource.flatMapCompletable(new Function1<Integer, CompletableSource>() {
             @Override
-            public CompletableSource apply(Integer v) throws Exception {
+            public CompletableSource invoke(Integer v) {
                 return Completable.complete();
             }
         });
 
-        obsFlatMapIterable1 = osource.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        obsFlatMapIterable1 = osource.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.singletonList(v);
             }
         });
 
-        obsFlatMapIterable0 = osource.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+        obsFlatMapIterable0 = osource.flatMapIterable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.<Integer>emptyList();
             }
         });
 
         // ooooooooooooooooooooooooo
 
-        obsFlatMapSingleAsObs1 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapSingleAsObs1 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Single.just(v).toObservable();
             }
         });
 
-        obsFlatMapMaybeAsObs1 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapMaybeAsObs1 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Maybe.just(v).toObservable();
             }
         });
 
-        obsFlatMapMaybeAsObs0 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapMaybeAsObs0 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Maybe.<Integer>empty().toObservable();
             }
         });
 
-        obsFlatMapCompletableAsObs0 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapCompletableAsObs0 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Completable.complete().<Integer>toObservable();
             }
         });
 
-        obsFlatMapIterableAsObs1 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapIterableAsObs1 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.fromIterable(Collections.singletonList(v));
             }
         });
 
-        obsFlatMapIterableAsObs0 = osource.flatMap(new Function<Integer, Observable<Integer>>() {
+        obsFlatMapIterableAsObs0 = osource.flatMap(new Function1<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Integer v) throws Exception {
+            public Observable<Integer> invoke(Integer v) {
                 return Observable.fromIterable(Collections.<Integer>emptyList());
             }
         });

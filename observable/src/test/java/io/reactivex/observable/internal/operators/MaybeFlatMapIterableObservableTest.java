@@ -13,30 +13,37 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.common.Disposable;
+import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.utils.CrashingIterable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.extensions.QueueDisposable;
-import io.reactivex.observable.observers.*;
+import io.reactivex.observable.observers.ObserverFusion;
+import io.reactivex.observable.observers.TestObserver;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MaybeFlatMapIterableObservableTest {
 
     @Test
     public void normal() {
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -47,9 +54,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void emptyIterable() {
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Collections.<Integer>emptyList();
             }
         })
@@ -60,9 +67,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void error() {
 
-        Maybe.<Integer>error(new TestException()).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.<Integer>error(new TestException()).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -73,9 +80,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void empty() {
 
-        Maybe.<Integer>empty().flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.<Integer>empty().flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -85,9 +92,9 @@ public class MaybeFlatMapIterableObservableTest {
 
     @Test
     public void take() {
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -100,9 +107,9 @@ public class MaybeFlatMapIterableObservableTest {
     public void fused() {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -118,9 +125,9 @@ public class MaybeFlatMapIterableObservableTest {
     public void fusedNoSync() {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.SYNC);
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(v, v + 1);
             }
         })
@@ -135,9 +142,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void iteratorCrash() {
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(1, 100, 100);
             }
         })
@@ -148,9 +155,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void hasNextCrash() {
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(100, 1, 100);
             }
         })
@@ -161,9 +168,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void nextCrash() {
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(100, 100, 1);
             }
         })
@@ -174,9 +181,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void hasNextCrash2() {
 
-        Maybe.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
+        Maybe.just(1).flattenAsObservable(new Function1<Integer, Iterable<Integer>>() {
             @Override
-            public Iterable<Integer> apply(Integer v) throws Exception {
+            public Iterable<Integer> invoke(Integer v) {
                 return new CrashingIterable(100, 2, 100);
             }
         })
@@ -186,12 +193,12 @@ public class MaybeFlatMapIterableObservableTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToObservable(new Function<Maybe<Object>, ObservableSource<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybeToObservable(new Function1<Maybe<Object>, ObservableSource<Integer>>() {
             @Override
-            public ObservableSource<Integer> apply(Maybe<Object> o) throws Exception {
-                return o.flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+            public ObservableSource<Integer> invoke(Maybe<Object> o) {
+                return o.flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return Collections.singleton(1);
                     }
                 });
@@ -201,9 +208,9 @@ public class MaybeFlatMapIterableObservableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.just(1).flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+        TestHelper.checkDisposed(Maybe.just(1).flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return Collections.singleton(1);
                     }
                 }));
@@ -212,9 +219,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void async1() {
         Maybe.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+                .flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -233,9 +240,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void async2() {
         Maybe.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+                .flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -253,9 +260,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void async3() {
         Maybe.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+                .flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -274,9 +281,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void async4() {
         Maybe.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+                .flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         Integer[] array = new Integer[1000 * 1000];
                         Arrays.fill(array, 1);
                         return Arrays.asList(array);
@@ -295,9 +302,9 @@ public class MaybeFlatMapIterableObservableTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.just(1)
-        .flattenAsObservable(new Function<Object, Iterable<Integer>>() {
+                .flattenAsObservable(new Function1<Object, Iterable<Integer>>() {
                     @Override
-                    public Iterable<Integer> apply(Object v) throws Exception {
+                    public Iterable<Integer> invoke(Object v) {
                         return Arrays.asList(1, 2, 3);
                     }
         }).subscribe(new Observer<Integer>() {

@@ -23,7 +23,6 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Scheduler.Worker;
 import io.reactivex.common.Schedulers;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.schedulers.IoScheduler;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
@@ -48,10 +47,10 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
 
         Flowable<Integer> o1 = Flowable.just(1, 2, 3, 4, 5);
         Flowable<Integer> o2 = Flowable.just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.merge(o1, o2).map(new Function<Integer, String>() {
+        Flowable<String> o = Flowable.merge(o1, o2).map(new Function1<Integer, String>() {
 
             @Override
-            public String apply(Integer t) {
+            public String invoke(Integer t) {
                 assertTrue(Thread.currentThread().getName().startsWith("RxCachedThreadScheduler"));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }

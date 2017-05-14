@@ -13,11 +13,21 @@
 
 package io.reactivex.common;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
-import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.annotations.NonNull;
-import io.reactivex.common.internal.schedulers.*;
+import io.reactivex.common.internal.schedulers.ComputationScheduler;
+import io.reactivex.common.internal.schedulers.ExecutorScheduler;
+import io.reactivex.common.internal.schedulers.IoScheduler;
+import io.reactivex.common.internal.schedulers.NewThreadScheduler;
+import io.reactivex.common.internal.schedulers.SchedulerPoolFactory;
+import io.reactivex.common.internal.schedulers.SingleScheduler;
+import io.reactivex.common.internal.schedulers.TrampolineScheduler;
+import kotlin.jvm.functions.Function1;
 
 /**
  * Static factory methods for returning standard Scheduler instances.
@@ -114,11 +124,11 @@ public final class Schedulers {
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
-     * {@link RxJavaCommonPlugins#setInitComputationSchedulerHandler(io.reactivex.common.functions.Function)} plugin method.
+     * {@link RxJavaCommonPlugins#setInitComputationSchedulerHandler(Function1)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
      * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
-     * via the {@link RxJavaCommonPlugins#setComputationSchedulerHandler(io.reactivex.common.functions.Function)} method.
+     * via the {@link RxJavaCommonPlugins#setComputationSchedulerHandler(Function1)} method.
      * <p>
      * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
      * {@link RxJavaCommonPlugins#createComputationScheduler(ThreadFactory)} method. Note that such custom
@@ -158,11 +168,11 @@ public final class Schedulers {
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
-     * {@link RxJavaCommonPlugins#setInitIoSchedulerHandler(io.reactivex.common.functions.Function)} plugin method.
+     * {@link RxJavaCommonPlugins#setInitIoSchedulerHandler(Function1)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
      * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
-     * via the {@link RxJavaCommonPlugins#setIoSchedulerHandler(io.reactivex.common.functions.Function)} method.
+     * via the {@link RxJavaCommonPlugins#setIoSchedulerHandler(Function1)} method.
      * <p>
      * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
      * {@link RxJavaCommonPlugins#createIoScheduler(ThreadFactory)} method. Note that such custom
@@ -216,11 +226,11 @@ public final class Schedulers {
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
-     * {@link RxJavaCommonPlugins#setInitNewThreadSchedulerHandler(io.reactivex.common.functions.Function)} plugin method.
+     * {@link RxJavaCommonPlugins#setInitNewThreadSchedulerHandler(Function1)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
      * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
-     * via the {@link RxJavaCommonPlugins#setNewThreadSchedulerHandler(io.reactivex.common.functions.Function)} method.
+     * via the {@link RxJavaCommonPlugins#setNewThreadSchedulerHandler(Function1)} method.
      * <p>
      * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
      * {@link RxJavaCommonPlugins#createNewThreadScheduler(ThreadFactory)} method. Note that such custom
@@ -265,11 +275,11 @@ public final class Schedulers {
      * </ul>
      * <p>
      * The default value of this scheduler can be overridden at initialization time via the
-     * {@link RxJavaCommonPlugins#setInitSingleSchedulerHandler(io.reactivex.common.functions.Function)} plugin method.
+     * {@link RxJavaCommonPlugins#setInitSingleSchedulerHandler(Function1)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
      * Once the {@link Schedulers} class has been initialized, you can override the returned {@link Scheduler} instance
-     * via the {@link RxJavaCommonPlugins#setSingleSchedulerHandler(io.reactivex.common.functions.Function)} method.
+     * via the {@link RxJavaCommonPlugins#setSingleSchedulerHandler(Function1)} method.
      * <p>
      * It is possible to create a fresh instance of this scheduler with a custom ThreadFactory, via the
      * {@link RxJavaCommonPlugins#createSingleScheduler(ThreadFactory)} method. Note that such custom

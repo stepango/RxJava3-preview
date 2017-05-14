@@ -15,8 +15,11 @@ package io.reactivex.observable.internal.operators;
 
 import org.junit.Test;
 
-import io.reactivex.common.functions.Function;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.SingleSource;
+import io.reactivex.observable.TestHelper;
+import kotlin.jvm.functions.Function1;
 
 public class ObservableCountTest {
 
@@ -29,16 +32,16 @@ public class ObservableCountTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Long>>() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Long>>() {
             @Override
-            public ObservableSource<Long> apply(Observable<Object> o) throws Exception {
+            public ObservableSource<Long> invoke(Observable<Object> o) {
                 return o.count().toObservable();
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Long>>() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function1<Observable<Object>, SingleSource<Long>>() {
             @Override
-            public SingleSource<Long> apply(Observable<Object> o) throws Exception {
+            public SingleSource<Long> invoke(Observable<Object> o) {
                 return o.count();
             }
         });

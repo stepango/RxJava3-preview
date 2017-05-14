@@ -25,7 +25,6 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.TestHelper;
@@ -92,9 +91,9 @@ public class ObservableForEachTest {
 
     @Test
     public void badSource() {
-        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+        TestHelper.checkBadSourceObservable(new Function1<Observable<Integer>, Object>() {
             @Override
-            public Object apply(Observable<Integer> f) throws Exception {
+            public Object invoke(Observable<Integer> f) {
                 return f.forEachWhile(Functions.alwaysTrue());
             }
         }, false, 1, 1, (Object[])null);

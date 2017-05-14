@@ -14,14 +14,17 @@
 package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.Disposable;
-import io.reactivex.common.exceptions.*;
-import io.reactivex.common.functions.Function;
+import io.reactivex.common.exceptions.CompositeException;
+import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.internal.disposables.DisposableHelper;
-import io.reactivex.observable.*;
+import io.reactivex.observable.ObservableSource;
+import io.reactivex.observable.Observer;
+import kotlin.jvm.functions.Function1;
 
 public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpstream<T, T> {
-    final Function<? super Throwable, ? extends T> valueSupplier;
-    public ObservableOnErrorReturn(ObservableSource<T> source, Function<? super Throwable, ? extends T> valueSupplier) {
+    final Function1<? super Throwable, ? extends T> valueSupplier;
+
+    public ObservableOnErrorReturn(ObservableSource<T> source, Function1<? super Throwable, ? extends T> valueSupplier) {
         super(source);
         this.valueSupplier = valueSupplier;
     }
@@ -33,11 +36,11 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
 
     static final class OnErrorReturnObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final Function<? super Throwable, ? extends T> valueSupplier;
+        final Function1<? super Throwable, ? extends T> valueSupplier;
 
         Disposable s;
 
-        OnErrorReturnObserver(Observer<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
+        OnErrorReturnObserver(Observer<? super T> actual, Function1<? super Throwable, ? extends T> valueSupplier) {
             this.actual = actual;
             this.valueSupplier = valueSupplier;
         }
@@ -70,7 +73,7 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
         public void onError(Throwable t) {
             T v;
             try {
-                v = valueSupplier.apply(t);
+                v = valueSupplier.invoke(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(t, e));

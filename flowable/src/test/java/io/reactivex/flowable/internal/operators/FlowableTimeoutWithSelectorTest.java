@@ -13,28 +13,43 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.common.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.Schedulers;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.Function;
 import io.reactivex.common.internal.functions.Functions;
-import io.reactivex.flowable.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+import kotlin.jvm.functions.Function1;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class FlowableTimeoutWithSelectorTest {
     @Test(timeout = 2000)
@@ -42,9 +57,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return timeout;
             }
         };
@@ -75,9 +90,9 @@ public class FlowableTimeoutWithSelectorTest {
         Flowable<Integer> source = Flowable.<Integer>never();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return timeout;
             }
         };
@@ -102,9 +117,9 @@ public class FlowableTimeoutWithSelectorTest {
         Flowable<Integer> source = Flowable.<Integer>never();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return timeout;
             }
         };
@@ -133,9 +148,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 throw new TestException();
             }
         };
@@ -160,9 +175,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return timeout;
             }
         };
@@ -184,9 +199,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return Flowable.<Integer> error(new TestException());
             }
         };
@@ -211,9 +226,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return PublishProcessor.create();
             }
         };
@@ -233,9 +248,9 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 return timeout;
             }
         };
@@ -272,9 +287,9 @@ public class FlowableTimeoutWithSelectorTest {
         final CountDownLatch enteredTimeoutOne = new CountDownLatch(1);
         final AtomicBoolean latchTimeout = new AtomicBoolean(false);
 
-        final Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
+        final Function1<Integer, Flowable<Integer>> timeoutFunc = new Function1<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Integer t1) {
+            public Flowable<Integer> invoke(Integer t1) {
                 if (t1 == 1) {
                     // Force "unsubscribe" run on another thread
                     return Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -379,16 +394,16 @@ public class FlowableTimeoutWithSelectorTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.timeout(Functions.justFunction(Flowable.never()));
             }
         });
 
-        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+            public Flowable<Object> invoke(Flowable<Object> o) {
                 return o.timeout(Functions.justFunction(Flowable.never()), Flowable.never());
             }
         });
