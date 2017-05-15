@@ -39,8 +39,8 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
-import io.reactivex.common.functions.Function6;
-import io.reactivex.common.functions.Function7;
+import kotlin.jvm.functions.Function6;
+import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
 import kotlin.jvm.functions.Function9;
 import io.reactivex.common.internal.functions.Functions;
@@ -1249,7 +1249,7 @@ public class ObservableZipTest {
                 Observable.just(6),
             new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) {
                     return "" + a + b + c + d + e + f;
                 }
             }
@@ -1266,8 +1266,7 @@ public class ObservableZipTest {
                 Observable.just(6), Observable.just(7),
             new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g)
-                        throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g) {
                     return "" + a + b + c + d + e + f + g;
                 }
             }

@@ -45,8 +45,8 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
-import io.reactivex.common.functions.Function6;
-import io.reactivex.common.functions.Function7;
+import kotlin.jvm.functions.Function6;
+import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.extensions.QueueDisposable;
@@ -2793,13 +2793,12 @@ public class MaybeTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7)
-                throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7) {
             return "" + t1 + t2 + t3 + t4 + t5 + t6 + t7;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) {
             return "" + t1 + t2 + t3 + t4 + t5 + t6;
         }
 

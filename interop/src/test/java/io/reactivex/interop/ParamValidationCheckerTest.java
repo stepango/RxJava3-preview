@@ -43,8 +43,8 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
-import io.reactivex.common.functions.Function6;
-import io.reactivex.common.functions.Function7;
+import kotlin.jvm.functions.Function6;
+import kotlin.jvm.functions.Function7;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.BackpressureOverflowStrategy;
 import io.reactivex.flowable.BackpressureStrategy;
@@ -944,13 +944,12 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7)
-                throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7) {
             return null;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) {
             return null;
         }
 

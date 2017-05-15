@@ -33,8 +33,8 @@ import io.reactivex.common.functions.BiFunction;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
-import io.reactivex.common.functions.Function6;
-import io.reactivex.common.functions.Function7;
+import kotlin.jvm.functions.Function6;
+import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
@@ -684,7 +684,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -707,7 +707,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5], (T7) a[6]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4], (T6) a[5], (T7) a[6]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;
