@@ -33,7 +33,7 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -73,9 +73,9 @@ public class ObservableCombineLatestTest {
         PublishSubject<String> w1 = PublishSubject.create();
         PublishSubject<String> w2 = PublishSubject.create();
 
-        Observable<String> combined = Observable.combineLatest(w1, w2, new BiFunction<String, String, String>() {
+        Observable<String> combined = Observable.combineLatest(w1, w2, new Function2<String, String, String>() {
             @Override
-            public String apply(String v1, String v2) {
+            public String invoke(String v1, String v2) {
                 throw new RuntimeException("I don't work.");
             }
         });
@@ -202,7 +202,7 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void testCombineLatest2Types() {
-        BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
+        Function2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
@@ -267,10 +267,10 @@ public class ObservableCombineLatestTest {
         return combineLatestFunction;
     }
 
-    private BiFunction<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
-        BiFunction<String, Integer, String> combineLatestFunction = new BiFunction<String, Integer, String>() {
+    private Function2<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
+        Function2<String, Integer, String> combineLatestFunction = new Function2<String, Integer, String>() {
             @Override
-            public String apply(String s, Integer i) {
+            public String invoke(String s, Integer i) {
                 return getStringValue(s) + getStringValue(i);
             }
         };
@@ -298,9 +298,9 @@ public class ObservableCombineLatestTest {
         }
     }
 
-    BiFunction<Integer, Integer, Integer> or = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> or = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 | t2;
         }
     };
@@ -547,9 +547,9 @@ public class ObservableCombineLatestTest {
         Observable<Integer> s2 = Observable.just(2);
 
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2,
-                new BiFunction<Integer, Integer, List<Integer>>() {
+                new Function2<Integer, Integer, List<Integer>>() {
                     @Override
-                    public List<Integer> apply(Integer t1, Integer t2) {
+                    public List<Integer> invoke(Integer t1, Integer t2) {
                         return Arrays.asList(t1, t2);
                     }
                 });
@@ -787,9 +787,9 @@ public class ObservableCombineLatestTest {
 
         TestObserver<Long> ts = new TestObserver<Long>();
 
-        Observable.combineLatest(timer, Observable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
+        Observable.combineLatest(timer, Observable.<Integer> never(), new Function2<Long, Integer, Long>() {
             @Override
-            public Long apply(Long t1, Integer t2) {
+            public Long invoke(Long t1, Integer t2) {
                 return t1;
             }
         }).subscribe(ts);
@@ -895,9 +895,9 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(Observable.combineLatest(Observable.never(), Observable.never(), new BiFunction<Object, Object, Object>() {
+        TestHelper.checkDisposed(Observable.combineLatest(Observable.never(), Observable.never(), new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         }));
@@ -917,9 +917,9 @@ public class ObservableCombineLatestTest {
                     }
                 }),
                 Observable.never(),
-                new BiFunction<Object, Object, Object>() {
+                new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -930,9 +930,9 @@ public class ObservableCombineLatestTest {
     public void combineAsync() {
         Observable<Integer> source = Observable.range(1, 1000).subscribeOn(Schedulers.computation());
 
-        Observable.combineLatest(source, source, new BiFunction<Object, Object, Object>() {
+        Observable.combineLatest(source, source, new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -945,9 +945,9 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void error() {
-        Observable.combineLatest(Observable.never(), Observable.error(new TestException()), new BiFunction<Object, Object, Object>() {
+        Observable.combineLatest(Observable.never(), Observable.error(new TestException()), new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -999,9 +999,9 @@ public class ObservableCombineLatestTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+                TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a;
                     }
                 }).test();
@@ -1063,9 +1063,9 @@ public class ObservableCombineLatestTest {
                             return Unit.INSTANCE;
                         }
                     }),
-                    new BiFunction<Object, Object, Object>() {
+                    new Function2<Object, Object, Object>() {
                         @Override
-                        public Object apply(Object a, Object b) throws Exception {
+                        public Object invoke(Object a, Object b) {
                             return 0;
                         }
                     })
@@ -1224,9 +1224,9 @@ public class ObservableCombineLatestTest {
             }
         };
 
-        Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+        Observable.combineLatest(ps1, ps2, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })

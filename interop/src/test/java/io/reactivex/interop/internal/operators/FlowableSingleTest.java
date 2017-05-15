@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Maybe;
@@ -251,9 +251,9 @@ public class FlowableSingleTest {
     public void testIssue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Maybe<Integer> reduced = reduce(source, new BiFunction<Integer, Integer, Integer>() {
+        Maybe<Integer> reduced = reduce(source, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer i1, Integer i2) {
+            public Integer invoke(Integer i1, Integer i2) {
                 return i1 + i2;
             }
         });

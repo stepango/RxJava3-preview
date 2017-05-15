@@ -28,7 +28,7 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -99,7 +99,6 @@ import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -1061,7 +1060,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Single<R> zip(
             SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper
+            Function2<? super T1, ? super T2, ? extends R> zipper
      ) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
@@ -2970,7 +2969,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Single<R> zipWith(SingleSource<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Single<R> zipWith(SingleSource<U> other, Function2<? super T, ? super U, ? extends R> zipper) {
         return zip(this, other, zipper);
     }
 

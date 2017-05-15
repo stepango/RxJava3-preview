@@ -26,7 +26,7 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
 import io.reactivex.observable.Observable;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class ObservableZipIterableTest {
-    BiFunction<String, String, String> concat2Strings;
+    Function2<String, String, String> concat2Strings;
     PublishSubject<String> s1;
     PublishSubject<String> s2;
     Observable<String> zipped;
@@ -54,9 +54,9 @@ public class ObservableZipIterableTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
+        concat2Strings = new Function2<String, String, String>() {
             @Override
-            public String apply(String t1, String t2) {
+            public String invoke(String t1, String t2) {
                 return t1 + "-" + t2;
             }
         };
@@ -71,10 +71,10 @@ public class ObservableZipIterableTest {
         zipped.subscribe(observer);
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
+    Function2<Object, Object, String> zipr2 = new Function2<Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2) {
+        public String invoke(Object t1, Object t2) {
             return "" + t1 + t2;
         }
 
@@ -377,9 +377,9 @@ public class ObservableZipIterableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Observable.just(1).zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));
@@ -390,9 +390,9 @@ public class ObservableZipIterableTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Integer>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> invoke(Observable<Integer> o) {
-                return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+                return o.zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
                     @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
+                    public Object invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 });
@@ -402,9 +402,9 @@ public class ObservableZipIterableTest {
 
     @Test
     public void iteratorThrows() {
-        Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), new BiFunction<Integer, Integer, Object>() {
+        Observable.just(1).zipWith(new CrashingIterable(100, 1, 100), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -427,9 +427,9 @@ public class ObservableZipIterableTest {
                     observer.onComplete();
                 }
             }
-            .zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+            .zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b) throws Exception {
+                public Object invoke(Integer a, Integer b) {
                     return a + b;
                 }
             })

@@ -31,7 +31,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -54,9 +54,9 @@ public class FlowableMapTest {
     Subscriber<String> stringSubscriber;
     Subscriber<String> stringSubscriber2;
 
-    static final BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
+    static final Function2<String, Integer, String> APPEND_INDEX = new Function2<String, Integer, String>() {
         @Override
-        public String apply(String value, Integer index) {
+        public String invoke(String value, Integer index) {
             return value + index;
         }
     };

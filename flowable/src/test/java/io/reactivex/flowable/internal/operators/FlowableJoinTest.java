@@ -26,7 +26,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -43,9 +43,9 @@ import static org.mockito.Mockito.verify;
 public class FlowableJoinTest {
     Subscriber<Object> observer = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> add = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -295,9 +295,9 @@ public class FlowableJoinTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        BiFunction<Integer, Integer, Integer> fail = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> fail = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -319,9 +319,9 @@ public class FlowableJoinTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishProcessor.<Integer>create().join(Flowable.just(1),
                 Functions.justFunction(Flowable.never()),
-                Functions.justFunction(Flowable.never()), new BiFunction<Integer, Integer, Integer>() {
+                Functions.justFunction(Flowable.never()), new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 }));
@@ -333,9 +333,9 @@ public class FlowableJoinTest {
                 Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 })
@@ -351,9 +351,9 @@ public class FlowableJoinTest {
         TestSubscriber<Integer> to = ps.join(Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.empty()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
             })
@@ -373,9 +373,9 @@ public class FlowableJoinTest {
                 Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         throw new TestException();
                     }
                 })
@@ -402,9 +402,9 @@ public class FlowableJoinTest {
             .join(Flowable.just(2),
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(Flowable.never()),
-                    new BiFunction<Integer, Integer, Integer>() {
+                    new Function2<Integer, Integer, Integer>() {
                         @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
+                        public Integer invoke(Integer a, Integer b) {
                             return a + b;
                         }
                 })
@@ -435,9 +435,9 @@ public class FlowableJoinTest {
                             observer.onError(new TestException("First"));
                         }
                     }),
-                    new BiFunction<Integer, Integer, Integer>() {
+                    new Function2<Integer, Integer, Integer>() {
                         @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
+                        public Integer invoke(Integer a, Integer b) {
                             return a + b;
                         }
                 })
@@ -460,9 +460,9 @@ public class FlowableJoinTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestSubscriber<Object> ts = pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Object>() {
+                new Function2<Integer, Integer, Object>() {
                     @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
+                    public Object invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 })
@@ -480,9 +480,9 @@ public class FlowableJoinTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestSubscriber<Object> ts = pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()),
-                new BiFunction<Integer, Integer, Object>() {
+                new Function2<Integer, Integer, Object>() {
                     @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
+                    public Object invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 })

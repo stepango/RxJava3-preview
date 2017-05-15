@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.*;
@@ -31,9 +31,9 @@ import io.reactivex.flowable.internal.subscriptions.*;
  */
 public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    final BiFunction<T, T, T> reducer;
+    final Function2<T, T, T> reducer;
 
-    public FlowableReduce(Flowable<T> source, BiFunction<T, T, T> reducer) {
+    public FlowableReduce(Flowable<T> source, Function2<T, T, T> reducer) {
         super(source);
         this.reducer = reducer;
     }
@@ -47,11 +47,11 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
 
         private static final long serialVersionUID = -4663883003264602070L;
 
-        final BiFunction<T, T, T> reducer;
+        final Function2<T, T, T> reducer;
 
         Subscription s;
 
-        ReduceSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(Subscriber<? super T> actual, Function2<T, T, T> reducer) {
             super(actual);
             this.reducer = reducer;
         }
@@ -78,7 +78,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
                 value = t;
             } else {
                 try {
-                    value = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
+                    value = ObjectHelper.requireNonNull(reducer.invoke(v, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     s.cancel();

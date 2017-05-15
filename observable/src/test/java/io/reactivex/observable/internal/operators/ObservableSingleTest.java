@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeObserver;
 import io.reactivex.observable.MaybeSource;
@@ -252,9 +252,9 @@ public class ObservableSingleTest {
     public void testIssue1527Observable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+        Observable<Integer> reduced = source.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer i1, Integer i2) {
+            public Integer invoke(Integer i1, Integer i2) {
                 return i1 + i2;
             }
         }).toObservable();
@@ -464,9 +464,9 @@ public class ObservableSingleTest {
     public void testIssue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Maybe<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+        Maybe<Integer> reduced = source.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer i1, Integer i2) {
+            public Integer invoke(Integer i1, Integer i2) {
                 return i1 + i2;
             }
         });

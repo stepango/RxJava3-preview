@@ -16,7 +16,7 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 
@@ -27,9 +27,9 @@ public class ReduceWithTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(final long elements) {
         return
                 Flowable.range(1, 1000).reduceWith(Functions.justCallable(0),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 })

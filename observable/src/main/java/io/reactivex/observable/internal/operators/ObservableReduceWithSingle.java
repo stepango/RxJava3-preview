@@ -16,7 +16,7 @@ package io.reactivex.observable.internal.operators;
 import java.util.concurrent.Callable;
 
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
@@ -35,9 +35,9 @@ public final class ObservableReduceWithSingle<T, R> extends Single<R> {
 
     final Callable<R> seedSupplier;
 
-    final BiFunction<R, ? super T, R> reducer;
+    final Function2<R, ? super T, R> reducer;
 
-    public ObservableReduceWithSingle(ObservableSource<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+    public ObservableReduceWithSingle(ObservableSource<T> source, Callable<R> seedSupplier, Function2<R, ? super T, R> reducer) {
         this.source = source;
         this.seedSupplier = seedSupplier;
         this.reducer = reducer;

@@ -22,7 +22,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ComputationScheduler;
 import io.reactivex.common.internal.schedulers.IoScheduler;
@@ -50,7 +50,7 @@ public final class RxJavaFlowablePlugins {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe;
+    static volatile Function2<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe;
 
     /** Prevents changing the plugins. */
     static volatile boolean lockdown;
@@ -117,7 +117,7 @@ public final class RxJavaFlowablePlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> getOnFlowableSubscribe() {
+    public static Function2<? super Flowable, ? super Subscriber, ? extends Subscriber> getOnFlowableSubscribe() {
         return onFlowableSubscribe;
     }
 
@@ -150,7 +150,7 @@ public final class RxJavaFlowablePlugins {
      * @param onFlowableSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnFlowableSubscribe(@Nullable BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe) {
+    public static void setOnFlowableSubscribe(@Nullable Function2<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -167,7 +167,7 @@ public final class RxJavaFlowablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Subscriber<? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<? super T> subscriber) {
-        BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
+        Function2<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }
@@ -336,9 +336,9 @@ public final class RxJavaFlowablePlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, U, R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
+    static <T, U, R> R apply(@NonNull Function2<T, U, R> f, @NonNull T t, @NonNull U u) {
         try {
-            return f.apply(t, u);
+            return f.invoke(t, u);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

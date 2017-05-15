@@ -16,7 +16,7 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 
 @Test
@@ -26,9 +26,9 @@ public class WithLatestFromTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .withLatestFrom(Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
+                .withLatestFrom(Flowable.just(1), new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 })

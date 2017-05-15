@@ -23,7 +23,7 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.UndeliverableException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ComputationScheduler;
 import io.reactivex.common.internal.schedulers.IoScheduler;
@@ -701,9 +701,9 @@ public final class RxJavaCommonPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, U, R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
+    static <T, U, R> R apply(@NonNull Function2<T, U, R> f, @NonNull T t, @NonNull U u) {
         try {
-            return f.apply(t, u);
+            return f.invoke(t, u);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

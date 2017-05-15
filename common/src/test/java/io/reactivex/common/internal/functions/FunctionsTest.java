@@ -18,7 +18,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import io.reactivex.common.TestCommonHelper;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -103,9 +103,9 @@ public class FunctionsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void toFunction2() throws Exception {
-        Functions.toFunction(new BiFunction<Integer, Integer, Integer>() {
+        Functions.toFunction(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
+            public Integer invoke(Integer t1, Integer t2) {
                 return null;
             }
         }).invoke(new Object[20]);
@@ -184,7 +184,7 @@ public class FunctionsTest {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test(expected = NullPointerException.class)
     public void biFunctionFail() throws Exception {
-        BiFunction biFunction = null;
+        Function2 biFunction = null;
         Functions.toFunction(biFunction);
     }
 

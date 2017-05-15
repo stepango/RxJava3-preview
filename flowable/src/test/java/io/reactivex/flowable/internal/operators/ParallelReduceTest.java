@@ -13,19 +13,22 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.Callable;
-
 import org.junit.Test;
 
-import io.reactivex.common.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ParallelReduceTest {
 
@@ -37,9 +40,9 @@ public class ParallelReduceTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
+        }, new Function2<List<Integer>, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
+            public List<Integer> invoke(List<Integer> a, Integer b) {
                 a.add(b);
                 return a;
             }
@@ -56,9 +59,9 @@ public class ParallelReduceTest {
             public List<Integer> call() throws Exception {
                 throw new TestException();
             }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
+        }, new Function2<List<Integer>, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
+            public List<Integer> invoke(List<Integer> a, Integer b) {
                 a.add(b);
                 return a;
             }
@@ -78,9 +81,9 @@ public class ParallelReduceTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
+        }, new Function2<List<Integer>, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
+            public List<Integer> invoke(List<Integer> a, Integer b) {
                 if (b == 3) {
                     throw new TestException();
                 }
@@ -104,9 +107,9 @@ public class ParallelReduceTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
+        }, new Function2<List<Integer>, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
+            public List<Integer> invoke(List<Integer> a, Integer b) {
                 a.add(b);
                 return a;
             }
@@ -131,9 +134,9 @@ public class ParallelReduceTest {
             public List<Integer> call() throws Exception {
                 return new ArrayList<Integer>();
             }
-        }, new BiFunction<List<Integer>, Integer, List<Integer>>() {
+        }, new Function2<List<Integer>, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(List<Integer> a, Integer b) throws Exception {
+            public List<Integer> invoke(List<Integer> a, Integer b) {
                 a.add(b);
                 return a;
             }
@@ -154,9 +157,9 @@ public class ParallelReduceTest {
                 public List<Object> call() throws Exception {
                     return new ArrayList<Object>();
                 }
-            }, new BiFunction<List<Object>, Object, List<Object>>() {
+            }, new Function2<List<Object>, Object, List<Object>>() {
                 @Override
-                public List<Object> apply(List<Object> a, Object b) throws Exception {
+                public List<Object> invoke(List<Object> a, Object b) {
                     a.add(b);
                     return a;
                 }

@@ -17,7 +17,7 @@ import java.util.Iterator;
 
 import io.reactivex.common.*;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
@@ -26,11 +26,11 @@ import io.reactivex.observable.internal.disposables.EmptyDisposable;
 public final class ObservableZipIterable<T, U, V> extends Observable<V> {
     final Observable<? extends T> source;
     final Iterable<U> other;
-    final BiFunction<? super T, ? super U, ? extends V> zipper;
+    final Function2<? super T, ? super U, ? extends V> zipper;
 
     public ObservableZipIterable(
             Observable<? extends T> source,
-            Iterable<U> other, BiFunction<? super T, ? super U, ? extends V> zipper) {
+            Iterable<U> other, Function2<? super T, ? super U, ? extends V> zipper) {
         this.source = source;
         this.other = other;
         this.zipper = zipper;
@@ -69,14 +69,14 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
     static final class ZipIterableObserver<T, U, V> implements Observer<T>, Disposable {
         final Observer<? super V> actual;
         final Iterator<U> iterator;
-        final BiFunction<? super T, ? super U, ? extends V> zipper;
+        final Function2<? super T, ? super U, ? extends V> zipper;
 
         Disposable s;
 
         boolean done;
 
         ZipIterableObserver(Observer<? super V> actual, Iterator<U> iterator,
-                BiFunction<? super T, ? super U, ? extends V> zipper) {
+                Function2<? super T, ? super U, ? extends V> zipper) {
             this.actual = actual;
             this.iterator = iterator;
             this.zipper = zipper;
@@ -120,7 +120,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
+                v = ObjectHelper.requireNonNull(zipper.invoke(t, u), "The zipper function returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 error(e);

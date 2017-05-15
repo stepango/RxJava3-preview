@@ -41,7 +41,7 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.annotations.Nullable;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.flowable.Flowable;
@@ -738,10 +738,10 @@ public class FlowableObserveOnTest {
 
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
 
-        Flowable.combineLatest(timer, Flowable.<Integer> never(), new BiFunction<Long, Integer, Long>() {
+        Flowable.combineLatest(timer, Flowable.<Integer> never(), new Function2<Long, Integer, Long>() {
 
             @Override
-            public Long apply(Long t1, Integer t2) {
+            public Long invoke(Long t1, Integer t2) {
                 return t1;
             }
 

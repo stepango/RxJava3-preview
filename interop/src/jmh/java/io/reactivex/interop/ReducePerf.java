@@ -13,15 +13,27 @@
 
 package io.reactivex.interop;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
-
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.observable.*;
+import io.reactivex.observable.Maybe;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Single;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -29,7 +41,7 @@ import io.reactivex.observable.*;
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Fork(value = 1, jvmArgsAppend = { "-XX:MaxInlineLevel=20" })
 @State(Scope.Thread)
-public class ReducePerf implements BiFunction<Integer, Integer, Integer> {
+public class ReducePerf implements Function2<Integer, Integer, Integer> {
     @Param({ "1", "1000", "1000000" })
     public int times;
 
@@ -42,7 +54,7 @@ public class ReducePerf implements BiFunction<Integer, Integer, Integer> {
     Maybe<Integer> flowMaybe;
 
     @Override
-    public Integer apply(Integer t1, Integer t2) throws Exception {
+    public Integer invoke(Integer t1, Integer t2) {
         return t1 + t2;
     }
 

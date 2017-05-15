@@ -39,7 +39,7 @@ import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.ProtocolViolationException;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.schedulers.ImmediateThinScheduler;
 import kotlin.Unit;
@@ -207,9 +207,9 @@ public class RxJavaCommonPluginsTest {
                 }
             };
             Function1 f1 = Functions.identity();
-            BiFunction f2 = new BiFunction() {
+            Function2 f2 = new Function2() {
                 @Override
-                public Object apply(Object t1, Object t2) {
+                public Object invoke(Object t1, Object t2) {
                     return t2;
                 }
             };

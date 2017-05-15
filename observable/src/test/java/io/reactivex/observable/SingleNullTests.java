@@ -32,11 +32,10 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertTrue;
 
@@ -493,9 +492,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zip2FirstNull() {
-        Single.zip(null, just1, new BiFunction<Object, Integer, Object>() {
+        Single.zip(null, just1, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         });
@@ -503,9 +502,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zip2SecondNull() {
-        Single.zip(just1, null, new BiFunction<Integer, Object, Object>() {
+        Single.zip(just1, null, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return 1;
             }
         });
@@ -518,9 +517,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zip2ZipperReturnsdNull() {
-        Single.zip(just1, null, new BiFunction<Integer, Object, Object>() {
+        Single.zip(just1, null, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return null;
             }
         }).blockingGet();
@@ -837,9 +836,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithNull() {
-        just1.zipWith(null, new BiFunction<Integer, Object, Object>() {
+        just1.zipWith(null, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return 1;
             }
         });
@@ -852,9 +851,9 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithFunctionReturnsNull() {
-        just1.zipWith(just1, new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith(just1, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingGet();

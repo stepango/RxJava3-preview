@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.ObservableCovarianceTest.CoolRating;
 import io.reactivex.observable.ObservableCovarianceTest.ExtendedResult;
 import io.reactivex.observable.ObservableCovarianceTest.HorrorMovie;
@@ -50,10 +50,10 @@ public class ObservableZipTests {
                 .flatMap(new Function1<GroupedObservable<String, Event>, Observable<HashMap<String, String>>>() {
                     @Override
                     public Observable<HashMap<String, String>> invoke(final GroupedObservable<String, Event> ge) {
-                            return ge.scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+                            return ge.scan(new HashMap<String, String>(), new Function2<HashMap<String, String>, Event, HashMap<String, String>>() {
                                 @Override
-                                public HashMap<String, String> apply(HashMap<String, String> accum,
-                                        Event perInstanceEvent) {
+                                public HashMap<String, String> invoke(HashMap<String, String> accum,
+                                                                      Event perInstanceEvent) {
                                     synchronized (accum) {
                                         accum.put("instance", ge.getKey());
                                     }
@@ -120,9 +120,9 @@ public class ObservableZipTests {
         assertSame(invoked, result.blockingLast());
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
+    Function2<Media, Rating, ExtendedResult> combine = new Function2<Media, Rating, ExtendedResult>() {
         @Override
-        public ExtendedResult apply(Media m, Rating r) {
+        public ExtendedResult invoke(Media m, Rating r) {
                 return new ExtendedResult();
         }
     };
@@ -146,9 +146,9 @@ public class ObservableZipTests {
     @Test
     public void zipWithDelayError() {
         Observable.just(1)
-        .zipWith(Observable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        .zipWith(Observable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -159,9 +159,9 @@ public class ObservableZipTests {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Observable.just(1)
-        .zipWith(Observable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        .zipWith(Observable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true, 16)

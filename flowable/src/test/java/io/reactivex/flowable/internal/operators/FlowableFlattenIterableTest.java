@@ -28,7 +28,7 @@ import hu.akarnokd.reactivestreams.extensions.FusedQueueSubscription;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.MissingBackpressureException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -52,9 +52,9 @@ public class FlowableFlattenIterableTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.range(1, 2)
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) {
+            public Integer invoke(Integer a, Integer b) {
                 return Math.max(a, b);
             }
         })
@@ -552,9 +552,9 @@ public class FlowableFlattenIterableTest {
             public Iterable<Integer> invoke(Integer v) {
                 return Collections.singletonList(1);
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) {
+            public Integer invoke(Integer a, Integer b) {
                 return a * 10 + b;
             }
         }, 2)

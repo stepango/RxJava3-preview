@@ -13,21 +13,23 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import io.reactivex.common.functions.BiFunction;
-import io.reactivex.flowable.FlowableCovarianceTest.*;
+import kotlin.jvm.functions.Function2;
+import io.reactivex.flowable.FlowableCovarianceTest.HorrorMovie;
+import io.reactivex.flowable.FlowableCovarianceTest.Movie;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class FlowableReduceTests {
 
     @Test
     public void reduceIntsFlowable() {
         Flowable<Integer> o = Flowable.just(1, 2, 3);
-        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        int value = o.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).blockingSingle();
@@ -40,16 +42,16 @@ public class FlowableReduceTests {
     public void reduceWithObjectsFlowable() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
+        Flowable<Movie> reduceResult = horrorMovies.scan(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         }).takeLast(1);
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         });
@@ -66,9 +68,9 @@ public class FlowableReduceTests {
     public void reduceWithCovariantObjectsFlowable() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         });
@@ -80,9 +82,9 @@ public class FlowableReduceTests {
     @Test
     public void reduceInts() {
         Flowable<Integer> o = Flowable.just(1, 2, 3);
-        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        int value = o.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).blockingSingle();
@@ -95,16 +97,16 @@ public class FlowableReduceTests {
     public void reduceWithObjects() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult = horrorMovies.scan(new BiFunction<Movie, Movie, Movie>() {
+        Flowable<Movie> reduceResult = horrorMovies.scan(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         }).takeLast(1);
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         });
@@ -121,9 +123,9 @@ public class FlowableReduceTests {
     public void reduceWithCovariantObjects() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         });
@@ -148,9 +150,9 @@ public class FlowableReduceTests {
      */
     public void libraryFunctionActingOnMovieObservables(Flowable<Movie> obs) {
 
-        obs.reduce(new BiFunction<Movie, Movie, Movie>() {
+        obs.reduce(new Function2<Movie, Movie, Movie>() {
             @Override
-            public Movie apply(Movie t1, Movie t2) {
+            public Movie invoke(Movie t1, Movie t2) {
                 return t2;
             }
         });

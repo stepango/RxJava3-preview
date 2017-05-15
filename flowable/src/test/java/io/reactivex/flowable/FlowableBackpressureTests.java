@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 import io.reactivex.flowable.subscribers.ResourceSubscriber;
@@ -289,9 +289,9 @@ public class FlowableBackpressureTests {
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1),
                 incrementingIntegers(c2),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer t1, Integer t2) {
+                    public Integer invoke(Integer t1, Integer t2) {
                         return t1 + t2;
                     }
                 });
@@ -316,9 +316,9 @@ public class FlowableBackpressureTests {
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer t1, Integer t2) {
+                    public Integer invoke(Integer t1, Integer t2) {
                         return t1 + t2;
                     }
                 });

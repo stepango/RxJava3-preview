@@ -32,7 +32,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -65,10 +65,10 @@ public class ObservableFlatMapTest {
                 return list;
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 | t2;
             }
         };
@@ -96,10 +96,10 @@ public class ObservableFlatMapTest {
                 throw new TestException();
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 | t2;
             }
         };
@@ -125,10 +125,10 @@ public class ObservableFlatMapTest {
                 return list;
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new TestException();
             }
         };
@@ -152,10 +152,10 @@ public class ObservableFlatMapTest {
                 return Observable.error(new TestException());
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 | t2;
             }
         };
@@ -380,9 +380,9 @@ public class ObservableFlatMapTest {
                 return composer(Observable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 * 1000 + t2;
             }
         }, m);
@@ -576,9 +576,9 @@ public class ObservableFlatMapTest {
             public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.just(v * 10);
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -594,9 +594,9 @@ public class ObservableFlatMapTest {
             public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException()));
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -612,9 +612,9 @@ public class ObservableFlatMapTest {
             public ObservableSource<Integer> invoke(Integer v) {
                 return Observable.just(v * 10);
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true, 1)

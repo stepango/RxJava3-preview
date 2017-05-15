@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.GroupedFlowable;
 import io.reactivex.flowable.TestHelper;
@@ -97,9 +97,9 @@ public class FlowableRetryTest {
                         public Tuple invoke(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
-                    .scan(new BiFunction<Tuple, Tuple, Tuple>() {
+                    .scan(new Function2<Tuple, Tuple, Tuple>() {
                         @Override
-                        public Tuple apply(Tuple t, Tuple n) {
+                        public Tuple invoke(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
                         }})
                         .flatMap(new Function1<Tuple, Flowable<Object>>() {
@@ -280,9 +280,9 @@ public class FlowableRetryTest {
                 .retryWhen(new Function1<Flowable<? extends Throwable>, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> invoke(Flowable<? extends Throwable> attempt) {
-                        return attempt.zipWith(Flowable.just(1), new BiFunction<Throwable, Integer, Object>() {
+                        return attempt.zipWith(Flowable.just(1), new Function2<Throwable, Integer, Object>() {
                             @Override
-                            public Object apply(Throwable o, Integer integer) {
+                            public Object invoke(Throwable o, Integer integer) {
                                 return 0;
                             }
                         });

@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.observable.*;
@@ -36,9 +36,9 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
 
     final R seed;
 
-    final BiFunction<R, ? super T, R> reducer;
+    final Function2<R, ? super T, R> reducer;
 
-    public FlowableReduceSeedSingle(Publisher<T> source, R seed, BiFunction<R, ? super T, R> reducer) {
+    public FlowableReduceSeedSingle(Publisher<T> source, R seed, Function2<R, ? super T, R> reducer) {
         this.source = source;
         this.seed = seed;
         this.reducer = reducer;
@@ -53,13 +53,13 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
 
         final SingleObserver<? super R> actual;
 
-        final BiFunction<R, ? super T, R> reducer;
+        final Function2<R, ? super T, R> reducer;
 
         R value;
 
         Subscription s;
 
-        ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
+        ReduceSeedObserver(SingleObserver<? super R> actual, Function2<R, ? super T, R> reducer, R value) {
             this.actual = actual;
             this.value = value;
             this.reducer = reducer;
@@ -80,7 +80,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
         public void onNext(T value) {
             R v = this.value;
             try {
-                this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                this.value = ObjectHelper.requireNonNull(reducer.invoke(v, value), "The reducer returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

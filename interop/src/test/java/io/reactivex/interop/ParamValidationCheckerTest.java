@@ -39,7 +39,7 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -86,7 +86,6 @@ import io.reactivex.observable.SingleSource;
 import io.reactivex.observable.SingleTransformer;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function8;
 import kotlin.jvm.functions.Function9;
 
@@ -917,7 +916,7 @@ public class ParamValidationCheckerTest {
 
     @SuppressWarnings("rawtypes")
     static final class AllFunctionals
-            implements BiFunction,
+            implements Function2,
             Function1, Function2, Function0,
     Function3, Function4, Function5, Function6, Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
@@ -969,7 +968,12 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2) throws Exception {
+        public Object invoke(Object t1, Object t2) {
+            return null;
+        }
+
+        @Override
+        public Object invoke(Object t) {
             return null;
         }
 
@@ -991,16 +995,6 @@ public class ParamValidationCheckerTest {
 
         @Override
         public void subscribe(FlowableEmitter e) throws Exception {
-        }
-
-        @Override
-        public Boolean invoke(Object t1, Object t2) {
-            return false;
-        }
-
-        @Override
-        public Boolean invoke(Object t) {
-            return false;
         }
 
         @Override

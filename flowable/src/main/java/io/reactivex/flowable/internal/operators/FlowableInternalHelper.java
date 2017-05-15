@@ -22,14 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.common.Emitter;
 import io.reactivex.common.Scheduler;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -41,7 +40,7 @@ public final class FlowableInternalHelper {
         throw new IllegalStateException("No instances!");
     }
 
-    static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
+    static final class SimpleGenerator<T, S> implements Function2<S, Emitter<T>, S> {
         final Function1<Emitter<T>, kotlin.Unit> consumer;
 
         SimpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
@@ -49,17 +48,17 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Exception {
+        public S invoke(S t1, Emitter<T> t2) {
             consumer.invoke(t2);
             return t1;
         }
     }
 
-    public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
+    public static <T, S> Function2<S, Emitter<T>, S> simpleGenerator(Function1<Emitter<T>, kotlin.Unit> consumer) {
         return new SimpleGenerator<T, S>(consumer);
     }
 
-    static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
+    static final class SimpleBiGenerator<T, S> implements Function2<S, Emitter<T>, S> {
         final Function2<S, Emitter<T>, kotlin.Unit> consumer;
 
         SimpleBiGenerator(Function2<S, Emitter<T>, kotlin.Unit> consumer) {
@@ -67,13 +66,13 @@ public final class FlowableInternalHelper {
         }
 
         @Override
-        public S apply(S t1, Emitter<T> t2) throws Exception {
+        public S invoke(S t1, Emitter<T> t2) {
             consumer.invoke(t1, t2);
             return t1;
         }
     }
 
-    public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(Function2<S, Emitter<T>, kotlin.Unit> consumer) {
+    public static <T, S> Function2<S, Emitter<T>, S> simpleBiGenerator(Function2<S, Emitter<T>, kotlin.Unit> consumer) {
         return new SimpleBiGenerator<T, S>(consumer);
     }
 
@@ -149,10 +148,10 @@ public final class FlowableInternalHelper {
     }
 
     static final class FlatMapWithCombinerInner<U, R, T> implements Function1<U, R> {
-        private final BiFunction<? super T, ? super U, ? extends R> combiner;
+        private final Function2<? super T, ? super U, ? extends R> combiner;
         private final T t;
 
-        FlatMapWithCombinerInner(BiFunction<? super T, ? super U, ? extends R> combiner, T t) {
+        FlatMapWithCombinerInner(Function2<? super T, ? super U, ? extends R> combiner, T t) {
             this.combiner = combiner;
             this.t = t;
         }
@@ -160,7 +159,7 @@ public final class FlowableInternalHelper {
         @Override
         public R invoke(U w) {
             try {
-                return combiner.apply(t, w);
+                return combiner.invoke(t, w);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -170,10 +169,10 @@ public final class FlowableInternalHelper {
     }
 
     static final class FlatMapWithCombinerOuter<T, R, U> implements Function1<T, Publisher<R>> {
-        private final BiFunction<? super T, ? super U, ? extends R> combiner;
+        private final Function2<? super T, ? super U, ? extends R> combiner;
         private final Function1<? super T, ? extends Publisher<? extends U>> mapper;
 
-        FlatMapWithCombinerOuter(BiFunction<? super T, ? super U, ? extends R> combiner,
+        FlatMapWithCombinerOuter(Function2<? super T, ? super U, ? extends R> combiner,
                                  Function1<? super T, ? extends Publisher<? extends U>> mapper) {
             this.combiner = combiner;
             this.mapper = mapper;
@@ -189,7 +188,7 @@ public final class FlowableInternalHelper {
 
     public static <T, U, R> Function1<T, Publisher<R>> flatMapWithCombiner(
             final Function1<? super T, ? extends Publisher<? extends U>> mapper,
-                    final BiFunction<? super T, ? super U, ? extends R> combiner) {
+                    final Function2<? super T, ? super U, ? extends R> combiner) {
         return new FlatMapWithCombinerOuter<T, R, U>(combiner, mapper);
     }
 

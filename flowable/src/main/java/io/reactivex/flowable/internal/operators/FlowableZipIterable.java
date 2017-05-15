@@ -13,25 +13,27 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.Iterator;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.Iterator;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpstream<T, V> {
     final Iterable<U> other;
-    final BiFunction<? super T, ? super U, ? extends V> zipper;
+    final Function2<? super T, ? super U, ? extends V> zipper;
 
     public FlowableZipIterable(
             Flowable<T> source,
-            Iterable<U> other, BiFunction<? super T, ? super U, ? extends V> zipper) {
+            Iterable<U> other, Function2<? super T, ? super U, ? extends V> zipper) {
         super(source);
         this.other = other;
         this.zipper = zipper;
@@ -70,14 +72,14 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
     static final class ZipIterableSubscriber<T, U, V> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super V> actual;
         final Iterator<U> iterator;
-        final BiFunction<? super T, ? super U, ? extends V> zipper;
+        final Function2<? super T, ? super U, ? extends V> zipper;
 
         Subscription s;
 
         boolean done;
 
         ZipIterableSubscriber(Subscriber<? super V> actual, Iterator<U> iterator,
-                BiFunction<? super T, ? super U, ? extends V> zipper) {
+                Function2<? super T, ? super U, ? extends V> zipper) {
             this.actual = actual;
             this.iterator = iterator;
             this.zipper = zipper;
@@ -108,7 +110,7 @@ public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpst
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
+                v = ObjectHelper.requireNonNull(zipper.invoke(t, u), "The zipper function returned a null value");
             } catch (Throwable e) {
                 error(e);
                 return;

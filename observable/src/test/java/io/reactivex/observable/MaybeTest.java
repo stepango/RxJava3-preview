@@ -41,7 +41,7 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -59,7 +59,6 @@ import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function9;
 
 import static org.junit.Assert.assertEquals;
@@ -2778,7 +2777,7 @@ public class MaybeTest {
      * Implements all Function types which return a String concatenating their inputs.
      */
     @SuppressWarnings("rawtypes")
-    public enum ArgsToString implements Function1, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+    public enum ArgsToString implements Function1, Function2, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
         INSTANCE;
 
         @Override
@@ -2818,7 +2817,7 @@ public class MaybeTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2) throws Exception {
+        public Object invoke(Object t1, Object t2) {
             return "" + t1 + t2;
         }
 

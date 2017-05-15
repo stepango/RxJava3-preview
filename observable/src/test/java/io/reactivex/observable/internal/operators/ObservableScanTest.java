@@ -26,7 +26,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
 import io.reactivex.observable.Observer;
@@ -36,7 +36,6 @@ import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -55,10 +54,10 @@ public class ObservableScanTest {
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
-        Observable<String> m = o.scan("", new BiFunction<String, Integer, String>() {
+        Observable<String> m = o.scan("", new Function2<String, Integer, String>() {
 
             @Override
-            public String apply(String s, Integer n) {
+            public String invoke(String s, Integer n) {
                 return s + n.toString();
             }
 
@@ -81,10 +80,10 @@ public class ObservableScanTest {
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
-        Observable<Integer> m = o.scan(new BiFunction<Integer, Integer, Integer>() {
+        Observable<Integer> m = o.scan(new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -107,10 +106,10 @@ public class ObservableScanTest {
 
         Observable<Integer> o = Observable.just(1);
 
-        Observable<Integer> m = o.scan(new BiFunction<Integer, Integer, Integer>() {
+        Observable<Integer> m = o.scan(new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -128,10 +127,10 @@ public class ObservableScanTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Observable.range(1, 100).scan(0, new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -152,10 +151,10 @@ public class ObservableScanTest {
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
+                .scan(0, new Function2<Integer, Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer t1, Integer t2) {
+                    public Integer invoke(Integer t1, Integer t2) {
                         return t1 + t2;
                     }
 
@@ -213,10 +212,10 @@ public class ObservableScanTest {
 
     @Test
     public void testScanWithRequestOne() {
-        Observable<Integer> o = Observable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Observable<Integer> o = Observable.just(1, 2).scan(0, new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -234,9 +233,9 @@ public class ObservableScanTest {
 
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
+        source.scan(0, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
@@ -248,16 +247,16 @@ public class ObservableScanTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().scan(new BiFunction<Object, Object, Object>() {
+        TestHelper.checkDisposed(PublishSubject.create().scan(new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         }));
 
-        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, new BiFunction<Integer, Integer, Integer>() {
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));
@@ -268,9 +267,9 @@ public class ObservableScanTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> invoke(Observable<Object> o) {
-                return o.scan(new BiFunction<Object, Object, Object>() {
+                return o.scan(new Function2<Object, Object, Object>() {
                     @Override
-                    public Object apply(Object a, Object b) throws Exception {
+                    public Object invoke(Object a, Object b) {
                         return a;
                     }
                 });
@@ -280,9 +279,9 @@ public class ObservableScanTest {
         TestHelper.checkDoubleOnSubscribeObservable(new Function1<Observable<Object>, ObservableSource<Object>>() {
             @Override
             public ObservableSource<Object> invoke(Observable<Object> o) {
-                return o.scan(0, new BiFunction<Object, Object, Object>() {
+                return o.scan(0, new Function2<Object, Object, Object>() {
                     @Override
-                    public Object apply(Object a, Object b) throws Exception {
+                    public Object invoke(Object a, Object b) {
                         return a;
                     }
                 });
@@ -293,9 +292,9 @@ public class ObservableScanTest {
     @Test
     public void error() {
         Observable.error(new TestException())
-        .scan(new BiFunction<Object, Object, Object>() {
+        .scan(new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -308,9 +307,9 @@ public class ObservableScanTest {
         TestHelper.checkBadSourceObservable(new Function1<Observable<Object>, Object>() {
             @Override
             public Object invoke(Observable<Object> o) {
-                return o.scan(0, new BiFunction<Object, Object, Object>() {
+                return o.scan(0, new Function2<Object, Object, Object>() {
                     @Override
-                    public Object apply(Object a, Object b) throws Exception {
+                    public Object invoke(Object a, Object b) {
                         return a;
                     }
                 });
@@ -340,9 +339,9 @@ public class ObservableScanTest {
                     o.onNext(2);
                     o.onError(err2);
                 }})
-            .scan(new BiFunction<Integer,Integer,Integer>() {
+            .scan(new Function2<Integer,Integer,Integer>() {
                 @Override
-                public Integer apply(Integer t1, Integer t2) throws Exception {
+                public Integer invoke(Integer t1, Integer t2) {
                     throw err;
                 }})
             .test()
@@ -365,9 +364,9 @@ public class ObservableScanTest {
                 o.onNext(2);
                 o.onComplete();
             }})
-        .scan(new BiFunction<Integer,Integer,Integer>() {
+        .scan(new Function2<Integer,Integer,Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw err;
             }})
         .test()
@@ -388,9 +387,9 @@ public class ObservableScanTest {
                 o.onNext(2);
                 o.onNext(3);
             }})
-        .scan(new BiFunction<Integer,Integer,Integer>() {
+        .scan(new Function2<Integer,Integer,Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
+            public Integer invoke(Integer t1, Integer t2) {
                 count.incrementAndGet();
                 throw err;
             }})

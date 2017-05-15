@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.ObservableEventStream.Event;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -28,9 +28,9 @@ public class ObservableScanTests {
     public void testUnsubscribeScan() throws Exception {
 
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
-        .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+        .scan(new HashMap<String, String>(), new Function2<HashMap<String, String>, Event, HashMap<String, String>>() {
             @Override
-            public HashMap<String, String> apply(HashMap<String, String> accum, Event perInstanceEvent) {
+            public HashMap<String, String> invoke(HashMap<String, String> accum, Event perInstanceEvent) {
                 accum.put("instance", perInstanceEvent.instanceId);
                 return accum;
             }

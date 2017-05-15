@@ -28,7 +28,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
 import io.reactivex.common.exceptions.MissingBackpressureException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
 import io.reactivex.flowable.Flowable;
@@ -48,14 +48,14 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
     final Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
 
-    final BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector;
+    final Function2<? super TLeft, ? super TRight, ? extends R> resultSelector;
 
     public FlowableJoin(
             Flowable<TLeft> source,
             Publisher<? extends TRight> other,
             Function1<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
             Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-            BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
+            Function2<? super TLeft, ? super TRight, ? extends R> resultSelector) {
         super(source);
         this.other = other;
         this.leftEnd = leftEnd;
@@ -104,7 +104,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
         final Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
 
-        final BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector;
+        final Function2<? super TLeft, ? super TRight, ? extends R> resultSelector;
 
         final AtomicInteger active;
 
@@ -124,7 +124,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
         JoinSubscription(Subscriber<? super R> actual, Function1<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
                          Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
+                         Function2<? super TLeft, ? super TRight, ? extends R> resultSelector) {
             this.actual = actual;
             this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
@@ -261,7 +261,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                             R w;
 
                             try {
-                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = ObjectHelper.requireNonNull(resultSelector.invoke(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;
@@ -322,7 +322,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                             R w;
 
                             try {
-                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = ObjectHelper.requireNonNull(resultSelector.invoke(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;

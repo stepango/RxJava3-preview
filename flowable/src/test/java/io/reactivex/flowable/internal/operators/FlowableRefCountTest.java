@@ -32,7 +32,7 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.ConnectableFlowable;
 import io.reactivex.flowable.Flowable;
@@ -522,9 +522,9 @@ public class FlowableRefCountTest {
     public void testConnectDisconnectConnectAndSubjectState() {
         Flowable<Integer> o1 = Flowable.just(10);
         Flowable<Integer> o2 = Flowable.just(20);
-        Flowable<Integer> combined = Flowable.combineLatest(o1, o2, new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> combined = Flowable.combineLatest(o1, o2, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })

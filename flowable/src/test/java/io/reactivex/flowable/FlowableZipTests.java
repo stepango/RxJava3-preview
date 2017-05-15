@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.FlowableCovarianceTest.CoolRating;
 import io.reactivex.flowable.FlowableCovarianceTest.ExtendedResult;
 import io.reactivex.flowable.FlowableCovarianceTest.HorrorMovie;
@@ -51,10 +51,10 @@ public class FlowableZipTests {
                 .flatMap(new Function1<GroupedFlowable<String, Event>, Publisher<HashMap<String, String>>>() {
                     @Override
                     public Publisher<HashMap<String, String>> invoke(final GroupedFlowable<String, Event> ge) {
-                            return ge.scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+                            return ge.scan(new HashMap<String, String>(), new Function2<HashMap<String, String>, Event, HashMap<String, String>>() {
                                 @Override
-                                public HashMap<String, String> apply(HashMap<String, String> accum,
-                                        Event perInstanceEvent) {
+                                public HashMap<String, String> invoke(HashMap<String, String> accum,
+                                                                      Event perInstanceEvent) {
                                     synchronized (accum) {
                                             accum.put("instance", ge.getKey());
                                     }
@@ -119,9 +119,9 @@ public class FlowableZipTests {
         assertSame(invoked, result.blockingLast());
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
+    Function2<Media, Rating, ExtendedResult> combine = new Function2<Media, Rating, ExtendedResult>() {
         @Override
-        public ExtendedResult apply(Media m, Rating r) {
+        public ExtendedResult invoke(Media m, Rating r) {
                 return new ExtendedResult();
         }
     };
@@ -146,9 +146,9 @@ public class FlowableZipTests {
     @Test
     public void zipWithDelayError() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        .zipWith(Flowable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -159,9 +159,9 @@ public class FlowableZipTests {
     @Test
     public void zipWithDelayErrorBufferSize() {
         Flowable.just(1)
-        .zipWith(Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        .zipWith(Flowable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true, 16)

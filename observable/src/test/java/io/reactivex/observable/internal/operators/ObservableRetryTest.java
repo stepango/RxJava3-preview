@@ -32,7 +32,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.GroupedObservable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -95,9 +95,9 @@ public class ObservableRetryTest {
                         public Tuple invoke(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
-                    .scan(new BiFunction<Tuple, Tuple, Tuple>() {
+                    .scan(new Function2<Tuple, Tuple, Tuple>() {
                         @Override
-                        public Tuple apply(Tuple t, Tuple n) {
+                        public Tuple invoke(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
                         }})
                         .flatMap(new Function1<Tuple, Observable<Long>>() {
@@ -279,9 +279,9 @@ public class ObservableRetryTest {
                 .retryWhen(new Function1<Observable<? extends Throwable>, Observable<?>>() {
                     @Override
                     public Observable<?> invoke(Observable<? extends Throwable> attempt) {
-                        return attempt.zipWith(Observable.just(1), new BiFunction<Throwable, Integer, Void>() {
+                        return attempt.zipWith(Observable.just(1), new Function2<Throwable, Integer, Void>() {
                             @Override
-                            public Void apply(Throwable o, Integer integer) {
+                            public Void invoke(Throwable o, Integer integer) {
                                 return null;
                             }
                         });

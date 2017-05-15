@@ -21,7 +21,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.ParallelFailureHandling;
@@ -146,9 +146,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
             public Integer invoke(Integer v) {
                 return 1 / v;
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        }, new Function2<Long, Throwable, ParallelFailureHandling>() {
             @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
+            public ParallelFailureHandling invoke(Long n, Throwable e) {
                 return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
             }
         })
@@ -182,9 +182,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
             public Integer invoke(Integer v) {
                 return 1 / v;
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        }, new Function2<Long, Throwable, ParallelFailureHandling>() {
             @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
+            public ParallelFailureHandling invoke(Long n, Throwable e) {
                 throw new TestException();
             }
         })
@@ -279,9 +279,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
             public Integer invoke(Integer v) {
                 return 1 / v;
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        }, new Function2<Long, Throwable, ParallelFailureHandling>() {
             @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
+            public ParallelFailureHandling invoke(Long n, Throwable e) {
                 return n < 5 ? ParallelFailureHandling.RETRY : ParallelFailureHandling.SKIP;
             }
         })
@@ -317,9 +317,9 @@ public class ParallelMapTryTest implements Function1<Object, kotlin.Unit> {
             public Integer invoke(Integer v) {
                 return 1 / v;
             }
-        }, new BiFunction<Long, Throwable, ParallelFailureHandling>() {
+        }, new Function2<Long, Throwable, ParallelFailureHandling>() {
             @Override
-            public ParallelFailureHandling apply(Long n, Throwable e) throws Exception {
+            public ParallelFailureHandling invoke(Long n, Throwable e) {
                 throw new TestException();
             }
         })

@@ -36,7 +36,7 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -60,7 +60,6 @@ import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function9;
 
 /**
@@ -404,7 +403,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> combiner) {
+            Function2<? super T1, ? super T2, ? extends R> combiner) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2);
@@ -1949,7 +1948,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, Function2<S, Emitter<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
@@ -1976,7 +1975,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator,
+    public static <T, S> Observable<T> generate(Callable<S> initialState, Function2<S, Emitter<T>, S> generator,
                                                 Function1<? super S, kotlin.Unit> disposeState) {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator  is null");
@@ -3890,7 +3889,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+            Function2<? super T1, ? super T2, ? extends R> zipper) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
@@ -3946,7 +3945,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
+            Function2<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
@@ -4003,7 +4002,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
+            Function2<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
@@ -7581,7 +7580,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
-                                              BiFunction<? super T, ? super U, ? extends R> resultSelector) {
+                                              Function2<? super T, ? super U, ? extends R> resultSelector) {
         return flatMap(mapper, resultSelector, false, bufferSize(), bufferSize());
     }
 
@@ -7614,7 +7613,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
-                                              BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors) {
+                                              Function2<? super T, ? super U, ? extends R> combiner, boolean delayErrors) {
         return flatMap(mapper, combiner, delayErrors, bufferSize(), bufferSize());
     }
 
@@ -7651,7 +7650,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
-                                              BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency) {
+                                              Function2<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency) {
         return flatMap(mapper, combiner, delayErrors, maxConcurrency, bufferSize());
     }
 
@@ -7690,7 +7689,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(final Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
-                                              final BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
+                                              final Function2<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         return flatMap(ObservableInternalHelper.flatMapWithCombiner(mapper, combiner), delayErrors, maxConcurrency, bufferSize);
@@ -7726,7 +7725,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(Function1<? super T, ? extends ObservableSource<? extends U>> mapper,
-                                              BiFunction<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
+                                              Function2<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
         return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
     }
 
@@ -7818,7 +7817,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<V> flatMapIterable(final Function1<? super T, ? extends Iterable<? extends U>> mapper,
-                                                      BiFunction<? super T, ? super U, ? extends V> resultSelector) {
+                                                      Function2<? super T, ? super U, ? extends V> resultSelector) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), bufferSize());
@@ -8250,7 +8249,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends TRight> other,
             Function1<? super T, ? extends ObservableSource<TLeftEnd>> leftEnd,
             Function1<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
-            BiFunction<? super T, ? super Observable<TRight>, ? extends R> resultSelector
+            Function2<? super T, ? super Observable<TRight>, ? extends R> resultSelector
                     ) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(leftEnd, "leftEnd is null");
@@ -8355,7 +8354,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends TRight> other,
             Function1<? super T, ? extends ObservableSource<TLeftEnd>> leftEnd,
             Function1<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
-            BiFunction<? super T, ? super TRight, ? extends R> resultSelector
+            Function2<? super T, ? super TRight, ? extends R> resultSelector
                     ) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(leftEnd, "leftEnd is null");
@@ -8916,7 +8915,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
+    public final Maybe<T> reduce(Function2<T, T, T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableReduceMaybe<T>(this, reducer));
     }
@@ -8964,7 +8963,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
+    public final <R> Single<R> reduce(R seed, Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(seed, "seed is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableReduceSeedSingle<T, R>(this, seed, reducer));
@@ -9013,7 +9012,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+    public final <R> Single<R> reduceWith(Callable<R> seedSupplier, Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableReduceWithSingle<T, R>(this, seedSupplier, reducer));
@@ -10026,7 +10025,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> scan(BiFunction<T, T, T> accumulator) {
+    public final Observable<T> scan(Function2<T, T, T> accumulator) {
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableScan<T>(this, accumulator));
     }
@@ -10075,7 +10074,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> scan(final R initialValue, BiFunction<R, ? super T, R> accumulator) {
+    public final <R> Observable<R> scan(final R initialValue, Function2<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(initialValue, "seed is null");
         return scanWith(Functions.justCallable(initialValue), accumulator);
     }
@@ -10124,7 +10123,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public final <R> Observable<R> scanWith(Callable<R> seedSupplier, Function2<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableScanSeed<T, R>(this, seedSupplier, accumulator));
@@ -13312,7 +13311,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Observable<R> withLatestFrom(ObservableSource<? extends U> other, BiFunction<? super T, ? super U, ? extends R> combiner) {
+    public final <U, R> Observable<R> withLatestFrom(ObservableSource<? extends U> other, Function2<? super T, ? super U, ? extends R> combiner) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
 
@@ -13524,7 +13523,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Observable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Observable<R> zipWith(Iterable<U> other,  Function2<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         return RxJavaObservablePlugins.onAssembly(new ObservableZipIterable<T, U, R>(this, other, zipper));
@@ -13568,7 +13567,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> zipper) {
+            Function2<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         return zip(this, other, zipper);
     }
@@ -13614,7 +13613,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
+                                              Function2<? super T, ? super U, ? extends R> zipper, boolean delayError) {
         return zip(this, other, zipper, delayError);
     }
 
@@ -13661,7 +13660,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
+                                              Function2<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
         return zip(this, other, zipper, delayError, bufferSize);
     }
 

@@ -35,7 +35,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.subscribers.ForEachWhileSubscriber;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
@@ -825,9 +825,9 @@ public class RelaxedSubscriberTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void pluginNull() {
-        RxJavaFlowablePlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
+        RxJavaFlowablePlugins.setOnFlowableSubscribe(new Function2<Flowable, Subscriber, Subscriber>() {
             @Override
-            public Subscriber apply(Flowable a, Subscriber b) throws Exception {
+            public Subscriber invoke(Flowable a, Subscriber b) {
                 return null;
             }
         });

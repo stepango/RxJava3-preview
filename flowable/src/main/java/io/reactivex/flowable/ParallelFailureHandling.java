@@ -14,14 +14,14 @@
 package io.reactivex.flowable;
 
 import io.reactivex.common.annotations.Experimental;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Enumerations for handling failure within a parallel operator.
  * @since 2.0.8 - experimental
  */
 @Experimental
-public enum ParallelFailureHandling implements BiFunction<Long, Throwable, ParallelFailureHandling> {
+public enum ParallelFailureHandling implements Function2<Long, Throwable, ParallelFailureHandling> {
     /**
      * The current rail is stopped and the error is dropped.
      */
@@ -40,7 +40,7 @@ public enum ParallelFailureHandling implements BiFunction<Long, Throwable, Paral
     RETRY;
 
     @Override
-    public ParallelFailureHandling apply(Long t1, Throwable t2) {
+    public ParallelFailureHandling invoke(Long t1, Throwable t2) {
         return this;
     }
 }

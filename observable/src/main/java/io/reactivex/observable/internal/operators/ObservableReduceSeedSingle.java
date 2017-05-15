@@ -15,7 +15,7 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.*;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
@@ -33,9 +33,9 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
     final R seed;
 
-    final BiFunction<R, ? super T, R> reducer;
+    final Function2<R, ? super T, R> reducer;
 
-    public ObservableReduceSeedSingle(ObservableSource<T> source, R seed, BiFunction<R, ? super T, R> reducer) {
+    public ObservableReduceSeedSingle(ObservableSource<T> source, R seed, Function2<R, ? super T, R> reducer) {
         this.source = source;
         this.seed = seed;
         this.reducer = reducer;
@@ -50,13 +50,13 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
         final SingleObserver<? super R> actual;
 
-        final BiFunction<R, ? super T, R> reducer;
+        final Function2<R, ? super T, R> reducer;
 
         R value;
 
         Disposable d;
 
-        ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
+        ReduceSeedObserver(SingleObserver<? super R> actual, Function2<R, ? super T, R> reducer, R value) {
             this.actual = actual;
             this.value = value;
             this.reducer = reducer;
@@ -76,7 +76,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
             R v = this.value;
             if (v != null) {
                 try {
-                    this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                    this.value = ObjectHelper.requireNonNull(reducer.invoke(v, value), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     d.dispose();

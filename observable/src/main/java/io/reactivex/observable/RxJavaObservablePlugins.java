@@ -20,7 +20,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.Nullable;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.schedulers.ComputationScheduler;
 import io.reactivex.common.internal.schedulers.IoScheduler;
@@ -54,18 +54,18 @@ public final class RxJavaObservablePlugins {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe;
+    static volatile Function2<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe;
+    static volatile Function2<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe;
+    static volatile Function2<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe;
 
     @Nullable
-    static volatile BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe;
+    static volatile Function2<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe;
 
     /** Prevents changing the plugins. */
     static volatile boolean lockdown;
@@ -127,7 +127,7 @@ public final class RxJavaObservablePlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> getOnCompletableSubscribe() {
+    public static Function2<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> getOnCompletableSubscribe() {
         return onCompletableSubscribe;
     }
 
@@ -137,7 +137,7 @@ public final class RxJavaObservablePlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> getOnMaybeSubscribe() {
+    public static Function2<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> getOnMaybeSubscribe() {
         return onMaybeSubscribe;
     }
 
@@ -167,7 +167,7 @@ public final class RxJavaObservablePlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> getOnSingleSubscribe() {
+    public static Function2<? super Single, ? super SingleObserver, ? extends SingleObserver> getOnSingleSubscribe() {
         return onSingleSubscribe;
     }
 
@@ -197,7 +197,7 @@ public final class RxJavaObservablePlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<? super Observable, ? super Observer, ? extends Observer> getOnObservableSubscribe() {
+    public static Function2<? super Observable, ? super Observer, ? extends Observer> getOnObservableSubscribe() {
         return onObservableSubscribe;
     }
 
@@ -217,7 +217,7 @@ public final class RxJavaObservablePlugins {
      * @param onCompletableSubscribe the hook function to set, null allowed
      */
     public static void setOnCompletableSubscribe(
-            @Nullable BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe) {
+            @Nullable Function2<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -241,7 +241,7 @@ public final class RxJavaObservablePlugins {
      * @param onMaybeSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnMaybeSubscribe(@Nullable BiFunction<? super Maybe, MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe) {
+    public static void setOnMaybeSubscribe(@Nullable Function2<? super Maybe, MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -278,7 +278,7 @@ public final class RxJavaObservablePlugins {
      */
     @SuppressWarnings("rawtypes")
     public static void setOnObservableSubscribe(
-            @Nullable BiFunction<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe) {
+            @Nullable Function2<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -302,7 +302,7 @@ public final class RxJavaObservablePlugins {
      * @param onSingleSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleSubscribe(@Nullable BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe) {
+    public static void setOnSingleSubscribe(@Nullable Function2<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -319,7 +319,7 @@ public final class RxJavaObservablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Observer<? super T> onSubscribe(@NonNull Observable<T> source, @NonNull Observer<? super T> observer) {
-        BiFunction<? super Observable, ? super Observer, ? extends Observer> f = onObservableSubscribe;
+        Function2<? super Observable, ? super Observer, ? extends Observer> f = onObservableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -336,7 +336,7 @@ public final class RxJavaObservablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> SingleObserver<? super T> onSubscribe(@NonNull Single<T> source, @NonNull SingleObserver<? super T> observer) {
-        BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> f = onSingleSubscribe;
+        Function2<? super Single, ? super SingleObserver, ? extends SingleObserver> f = onSingleSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -351,7 +351,7 @@ public final class RxJavaObservablePlugins {
      */
     @NonNull
     public static CompletableObserver onSubscribe(@NonNull Completable source, @NonNull CompletableObserver observer) {
-        BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> f = onCompletableSubscribe;
+        Function2<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> f = onCompletableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -368,7 +368,7 @@ public final class RxJavaObservablePlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> subscriber) {
-        BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
+        Function2<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }
@@ -539,9 +539,9 @@ public final class RxJavaObservablePlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, U, R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
+    static <T, U, R> R apply(@NonNull Function2<T, U, R> f, @NonNull T t, @NonNull U u) {
         try {
-            return f.apply(t, u);
+            return f.invoke(t, u);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

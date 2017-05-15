@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.RxJavaCommonPlugins;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.subscribers.DefaultSubscriber;
@@ -495,9 +495,9 @@ public class FlowableSingleTest {
     public void testIssue1527Flowable() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Flowable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> reduced = source.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer i1, Integer i2) {
+            public Integer invoke(Integer i1, Integer i2) {
                 return i1 + i2;
             }
         });

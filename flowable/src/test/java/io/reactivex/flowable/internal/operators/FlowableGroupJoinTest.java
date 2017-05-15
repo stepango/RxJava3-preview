@@ -30,7 +30,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -48,9 +48,9 @@ public class FlowableGroupJoinTest {
 
     Subscriber<Object> observer = TestHelper.mockSubscriber();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> add = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -73,14 +73,14 @@ public class FlowableGroupJoinTest {
         };
     }
 
-    BiFunction<Integer, Flowable<Integer>, Flowable<Integer>> add2 = new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+    Function2<Integer, Flowable<Integer>, Flowable<Integer>> add2 = new Function2<Integer, Flowable<Integer>, Flowable<Integer>>() {
         @Override
-        public Flowable<Integer> apply(final Integer leftValue, Flowable<Integer> rightValues) {
+        public Flowable<Integer> invoke(final Integer leftValue, Flowable<Integer> rightValues) {
             return rightValues.map(new Function1<Integer, Integer>() {
                 @Override
                 public Integer invoke(Integer rightValue) {
                     try {
-                        return add.apply(leftValue, rightValue);
+                        return add.invoke(leftValue, rightValue);
                     } catch (Exception e) {
                         //TODO checked exceptions
                         if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -181,9 +181,9 @@ public class FlowableGroupJoinTest {
                 source2,
                 just2(Flowable.<Object>never()),
                 just2(Flowable.<Object>never()),
-                new BiFunction<Person, Flowable<PersonFruit>, PPF>() {
+                new Function2<Person, Flowable<PersonFruit>, PPF>() {
                     @Override
-                    public PPF apply(Person t1, Flowable<PersonFruit> t2) {
+                    public PPF invoke(Person t1, Flowable<PersonFruit> t2) {
                         return new PPF(t1, t2);
                     }
                 });
@@ -361,9 +361,9 @@ public class FlowableGroupJoinTest {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
 
-        BiFunction<Integer, Flowable<Integer>, Integer> fail = new BiFunction<Integer, Flowable<Integer>, Integer>() {
+        Function2<Integer, Flowable<Integer>, Integer> fail = new Function2<Integer, Flowable<Integer>, Integer>() {
             @Override
-            public Integer apply(Integer t1, Flowable<Integer> t2) {
+            public Integer invoke(Integer t1, Flowable<Integer> t2) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -397,9 +397,9 @@ public class FlowableGroupJoinTest {
                         return Flowable.never();
                     }
                 },
-                new BiFunction<Integer, Flowable<Integer>, Object>() {
+                new Function2<Integer, Flowable<Integer>, Object>() {
                     @Override
-                    public Object apply(Integer r, Flowable<Integer> l) throws Exception {
+                    public Object invoke(Integer r, Flowable<Integer> l) {
                         return l;
                     }
                 }
@@ -423,9 +423,9 @@ public class FlowableGroupJoinTest {
                                 return Flowable.never();
                             }
                         },
-                        new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                        new Function2<Integer, Flowable<Integer>, Flowable<Integer>>() {
                             @Override
-                            public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                            public Flowable<Integer> invoke(Integer r, Flowable<Integer> l) {
                                 return l;
                             }
                         }
@@ -452,9 +452,9 @@ public class FlowableGroupJoinTest {
                                 return Flowable.never();
                             }
                         },
-                        new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                        new Function2<Integer, Flowable<Integer>, Flowable<Integer>>() {
                             @Override
-                            public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                            public Flowable<Integer> invoke(Integer r, Flowable<Integer> l) {
                                 return l;
                             }
                         }
@@ -481,9 +481,9 @@ public class FlowableGroupJoinTest {
                                 return Flowable.empty();
                             }
                         },
-                        new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                        new Function2<Integer, Flowable<Integer>, Flowable<Integer>>() {
                             @Override
-                            public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                            public Flowable<Integer> invoke(Integer r, Flowable<Integer> l) {
                                 return l;
                             }
                         }
@@ -510,9 +510,9 @@ public class FlowableGroupJoinTest {
                                 return Flowable.error(new TestException());
                             }
                         },
-                        new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                        new Function2<Integer, Flowable<Integer>, Flowable<Integer>>() {
                             @Override
-                            public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                            public Flowable<Integer> invoke(Integer r, Flowable<Integer> l) {
                                 return l;
                             }
                         }
@@ -546,9 +546,9 @@ public class FlowableGroupJoinTest {
                                         return ps2;
                                     }
                                 },
-                                new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                                new Function2<Integer, Flowable<Integer>, Flowable<Integer>>() {
                                     @Override
-                                    public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                                    public Flowable<Integer> invoke(Integer r, Flowable<Integer> l) {
                                         return l;
                                     }
                                 }
@@ -618,9 +618,9 @@ public class FlowableGroupJoinTest {
                                         return Flowable.never();
                                     }
                                 },
-                                new BiFunction<Object, Flowable<Object>, Flowable<Object>>() {
+                                new Function2<Object, Flowable<Object>, Flowable<Object>>() {
                                     @Override
-                                    public Flowable<Object> apply(Object r, Flowable<Object> l) throws Exception {
+                                    public Flowable<Object> invoke(Object r, Flowable<Object> l) {
                                         return l;
                                     }
                                 }
@@ -687,9 +687,9 @@ public class FlowableGroupJoinTest {
                                 return Flowable.never();
                             }
                         },
-                        new BiFunction<Object, Flowable<Object>, Flowable<Object>>() {
+                        new Function2<Object, Flowable<Object>, Flowable<Object>>() {
                             @Override
-                            public Flowable<Object> apply(Object r, Flowable<Object> l) throws Exception {
+                            public Flowable<Object> invoke(Object r, Flowable<Object> l) {
                                 return l;
                             }
                         }

@@ -28,7 +28,7 @@ import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -55,7 +55,6 @@ import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 /**
  * Abstract base class for Parallel publishers that take an array of Subscribers.
@@ -203,7 +202,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @Experimental
     @NonNull
-    public final <R> ParallelFlowable<R> map(@NonNull Function1<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final <R> ParallelFlowable<R> map(@NonNull Function1<? super T, ? extends R> mapper, @NonNull Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(mapper, "mapper");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelMapTry<T, R>(this, mapper, errorHandler));
@@ -256,7 +255,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @Experimental
-    public final ParallelFlowable<T> filter(@NonNull Function1<? super T, Boolean> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final ParallelFlowable<T> filter(@NonNull Function1<? super T, Boolean> predicate, @NonNull Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
@@ -326,7 +325,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final Flowable<T> reduce(@NonNull BiFunction<T, T, T> reducer) {
+    public final Flowable<T> reduce(@NonNull Function2<T, T, T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer");
         return RxJavaFlowablePlugins.onAssembly(new ParallelReduceFull<T>(this, reducer));
     }
@@ -344,7 +343,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     @NonNull
-    public final <R> ParallelFlowable<R> reduce(@NonNull Callable<R> initialSupplier, @NonNull BiFunction<R, ? super T, R> reducer) {
+    public final <R> ParallelFlowable<R> reduce(@NonNull Callable<R> initialSupplier, @NonNull Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(initialSupplier, "initialSupplier");
         ObjectHelper.requireNonNull(reducer, "reducer");
         return RxJavaFlowablePlugins.onAssembly(new ParallelReduce<T, R>(this, initialSupplier, reducer));
@@ -582,7 +581,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @Experimental
     @NonNull
-    public final ParallelFlowable<T> doOnNext(@NonNull Function1<? super T, Unit> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+    public final ParallelFlowable<T> doOnNext(@NonNull Function1<? super T, Unit> onNext, @NonNull Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
         return RxJavaFlowablePlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));

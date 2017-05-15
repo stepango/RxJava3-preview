@@ -20,7 +20,7 @@ import hu.akarnokd.reactivestreams.extensions.ConditionalSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFailureHandling;
 import io.reactivex.flowable.ParallelFlowable;
@@ -41,10 +41,10 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
     final Function1<? super T, Unit> onNext;
 
-    final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
+    final Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
     public ParallelDoOnNextTry(ParallelFlowable<T> source, Function1<? super T, Unit> onNext,
-                               BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+                               Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         this.source = source;
         this.onNext = onNext;
         this.errorHandler = errorHandler;
@@ -83,14 +83,14 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
         final Function1<? super T, Unit> onNext;
 
-        final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
+        final Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
         Subscription s;
 
         boolean done;
 
         ParallelDoOnNextSubscriber(Subscriber<? super T> actual, Function1<? super T, Unit> onNext,
-                                   BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+                                   Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.actual = actual;
             this.onNext = onNext;
             this.errorHandler = errorHandler;
@@ -138,7 +138,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     ParallelFailureHandling h;
 
                     try {
-                        h = ObjectHelper.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                        h = ObjectHelper.requireNonNull(errorHandler.invoke(++retries, ex), "The errorHandler returned a null item");
                     } catch (Throwable exc) {
                         Exceptions.throwIfFatal(exc);
                         cancel();
@@ -193,14 +193,14 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
         final Function1<? super T, Unit> onNext;
 
-        final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
+        final Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
         Subscription s;
 
         boolean done;
 
         ParallelDoOnNextConditionalSubscriber(ConditionalSubscriber<? super T> actual,
                                               Function1<? super T, Unit> onNext,
-                                              BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+                                              Function2<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
             this.actual = actual;
             this.onNext = onNext;
             this.errorHandler = errorHandler;
@@ -248,7 +248,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     ParallelFailureHandling h;
 
                     try {
-                        h = ObjectHelper.requireNonNull(errorHandler.apply(++retries, ex), "The errorHandler returned a null item");
+                        h = ObjectHelper.requireNonNull(errorHandler.invoke(++retries, ex), "The errorHandler returned a null item");
                     } catch (Throwable exc) {
                         Exceptions.throwIfFatal(exc);
                         cancel();

@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.SafeObserver;
 import io.reactivex.observable.observers.TestObserver;
@@ -204,9 +204,9 @@ public class ObservableSubscriberTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void pluginNull() {
-        RxJavaObservablePlugins.setOnObservableSubscribe(new BiFunction<Observable, Observer, Observer>() {
+        RxJavaObservablePlugins.setOnObservableSubscribe(new Function2<Observable, Observer, Observer>() {
             @Override
-            public Observer apply(Observable a, Observer b) throws Exception {
+            public Observer invoke(Observable a, Observer b) {
                 return null;
             }
         });

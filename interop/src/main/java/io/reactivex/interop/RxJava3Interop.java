@@ -32,7 +32,7 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ArrayListSupplier;
@@ -93,7 +93,6 @@ import io.reactivex.observable.RxJavaObservablePlugins;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 /**
  * The base utility class that hosts factory methods and
@@ -275,7 +274,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> reduce(Flowable<T> source, BiFunction<T, T, T> reducer) {
+    public static <T> Maybe<T> reduce(Flowable<T> source, Function2<T, T, T> reducer) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaObservablePlugins.onAssembly(new FlowableReduceMaybe<T>(source, reducer));
@@ -283,7 +282,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Single<R> reduceWith(Flowable<T> source, Callable<R> seed, BiFunction<R, ? super T, R> reducer) {
+    public static <T, R> Single<R> reduceWith(Flowable<T> source, Callable<R> seed, Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(seed, "seed is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
@@ -292,7 +291,7 @@ public final class RxJava3Interop {
 
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, R> Single<R> reduce(Flowable<T> source, R seed, BiFunction<R, ? super T, R> reducer) {
+    public static <T, R> Single<R> reduce(Flowable<T> source, R seed, Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(seed, "seed is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
@@ -1037,7 +1036,7 @@ public final class RxJava3Interop {
      * actions. Generally each {@link Flowable} uses its own {@link Worker}.
      * This means that this will essentially limit the number of concurrent
      * subscribes. The danger comes from using operators like
-     * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.common.functions.BiFunction)} where
+     * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, Function2)} where
      * subscribing to the first {@link Flowable} could deadlock the
      * subscription to the second.
      * 

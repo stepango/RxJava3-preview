@@ -26,7 +26,7 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -107,7 +107,6 @@ import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 /**
  * Represents a deferred computation and emission of a maybe value or exception.
@@ -1536,7 +1535,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Maybe<R> zip(
             MaybeSource<? extends T1> source1, MaybeSource<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+            Function2<? super T1, ? super T2, ? extends R> zipper) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), source1, source2);
@@ -2669,7 +2668,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Maybe<R> flatMap(Function1<? super T, ? extends MaybeSource<? extends U>> mapper,
-                                         BiFunction<? super T, ? super U, ? extends R> resultSelector) {
+                                         Function2<? super T, ? super U, ? extends R> resultSelector) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return RxJavaObservablePlugins.onAssembly(new MaybeFlatMapBiSelector<T, U, R>(this, mapper, resultSelector));
@@ -3990,7 +3989,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Maybe<R> zipWith(MaybeSource<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Maybe<R> zipWith(MaybeSource<? extends U> other, Function2<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         return zip(this, other, zipper);
     }

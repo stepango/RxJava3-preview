@@ -18,14 +18,14 @@ import org.reactivestreams.*;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
-    final BiFunction<T, T, T> accumulator;
-    public FlowableScan(Flowable<T> source, BiFunction<T, T, T> accumulator) {
+    final Function2<T, T, T> accumulator;
+    public FlowableScan(Flowable<T> source, Function2<T, T, T> accumulator) {
         super(source);
         this.accumulator = accumulator;
     }
@@ -37,7 +37,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
     static final class ScanSubscriber<T> implements RelaxedSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
-        final BiFunction<T, T, T> accumulator;
+        final Function2<T, T, T> accumulator;
 
         Subscription s;
 
@@ -45,7 +45,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
         boolean done;
 
-        ScanSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> accumulator) {
+        ScanSubscriber(Subscriber<? super T> actual, Function2<T, T, T> accumulator) {
             this.actual = actual;
             this.accumulator = accumulator;
         }
@@ -72,7 +72,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 T u;
 
                 try {
-                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
+                    u = ObjectHelper.requireNonNull(accumulator.invoke(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.cancel();

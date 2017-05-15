@@ -21,7 +21,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
@@ -33,9 +33,9 @@ import static org.junit.Assert.assertTrue;
 
 public class MaybeZipArrayTest {
 
-    final BiFunction<Object, Object, Object> addString = new BiFunction<Object, Object, Object>() {
+    final Function2<Object, Object, Object> addString = new Function2<Object, Object, Object>() {
         @Override
-        public Object apply(Object a, Object b) throws Exception {
+        public Object invoke(Object a, Object b) {
             return "" + a + b;
         }
     };
@@ -78,9 +78,9 @@ public class MaybeZipArrayTest {
 
     @Test
     public void zipperThrows() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), new BiFunction<Integer, Integer, Object>() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })
@@ -90,9 +90,9 @@ public class MaybeZipArrayTest {
 
     @Test
     public void zipperReturnsNull() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), new BiFunction<Integer, Integer, Object>() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         })

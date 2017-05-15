@@ -33,7 +33,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.observers.DefaultObserver;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.ReplaySubject;
@@ -262,9 +262,9 @@ public class ObservableTest {
     @Test
     public void testReduce() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        o.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -279,9 +279,9 @@ public class ObservableTest {
     @Test
     public void testReduceObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        o.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -297,9 +297,9 @@ public class ObservableTest {
     @Test
     public void testReduceWithEmptyObservable() {
         Observable<Integer> o = Observable.range(1, 0);
-        o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        o.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -316,9 +316,9 @@ public class ObservableTest {
     @Test
     public void testReduceWithEmptyObservableAndSeed() {
         Observable<Integer> o = Observable.range(1, 0);
-        int value = o.reduce(1, new BiFunction<Integer, Integer, Integer>() {
+        int value = o.reduce(1, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -330,9 +330,9 @@ public class ObservableTest {
     @Test
     public void testReduceWithInitialValue() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce(50, new BiFunction<Integer, Integer, Integer>() {
+        o.reduce(50, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -346,9 +346,9 @@ public class ObservableTest {
     @Test
     public void testReduceWithInitialValueObservable() {
         Observable<Integer> o = Observable.just(1, 2, 3, 4);
-        o.reduce(50, new BiFunction<Integer, Integer, Integer>() {
+        o.reduce(50, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })

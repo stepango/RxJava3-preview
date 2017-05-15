@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
 import io.reactivex.flowable.Flowable;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class FlowableZipIterableTest {
-    BiFunction<String, String, String> concat2Strings;
+    Function2<String, String, String> concat2Strings;
     PublishProcessor<String> s1;
     PublishProcessor<String> s2;
     Flowable<String> zipped;
@@ -53,9 +53,9 @@ public class FlowableZipIterableTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
+        concat2Strings = new Function2<String, String, String>() {
             @Override
-            public String apply(String t1, String t2) {
+            public String invoke(String t1, String t2) {
                 return t1 + "-" + t2;
             }
         };
@@ -70,10 +70,10 @@ public class FlowableZipIterableTest {
         zipped.subscribe(observer);
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
+    Function2<Object, Object, String> zipr2 = new Function2<Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2) {
+        public String invoke(Object t1, Object t2) {
             return "" + t1 + t2;
         }
 
@@ -376,9 +376,9 @@ public class FlowableZipIterableTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(1).zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Flowable.just(1).zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));
@@ -389,9 +389,9 @@ public class FlowableZipIterableTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Integer>, Flowable<Object>>() {
             @Override
             public Flowable<Object> invoke(Flowable<Integer> o) {
-                return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+                return o.zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
                     @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
+                    public Object invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 });
@@ -401,9 +401,9 @@ public class FlowableZipIterableTest {
 
     @Test
     public void iteratorThrows() {
-        Flowable.just(1).zipWith(new CrashingIterable(100, 1, 100), new BiFunction<Integer, Integer, Object>() {
+        Flowable.just(1).zipWith(new CrashingIterable(100, 1, 100), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -426,9 +426,9 @@ public class FlowableZipIterableTest {
                     observer.onComplete();
                 }
             }
-            .zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+            .zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b) throws Exception {
+                public Object invoke(Integer a, Integer b) {
                     return a + b;
                 }
             })

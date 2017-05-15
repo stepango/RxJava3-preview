@@ -42,7 +42,7 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.SequentialDisposable;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -53,7 +53,6 @@ import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -3608,7 +3607,7 @@ public class CompletableTest {
 
     private Function1<Completable, Completable> onCreate;
 
-    private BiFunction<Completable, CompletableObserver, CompletableObserver> onStart;
+    private Function2<Completable, CompletableObserver, CompletableObserver> onStart;
 
     @Before
     public void setUp() throws Exception {
@@ -3621,9 +3620,9 @@ public class CompletableTest {
 
         RxJavaObservablePlugins.setOnCompletableAssembly(onCreate);
 
-        onStart = spy(new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
+        onStart = spy(new Function2<Completable, CompletableObserver, CompletableObserver>() {
             @Override
-            public CompletableObserver apply(Completable t1, CompletableObserver t2) {
+            public CompletableObserver invoke(Completable t1, CompletableObserver t2) {
                 return t2;
             }
         });
@@ -4032,7 +4031,7 @@ public class CompletableTest {
         });
         completable.subscribe(ts);
 
-        verify(onStart, times(1)).apply(eq(completable), any(CompletableObserver.class));
+        verify(onStart, times(1)).invoke(eq(completable), any(CompletableObserver.class));
     }
 
     @Ignore("No unsafeSubscribe")

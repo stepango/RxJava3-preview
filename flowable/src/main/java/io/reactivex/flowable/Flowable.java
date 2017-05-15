@@ -41,7 +41,7 @@ import io.reactivex.common.annotations.CheckReturnValue;
 import io.reactivex.common.annotations.Experimental;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -66,7 +66,6 @@ import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function9;
 
 /**
@@ -703,7 +702,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> combineLatest(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> combiner) {
+            Function2<? super T1, ? super T2, ? extends R> combiner) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         Function1<Object[], R> f = Functions.toFunction(combiner);
@@ -2147,64 +2146,66 @@ public abstract class Flowable<T> implements Publisher<T> {
                 FlowableInternalHelper.<T, Object>simpleGenerator(generator),
                 Functions.emptyConsumer());
     }
+//TODO: reimplement with different type signature
+//    /**
+//     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+//     * <p>
+//     * <dl>
+//     *  <dt><b>Backpressure:</b></dt>
+//     *  <dd>The operator honors downstream backpressure.</dd>
+//     *  <dt><b>Scheduler:</b></dt>
+//     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
+//     * </dl>
+//     *
+//     * @param <S> the type of the per-Subscriber state
+//     * @param <T> the generated value type
+//     * @param initialState the Callable to generate the initial state for each Subscriber
+//     * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
+//     * requested a value. The callback then should call {@code onNext}, {@code onError} or
+//     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
+//     * in a call will make the operator signal {@code IllegalStateException}.
+//     * @return the new Flowable instance
+//     */
+//    @CheckReturnValue
+//    @BackpressureSupport(BackpressureKind.FULL)
+//    @SchedulerSupport(SchedulerSupport.NONE)
+//    public static <T, S> Flowable<T> generate(Callable<S> initialState, final
+//                                                Function2<S, Emitter<T>, kotlin.Unit> generator) {
+//        ObjectHelper.requireNonNull(generator, "generator is null");
+//        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator),
+//                Functions.emptyConsumer());
+//    }
 
-    /**
-     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
-     * <p>
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors downstream backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <S> the type of the per-Subscriber state
-     * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
-     * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
-     * requested a value. The callback then should call {@code onNext}, {@code onError} or
-     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
-     * in a call will make the operator signal {@code IllegalStateException}.
-     * @return the new Flowable instance
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator) {
-        ObjectHelper.requireNonNull(generator, "generator is null");
-        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator),
-                Functions.emptyConsumer());
-    }
-
-    /**
-     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
-     * <p>
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors downstream backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <S> the type of the per-Subscriber state
-     * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
-     * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
-     * requested a value. The callback then should call {@code onNext}, {@code onError} or
-     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
-     * in a call will make the operator signal {@code IllegalStateException}.
-     * @param disposeState the Consumer that is called with the current state when the generator
-     * terminates the sequence or it gets cancelled
-     * @return the new Flowable instance
-     */
-    @CheckReturnValue
-    @BackpressureSupport(BackpressureKind.FULL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator,
-                                              Function1<? super S, Unit> disposeState) {
-        ObjectHelper.requireNonNull(generator, "generator is null");
-        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), disposeState);
-    }
+//    /**
+//     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+//     * <p>
+//     * <dl>
+//     *  <dt><b>Backpressure:</b></dt>
+//     *  <dd>The operator honors downstream backpressure.</dd>
+//     *  <dt><b>Scheduler:</b></dt>
+//     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
+//     * </dl>
+//     *
+//     * @param <S> the type of the per-Subscriber state
+//     * @param <T> the generated value type
+//     * @param initialState the Callable to generate the initial state for each Subscriber
+//     * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
+//     * requested a value. The callback then should call {@code onNext}, {@code onError} or
+//     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
+//     * in a call will make the operator signal {@code IllegalStateException}.
+//     * @param disposeState the Consumer that is called with the current state when the generator
+//     * terminates the sequence or it gets cancelled
+//     * @return the new Flowable instance
+//     */
+//    @CheckReturnValue
+//    @BackpressureSupport(BackpressureKind.FULL)
+//    @SchedulerSupport(SchedulerSupport.NONE)
+//    public static <T, S> Flowable<T> generate(Callable<S> initialState,
+//                                              final Function2<S, Emitter<T>, kotlin.Unit> generator,
+//                                              Function1<? super S, Unit> disposeState) {
+//        ObjectHelper.requireNonNull(generator, "generator is null");
+//        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), disposeState);
+//    }
 
     /**
      * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
@@ -2229,7 +2230,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator) {
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, Function2<S, Emitter<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
@@ -2258,7 +2259,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator, Function1<? super S, Unit> disposeState) {
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, Function2<S, Emitter<T>, S> generator, Function1<? super S, Unit> disposeState) {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator is null");
         ObjectHelper.requireNonNull(disposeState, "disposeState is null");
@@ -4343,7 +4344,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+            Function2<? super T1, ? super T2, ? extends R> zipper) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
@@ -4404,7 +4405,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
+            Function2<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
@@ -4467,7 +4468,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
+            Function2<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
@@ -8583,7 +8584,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function1<? super T, ? extends Publisher<? extends U>> mapper,
-                                            BiFunction<? super T, ? super U, ? extends R> combiner) {
+                                            Function2<? super T, ? super U, ? extends R> combiner) {
         return flatMap(mapper, combiner, false, bufferSize(), bufferSize());
     }
 
@@ -8622,7 +8623,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function1<? super T, ? extends Publisher<? extends U>> mapper,
-                                            BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors) {
+                                            Function2<? super T, ? super U, ? extends R> combiner, boolean delayErrors) {
         return flatMap(mapper, combiner, delayErrors, bufferSize(), bufferSize());
     }
 
@@ -8665,7 +8666,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function1<? super T, ? extends Publisher<? extends U>> mapper,
-                                            BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency) {
+                                            Function2<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency) {
         return flatMap(mapper, combiner, delayErrors, maxConcurrency, bufferSize());
     }
 
@@ -8710,7 +8711,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(final Function1<? super T, ? extends Publisher<? extends U>> mapper,
-                                            final BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
+                                            final Function2<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
@@ -8754,7 +8755,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function1<? super T, ? extends Publisher<? extends U>> mapper,
-                                            BiFunction<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
+                                            Function2<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
         return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
     }
 
@@ -8853,7 +8854,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<V> flatMapIterable(final Function1<? super T, ? extends Iterable<? extends U>> mapper,
-                                                    final BiFunction<? super T, ? super U, ? extends V> resultSelector) {
+                                                    final Function2<? super T, ? super U, ? extends V> resultSelector) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), bufferSize());
@@ -8895,7 +8896,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<V> flatMapIterable(final Function1<? super T, ? extends Iterable<? extends U>> mapper,
-                                                    final BiFunction<? super T, ? super U, ? extends V> resultSelector, int prefetch) {
+                                                    final Function2<? super T, ? super U, ? extends V> resultSelector, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), prefetch);
@@ -9298,7 +9299,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends TRight> other,
             Function1<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
             Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-            BiFunction<? super T, ? super Flowable<TRight>, ? extends R> resultSelector) {
+            Function2<? super T, ? super Flowable<TRight>, ? extends R> resultSelector) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(leftEnd, "leftEnd is null");
         ObjectHelper.requireNonNull(rightEnd, "rightEnd is null");
@@ -9419,7 +9420,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends TRight> other,
             Function1<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
             Function1<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-            BiFunction<? super T, ? super TRight, ? extends R> resultSelector) {
+            Function2<? super T, ? super TRight, ? extends R> resultSelector) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(leftEnd, "leftEnd is null");
         ObjectHelper.requireNonNull(rightEnd, "rightEnd is null");
@@ -10599,7 +10600,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> reduce(BiFunction<T, T, T> reducer) {
+    public final Flowable<T> reduce(Function2<T, T, T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableReduce<T>(this, reducer));
     }
@@ -10651,7 +10652,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
+    public final <R> Flowable<R> reduce(R seed, Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(seed, "seed is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableReduceSeed<T, R>(this, seed, reducer));
@@ -10704,7 +10705,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+    public final <R> Flowable<R> reduceWith(Callable<R> seedSupplier, Function2<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableReduceWith<T, R>(this, seedSupplier, reducer));
@@ -11873,7 +11874,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> scan(BiFunction<T, T, T> accumulator) {
+    public final Flowable<T> scan(Function2<T, T, T> accumulator) {
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableScan<T>(this, accumulator));
     }
@@ -11926,7 +11927,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> scan(final R initialValue, BiFunction<R, ? super T, R> accumulator) {
+    public final <R> Flowable<R> scan(final R initialValue, Function2<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(initialValue, "seed is null");
         return scanWith(Functions.justCallable(initialValue), accumulator);
     }
@@ -11981,7 +11982,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public final <R> Flowable<R> scanWith(Callable<R> seedSupplier, Function2<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableScanSeed<T, R>(this, seedSupplier, accumulator));
@@ -15677,7 +15678,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> withLatestFrom(Publisher<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> combiner) {
+            Function2<? super T, ? super U, ? extends R> combiner) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
 
@@ -15905,7 +15906,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Flowable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Flowable<R> zipWith(Iterable<U> other,  Function2<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         return RxJavaFlowablePlugins.onAssembly(new FlowableZipIterable<T, U, R>(this, other, zipper));
@@ -15954,7 +15955,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+    public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other, Function2<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         return zip(this, other, zipper);
     }
@@ -16006,7 +16007,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
+                                            Function2<? super T, ? super U, ? extends R> zipper, boolean delayError) {
         return zip(this, other, zipper, delayError);
     }
 
@@ -16059,7 +16060,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> zipWith(Publisher<? extends U> other,
-            BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
+                                            Function2<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
         return zip(this, other, zipper, delayError, bufferSize);
     }
 

@@ -28,7 +28,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.internal.operators.CompletableError;
 import io.reactivex.observable.internal.operators.MaybeError;
@@ -214,9 +214,9 @@ public class RxJavaObservablePluginsTest {
                 }
             };
             Function1 f1 = Functions.identity();
-            BiFunction f2 = new BiFunction() {
+            Function2 f2 = new Function2() {
                 @Override
-                public Object apply(Object t1, Object t2) {
+                public Object invoke(Object t1, Object t2) {
                     return t2;
                 }
             };
@@ -328,9 +328,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void observableStart() {
         try {
-            RxJavaObservablePlugins.setOnObservableSubscribe(new BiFunction<Observable, Observer, Observer>() {
+            RxJavaObservablePlugins.setOnObservableSubscribe(new Function2<Observable, Observer, Observer>() {
                 @Override
-                public Observer apply(Observable o, final Observer t) {
+                public Observer invoke(Observable o, final Observer t) {
                     return new Observer() {
 
                         @Override
@@ -432,9 +432,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void singleStart() {
         try {
-            RxJavaObservablePlugins.setOnSingleSubscribe(new BiFunction<Single, SingleObserver, SingleObserver>() {
+            RxJavaObservablePlugins.setOnSingleSubscribe(new Function2<Single, SingleObserver, SingleObserver>() {
                 @Override
-                public SingleObserver apply(Single o, final SingleObserver t) {
+                public SingleObserver invoke(Single o, final SingleObserver t) {
                     return new SingleObserver<Object>() {
 
                         @Override
@@ -529,9 +529,9 @@ public class RxJavaObservablePluginsTest {
     @Test
     public void completableStart() {
         try {
-            RxJavaObservablePlugins.setOnCompletableSubscribe(new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
+            RxJavaObservablePlugins.setOnCompletableSubscribe(new Function2<Completable, CompletableObserver, CompletableObserver>() {
                 @Override
-                public CompletableObserver apply(Completable o, final CompletableObserver t) {
+                public CompletableObserver invoke(Completable o, final CompletableObserver t) {
                     return new CompletableObserver() {
                         @Override
                         public void onSubscribe(Disposable d) {
@@ -613,9 +613,9 @@ public class RxJavaObservablePluginsTest {
                     return maybe;
                 }
             };
-            BiFunction<Maybe, MaybeObserver, MaybeObserver> maybe2observer = new BiFunction<Maybe, MaybeObserver, MaybeObserver>() {
+            Function2<Maybe, MaybeObserver, MaybeObserver> maybe2observer = new Function2<Maybe, MaybeObserver, MaybeObserver>() {
                 @Override
-                public MaybeObserver apply(Maybe maybe, MaybeObserver maybeObserver) throws Exception {
+                public MaybeObserver invoke(Maybe maybe, MaybeObserver maybeObserver) {
                     return maybeObserver;
                 }
             };
@@ -625,9 +625,9 @@ public class RxJavaObservablePluginsTest {
                     return observable;
                 }
             };
-            BiFunction<? super Observable, ? super Observer, ? extends Observer> observable2observer = new BiFunction<Observable, Observer, Observer>() {
+            Function2<? super Observable, ? super Observer, ? extends Observer> observable2observer = new Function2<Observable, Observer, Observer>() {
                 @Override
-                public Observer apply(Observable observable, Observer observer) throws Exception {
+                public Observer invoke(Observable observable, Observer observer) {
                     return observer;
                 }
             };
@@ -637,15 +637,15 @@ public class RxJavaObservablePluginsTest {
                     return single;
                 }
             };
-            BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> single2observer = new BiFunction<Single, SingleObserver, SingleObserver>() {
+            Function2<? super Single, ? super SingleObserver, ? extends SingleObserver> single2observer = new Function2<Single, SingleObserver, SingleObserver>() {
                 @Override
-                public SingleObserver apply(Single single, SingleObserver singleObserver) throws Exception {
+                public SingleObserver invoke(Single single, SingleObserver singleObserver) {
                     return singleObserver;
                 }
             };
-            BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> completableObserver2completableObserver = new BiFunction<Completable, CompletableObserver, CompletableObserver>() {
+            Function2<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> completableObserver2completableObserver = new Function2<Completable, CompletableObserver, CompletableObserver>() {
                 @Override
-                public CompletableObserver apply(Completable completable, CompletableObserver completableObserver) throws Exception {
+                public CompletableObserver invoke(Completable completable, CompletableObserver completableObserver) {
                     return completableObserver;
                 }
             };
@@ -1143,9 +1143,9 @@ public class RxJavaObservablePluginsTest {
     @SuppressWarnings("rawtypes")
     public void maybeStart() {
         try {
-            RxJavaObservablePlugins.setOnMaybeSubscribe(new BiFunction<Maybe, MaybeObserver, MaybeObserver>() {
+            RxJavaObservablePlugins.setOnMaybeSubscribe(new Function2<Maybe, MaybeObserver, MaybeObserver>() {
                 @Override
-                public MaybeObserver apply(Maybe o, final MaybeObserver t) {
+                public MaybeObserver invoke(Maybe o, final MaybeObserver t) {
                     return new MaybeObserver() {
                         @Override
                         public void onSubscribe(Disposable d) {

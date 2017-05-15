@@ -30,7 +30,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.ConnectableObservable;
 import io.reactivex.observable.Observable;
@@ -518,9 +518,9 @@ public class ObservableRefCountTest {
     public void testConnectDisconnectConnectAndSubjectState() {
         Observable<Integer> o1 = Observable.just(10);
         Observable<Integer> o2 = Observable.just(20);
-        Observable<Integer> combined = Observable.combineLatest(o1, o2, new BiFunction<Integer, Integer, Integer>() {
+        Observable<Integer> combined = Observable.combineLatest(o1, o2, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })

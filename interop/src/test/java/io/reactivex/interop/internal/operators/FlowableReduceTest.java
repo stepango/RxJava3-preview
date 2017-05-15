@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
 import io.reactivex.observable.Maybe;
@@ -47,9 +47,9 @@ public class FlowableReduceTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> sum = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -90,9 +90,9 @@ public class FlowableReduceTest {
 
     @Test
     public void testAggregateAsIntSumAccumulatorThrows() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> sumErr = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new TestException();
             }
         };
@@ -193,9 +193,9 @@ public class FlowableReduceTest {
     @Test
     public void reducerThrows() {
         reduce(Flowable.just(1, 2)
-        , new BiFunction<Integer, Integer, Integer>() {
+        , new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })
@@ -220,9 +220,9 @@ public class FlowableReduceTest {
                         return blockingOp(x, y);
                     }
                 }).subscribeOn(Schedulers.io())
-                , new BiFunction<String, String, String>() {
+                , new Function2<String, String, String>() {
                     @Override
-                    public String apply(String l, String r) throws Exception {
+                    public String invoke(String l, String r) {
                         return l + "_" + r;
                     }
                 })

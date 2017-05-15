@@ -39,7 +39,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.processors.AsyncProcessor;
 import io.reactivex.flowable.processors.BehaviorProcessor;
@@ -50,7 +50,6 @@ import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.fail;
 
@@ -378,54 +377,55 @@ public class FlowableNullTests {
         }).blockingLast();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void generateStateConsumerInitialStateNull() {
-        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
-            @Override
-            public Unit invoke(Integer s, Emitter<Integer> o) {
-                o.onNext(1);
-                return Unit.INSTANCE;
-            }
-        };
-        Flowable.generate(null, generator);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void generateStateFunctionInitialStateNull() {
-        Flowable.generate(null, new BiFunction<Object, Emitter<Object>, Object>() {
-            @Override
-            public Object apply(Object s, Emitter<Object> o) {
-                o.onNext(1); return s;
-            }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void generateStateConsumerNull() {
-        Flowable.generate(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return 1;
-            }
-        }, (Function2<Integer, Emitter<Object>, kotlin.Unit>) null);
-    }
-
-    @Test
-    public void generateConsumerStateNullAllowed() {
-        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
-            @Override
-            public Unit invoke(Integer s, Emitter<Integer> o) {
-                o.onComplete();
-                return Unit.INSTANCE;
-            }
-        };
-        Flowable.generate(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return null;
-            }
-        }, generator).blockingSubscribe();
-    }
+    //TODO reimplement
+//    @Test(expected = NullPointerException.class)
+//    public void generateStateConsumerInitialStateNull() {
+//        Function2<Unit, Emitter<Integer>, Unit> generator = new Function2<Integer, Emitter<Integer>, Unit>() {
+//            @Override
+//            public Unit invoke(Integer s, Emitter<Integer> o) {
+//                o.onNext(1);
+//                return Unit.INSTANCE;
+//            }
+//        };
+//        Flowable.generate(null, generator);
+//    }
+//
+//    @Test(expected = NullPointerException.class)
+//    public void generateStateFunctionInitialStateNull() {
+//        Flowable.generate(null, new Function2<Object, Emitter<Object>, Object>() {
+//            @Override
+//            public Object invoke(Object s, Emitter<Object> o) {
+//                o.onNext(1); return s;
+//            }
+//        });
+//    }
+//
+//    @Test(expected = NullPointerException.class)
+//    public void generateStateConsumerNull() {
+//        Flowable.generate(new Callable<Integer>() {
+//            @Override
+//            public Integer call() {
+//                return 1;
+//            }
+//        }, (Function2<Integer, Emitter<Object>, kotlin.Unit>) null);
+//    }
+//
+//    @Test
+//    public void generateConsumerStateNullAllowed() {
+//        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
+//            @Override
+//            public Unit invoke(Integer s, Emitter<Integer> o) {
+//                o.onComplete();
+//                return Unit.INSTANCE;
+//            }
+//        };
+//        Flowable.generate(new Callable<Integer>() {
+//            @Override
+//            public Integer call() {
+//                return null;
+//            }
+//        }, generator).blockingSubscribe();
+//    }
 
     @Test
     public void generateFunctionStateNullAllowed() {
@@ -434,30 +434,31 @@ public class FlowableNullTests {
             public Object call() {
                 return null;
             }
-        }, new BiFunction<Object, Emitter<Object>, Object>() {
+        }, new Function2<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Emitter<Object> o) {
+            public Object invoke(Object s, Emitter<Object> o) {
                 o.onComplete(); return s;
             }
         }).blockingSubscribe();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void generateConsumerDisposeNull() {
-        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
-            @Override
-            public Unit invoke(Integer s, Emitter<Integer> o) {
-                o.onNext(1);
-                return Unit.INSTANCE;
-            }
-        };
-        Flowable.generate(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return 1;
-            }
-        }, generator, null);
-    }
+    //TODO reimplement
+//    @Test(expected = NullPointerException.class)
+//    public void generateConsumerDisposeNull() {
+//        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
+//            @Override
+//            public Unit invoke(Integer s, Emitter<Integer> o) {
+//                o.onNext(1);
+//                return Unit.INSTANCE;
+//            }
+//        };
+//        Flowable.generate(new Callable<Integer>() {
+//            @Override
+//            public Integer call() {
+//                return 1;
+//            }
+//        }, generator, null);
+//    }
 
     @Test(expected = NullPointerException.class)
     public void generateFunctionDisposeNull() {
@@ -466,9 +467,9 @@ public class FlowableNullTests {
             public Object call() {
                 return 1;
             }
-        }, new BiFunction<Object, Emitter<Object>, Object>() {
+        }, new Function2<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Emitter<Object> o) {
+            public Object invoke(Object s, Emitter<Object> o) {
                 o.onNext(1); return s;
             }
         }, null);
@@ -1444,9 +1445,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void flatMapCombinerMapperNull() {
-        just1.flatMap(null, new BiFunction<Integer, Object, Object>() {
+        just1.flatMap(null, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return 1;
             }
         });
@@ -1459,9 +1460,9 @@ public class FlowableNullTests {
             public Publisher<Object> invoke(Integer v) {
                 return null;
             }
-        }, new BiFunction<Integer, Object, Object>() {
+        }, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return 1;
             }
         }).blockingSubscribe();
@@ -1484,9 +1485,9 @@ public class FlowableNullTests {
             public Publisher<Integer> invoke(Integer v) {
                 return just1;
             }
-        }, new BiFunction<Integer, Integer, Object>() {
+        }, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1549,9 +1550,9 @@ public class FlowableNullTests {
             public Iterable<Integer> invoke(Integer v) {
                 return Arrays.asList(1);
             }
-        }, new BiFunction<Integer, Integer, Object>() {
+        }, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1766,9 +1767,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void reduceFunctionReturnsNull() {
-        Flowable.just(1, 1).reduce(new BiFunction<Integer, Integer, Integer>() {
+        Flowable.just(1, 1).reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) {
+            public Integer invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -1776,9 +1777,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void reduceSeedNull() {
-        just1.reduce(null, new BiFunction<Object, Integer, Object>() {
+        just1.reduce(null, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         });
@@ -1791,9 +1792,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void reduceSeedFunctionReturnsNull() {
-        just1.reduce(1, new BiFunction<Integer, Integer, Integer>() {
+        just1.reduce(1, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) {
+            public Integer invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingLast();
@@ -1801,9 +1802,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void reduceWithSeedNull() {
-        just1.reduceWith(null, new BiFunction<Object, Integer, Object>() {
+        just1.reduceWith(null, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         });
@@ -1816,9 +1817,9 @@ public class FlowableNullTests {
             public Object call() {
                 return null;
             }
-        }, new BiFunction<Object, Integer, Object>() {
+        }, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         }).blockingLast();
@@ -2021,9 +2022,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanFunctionReturnsNull() {
-        Flowable.just(1, 1).scan(new BiFunction<Integer, Integer, Integer>() {
+        Flowable.just(1, 1).scan(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) {
+            public Integer invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2031,9 +2032,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedNull() {
-        just1.scan(null, new BiFunction<Object, Integer, Object>() {
+        just1.scan(null, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         });
@@ -2046,9 +2047,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedFunctionReturnsNull() {
-        just1.scan(1, new BiFunction<Integer, Integer, Integer>() {
+        just1.scan(1, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) {
+            public Integer invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2056,9 +2057,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void scanSeedSupplierNull() {
-        just1.scanWith(null, new BiFunction<Object, Integer, Object>() {
+        just1.scanWith(null, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         });
@@ -2071,9 +2072,9 @@ public class FlowableNullTests {
             public Object call() {
                 return null;
             }
-        }, new BiFunction<Object, Integer, Object>() {
+        }, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return 1;
             }
         }).blockingSubscribe();
@@ -2096,9 +2097,9 @@ public class FlowableNullTests {
             public Object call() {
                 return 1;
             }
-        }, new BiFunction<Object, Integer, Object>() {
+        }, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) {
+            public Object invoke(Object a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2676,9 +2677,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void withLatestFromOtherNull() {
-        just1.withLatestFrom(null, new BiFunction<Integer, Object, Object>() {
+        just1.withLatestFrom(null, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return 1;
             }
         });
@@ -2691,9 +2692,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void withLatestFromCombinerReturnsNull() {
-        just1.withLatestFrom(just1, new BiFunction<Integer, Integer, Object>() {
+        just1.withLatestFrom(just1, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2701,9 +2702,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableNull() {
-        just1.zipWith((Iterable<Integer>)null, new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith((Iterable<Integer>)null, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return 1;
             }
         });
@@ -2716,9 +2717,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableCombinerReturnsNull() {
-        just1.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith(Arrays.asList(1), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2731,9 +2732,9 @@ public class FlowableNullTests {
             public Iterator<Object> iterator() {
                 return null;
             }
-        }, new BiFunction<Integer, Object, Object>() {
+        }, new Function2<Integer, Object, Object>() {
             @Override
-            public Object apply(Integer a, Object b) {
+            public Object invoke(Integer a, Object b) {
                 return 1;
             }
         }).blockingSubscribe();
@@ -2741,9 +2742,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithIterableOneIsNull() {
-        Flowable.just(1, 2).zipWith(Arrays.asList(1, null), new BiFunction<Integer, Integer, Object>() {
+        Flowable.just(1, 2).zipWith(Arrays.asList(1, null), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return 1;
             }
         }).blockingSubscribe();
@@ -2751,9 +2752,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithPublisherNull() {
-        just1.zipWith((Publisher<Integer>)null, new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith((Publisher<Integer>)null, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return 1;
             }
         });
@@ -2767,9 +2768,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithCombinerReturnsNull() {
-        just1.zipWith(just1, new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith(just1, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         }).blockingSubscribe();
@@ -2868,9 +2869,9 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipWithFlowableNull() {
-        just1.zipWith((Flowable<Integer>)null, new BiFunction<Integer, Integer, Object>() {
+        just1.zipWith((Flowable<Integer>)null, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) {
+            public Object invoke(Integer a, Integer b) {
                 return 1;
             }
         });

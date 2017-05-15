@@ -28,7 +28,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -48,9 +48,9 @@ public class ObservableGroupJoinTest {
 
     Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> add = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -73,14 +73,14 @@ public class ObservableGroupJoinTest {
         };
     }
 
-    BiFunction<Integer, Observable<Integer>, Observable<Integer>> add2 = new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+    Function2<Integer, Observable<Integer>, Observable<Integer>> add2 = new Function2<Integer, Observable<Integer>, Observable<Integer>>() {
         @Override
-        public Observable<Integer> apply(final Integer leftValue, Observable<Integer> rightValues) {
+        public Observable<Integer> invoke(final Integer leftValue, Observable<Integer> rightValues) {
             return rightValues.map(new Function1<Integer, Integer>() {
                 @Override
                 public Integer invoke(Integer rightValue) {
                     try {
-                        return add.apply(leftValue, rightValue);
+                        return add.invoke(leftValue, rightValue);
                     } catch (Exception e) {
                         //TODO checked exception
                         if (e instanceof RuntimeException) throw ((RuntimeException) e);
@@ -181,9 +181,9 @@ public class ObservableGroupJoinTest {
                 source2,
                 just2(Observable.<Object> never()),
                 just2(Observable.<Object> never()),
-                new BiFunction<Person, Observable<PersonFruit>, PPF>() {
+                new Function2<Person, Observable<PersonFruit>, PPF>() {
                     @Override
-                    public PPF apply(Person t1, Observable<PersonFruit> t2) {
+                    public PPF invoke(Person t1, Observable<PersonFruit> t2) {
                         return new PPF(t1, t2);
                     }
                 });
@@ -360,9 +360,9 @@ public class ObservableGroupJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        BiFunction<Integer, Observable<Integer>, Integer> fail = new BiFunction<Integer, Observable<Integer>, Integer>() {
+        Function2<Integer, Observable<Integer>, Integer> fail = new Function2<Integer, Observable<Integer>, Integer>() {
             @Override
-            public Integer apply(Integer t1, Observable<Integer> t2) {
+            public Integer invoke(Integer t1, Observable<Integer> t2) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -396,9 +396,9 @@ public class ObservableGroupJoinTest {
                     return Observable.never();
                 }
             },
-            new BiFunction<Integer, Observable<Integer>, Object>() {
+            new Function2<Integer, Observable<Integer>, Object>() {
                 @Override
-                public Object apply(Integer r, Observable<Integer> l) throws Exception {
+                public Object invoke(Integer r, Observable<Integer> l) {
                     return l;
                 }
             }
@@ -422,9 +422,9 @@ public class ObservableGroupJoinTest {
                     return Observable.never();
                 }
             },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+            new Function2<Integer, Observable<Integer>, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                public Observable<Integer> invoke(Integer r, Observable<Integer> l) {
                     return l;
                 }
             }
@@ -451,9 +451,9 @@ public class ObservableGroupJoinTest {
                     return Observable.never();
                 }
             },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+            new Function2<Integer, Observable<Integer>, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                public Observable<Integer> invoke(Integer r, Observable<Integer> l) {
                     return l;
                 }
             }
@@ -480,9 +480,9 @@ public class ObservableGroupJoinTest {
                     return Observable.empty();
                 }
             },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+            new Function2<Integer, Observable<Integer>, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                public Observable<Integer> invoke(Integer r, Observable<Integer> l) {
                     return l;
                 }
             }
@@ -509,9 +509,9 @@ public class ObservableGroupJoinTest {
                     return Observable.error(new TestException());
                 }
             },
-            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+            new Function2<Integer, Observable<Integer>, Observable<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                public Observable<Integer> invoke(Integer r, Observable<Integer> l) {
                     return l;
                 }
             }
@@ -545,9 +545,9 @@ public class ObservableGroupJoinTest {
                             return ps2;
                         }
                     },
-                    new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+                    new Function2<Integer, Observable<Integer>, Observable<Integer>>() {
                         @Override
-                        public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                        public Observable<Integer> invoke(Integer r, Observable<Integer> l) {
                             return l;
                         }
                     }
@@ -617,9 +617,9 @@ public class ObservableGroupJoinTest {
                             return Observable.never();
                         }
                     },
-                    new BiFunction<Object, Observable<Object>, Observable<Object>>() {
+                    new Function2<Object, Observable<Object>, Observable<Object>>() {
                         @Override
-                        public Observable<Object> apply(Object r, Observable<Object> l) throws Exception {
+                        public Observable<Object> invoke(Object r, Observable<Object> l) {
                             return l;
                         }
                     }
@@ -686,9 +686,9 @@ public class ObservableGroupJoinTest {
                     return Observable.never();
                 }
             },
-            new BiFunction<Object, Observable<Object>, Observable<Object>>() {
+            new Function2<Object, Observable<Object>, Observable<Object>>() {
                 @Override
-                public Observable<Object> apply(Object r, Observable<Object> l) throws Exception {
+                public Observable<Object> invoke(Object r, Observable<Object> l) {
                     return l;
                 }
             }

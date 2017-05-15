@@ -13,17 +13,19 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.Callable;
 
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.internal.subscribers.DeferredScalarSubscriber;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 /**
  * Reduce the sequence of values in each 'rail' to a single value.
@@ -37,9 +39,9 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     final Callable<R> initialSupplier;
 
-    final BiFunction<R, ? super T, R> reducer;
+    final Function2<R, ? super T, R> reducer;
 
-    public ParallelReduce(ParallelFlowable<? extends T> source, Callable<R> initialSupplier, BiFunction<R, ? super T, R> reducer) {
+    public ParallelReduce(ParallelFlowable<? extends T> source, Callable<R> initialSupplier, Function2<R, ? super T, R> reducer) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.reducer = reducer;
@@ -89,13 +91,13 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
         private static final long serialVersionUID = 8200530050639449080L;
 
-        final BiFunction<R, ? super T, R> reducer;
+        final Function2<R, ? super T, R> reducer;
 
         R accumulator;
 
         boolean done;
 
-        ParallelReduceSubscriber(Subscriber<? super R> subscriber, R initialValue, BiFunction<R, ? super T, R> reducer) {
+        ParallelReduceSubscriber(Subscriber<? super R> subscriber, R initialValue, Function2<R, ? super T, R> reducer) {
             super(subscriber);
             this.accumulator = initialValue;
             this.reducer = reducer;
@@ -118,7 +120,7 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(reducer.apply(accumulator, t), "The reducer returned a null value");
+                    v = ObjectHelper.requireNonNull(reducer.invoke(accumulator, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancel();

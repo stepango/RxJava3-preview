@@ -18,7 +18,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -37,9 +37,9 @@ public class SingleZipTest {
 
     @Test
     public void zip2() {
-        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
+        Single.zip(Single.just(1), Single.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + "" + b;
             }
         })
@@ -160,9 +160,9 @@ public class SingleZipTest {
             }
         });
 
-        Single.zip(source, source, new BiFunction<Integer, Integer, Object>() {
+        Single.zip(source, source, new Function2<Integer, Integer, Object>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })

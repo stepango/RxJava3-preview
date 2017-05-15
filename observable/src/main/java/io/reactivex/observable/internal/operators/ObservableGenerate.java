@@ -19,7 +19,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.Emitter;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
@@ -27,10 +27,10 @@ import kotlin.jvm.functions.Function1;
 
 public final class ObservableGenerate<T, S> extends Observable<T> {
     final Callable<S> stateSupplier;
-    final BiFunction<S, Emitter<T>, S> generator;
+    final Function2<S, Emitter<T>, S> generator;
     final Function1<? super S, kotlin.Unit> disposeState;
 
-    public ObservableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
+    public ObservableGenerate(Callable<S> stateSupplier, Function2<S, Emitter<T>, S> generator,
                               Function1<? super S, kotlin.Unit> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
@@ -58,7 +58,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
     implements Emitter<T>, Disposable {
 
         final Observer<? super T> actual;
-        final BiFunction<S, ? super Emitter<T>, S> generator;
+        final Function2<S, ? super Emitter<T>, S> generator;
         final Function1<? super S, kotlin.Unit> disposeState;
 
         S state;
@@ -70,7 +70,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         boolean hasNext;
 
         GeneratorDisposable(Observer<? super T> actual,
-                            BiFunction<S, ? super Emitter<T>, S> generator,
+                            Function2<S, ? super Emitter<T>, S> generator,
                             Function1<? super S, kotlin.Unit> disposeState, S initialState) {
             this.actual = actual;
             this.generator = generator;
@@ -87,7 +87,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 return;
             }
 
-            final BiFunction<S, ? super Emitter<T>, S> f = generator;
+            final Function2<S, ? super Emitter<T>, S> f = generator;
 
             for (;;) {
 
@@ -100,7 +100,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 hasNext = false;
 
                 try {
-                    s = f.apply(s, this);
+                    s = f.invoke(s, this);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     state = null;

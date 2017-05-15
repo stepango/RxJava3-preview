@@ -13,22 +13,23 @@
 
 package io.reactivex.interop.internal.operators;
 
-import static io.reactivex.interop.RxJava3Interop.*;
 import org.junit.Test;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.interop.TestHelper;
+
+import static io.reactivex.interop.RxJava3Interop.reduceWith;
 
 public class FlowableReduceWithSingleTest {
 
     @Test
     public void normal() {
         reduceWith(Flowable.range(1, 5)
-        , Functions.justCallable(1), new BiFunction<Integer, Integer, Integer>() {
+        , Functions.justCallable(1), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -39,9 +40,9 @@ public class FlowableReduceWithSingleTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(reduceWith(Flowable.range(1, 5)
-        , Functions.justCallable(1), new BiFunction<Integer, Integer, Integer>() {
+        , Functions.justCallable(1), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));

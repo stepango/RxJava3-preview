@@ -41,7 +41,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -71,7 +71,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class FlowableZipTest {
-    BiFunction<String, String, String> concat2Strings;
+    Function2<String, String, String> concat2Strings;
     PublishProcessor<String> s1;
     PublishProcessor<String> s2;
     Flowable<String> zipped;
@@ -81,9 +81,9 @@ public class FlowableZipTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
+        concat2Strings = new Function2<String, String, String>() {
             @Override
-            public String apply(String t1, String t2) {
+            public String invoke(String t1, String t2) {
                 return t1 + "-" + t2;
             }
         };
@@ -186,10 +186,10 @@ public class FlowableZipTest {
 
     }
 
-    BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
+    Function2<Object, Object, String> zipr2 = new Function2<Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2) {
+        public String invoke(Object t1, Object t2) {
             return "" + t1 + t2;
         }
 
@@ -436,7 +436,7 @@ public class FlowableZipTest {
 
     @Test
     public void testStart2Types() {
-        BiFunction<String, Integer, String> zipr = getConcatStringIntegerZipr();
+        Function2<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define a Subscriber to receive aggregated events */
         Subscriber<String> observer = TestHelper.mockSubscriber();
@@ -469,7 +469,7 @@ public class FlowableZipTest {
 
     @Test
     public void testOnNextExceptionInvokesOnError() {
-        BiFunction<Integer, Integer, Integer> zipr = getDivideZipr();
+        Function2<Integer, Integer, Integer> zipr = getDivideZipr();
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
@@ -571,21 +571,21 @@ public class FlowableZipTest {
         io.verifyNoMoreInteractions();
     }
 
-    private BiFunction<String, String, String> getConcat2Strings() {
-        return new BiFunction<String, String, String>() {
+    private Function2<String, String, String> getConcat2Strings() {
+        return new Function2<String, String, String>() {
 
             @Override
-            public String apply(String t1, String t2) {
+            public String invoke(String t1, String t2) {
                 return t1 + "-" + t2;
             }
         };
     }
 
-    private BiFunction<Integer, Integer, Integer> getDivideZipr() {
-        BiFunction<Integer, Integer, Integer> zipr = new BiFunction<Integer, Integer, Integer>() {
+    private Function2<Integer, Integer, Integer> getDivideZipr() {
+        Function2<Integer, Integer, Integer> zipr = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer i1, Integer i2) {
+            public Integer invoke(Integer i1, Integer i2) {
                 return i1 / i2;
             }
 
@@ -614,11 +614,11 @@ public class FlowableZipTest {
         return zipr;
     }
 
-    private BiFunction<String, Integer, String> getConcatStringIntegerZipr() {
-        BiFunction<String, Integer, String> zipr = new BiFunction<String, Integer, String>() {
+    private Function2<String, Integer, String> getConcatStringIntegerZipr() {
+        Function2<String, Integer, String> zipr = new Function2<String, Integer, String>() {
 
             @Override
-            public String apply(String s, Integer i) {
+            public String invoke(String s, Integer i) {
                 return getStringValue(s) + getStringValue(i);
             }
 
@@ -761,9 +761,9 @@ public class FlowableZipTest {
         final Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
         Flowable.zip(Flowable.just(1),
-                Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
+                Flowable.just(1), new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 }).subscribe(new DefaultSubscriber<Integer>() {
@@ -794,10 +794,10 @@ public class FlowableZipTest {
     @Test
     public void testStart() {
         Flowable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(OBSERVABLE_OF_5_INTEGERS, new BiFunction<Integer, Integer, String>() {
+                .zipWith(OBSERVABLE_OF_5_INTEGERS, new Function2<Integer, Integer, String>() {
 
                     @Override
-                    public String apply(Integer a, Integer b) {
+                    public String invoke(Integer a, Integer b) {
                         return a + "-" + b;
                     }
                 });
@@ -822,10 +822,10 @@ public class FlowableZipTest {
     @Test
     public void testStartAsync() throws InterruptedException {
         Flowable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer()
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new BiFunction<Integer, Integer, String>() {
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new Function2<Integer, Integer, String>() {
 
                     @Override
-                    public String apply(Integer a, Integer b) {
+                    public String invoke(Integer a, Integer b) {
                         return a + "-" + b;
                     }
                 }).take(5);
@@ -847,10 +847,10 @@ public class FlowableZipTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteFlowable = new CountDownLatch(1);
         Flowable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteFlowable), new BiFunction<Integer, Integer, String>() {
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteFlowable), new Function2<Integer, Integer, String>() {
 
                     @Override
-                    public String apply(Integer a, Integer b) {
+                    public String invoke(Integer a, Integer b) {
                         return a + "-" + b;
                     }
                 });
@@ -892,10 +892,10 @@ public class FlowableZipTest {
     public void testEmitNull() {
         Flowable<Integer> oi = Flowable.just(1, null, 3);
         Flowable<String> os = Flowable.just("a", "b", null);
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Integer, String, String>() {
+        Flowable<String> o = Flowable.zip(oi, os, new Function2<Integer, String, String>() {
 
             @Override
-            public String apply(Integer t1, String t2) {
+            public String invoke(Integer t1, String t2) {
                 return t1 + "-" + t2;
             }
 
@@ -941,10 +941,10 @@ public class FlowableZipTest {
     public void testEmitMaterializedNotifications() {
         Flowable<Notification<Integer>> oi = Flowable.just(1, 2, 3).materialize();
         Flowable<Notification<String>> os = Flowable.just("a", "b", "c").materialize();
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
+        Flowable<String> o = Flowable.zip(oi, os, new Function2<Notification<Integer>, Notification<String>, String>() {
 
             @Override
-            public String apply(Notification<Integer> t1, Notification<String> t2) {
+            public String invoke(Notification<Integer> t1, Notification<String> t2) {
                 return kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2);
             }
 
@@ -971,10 +971,10 @@ public class FlowableZipTest {
     @Test
     public void testStartEmptyFlowables() {
 
-        Flowable<String> o = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
+        Flowable<String> o = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new Function2<Integer, String, String>() {
 
             @Override
-            public String apply(Integer t1, String t2) {
+            public String invoke(Integer t1, String t2) {
                 return t1 + "-" + t2;
             }
 
@@ -1043,10 +1043,10 @@ public class FlowableZipTest {
         Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(o1, o2, new Function2<Integer, Integer, String>() {
 
             @Override
-            public String apply(Integer t1, Integer t2) {
+            public String invoke(Integer t1, Integer t2) {
                 return t1 + "-" + t2;
             }
 
@@ -1067,10 +1067,10 @@ public class FlowableZipTest {
         Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(o1, o2, new Function2<Integer, Integer, String>() {
 
             @Override
-            public String apply(Integer t1, Integer t2) {
+            public String invoke(Integer t1, Integer t2) {
                 return t1 + "-" + t2;
             }
 
@@ -1091,10 +1091,10 @@ public class FlowableZipTest {
         Flowable<Integer> o2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(o1, o2, new Function2<Integer, Integer, String>() {
 
             @Override
-            public String apply(Integer t1, Integer t2) {
+            public String invoke(Integer t1, Integer t2) {
                 return t1 + "-" + t2;
             }
 
@@ -1116,10 +1116,10 @@ public class FlowableZipTest {
         Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(o1, o2, new Function2<Integer, Integer, String>() {
 
             @Override
-            public String apply(Integer t1, Integer t2) {
+            public String invoke(Integer t1, Integer t2) {
                 return t1 + "-" + t2;
             }
 
@@ -1141,10 +1141,10 @@ public class FlowableZipTest {
         Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(o1, o2, new Function2<Integer, Integer, String>() {
 
             @Override
-            public String apply(Integer t1, Integer t2) {
+            public String invoke(Integer t1, Integer t2) {
                 return t1 + "-" + t2;
             }
 
@@ -1240,18 +1240,18 @@ public class FlowableZipTest {
     public void testIssue1812() {
         // https://github.com/ReactiveX/RxJava/issues/1812
         Flowable<Integer> zip1 = Flowable.zip(Flowable.range(0, 1026), Flowable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer i1, Integer i2) {
+                    public Integer invoke(Integer i1, Integer i2) {
                         return i1 + i2;
                     }
                 });
         Flowable<Integer> zip2 = Flowable.zip(zip1, Flowable.range(0, 1026),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer i1, Integer i2) {
+                    public Integer invoke(Integer i1, Integer i2) {
                         return i1 + i2;
                     }
                 });
@@ -1263,9 +1263,9 @@ public class FlowableZipTest {
     }
     @Test
     public void testUnboundedDownstreamOverrequesting() {
-        Flowable<Integer> source = Flowable.range(1, 2).zipWith(Flowable.range(1, 2), new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 2).zipWith(Flowable.range(1, 2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + 10 * t2;
             }
         });
@@ -1294,9 +1294,9 @@ public class FlowableZipTest {
         // used so that this test will not timeout on slow machines.
         int i = 0;
         while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
-            int value = Flowable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
+            int value = Flowable.zip(src, src, new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer t1, Integer t2) {
+                public Integer invoke(Integer t1, Integer t2) {
                     return t1 + t2 * 10;
                 }
             }).blockingSingle(0);
@@ -1313,9 +1313,9 @@ public class FlowableZipTest {
         Flowable<Integer> src = Flowable.just(1).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
 
-        Flowable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
+        Flowable.zip(src, src, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2 * 10;
             }
         }).subscribe(ts);
@@ -1335,7 +1335,7 @@ public class FlowableZipTest {
         for (int i = 2; i < 10; i++) {
             Class<?>[] types = new Class[i + 1];
             Arrays.fill(types, Publisher.class);
-            types[i] = i == 2 ? BiFunction.class : Class.forName("io.reactivex.common.functions.Function" + i);
+            types[i] = i == 2 ? Function2.class : Class.forName("io.reactivex.common.functions.Function" + i);
 
             Method m = Flowable.class.getMethod("zip", types);
 
@@ -1374,7 +1374,7 @@ public class FlowableZipTest {
      * Implements all Function types which return a String concatenating their inputs.
      */
     @SuppressWarnings("rawtypes")
-    public enum ArgsToString implements Function1, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+    public enum ArgsToString implements Function1, Function2, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
         INSTANCE;
 
         @Override
@@ -1414,7 +1414,7 @@ public class FlowableZipTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2) throws Exception {
+        public Object invoke(Object t1, Object t2) {
             return "" + t1 + t2;
         }
 
@@ -1432,9 +1432,9 @@ public class FlowableZipTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
+        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return "" + a + b;
             }
         }, true)
@@ -1455,9 +1455,9 @@ public class FlowableZipTest {
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
 
-        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
+        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return "" + a + b;
             }
         }, true, 1)
@@ -1474,9 +1474,9 @@ public class FlowableZipTest {
     public void zip2Prefetch() {
         Flowable.zip(Flowable.range(1, 9),
                 Flowable.range(21, 9),
-            new BiFunction<Integer, Integer, Object>() {
+            new Function2<Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b) throws Exception {
+                public Object invoke(Integer a, Integer b) {
                     return "" + a + b;
                 }
             }, false, 2
@@ -1496,9 +1496,9 @@ public class FlowableZipTest {
     public void zip2() {
         Flowable.zip(Flowable.just(1),
                 Flowable.just(2),
-            new BiFunction<Integer, Integer, Object>() {
+            new Function2<Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b) throws Exception {
+                public Object invoke(Integer a, Integer b) {
                     return "" + a + b;
                 }
             }
@@ -1645,9 +1645,9 @@ public class FlowableZipTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), new BiFunction<Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));
@@ -1655,9 +1655,9 @@ public class FlowableZipTest {
 
     @Test
     public void badRequest() {
-        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), new BiFunction<Integer, Integer, Object>() {
+        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));
@@ -1676,9 +1676,9 @@ public class FlowableZipTest {
                 protected void subscribeActual(Subscriber<? super Object> s) {
                     sub[0] = s;
                 }
-            }, new BiFunction<Object, Object, Object>() {
+            }, new Function2<Object, Object, Object>() {
                 @Override
-                public Object apply(Object a, Object b) throws Exception {
+                public Object invoke(Object a, Object b) {
                     return a;
                 }
             })
@@ -1702,9 +1702,9 @@ public class FlowableZipTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
+        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         }, true)
@@ -1722,9 +1722,9 @@ public class FlowableZipTest {
         PublishProcessor<Object> pp1 = PublishProcessor.create();
         PublishProcessor<Object> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
+        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -1744,9 +1744,9 @@ public class FlowableZipTest {
             public Integer invoke(Integer v) {
                 throw new TestException();
             }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        }), Flowable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -1761,9 +1761,9 @@ public class FlowableZipTest {
             public Integer invoke(Integer v) {
                 throw new TestException();
             }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        }), Flowable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -1778,9 +1778,9 @@ public class FlowableZipTest {
             public Integer invoke(Integer v) {
                 throw new TestException();
             }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        }), Flowable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -1795,9 +1795,9 @@ public class FlowableZipTest {
             public Integer invoke(Integer v) {
                 throw new TestException();
             }
-        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+        }), Flowable.just(2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -1821,9 +1821,9 @@ public class FlowableZipTest {
                             return Thread.currentThread().getName().substring(0, 4);
                         }
                     }),
-                    new BiFunction<Object, Object, List<Object>>() {
+                    new Function2<Object, Object, List<Object>>() {
                         @Override
-                        public List<Object> apply(Object t1, Object t2) throws Exception {
+                        public List<Object> invoke(Object t1, Object t2) {
                             return Arrays.asList(t1, t2);
                         }
                     }
@@ -1881,9 +1881,9 @@ public class FlowableZipTest {
 
     @Test
     public void fusedInputThrows2() {
-        Flowable.zip(new ThrowingFusedQueueSubscription(), Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
+        Flowable.zip(new ThrowingFusedQueueSubscription(), Flowable.just(1), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -1893,9 +1893,9 @@ public class FlowableZipTest {
 
     @Test
     public void fusedInputThrows2Backpressured() {
-        Flowable.zip(new ThrowingFusedQueueSubscription(), Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
+        Flowable.zip(new ThrowingFusedQueueSubscription(), Flowable.just(1), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -1914,9 +1914,9 @@ public class FlowableZipTest {
             }
         };
 
-        Flowable.zip(Flowable.range(1, 2), Flowable.range(3, 2), new BiFunction<Integer, Integer, Integer>() {
+        Flowable.zip(Flowable.range(1, 2), Flowable.range(3, 2), new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })

@@ -34,7 +34,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -65,10 +65,10 @@ public class FlowableFlatMapTest {
                 return list;
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 | t2;
             }
         };
@@ -96,10 +96,10 @@ public class FlowableFlatMapTest {
                 throw new TestException();
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 | t2;
             }
         };
@@ -125,10 +125,10 @@ public class FlowableFlatMapTest {
                 return list;
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new TestException();
             }
         };
@@ -152,10 +152,10 @@ public class FlowableFlatMapTest {
                 return Flowable.error(new TestException());
             }
         };
-        BiFunction<Integer, Integer, Integer> resFunc = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> resFunc = new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 | t2;
             }
         };
@@ -380,9 +380,9 @@ public class FlowableFlatMapTest {
                 return composer(Flowable.range(t1 * 10, 2), subscriptionCount, m)
                         .subscribeOn(Schedulers.computation());
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 * 1000 + t2;
             }
         }, m);
@@ -686,9 +686,9 @@ public class FlowableFlatMapTest {
             public Publisher<Integer> invoke(Integer t) {
                 throw new TestException();
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1;
             }
         }).subscribe(ts);
@@ -710,9 +710,9 @@ public class FlowableFlatMapTest {
             public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v * 10);
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -728,9 +728,9 @@ public class FlowableFlatMapTest {
             public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException()));
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true)
@@ -746,9 +746,9 @@ public class FlowableFlatMapTest {
             public Publisher<Integer> invoke(Integer v) {
                 return Flowable.just(v * 10);
             }
-        }, new BiFunction<Integer, Integer, Integer>() {
+        }, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }, true, 1)

@@ -13,17 +13,21 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
-import io.reactivex.flowable.*;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFlowable;
+import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 /**
  * Reduces all 'rails' into a single value which then gets reduced into a single
@@ -35,9 +39,9 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
     final ParallelFlowable<? extends T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final Function2<T, T, T> reducer;
 
-    public ParallelReduceFull(ParallelFlowable<? extends T> source, BiFunction<T, T, T> reducer) {
+    public ParallelReduceFull(ParallelFlowable<? extends T> source, Function2<T, T, T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -57,7 +61,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final ParallelReduceFullInnerSubscriber<T>[] subscribers;
 
-        final BiFunction<T, T, T> reducer;
+        final Function2<T, T, T> reducer;
 
         final AtomicReference<SlotPair<T>> current = new AtomicReference<SlotPair<T>>();
 
@@ -65,7 +69,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        ParallelReduceFullMainSubscriber(Subscriber<? super T> subscriber, int n, BiFunction<T, T, T> reducer) {
+        ParallelReduceFullMainSubscriber(Subscriber<? super T> subscriber, int n, Function2<T, T, T> reducer) {
             super(subscriber);
             @SuppressWarnings("unchecked")
             ParallelReduceFullInnerSubscriber<T>[] a = new ParallelReduceFullInnerSubscriber[n];
@@ -133,7 +137,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                     if (sp != null) {
 
                         try {
-                            value = ObjectHelper.requireNonNull(reducer.apply(sp.first, sp.second), "The reducer returned a null value");
+                            value = ObjectHelper.requireNonNull(reducer.invoke(sp.first, sp.second), "The reducer returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             innerError(ex);
@@ -167,13 +171,13 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final ParallelReduceFullMainSubscriber<T> parent;
 
-        final BiFunction<T, T, T> reducer;
+        final Function2<T, T, T> reducer;
 
         T value;
 
         boolean done;
 
-        ParallelReduceFullInnerSubscriber(ParallelReduceFullMainSubscriber<T> parent, BiFunction<T, T, T> reducer) {
+        ParallelReduceFullInnerSubscriber(ParallelReduceFullMainSubscriber<T> parent, Function2<T, T, T> reducer) {
             this.parent = parent;
             this.reducer = reducer;
         }
@@ -195,7 +199,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                 } else {
 
                     try {
-                        v = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
+                        v = ObjectHelper.requireNonNull(reducer.invoke(v, t), "The reducer returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         get().cancel();

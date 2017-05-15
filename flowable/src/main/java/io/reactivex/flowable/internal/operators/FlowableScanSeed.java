@@ -12,26 +12,30 @@
  */
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.queues.*;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.queues.SimplePlainQueue;
+import io.reactivex.flowable.internal.queues.SpscArrayQueue;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.internal.utils.BackpressureHelper;
 
 public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T, R> {
-    final BiFunction<R, ? super T, R> accumulator;
+    final Function2<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 
-    public FlowableScanSeed(Flowable<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public FlowableScanSeed(Flowable<T> source, Callable<R> seedSupplier, Function2<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -59,7 +63,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
         final Subscriber<? super R> actual;
 
-        final BiFunction<R, ? super T, R> accumulator;
+        final Function2<R, ? super T, R> accumulator;
 
         final SimplePlainQueue<R> queue;
 
@@ -80,7 +84,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
         int consumed;
 
-        ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value, int prefetch) {
+        ScanSeedSubscriber(Subscriber<? super R> actual, Function2<R, ? super T, R> accumulator, R value, int prefetch) {
             this.actual = actual;
             this.accumulator = accumulator;
             this.value = value;
@@ -110,7 +114,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
             R v = value;
             try {
-                v = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
+                v = ObjectHelper.requireNonNull(accumulator.invoke(v, t), "The accumulator returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

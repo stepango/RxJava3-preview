@@ -39,7 +39,7 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -79,9 +79,9 @@ public class FlowableCombineLatestTest {
         PublishProcessor<String> w1 = PublishProcessor.create();
         PublishProcessor<String> w2 = PublishProcessor.create();
 
-        Flowable<String> combined = Flowable.combineLatest(w1, w2, new BiFunction<String, String, String>() {
+        Flowable<String> combined = Flowable.combineLatest(w1, w2, new Function2<String, String, String>() {
             @Override
-            public String apply(String v1, String v2) {
+            public String invoke(String v1, String v2) {
                 throw new RuntimeException("I don't work.");
             }
         });
@@ -208,7 +208,7 @@ public class FlowableCombineLatestTest {
 
     @Test
     public void testCombineLatest2Types() {
-        BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
+        Function2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
         Subscriber<String> observer = TestHelper.mockSubscriber();
@@ -273,10 +273,10 @@ public class FlowableCombineLatestTest {
         return combineLatestFunction;
     }
 
-    private BiFunction<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
-        BiFunction<String, Integer, String> combineLatestFunction = new BiFunction<String, Integer, String>() {
+    private Function2<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
+        Function2<String, Integer, String> combineLatestFunction = new Function2<String, Integer, String>() {
             @Override
-            public String apply(String s, Integer i) {
+            public String invoke(String s, Integer i) {
                 return getStringValue(s) + getStringValue(i);
             }
         };
@@ -304,9 +304,9 @@ public class FlowableCombineLatestTest {
         }
     }
 
-    BiFunction<Integer, Integer, Integer> or = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> or = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 | t2;
         }
     };
@@ -549,9 +549,9 @@ public class FlowableCombineLatestTest {
         Flowable<Integer> s2 = Flowable.just(2);
 
         Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2,
-                new BiFunction<Integer, Integer, List<Integer>>() {
+                new Function2<Integer, Integer, List<Integer>>() {
                     @Override
-                    public List<Integer> apply(Integer t1, Integer t2) {
+                    public List<Integer> invoke(Integer t1, Integer t2) {
                         return Arrays.asList(t1, t2);
                     }
                 });
@@ -778,7 +778,7 @@ public class FlowableCombineLatestTest {
 
     @Test//(timeout = 2000)
     public void testBackpressure() {
-        BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
+        Function2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         int NUM = Flowable.bufferSize() * 4;
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -819,9 +819,9 @@ public class FlowableCombineLatestTest {
 
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
 
-        Flowable.combineLatest(timer, Flowable.<Integer>never(), new BiFunction<Long, Integer, Long>() {
+        Flowable.combineLatest(timer, Flowable.<Integer>never(), new Function2<Long, Integer, Long>() {
             @Override
-            public Long apply(Long t1, Integer t2) {
+            public Long invoke(Long t1, Integer t2) {
                 return t1;
             }
         }).subscribe(ts);
@@ -1096,7 +1096,7 @@ public class FlowableCombineLatestTest {
         for (int i = 2; i < 10; i++) {
             Class<?>[] types = new Class[i + 1];
             Arrays.fill(types, Publisher.class);
-            types[i] = i == 2 ? BiFunction.class : Class.forName("io.reactivex.common.functions.Function" + i);
+            types[i] = i == 2 ? Function2.class : Class.forName("io.reactivex.common.functions.Function" + i);
 
             Method m = Flowable.class.getMethod("combineLatest", types);
 
@@ -1256,9 +1256,9 @@ public class FlowableCombineLatestTest {
 
     @Test
     public void error() {
-        Flowable.combineLatest(Flowable.never(), Flowable.error(new TestException()), new BiFunction<Object, Object, Object>() {
+        Flowable.combineLatest(Flowable.never(), Flowable.error(new TestException()), new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -1268,9 +1268,9 @@ public class FlowableCombineLatestTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(Flowable.combineLatest(Flowable.never(), Flowable.never(), new BiFunction<Object, Object, Object>() {
+        TestHelper.checkDisposed(Flowable.combineLatest(Flowable.never(), Flowable.never(), new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         }));
@@ -1290,9 +1290,9 @@ public class FlowableCombineLatestTest {
                             }
                         }),
                 Flowable.never(),
-                new BiFunction<Object, Object, Object>() {
+                new Function2<Object, Object, Object>() {
                     @Override
-                    public Object apply(Object a, Object b) throws Exception {
+                    public Object invoke(Object a, Object b) {
                         return a;
                     }
                 })
@@ -1307,9 +1307,9 @@ public class FlowableCombineLatestTest {
                 final PublishProcessor<Integer> ps1 = PublishProcessor.create();
                 final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
-                TestSubscriber<Integer> to = Flowable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+                TestSubscriber<Integer> to = Flowable.combineLatest(ps1, ps2, new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a;
                     }
                 }).test();
@@ -1360,9 +1360,9 @@ public class FlowableCombineLatestTest {
     public void combineAsync() {
         Flowable<Integer> source = Flowable.range(1, 1000).subscribeOn(Schedulers.computation());
 
-        Flowable.combineLatest(source, source, new BiFunction<Object, Object, Object>() {
+        Flowable.combineLatest(source, source, new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -1424,9 +1424,9 @@ public class FlowableCombineLatestTest {
                                     return Unit.INSTANCE;
                                 }
                             }),
-                    new BiFunction<Object, Object, Object>() {
+                    new Function2<Object, Object, Object>() {
                         @Override
-                        public Object apply(Object a, Object b) throws Exception {
+                        public Object invoke(Object a, Object b) {
                             return 0;
                         }
                     })
@@ -1584,9 +1584,9 @@ public class FlowableCombineLatestTest {
             }
         };
 
-        Flowable.combineLatest(pp1, pp2, new BiFunction<Integer, Integer, Integer>() {
+        Flowable.combineLatest(pp1, pp2, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) throws Exception {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })

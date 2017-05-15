@@ -16,17 +16,17 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.common.*;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
 import io.reactivex.observable.internal.disposables.EmptyDisposable;
 
 public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstream<T, R> {
-    final BiFunction<R, ? super T, R> accumulator;
+    final Function2<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 
-    public ObservableScanSeed(ObservableSource<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public ObservableScanSeed(ObservableSource<T> source, Callable<R> seedSupplier, Function2<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -49,7 +49,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
 
     static final class ScanSeedObserver<T, R> implements Observer<T>, Disposable {
         final Observer<? super R> actual;
-        final BiFunction<R, ? super T, R> accumulator;
+        final Function2<R, ? super T, R> accumulator;
 
         R value;
 
@@ -57,7 +57,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
 
         boolean done;
 
-        ScanSeedObserver(Observer<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
+        ScanSeedObserver(Observer<? super R> actual, Function2<R, ? super T, R> accumulator, R value) {
             this.actual = actual;
             this.accumulator = accumulator;
             this.value = value;
@@ -96,7 +96,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             R u;
 
             try {
-                u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
+                u = ObjectHelper.requireNonNull(accumulator.invoke(v, t), "The accumulator returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();

@@ -35,7 +35,7 @@ import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.Disposable;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestScheduler;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.FlowableProcessor;
 import io.reactivex.flowable.processors.ReplayProcessor;
@@ -275,9 +275,9 @@ public class FlowableTests {
     @Test
     public void testReduce() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4);
-        observable.reduce(new BiFunction<Integer, Integer, Integer>() {
+        observable.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -291,9 +291,9 @@ public class FlowableTests {
     @Test
     public void testReduceWithEmptyObservable() {
         Flowable<Integer> observable = Flowable.range(1, 0);
-        observable.reduce(new BiFunction<Integer, Integer, Integer>() {
+        observable.reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -310,9 +310,9 @@ public class FlowableTests {
     @Test
     public void testReduceWithEmptyObservableAndSeed() {
         Flowable<Integer> observable = Flowable.range(1, 0);
-        int value = observable.reduce(1, new BiFunction<Integer, Integer, Integer>() {
+        int value = observable.reduce(1, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })
@@ -324,9 +324,9 @@ public class FlowableTests {
     @Test
     public void testReduceWithInitialValue() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3, 4);
-        observable.reduce(50, new BiFunction<Integer, Integer, Integer>() {
+        observable.reduce(50, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         })

@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.*;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.*;
 import io.reactivex.flowable.extensions.*;
@@ -37,9 +37,9 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
     final Flowable<T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final Function2<T, T, T> reducer;
 
-    public FlowableReduceMaybe(Flowable<T> source, BiFunction<T, T, T> reducer) {
+    public FlowableReduceMaybe(Flowable<T> source, Function2<T, T, T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -62,7 +62,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
     static final class ReduceSubscriber<T> implements RelaxedSubscriber<T>, Disposable {
         final MaybeObserver<? super T> actual;
 
-        final BiFunction<T, T, T> reducer;
+        final Function2<T, T, T> reducer;
 
         T value;
 
@@ -70,7 +70,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
         boolean done;
 
-        ReduceSubscriber(MaybeObserver<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(MaybeObserver<? super T> actual, Function2<T, T, T> reducer) {
             this.actual = actual;
             this.reducer = reducer;
         }
@@ -107,7 +107,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
                 value = t;
             } else {
                 try {
-                    value = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
+                    value = ObjectHelper.requireNonNull(reducer.invoke(v, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     s.cancel();

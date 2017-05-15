@@ -13,22 +13,25 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.flowable.subscribers.SerializedSubscriber;
 
 public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithUpstream<T, R> {
-    final BiFunction<? super T, ? super U, ? extends R> combiner;
+    final Function2<? super T, ? super U, ? extends R> combiner;
     final Publisher<? extends U> other;
-    public FlowableWithLatestFrom(Flowable<T> source, BiFunction<? super T, ? super U, ? extends R> combiner, Publisher<? extends U> other) {
+    public FlowableWithLatestFrom(Flowable<T> source, Function2<? super T, ? super U, ? extends R> combiner, Publisher<? extends U> other) {
         super(source);
         this.combiner = combiner;
         this.other = other;
@@ -51,7 +54,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         private static final long serialVersionUID = -312246233408980075L;
 
         final Subscriber<? super R> actual;
-        final BiFunction<? super T, ? super U, ? extends R> combiner;
+        final Function2<? super T, ? super U, ? extends R> combiner;
 
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
@@ -59,7 +62,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
-        WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
+        WithLatestFromSubscriber(Subscriber<? super R> actual, Function2<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
             this.combiner = combiner;
         }
@@ -74,7 +77,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
             if (u != null) {
                 R r;
                 try {
-                    r = ObjectHelper.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
+                    r = ObjectHelper.requireNonNull(combiner.invoke(t, u), "The combiner returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();

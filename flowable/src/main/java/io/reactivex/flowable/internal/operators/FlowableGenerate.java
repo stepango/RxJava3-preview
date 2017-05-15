@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import io.reactivex.common.Emitter;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
 import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
@@ -31,10 +31,10 @@ import kotlin.jvm.functions.Function1;
 
 public final class FlowableGenerate<T, S> extends Flowable<T> {
     final Callable<S> stateSupplier;
-    final BiFunction<S, Emitter<T>, S> generator;
+    final Function2<S, Emitter<T>, S> generator;
     final Function1<? super S, kotlin.Unit> disposeState;
 
-    public FlowableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
+    public FlowableGenerate(Callable<S> stateSupplier, Function2<S, Emitter<T>, S> generator,
                             Function1<? super S, kotlin.Unit> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
@@ -63,7 +63,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         private static final long serialVersionUID = 7565982551505011832L;
 
         final Subscriber<? super T> actual;
-        final BiFunction<S, ? super Emitter<T>, S> generator;
+        final Function2<S, ? super Emitter<T>, S> generator;
         final Function1<? super S, kotlin.Unit> disposeState;
 
         S state;
@@ -75,7 +75,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         boolean hasNext;
 
         GeneratorSubscription(Subscriber<? super T> actual,
-                              BiFunction<S, ? super Emitter<T>, S> generator,
+                              Function2<S, ? super Emitter<T>, S> generator,
                               Function1<? super S, kotlin.Unit> disposeState, S initialState) {
             this.actual = actual;
             this.generator = generator;
@@ -96,7 +96,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
             S s = state;
 
-            final BiFunction<S, ? super Emitter<T>, S> f = generator;
+            final Function2<S, ? super Emitter<T>, S> f = generator;
 
             for (;;) {
                 while (e != n) {
@@ -110,7 +110,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     hasNext = false;
 
                     try {
-                        s = f.apply(s, this);
+                        s = f.invoke(s, this);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelled = true;

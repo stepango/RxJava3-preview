@@ -29,7 +29,7 @@ import org.reactivestreams.Publisher;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.Observable;
@@ -60,9 +60,9 @@ public class ToFlowablePerf {
 
         Flowable<Integer> source = Flowable.fromArray(array);
 
-        final BiFunction<Integer, Integer, Integer> second = new BiFunction<Integer, Integer, Integer>() {
+        final Function2<Integer, Integer, Integer> second = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return b;
             }
         };

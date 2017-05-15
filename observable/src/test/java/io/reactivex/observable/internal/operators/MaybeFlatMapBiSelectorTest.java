@@ -16,7 +16,7 @@ package io.reactivex.observable.internal.operators;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.MaybeSource;
 import io.reactivex.observable.TestHelper;
@@ -27,10 +27,10 @@ import static org.junit.Assert.assertEquals;
 
 public class MaybeFlatMapBiSelectorTest {
 
-    BiFunction<Integer, Integer, String> stringCombine() {
-        return new BiFunction<Integer, Integer, String>() {
+    Function2<Integer, Integer, String> stringCombine() {
+        return new Function2<Integer, Integer, String>() {
             @Override
-            public String apply(Integer a, Integer b) throws Exception {
+            public String invoke(Integer a, Integer b) {
                 return a + ":" + b;
             }
         };
@@ -124,9 +124,9 @@ public class MaybeFlatMapBiSelectorTest {
             public MaybeSource<Integer> invoke(Object v) {
                 return Maybe.just(1);
             }
-        }, new BiFunction<Object, Integer, Object>() {
+        }, new Function2<Object, Integer, Object>() {
             @Override
-            public Object apply(Object a, Integer b) throws Exception {
+            public Object invoke(Object a, Integer b) {
                 return b;
             }
         }));
@@ -142,9 +142,9 @@ public class MaybeFlatMapBiSelectorTest {
                     public MaybeSource<Integer> invoke(Object v) {
                         return Maybe.just(1);
                     }
-                }, new BiFunction<Object, Integer, Object>() {
+                }, new Function2<Object, Integer, Object>() {
                     @Override
-                    public Object apply(Object a, Integer b) throws Exception {
+                    public Object invoke(Object a, Integer b) {
                         return b;
                     }
                 });
@@ -186,9 +186,9 @@ public class MaybeFlatMapBiSelectorTest {
             public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(2);
             }
-        }, new BiFunction<Integer, Integer, Object>() {
+        }, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })
@@ -204,9 +204,9 @@ public class MaybeFlatMapBiSelectorTest {
             public MaybeSource<Integer> invoke(Integer v) {
                 return Maybe.just(2);
             }
-        }, new BiFunction<Integer, Integer, Object>() {
+        }, new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         })

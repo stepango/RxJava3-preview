@@ -15,13 +15,13 @@ package io.reactivex.common.internal.utils;
 
 import java.util.*;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 
 /**
  * A BiFunction that merges two Lists into a new list.
  * @param <T> the value type
  */
-public final class MergerBiFunction<T> implements BiFunction<List<T>, List<T>, List<T>> {
+public final class MergerBiFunction<T> implements Function2<List<T>, List<T>, List<T>> {
 
     final Comparator<? super T> comparator;
 
@@ -30,7 +30,7 @@ public final class MergerBiFunction<T> implements BiFunction<List<T>, List<T>, L
     }
 
     @Override
-    public List<T> apply(List<T> a, List<T> b) throws Exception {
+    public List<T> invoke(List<T> a, List<T> b) {
         int n = a.size() + b.size();
         if (n == 0) {
             return new ArrayList<T>();

@@ -17,17 +17,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.common.Disposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
 import io.reactivex.observable.observers.SerializedObserver;
 
 public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableWithUpstream<T, R> {
-    final BiFunction<? super T, ? super U, ? extends R> combiner;
+    final Function2<? super T, ? super U, ? extends R> combiner;
     final ObservableSource<? extends U> other;
     public ObservableWithLatestFrom(ObservableSource<T> source,
-            BiFunction<? super T, ? super U, ? extends R> combiner, ObservableSource<? extends U> other) {
+                                    Function2<? super T, ? super U, ? extends R> combiner, ObservableSource<? extends U> other) {
         super(source);
         this.combiner = combiner;
         this.other = other;
@@ -51,13 +51,13 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         final Observer<? super R> actual;
 
-        final BiFunction<? super T, ? super U, ? extends R> combiner;
+        final Function2<? super T, ? super U, ? extends R> combiner;
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
 
-        WithLatestFromObserver(Observer<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
+        WithLatestFromObserver(Observer<? super R> actual, Function2<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
             this.combiner = combiner;
         }
@@ -72,7 +72,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
             if (u != null) {
                 R r;
                 try {
-                    r = ObjectHelper.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
+                    r = ObjectHelper.requireNonNull(combiner.invoke(t, u), "The combiner returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();

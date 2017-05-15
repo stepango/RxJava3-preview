@@ -15,14 +15,14 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.*;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
 
 public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T> {
-    final BiFunction<T, T, T> accumulator;
-    public ObservableScan(ObservableSource<T> source, BiFunction<T, T, T> accumulator) {
+    final Function2<T, T, T> accumulator;
+    public ObservableScan(ObservableSource<T> source, Function2<T, T, T> accumulator) {
         super(source);
         this.accumulator = accumulator;
     }
@@ -34,7 +34,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
     static final class ScanObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final BiFunction<T, T, T> accumulator;
+        final Function2<T, T, T> accumulator;
 
         Disposable s;
 
@@ -42,7 +42,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         boolean done;
 
-        ScanObserver(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
+        ScanObserver(Observer<? super T> actual, Function2<T, T, T> accumulator) {
             this.actual = actual;
             this.accumulator = accumulator;
         }
@@ -81,7 +81,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 T u;
 
                 try {
-                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
+                    u = ObjectHelper.requireNonNull(accumulator.invoke(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.dispose();

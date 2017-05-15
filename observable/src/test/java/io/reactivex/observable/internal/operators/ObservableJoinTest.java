@@ -25,7 +25,7 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -42,9 +42,9 @@ import static org.mockito.Mockito.verify;
 public class ObservableJoinTest {
     Observer<Object> observer = TestHelper.mockObserver();
 
-    BiFunction<Integer, Integer, Integer> add = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> add = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -294,9 +294,9 @@ public class ObservableJoinTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
 
-        BiFunction<Integer, Integer, Integer> fail = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> fail = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new RuntimeException("Forced failure");
             }
         };
@@ -318,9 +318,9 @@ public class ObservableJoinTest {
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.<Integer>create().join(Observable.just(1),
                 Functions.justFunction(Observable.never()),
-                Functions.justFunction(Observable.never()), new BiFunction<Integer, Integer, Integer>() {
+                Functions.justFunction(Observable.never()), new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 }));
@@ -332,9 +332,9 @@ public class ObservableJoinTest {
                 Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
                 })
@@ -350,9 +350,9 @@ public class ObservableJoinTest {
         TestObserver<Integer> to = ps.join(Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.empty()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         return a + b;
                     }
             })
@@ -372,9 +372,9 @@ public class ObservableJoinTest {
                 Observable.just(2),
                 Functions.justFunction(Observable.never()),
                 Functions.justFunction(Observable.never()),
-                new BiFunction<Integer, Integer, Integer>() {
+                new Function2<Integer, Integer, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Integer b) throws Exception {
+                    public Integer invoke(Integer a, Integer b) {
                         throw new TestException();
                     }
                 })
@@ -401,9 +401,9 @@ public class ObservableJoinTest {
             .join(Observable.just(2),
                     Functions.justFunction(Observable.never()),
                     Functions.justFunction(Observable.never()),
-                    new BiFunction<Integer, Integer, Integer>() {
+                    new Function2<Integer, Integer, Integer>() {
                         @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
+                        public Integer invoke(Integer a, Integer b) {
                             return a + b;
                         }
                 })
@@ -434,9 +434,9 @@ public class ObservableJoinTest {
                             observer.onError(new TestException("First"));
                         }
                     }),
-                    new BiFunction<Integer, Integer, Integer>() {
+                    new Function2<Integer, Integer, Integer>() {
                         @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
+                        public Integer invoke(Integer a, Integer b) {
                             return a + b;
                         }
                 })

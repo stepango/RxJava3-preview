@@ -33,12 +33,11 @@ import io.reactivex.common.Disposables;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.disposables.SerialDisposable;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.internal.operators.SingleInternalHelper;
 import io.reactivex.observable.observers.TestObserver;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -97,9 +96,9 @@ public class SingleTest {
         Single<String> a = Single.just("A");
         Single<String> b = Single.just("B");
 
-        Single.zip(a, b, new BiFunction<String, String, String>() {
+        Single.zip(a, b, new Function2<String, String, String>() {
             @Override
-            public String apply(String a1, String b1) {
+            public String invoke(String a1, String b1) {
                 return a1 + b1;
             }
         })
@@ -111,9 +110,9 @@ public class SingleTest {
     public void testZipWith() {
         TestObserver<String> ts = new TestObserver<String>();
 
-        Single.just("A").zipWith(Single.just("B"), new BiFunction<String, String, String>() {
+        Single.just("A").zipWith(Single.just("B"), new Function2<String, String, String>() {
             @Override
-            public String apply(String a1, String b1) {
+            public String invoke(String a1, String b1) {
                 return a1 + b1;
             }
         })

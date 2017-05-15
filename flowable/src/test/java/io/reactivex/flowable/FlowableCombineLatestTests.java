@@ -18,7 +18,7 @@ package io.reactivex.flowable;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.FlowableCovarianceTest.CoolRating;
 import io.reactivex.flowable.FlowableCovarianceTest.ExtendedResult;
 import io.reactivex.flowable.FlowableCovarianceTest.HorrorMovie;
@@ -51,9 +51,9 @@ public class FlowableCombineLatestTests {
         Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
     }
 
-    BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
+    Function2<Media, Rating, ExtendedResult> combine = new Function2<Media, Rating, ExtendedResult>() {
         @Override
-        public ExtendedResult apply(Media m, Rating r) {
+        public ExtendedResult invoke(Media m, Rating r) {
             return new ExtendedResult();
         }
     };
@@ -81,9 +81,9 @@ public class FlowableCombineLatestTests {
         Flowable<Boolean> nullObservable = BehaviorProcessor.createDefault((Boolean) null);
         Flowable<Boolean> nonNullObservable = BehaviorProcessor.createDefault(true);
         Flowable<Boolean> combined =
-                combineLatest(nullObservable, nonNullObservable, new BiFunction<Boolean, Boolean, Boolean>() {
+                combineLatest(nullObservable, nonNullObservable, new Function2<Boolean, Boolean, Boolean>() {
                     @Override
-                    public Boolean apply(Boolean bool1, Boolean bool2) {
+                    public Boolean invoke(Boolean bool1, Boolean bool2) {
                         return bool1 == null ? null : bool2;
                     }
                 });

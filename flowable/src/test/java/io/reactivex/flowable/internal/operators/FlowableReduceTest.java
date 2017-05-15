@@ -25,7 +25,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.extensions.HasUpstreamPublisher;
@@ -49,9 +49,9 @@ public class FlowableReduceTest {
         observer = TestHelper.mockSubscriber();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> sum = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -94,9 +94,9 @@ public class FlowableReduceTest {
 
     @Test
     public void testAggregateAsIntSumAccumulatorThrowsFlowable() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> sumErr = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new TestException();
             }
         };
@@ -161,9 +161,9 @@ public class FlowableReduceTest {
                     s.onComplete();
                 }
             })
-            .reduce(new BiFunction<Integer, Integer, Integer>() {
+            .reduce(new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
+                public Integer invoke(Integer a, Integer b) {
                     throw new TestException("Reducer");
                 }
             })
@@ -183,9 +183,9 @@ public class FlowableReduceTest {
 
         TestSubscriber<Integer> ts = Flowable.just(1)
         .concatWith(Flowable.<Integer>never())
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -277,9 +277,9 @@ public class FlowableReduceTest {
     @Test
     public void reducerThrows() {
         Flowable.just(1, 2)
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })
@@ -304,9 +304,9 @@ public class FlowableReduceTest {
                         return blockingOp(x, y);
                     }
                 }).subscribeOn(Schedulers.io())
-                .reduce(new BiFunction<String, String, String>() {
+                .reduce(new Function2<String, String, String>() {
                     @Override
-                    public String apply(String l, String r) throws Exception {
+                    public String invoke(String l, String r) {
                         return l + "_" + r;
                     }
                 })
@@ -343,9 +343,9 @@ public class FlowableReduceTest {
                         return blockingOp(x, y);
                     }
                 }).subscribeOn(Schedulers.io())
-                .reduce(new BiFunction<String, String, String>() {
+                .reduce(new Function2<String, String, String>() {
                     @Override
-                    public String apply(String l, String r) throws Exception {
+                    public String invoke(String l, String r) {
                         return l + "_" + r;
                     }
                 })

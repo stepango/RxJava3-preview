@@ -15,7 +15,7 @@ package io.reactivex.observable.internal.operators;
 
 import io.reactivex.common.*;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.observable.*;
@@ -30,9 +30,9 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
     final ObservableSource<T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final Function2<T, T, T> reducer;
 
-    public ObservableReduceMaybe(ObservableSource<T> source, BiFunction<T, T, T> reducer) {
+    public ObservableReduceMaybe(ObservableSource<T> source, Function2<T, T, T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -46,7 +46,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         final MaybeObserver<? super T> actual;
 
-        final BiFunction<T, T, T> reducer;
+        final Function2<T, T, T> reducer;
 
         boolean done;
 
@@ -54,7 +54,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         Disposable d;
 
-        ReduceObserver(MaybeObserver<? super T> observer, BiFunction<T, T, T> reducer) {
+        ReduceObserver(MaybeObserver<? super T> observer, Function2<T, T, T> reducer) {
             this.actual = observer;
             this.reducer = reducer;
         }
@@ -77,7 +77,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                     this.value = value;
                 } else {
                     try {
-                        this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                        this.value = ObjectHelper.requireNonNull(reducer.invoke(v, value), "The reducer returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         d.dispose();

@@ -16,7 +16,7 @@ package io.reactivex.flowable.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 
 @Test
@@ -26,9 +26,9 @@ public class ZipWithIterableTckTest extends BaseTck<Integer> {
     public Publisher<Integer> createPublisher(long elements) {
         return
                 Flowable.range(0, (int)elements)
-                .zipWith(iterate(elements), new BiFunction<Integer, Long, Integer>() {
+                .zipWith(iterate(elements), new Function2<Integer, Long, Integer>() {
                     @Override
-                    public Integer apply(Integer a, Long b) throws Exception {
+                    public Integer invoke(Integer a, Long b) {
                         return a + b.intValue();
                     }
                 })

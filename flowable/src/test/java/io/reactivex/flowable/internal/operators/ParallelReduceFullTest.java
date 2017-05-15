@@ -13,19 +13,22 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
-
-import io.reactivex.common.*;
+import io.reactivex.common.RxJavaCommonPlugins;
+import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
-import io.reactivex.flowable.*;
+import kotlin.jvm.functions.Function2;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.ParallelFlowable;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ParallelReduceFullTest {
 
@@ -35,9 +38,9 @@ public class ParallelReduceFullTest {
 
         TestSubscriber<Integer> ts = pp
         .parallel()
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -57,9 +60,9 @@ public class ParallelReduceFullTest {
         try {
             Flowable.<Integer>error(new TestException())
             .parallel()
-            .reduce(new BiFunction<Integer, Integer, Integer>() {
+            .reduce(new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
+                public Integer invoke(Integer a, Integer b) {
                     return a + b;
                 }
             })
@@ -79,9 +82,9 @@ public class ParallelReduceFullTest {
 
         try {
             ParallelFlowable.fromArray(Flowable.<Integer>error(new IOException()), Flowable.<Integer>error(new TestException()))
-            .reduce(new BiFunction<Integer, Integer, Integer>() {
+            .reduce(new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
+                public Integer invoke(Integer a, Integer b) {
                     return a + b;
                 }
             })
@@ -98,9 +101,9 @@ public class ParallelReduceFullTest {
     public void empty() {
         Flowable.<Integer>empty()
         .parallel()
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -113,9 +116,9 @@ public class ParallelReduceFullTest {
         List<Throwable> errors = TestCommonHelper.trackPluginErrors();
         try {
             new ParallelInvalid()
-            .reduce(new BiFunction<Object, Object, Object>() {
+            .reduce(new Function2<Object, Object, Object>() {
                 @Override
-                public Object apply(Object a, Object b) throws Exception {
+                public Object invoke(Object a, Object b) {
                     return "" + a + b;
                 }
             })
@@ -135,9 +138,9 @@ public class ParallelReduceFullTest {
     public void reducerCrash() {
         Flowable.range(1, 4)
         .parallel(2)
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 if (b == 3) {
                     throw new TestException();
                 }
@@ -152,9 +155,9 @@ public class ParallelReduceFullTest {
     public void reducerCrash2() {
         Flowable.range(1, 4)
         .parallel(2)
-        .reduce(new BiFunction<Integer, Integer, Integer>() {
+        .reduce(new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 if (a == 1 + 3) {
                     throw new TestException();
                 }

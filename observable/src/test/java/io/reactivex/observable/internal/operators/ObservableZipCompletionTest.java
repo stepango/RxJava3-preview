@@ -13,14 +13,18 @@
 
 package io.reactivex.observable.internal.operators;
 
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InOrder;
 
-import io.reactivex.common.functions.BiFunction;
-import io.reactivex.observable.*;
+import kotlin.jvm.functions.Function2;
+import io.reactivex.observable.Observable;
+import io.reactivex.observable.Observer;
+import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
+
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
 
 /**
  * Systematically tests that when zipping an infinite and a finite Observable,
@@ -28,7 +32,7 @@ import io.reactivex.observable.subjects.PublishSubject;
  *
  */
 public class ObservableZipCompletionTest {
-    BiFunction<String, String, String> concat2Strings;
+    Function2<String, String, String> concat2Strings;
 
     PublishSubject<String> s1;
     PublishSubject<String> s2;
@@ -39,9 +43,9 @@ public class ObservableZipCompletionTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
+        concat2Strings = new Function2<String, String, String>() {
             @Override
-            public String apply(String t1, String t2) {
+            public String invoke(String t1, String t2) {
                 return t1 + "-" + t2;
             }
         };

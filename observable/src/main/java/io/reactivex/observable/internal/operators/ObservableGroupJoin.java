@@ -25,7 +25,7 @@ import io.reactivex.common.Disposable;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.disposables.CompositeDisposable;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.disposables.DisposableHelper;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.common.internal.utils.ExceptionHelper;
@@ -44,14 +44,14 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
     final Function1<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd;
 
-    final BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
+    final Function2<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
 
     public ObservableGroupJoin(
             ObservableSource<TLeft> source,
             ObservableSource<? extends TRight> other,
             Function1<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
             Function1<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
-            BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
+            Function2<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
         super(source);
         this.other = other;
         this.leftEnd = leftEnd;
@@ -111,7 +111,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
         final Function1<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd;
 
-        final BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
+        final Function2<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
 
         final AtomicInteger active;
 
@@ -133,7 +133,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                 Observer<? super R> actual,
                 Function1<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
                 Function1<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
-                BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
+                Function2<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
             this.actual = actual;
             this.disposables = new CompositeDisposable();
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
@@ -270,7 +270,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         R w;
 
                         try {
-                            w = ObjectHelper.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
+                            w = ObjectHelper.requireNonNull(resultSelector.invoke(left, up), "The resultSelector returned a null value");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;

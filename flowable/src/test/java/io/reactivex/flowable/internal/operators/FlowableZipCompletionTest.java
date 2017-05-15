@@ -13,15 +13,18 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import static org.mockito.Mockito.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.BiFunction;
-import io.reactivex.flowable.*;
+import kotlin.jvm.functions.Function2;
+import io.reactivex.flowable.Flowable;
+import io.reactivex.flowable.TestHelper;
 import io.reactivex.flowable.processors.PublishProcessor;
+
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
 
 /**
  * Systematically tests that when zipping an infinite and a finite Observable,
@@ -29,7 +32,7 @@ import io.reactivex.flowable.processors.PublishProcessor;
  *
  */
 public class FlowableZipCompletionTest {
-    BiFunction<String, String, String> concat2Strings;
+    Function2<String, String, String> concat2Strings;
 
     PublishProcessor<String> s1;
     PublishProcessor<String> s2;
@@ -40,9 +43,9 @@ public class FlowableZipCompletionTest {
 
     @Before
     public void setUp() {
-        concat2Strings = new BiFunction<String, String, String>() {
+        concat2Strings = new Function2<String, String, String>() {
             @Override
-            public String apply(String t1, String t2) {
+            public String invoke(String t1, String t2) {
                 return t1 + "-" + t2;
             }
         };

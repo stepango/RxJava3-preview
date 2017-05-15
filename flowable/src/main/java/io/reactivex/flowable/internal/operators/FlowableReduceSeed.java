@@ -15,7 +15,7 @@ package io.reactivex.flowable.internal.operators;
 
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.internal.operators.FlowableReduceWith.ReduceWithSubscriber;
 
@@ -23,9 +23,9 @@ public final class FlowableReduceSeed<T, R> extends AbstractFlowableWithUpstream
 
     final R initialValue;
 
-    final BiFunction<R, ? super T, R> reducer;
+    final Function2<R, ? super T, R> reducer;
 
-    public FlowableReduceSeed(Flowable<T> source, R initialValue, BiFunction<R, ? super T, R> reducer) {
+    public FlowableReduceSeed(Flowable<T> source, R initialValue, Function2<R, ? super T, R> reducer) {
         super(source);
         this.initialValue = initialValue;
         this.reducer = reducer;

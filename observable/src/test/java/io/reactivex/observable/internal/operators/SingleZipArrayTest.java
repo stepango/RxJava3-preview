@@ -22,7 +22,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.observable.Single;
 import io.reactivex.observable.SingleSource;
@@ -35,9 +35,9 @@ import static org.junit.Assert.assertTrue;
 
 public class SingleZipArrayTest {
 
-    final BiFunction<Object, Object, Object> addString = new BiFunction<Object, Object, Object>() {
+    final Function2<Object, Object, Object> addString = new Function2<Object, Object, Object>() {
         @Override
-        public Object apply(Object a, Object b) throws Exception {
+        public Object invoke(Object a, Object b) {
             return "" + a + b;
         }
     };
@@ -80,9 +80,9 @@ public class SingleZipArrayTest {
 
     @Test
     public void zipperThrows() {
-        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
+        Single.zip(Single.just(1), Single.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 throw new TestException();
             }
         })
@@ -92,9 +92,9 @@ public class SingleZipArrayTest {
 
     @Test
     public void zipperReturnsNull() {
-        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
+        Single.zip(Single.just(1), Single.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         })

@@ -35,7 +35,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.common.internal.utils.ListAddBiConsumer;
 import io.reactivex.common.internal.utils.MergerBiFunction;
@@ -48,7 +48,6 @@ import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -200,9 +199,9 @@ public class ParallelFlowableTest {
 
             Flowable.range(1, 10)
             .parallel(i)
-            .reduce(new BiFunction<Integer, Integer, Integer>() {
+            .reduce(new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
+                public Integer invoke(Integer a, Integer b) {
                     return a + b;
                 }
             })
@@ -236,9 +235,9 @@ public class ParallelFlowableTest {
                     })
                     .parallel(i)
                     .runOn(scheduler)
-                    .reduce(new BiFunction<Long, Long, Long>() {
+                    .reduce(new Function2<Long, Long, Long>() {
                         @Override
-                        public Long apply(Long a, Long b) throws Exception {
+                        public Long invoke(Long a, Long b) {
                             return a + b;
                         }
                     })
@@ -1371,9 +1370,9 @@ public class ParallelFlowableTest {
     public void mergeBiFunction() throws Exception {
         MergerBiFunction<Integer> f = new MergerBiFunction<Integer>(Functions.<Integer>naturalComparator());
 
-        assertEquals(0, f.apply(Collections.<Integer>emptyList(), Collections.<Integer>emptyList()).size());
+        assertEquals(0, f.invoke(Collections.<Integer>emptyList(), Collections.<Integer>emptyList()).size());
 
-        assertEquals(Arrays.asList(1, 2), f.apply(Collections.<Integer>emptyList(), Arrays.asList(1, 2)));
+        assertEquals(Arrays.asList(1, 2), f.invoke(Collections.<Integer>emptyList(), Arrays.asList(1, 2)));
 
         for (int i = 0; i < 4; i++) {
             int k = 0;
@@ -1387,7 +1386,7 @@ public class ParallelFlowableTest {
                 list2.add(k++);
             }
 
-            assertEquals(Arrays.asList(0, 1, 2, 3), f.apply(list1, list2));
+            assertEquals(Arrays.asList(0, 1, 2, 3), f.invoke(list1, list2));
         }
     }
 

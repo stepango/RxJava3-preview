@@ -32,6 +32,7 @@ import io.reactivex.observable.Completable;
 import io.reactivex.observable.CompletableObserver;
 import io.reactivex.observable.Observable;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 /**
  * Allows the use of operators for controlling the timing around when actions
@@ -74,7 +75,7 @@ import kotlin.jvm.functions.Function1;
  * Generally each {@link Observable} uses its own {@link io.reactivex.common.Scheduler.Worker Worker}. This means
  * that this will essentially limit the number of concurrent subscribes. The
  * danger comes from using operators like
- * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.common.functions.BiFunction)} where
+ * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, Function2)} where
  * subscribing to the first {@link Observable} could deadlock the subscription
  * to the second.
  * 

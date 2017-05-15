@@ -17,7 +17,7 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.common.Emitter;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.Flowable;
 
@@ -28,9 +28,9 @@ public class GenerateTckTest extends BaseTck<Long> {
     public Publisher<Long> createPublisher(final long elements) {
         return
             Flowable.generate(Functions.justCallable(0L),
-            new BiFunction<Long, Emitter<Long>, Long>() {
+            new Function2<Long, Emitter<Long>, Long>() {
                 @Override
-                public Long apply(Long s, Emitter<Long> e) throws Exception {
+                public Long invoke(Long s, Emitter<Long> e) {
                     e.onNext(s);
                     if (++s == elements) {
                         e.onComplete();

@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.Observer;
@@ -42,9 +42,9 @@ public class ObservableReduceTest {
         singleObserver = TestHelper.mockSingleObserver();
     }
 
-    BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
+    Function2<Integer, Integer, Integer> sum = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -87,9 +87,9 @@ public class ObservableReduceTest {
 
     @Test
     public void testAggregateAsIntSumAccumulatorThrowsObservable() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> sumErr = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new TestException();
             }
         };
@@ -185,9 +185,9 @@ public class ObservableReduceTest {
 
     @Test
     public void testAggregateAsIntSumAccumulatorThrows() {
-        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
+        Function2<Integer, Integer, Integer> sumErr = new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 throw new TestException();
             }
         };

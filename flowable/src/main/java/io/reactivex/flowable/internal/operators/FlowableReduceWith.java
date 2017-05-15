@@ -13,24 +13,27 @@
 
 package io.reactivex.flowable.internal.operators;
 
-import java.util.concurrent.Callable;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.Callable;
 
 import hu.akarnokd.reactivestreams.extensions.RelaxedSubscriber;
 import io.reactivex.common.exceptions.Exceptions;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.ObjectHelper;
 import io.reactivex.flowable.Flowable;
-import io.reactivex.flowable.internal.subscriptions.*;
+import io.reactivex.flowable.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.flowable.internal.subscriptions.EmptySubscription;
+import io.reactivex.flowable.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableReduceWith<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Callable<R> initialValueSupplier;
 
-    final BiFunction<R, ? super T, R> reducer;
+    final Function2<R, ? super T, R> reducer;
 
-    public FlowableReduceWith(Flowable<T> source, Callable<R> initialValueSupplier, BiFunction<R, ? super T, R> reducer) {
+    public FlowableReduceWith(Flowable<T> source, Callable<R> initialValueSupplier, Function2<R, ? super T, R> reducer) {
         super(source);
         this.initialValueSupplier = initialValueSupplier;
         this.reducer = reducer;
@@ -56,13 +59,13 @@ public final class FlowableReduceWith<T, R> extends AbstractFlowableWithUpstream
 
         private static final long serialVersionUID = 7129356975009970557L;
 
-        final BiFunction<R, ? super T, R> reducer;
+        final Function2<R, ? super T, R> reducer;
 
         Subscription upstream;
 
         boolean done;
 
-        public ReduceWithSubscriber(Subscriber<? super R> actual, R value, BiFunction<R, ? super T, R> reducer) {
+        public ReduceWithSubscriber(Subscriber<? super R> actual, R value, Function2<R, ? super T, R> reducer) {
             super(actual);
             this.value = value;
             this.reducer = reducer;
@@ -72,7 +75,7 @@ public final class FlowableReduceWith<T, R> extends AbstractFlowableWithUpstream
         public void onNext(T t) {
             if (!done) {
                 try {
-                    value = ObjectHelper.requireNonNull(reducer.apply(value, t), "The reducer returned a null value");
+                    value = ObjectHelper.requireNonNull(reducer.invoke(value, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     onError(ex);

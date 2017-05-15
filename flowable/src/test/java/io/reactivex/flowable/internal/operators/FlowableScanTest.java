@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.exceptions.TestException;
 import io.reactivex.common.exceptions.UndeliverableException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.flowable.Burst;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.FlowableEventStream;
@@ -44,7 +44,6 @@ import io.reactivex.flowable.subscribers.DefaultSubscriber;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -64,10 +63,10 @@ public class FlowableScanTest {
 
         Flowable<Integer> observable = Flowable.just(1, 2, 3);
 
-        Flowable<String> m = observable.scan("", new BiFunction<String, Integer, String>() {
+        Flowable<String> m = observable.scan("", new Function2<String, Integer, String>() {
 
             @Override
-            public String apply(String s, Integer n) {
+            public String invoke(String s, Integer n) {
                 return s + n.toString();
             }
 
@@ -90,10 +89,10 @@ public class FlowableScanTest {
 
         Flowable<Integer> observable = Flowable.just(1, 2, 3);
 
-        Flowable<Integer> m = observable.scan(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> m = observable.scan(new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -116,10 +115,10 @@ public class FlowableScanTest {
 
         Flowable<Integer> observable = Flowable.just(1);
 
-        Flowable<Integer> m = observable.scan(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> m = observable.scan(new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -137,10 +136,10 @@ public class FlowableScanTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Flowable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Flowable.range(1, 100).scan(0, new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -161,10 +160,10 @@ public class FlowableScanTest {
     public void testBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
+                .scan(0, new Function2<Integer, Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer t1, Integer t2) {
+                    public Integer invoke(Integer t1, Integer t2) {
                         return t1 + t2;
                     }
 
@@ -202,10 +201,10 @@ public class FlowableScanTest {
     public void testBackpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(new BiFunction<Integer, Integer, Integer>() {
+                .scan(new Function2<Integer, Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer t1, Integer t2) {
+                    public Integer invoke(Integer t1, Integer t2) {
                         return t1 + t2;
                     }
 
@@ -243,10 +242,10 @@ public class FlowableScanTest {
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Flowable.range(1, 100)
-                .scan(0, new BiFunction<Integer, Integer, Integer>() {
+                .scan(0, new Function2<Integer, Integer, Integer>() {
 
                     @Override
-                    public Integer apply(Integer t1, Integer t2) {
+                    public Integer invoke(Integer t1, Integer t2) {
                         return t1 + t2;
                     }
 
@@ -304,10 +303,10 @@ public class FlowableScanTest {
 
     @Test
     public void testScanWithRequestOne() {
-        Flowable<Integer> o = Flowable.just(1, 2).scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> o = Flowable.just(1, 2).scan(0, new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -345,10 +344,10 @@ public class FlowableScanTest {
                 producer.set(p);
                 subscriber.onSubscribe(p);
             }
-        }).scan(100, new BiFunction<Integer, Integer, Integer>() {
+        }).scan(100, new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
@@ -373,9 +372,9 @@ public class FlowableScanTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
+        source.scan(0, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
@@ -392,9 +391,9 @@ public class FlowableScanTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        source.scan(0, new BiFunction<Integer, Integer, Integer>() {
+        source.scan(0, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2) {
+            public Integer invoke(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
@@ -406,16 +405,16 @@ public class FlowableScanTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishProcessor.create().scan(new BiFunction<Object, Object, Object>() {
+        TestHelper.checkDisposed(PublishProcessor.create().scan(new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         }));
 
-        TestHelper.checkDisposed(PublishProcessor.<Integer>create().scan(0, new BiFunction<Integer, Integer, Integer>() {
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create().scan(0, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         }));
@@ -426,9 +425,9 @@ public class FlowableScanTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
             public Flowable<Object> invoke(Flowable<Object> o) {
-                return o.scan(new BiFunction<Object, Object, Object>() {
+                return o.scan(new Function2<Object, Object, Object>() {
                     @Override
-                    public Object apply(Object a, Object b) throws Exception {
+                    public Object invoke(Object a, Object b) {
                         return a;
                     }
                 });
@@ -438,9 +437,9 @@ public class FlowableScanTest {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function1<Flowable<Object>, Flowable<Object>>() {
             @Override
             public Flowable<Object> invoke(Flowable<Object> o) {
-                return o.scan(0, new BiFunction<Object, Object, Object>() {
+                return o.scan(0, new Function2<Object, Object, Object>() {
                     @Override
-                    public Object apply(Object a, Object b) throws Exception {
+                    public Object invoke(Object a, Object b) {
                         return a;
                     }
                 });
@@ -451,9 +450,9 @@ public class FlowableScanTest {
     @Test
     public void error() {
         Flowable.error(new TestException())
-        .scan(new BiFunction<Object, Object, Object>() {
+        .scan(new Function2<Object, Object, Object>() {
             @Override
-            public Object apply(Object a, Object b) throws Exception {
+            public Object invoke(Object a, Object b) {
                 return a;
             }
         })
@@ -464,9 +463,9 @@ public class FlowableScanTest {
     @Test
     public void neverSource() {
         Flowable.<Integer>never()
-        .scan(0, new BiFunction<Integer, Integer, Integer>() {
+        .scan(0, new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer a, Integer b) throws Exception {
+            public Integer invoke(Integer a, Integer b) {
                 return a + b;
             }
         })
@@ -480,9 +479,9 @@ public class FlowableScanTest {
     public void testUnsubscribeScan() {
 
         FlowableEventStream.getEventStream("HTTP-ClusterB", 20)
-        .scan(new HashMap<String, String>(), new BiFunction<HashMap<String, String>, Event, HashMap<String, String>>() {
+        .scan(new HashMap<String, String>(), new Function2<HashMap<String, String>, Event, HashMap<String, String>>() {
             @Override
-            public HashMap<String, String> apply(HashMap<String, String> accum, Event perInstanceEvent) {
+            public HashMap<String, String> invoke(HashMap<String, String> accum, Event perInstanceEvent) {
                 accum.put("instance", perInstanceEvent.instanceId);
                 return accum;
             }
@@ -538,10 +537,10 @@ public class FlowableScanTest {
     public void testScanWithSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
-        Burst.items(1, 2).create().scan(0, new BiFunction<Integer, Integer, Integer>() {
+        Burst.items(1, 2).create().scan(0, new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer n1, Integer n2) throws Exception {
+            public Integer invoke(Integer n1, Integer n2) {
                 count.incrementAndGet();
                 throw e;
             }})
@@ -619,10 +618,10 @@ public class FlowableScanTest {
     public void testScanNoSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
         final AtomicInteger count = new AtomicInteger();
-        Burst.items(1, 2, 3).create().scan(new BiFunction<Integer, Integer, Integer>() {
+        Burst.items(1, 2, 3).create().scan(new Function2<Integer, Integer, Integer>() {
 
             @Override
-            public Integer apply(Integer n1, Integer n2) throws Exception {
+            public Integer invoke(Integer n1, Integer n2) {
                 count.incrementAndGet();
                 throw e;
             }})
@@ -632,19 +631,19 @@ public class FlowableScanTest {
         assertEquals(1, count.get());
     }
 
-    private static BiFunction<Integer,Integer, Integer> throwingBiFunction(final RuntimeException e) {
-        return new BiFunction<Integer, Integer, Integer>() {
+    private static Function2<Integer,Integer, Integer> throwingBiFunction(final RuntimeException e) {
+        return new Function2<Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer n1, Integer n2) throws Exception {
+            public Integer invoke(Integer n1, Integer n2) {
                 throw e;
             }
         };
     }
 
-    private static final BiFunction<Integer, Integer, Integer> SUM = new BiFunction<Integer, Integer, Integer>() {
+    private static final Function2<Integer, Integer, Integer> SUM = new Function2<Integer, Integer, Integer>() {
 
         @Override
-        public Integer apply(Integer t1, Integer t2) throws Exception {
+        public Integer invoke(Integer t1, Integer t2) {
             return t1 + t2;
         }
     };
@@ -699,9 +698,9 @@ public class FlowableScanTest {
 
         for (int b = 1; b <= n; b *= 2) {
             List<Integer> list = Flowable.range(1, n)
-            .scan(0, new BiFunction<Integer, Integer, Integer>() {
+            .scan(0, new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
+                public Integer invoke(Integer a, Integer b) {
                     return b;
                 }
             })

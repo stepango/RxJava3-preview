@@ -24,7 +24,7 @@ import java.util.List;
 import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -45,15 +45,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class FlowableWithLatestFromTest {
-    static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
+    static final Function2<Integer, Integer, Integer> COMBINER = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             return (t1 << 8) + t2;
         }
     };
-    static final BiFunction<Integer, Integer, Integer> COMBINER_ERROR = new BiFunction<Integer, Integer, Integer>() {
+    static final Function2<Integer, Integer, Integer> COMBINER_ERROR = new Function2<Integer, Integer, Integer>() {
         @Override
-        public Integer apply(Integer t1, Integer t2) {
+        public Integer invoke(Integer t1, Integer t2) {
             throw new TestException("Forced failure");
         }
     };
@@ -594,9 +594,9 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
+        TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return a;
             }
         }));
@@ -679,9 +679,9 @@ public class FlowableWithLatestFromTest {
                     s.onError(new TestException("First"));
                     s.onError(new TestException("Second"));
                 }
-            }, new BiFunction<Integer, Integer, Integer>() {
+            }, new Function2<Integer, Integer, Integer>() {
                 @Override
-                public Integer apply(Integer a, Integer b) throws Exception {
+                public Integer invoke(Integer a, Integer b) {
                     return a + b;
                 }
             })
@@ -697,9 +697,9 @@ public class FlowableWithLatestFromTest {
     @Test
     public void combineToNull1() {
         Flowable.just(1)
-        .withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
+        .withLatestFrom(Flowable.just(2), new Function2<Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b) throws Exception {
+            public Object invoke(Integer a, Integer b) {
                 return null;
             }
         })

@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.internal.functions.Functions;
 import io.reactivex.flowable.internal.operators.FlowableRange;
 import io.reactivex.flowable.internal.operators.ParallelFromPublisher;
@@ -196,9 +195,9 @@ public class RxJavaFlowablePluginsTest {
                 }
             };
             Function1 f1 = Functions.identity();
-            BiFunction f2 = new BiFunction() {
+            Function2 f2 = new Function2() {
                 @Override
-                public Object apply(Object t1, Object t2) {
+                public Object invoke(Object t1, Object t2) {
                     return t2;
                 }
             };
@@ -310,9 +309,9 @@ public class RxJavaFlowablePluginsTest {
     @Test
     public void flowableStart() {
         try {
-            RxJavaFlowablePlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
+            RxJavaFlowablePlugins.setOnFlowableSubscribe(new Function2<Flowable, Subscriber, Subscriber>() {
                 @Override
-                public Subscriber apply(Flowable o, final Subscriber t) {
+                public Subscriber invoke(Flowable o, final Subscriber t) {
                     return new Subscriber() {
 
                         @Override
@@ -456,9 +455,9 @@ public class RxJavaFlowablePluginsTest {
                     return flowable;
                 }
             };
-            BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> flowable2subscriber = new BiFunction<Flowable, Subscriber, Subscriber>() {
+            Function2<? super Flowable, ? super Subscriber, ? extends Subscriber> flowable2subscriber = new Function2<Flowable, Subscriber, Subscriber>() {
                 @Override
-                public Subscriber apply(Flowable flowable, Subscriber subscriber) throws Exception {
+                public Subscriber invoke(Flowable flowable, Subscriber subscriber) {
                     return subscriber;
                 }
             };
@@ -923,9 +922,9 @@ public class RxJavaFlowablePluginsTest {
     @Test
     public void subscribeHookCrashes() {
         try {
-            RxJavaFlowablePlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
+            RxJavaFlowablePlugins.setOnFlowableSubscribe(new Function2<Flowable, Subscriber, Subscriber>() {
                 @Override
-                public Subscriber apply(Flowable f, Subscriber s) throws Exception {
+                public Subscriber invoke(Flowable f, Subscriber s) {
                     throw new IllegalArgumentException();
                 }
             });
@@ -939,9 +938,9 @@ public class RxJavaFlowablePluginsTest {
                 }
             }
 
-            RxJavaFlowablePlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
+            RxJavaFlowablePlugins.setOnFlowableSubscribe(new Function2<Flowable, Subscriber, Subscriber>() {
                 @Override
-                public Subscriber apply(Flowable f, Subscriber s) throws Exception {
+                public Subscriber invoke(Flowable f, Subscriber s) {
                     throw new InternalError();
                 }
             });
@@ -953,24 +952,25 @@ public class RxJavaFlowablePluginsTest {
                 // expected
             }
 
-            RxJavaFlowablePlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
-                @Override
-                public Subscriber apply(Flowable f, Subscriber s) throws Exception {
-                    throw new IOException();
-                }
-            });
+            //TODO checked exception
+//            RxJavaFlowablePlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
+//                @Override
+//                public Subscriber invoke(Flowable f, Subscriber s) {
+//                    throw new IOException();
+//                }
+//            });
 
-            try {
-                Flowable.empty().test();
-                fail("Should have thrown!");
-            } catch (NullPointerException ex) {
-                if (!(ex.getCause() instanceof RuntimeException)) {
-                    fail(ex.getCause().toString() + ": Should have thrown NullPointerException(RuntimeException(IOException))");
-                }
-                if (!(ex.getCause().getCause() instanceof IOException)) {
-                    fail(ex.getCause().toString() + ": Should have thrown NullPointerException(RuntimeException(IOException))");
-                }
-            }
+//            try {
+//                Flowable.empty().test();
+//                fail("Should have thrown!");
+//            } catch (Exception ex) {
+//                if (!(ex.getCause() instanceof RuntimeException)) {
+//                    fail(ex.getCause().toString() + ": Should have thrown NullPointerException(RuntimeException(IOException))");
+//                }
+//                if (!(ex.getCause().getCause() instanceof IOException)) {
+//                    fail(ex.getCause().toString() + ": Should have thrown NullPointerException(RuntimeException(IOException))");
+//                }
+//            }
         } finally {
             RxJavaFlowablePlugins.reset();
         }

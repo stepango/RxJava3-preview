@@ -29,7 +29,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.Scheduler;
 import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
-import io.reactivex.common.functions.BiFunction;
+import kotlin.jvm.functions.Function2;
 import io.reactivex.common.functions.Function3;
 import io.reactivex.common.functions.Function4;
 import io.reactivex.common.functions.Function5;
@@ -39,7 +39,6 @@ import kotlin.jvm.functions.Function8;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function9;
 
 /**
@@ -54,7 +53,7 @@ public final class Functions {
         throw new IllegalStateException("No instances!");
     }
 
-    public static <T1, T2, R> Function1<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> f) {
+    public static <T1, T2, R> Function1<Object[], R> toFunction(final Function2<? super T1, ? super T2, ? extends R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
         return new Array2Func<T1, T2, R>(f);
     }
@@ -579,9 +578,9 @@ public final class Functions {
     }
 
     static final class Array2Func<T1, T2, R> implements Function1<Object[], R> {
-        final BiFunction<? super T1, ? super T2, ? extends R> f;
+        final Function2<? super T1, ? super T2, ? extends R> f;
 
-        Array2Func(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        Array2Func(Function2<? super T1, ? super T2, ? extends R> f) {
             this.f = f;
         }
 
@@ -592,7 +591,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1]);
+                return f.invoke((T1) a[0], (T2) a[1]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;

@@ -15,20 +15,20 @@ package io.reactivex.common.internal.utils;
 
 import java.util.List;
 
-import io.reactivex.common.functions.*;
+import kotlin.jvm.functions.Function2;
 
 @SuppressWarnings("rawtypes")
-public enum ListAddBiConsumer implements BiFunction<List, Object, List> {
+public enum ListAddBiConsumer implements Function2<List, Object, List> {
     INSTANCE;
 
     @SuppressWarnings("unchecked")
-    public static <T> BiFunction<List<T>, T, List<T>> instance() {
-        return (BiFunction)INSTANCE;
+    public static <T> Function2<List<T>, T, List<T>> instance() {
+        return (Function2)INSTANCE;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List apply(List t1, Object t2) throws Exception {
+    public List invoke(List t1, Object t2) {
         t1.add(t2);
         return t1;
     }
