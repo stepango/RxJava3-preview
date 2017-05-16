@@ -36,9 +36,9 @@ import io.reactivex.common.Notification;
 import io.reactivex.common.Schedulers;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -191,7 +191,7 @@ public class ObservableZipTest {
     Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2, Object t3) {
+        public String invoke(Object t1, Object t2, Object t3) {
             return "" + t1 + t2 + t3;
         }
 
@@ -591,7 +591,7 @@ public class ObservableZipTest {
         Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
 
             @Override
-            public String apply(String a1, String a2, String a3) {
+            public String invoke(String a1, String a2, String a3) {
                 if (a1 == null) {
                     a1 = "";
                 }
@@ -624,7 +624,7 @@ public class ObservableZipTest {
         Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
 
             @Override
-            public String apply(String s, Integer i, int[] iArray) {
+            public String invoke(String s, Integer i, int[] iArray) {
                 return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
             }
 
@@ -1200,7 +1200,7 @@ public class ObservableZipTest {
                 Observable.just(2), Observable.just(3),
             new Function3<Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c) {
                     return "" + a + b + c;
                 }
             }
@@ -1216,7 +1216,7 @@ public class ObservableZipTest {
                 Observable.just(4),
             new Function4<Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d) {
                     return "" + a + b + c + d;
                 }
             }
@@ -1232,7 +1232,7 @@ public class ObservableZipTest {
                 Observable.just(4), Observable.just(5),
             new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e) {
                     return "" + a + b + c + d + e;
                 }
             }

@@ -37,9 +37,9 @@ import io.reactivex.common.annotations.NonNull;
 import io.reactivex.common.annotations.SchedulerSupport;
 import io.reactivex.common.exceptions.Exceptions;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -1872,60 +1872,60 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObservableInternalHelper.simpleGenerator(generator), Functions.<Object>emptyConsumer());
     }
 
-    /**
-     * Returns a cold, synchronous and stateful generator of values.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <S> the type of the per-Observer state
-     * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Observer
-     * @param generator the Consumer called with the current state whenever a particular downstream Observer has
-     * requested a value. The callback then should call {@code onNext}, {@code onError} or
-     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
-     * in a call will make the operator signal {@code IllegalStateException}.
-     * @return the new Observable instance
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator) {
-        ObjectHelper.requireNonNull(generator, "generator  is null");
-        return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), Functions.emptyConsumer());
-    }
-
-    /**
-     * Returns a cold, synchronous and stateful generator of values.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <S> the type of the per-Observer state
-     * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Observer
-     * @param generator the Consumer called with the current state whenever a particular downstream Observer has
-     * requested a value. The callback then should call {@code onNext}, {@code onError} or
-     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
-     * in a call will make the operator signal {@code IllegalStateException}.
-     * @param disposeState the Consumer that is called with the current state when the generator
-     * terminates the sequence or it gets cancelled
-     * @return the new Observable instance
-     */
-    @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(
-            final Callable<S> initialState,
-            final Function2<S, Emitter<T>, kotlin.Unit> generator,
-            Function1<? super S, kotlin.Unit> disposeState) {
-        ObjectHelper.requireNonNull(generator, "generator  is null");
-        return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), disposeState);
-    }
+//    /**
+//     * Returns a cold, synchronous and stateful generator of values.
+//     * <p>
+//     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+//     * <dl>
+//     *  <dt><b>Scheduler:</b></dt>
+//     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
+//     * </dl>
+//     *
+//     * @param <S> the type of the per-Observer state
+//     * @param <T> the generated value type
+//     * @param initialState the Callable to generate the initial state for each Observer
+//     * @param generator the Consumer called with the current state whenever a particular downstream Observer has
+//     * requested a value. The callback then should call {@code onNext}, {@code onError} or
+//     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
+//     * in a call will make the operator signal {@code IllegalStateException}.
+//     * @return the new Observable instance
+//     */
+//    @CheckReturnValue
+//    @SchedulerSupport(SchedulerSupport.NONE)
+//    public static <T, S> Observable<T> generate(Callable<S> initialState, final Function2<S, Emitter<T>, kotlin.Unit> generator) {
+//        ObjectHelper.requireNonNull(generator, "generator  is null");
+//        return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), Functions.emptyConsumer());
+//    }
+//
+//    /**
+//     * Returns a cold, synchronous and stateful generator of values.
+//     * <p>
+//     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/generate.2.png" alt="">
+//     * <dl>
+//     *  <dt><b>Scheduler:</b></dt>
+//     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
+//     * </dl>
+//     *
+//     * @param <S> the type of the per-Observer state
+//     * @param <T> the generated value type
+//     * @param initialState the Callable to generate the initial state for each Observer
+//     * @param generator the Consumer called with the current state whenever a particular downstream Observer has
+//     * requested a value. The callback then should call {@code onNext}, {@code onError} or
+//     * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
+//     * in a call will make the operator signal {@code IllegalStateException}.
+//     * @param disposeState the Consumer that is called with the current state when the generator
+//     * terminates the sequence or it gets cancelled
+//     * @return the new Observable instance
+//     */
+//    @CheckReturnValue
+//    @SchedulerSupport(SchedulerSupport.NONE)
+//    public static <T, S> Observable<T> generate(
+//            final Callable<S> initialState,
+//            final Function2<S, Emitter<T>, kotlin.Unit> generator,
+//            Function1<? super S, kotlin.Unit> disposeState) {
+//        ObjectHelper.requireNonNull(generator, "generator  is null");
+//        return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), disposeState);
+//    }
 
     /**
      * Returns a cold, synchronous and stateful generator of values.

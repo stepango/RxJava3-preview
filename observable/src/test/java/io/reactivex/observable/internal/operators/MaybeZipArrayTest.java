@@ -22,7 +22,7 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
+import kotlin.jvm.functions.Function3;
 import io.reactivex.observable.Maybe;
 import io.reactivex.observable.observers.TestObserver;
 import io.reactivex.observable.subjects.PublishSubject;
@@ -43,7 +43,7 @@ public class MaybeZipArrayTest {
 
     final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
         @Override
-        public Object apply(Object a, Object b, Object c) throws Exception {
+        public Object invoke(Object a, Object b, Object c) {
             return "" + a + b + c;
         }
     };

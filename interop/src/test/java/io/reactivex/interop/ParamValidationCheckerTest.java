@@ -40,9 +40,9 @@ import io.reactivex.common.Schedulers;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import io.reactivex.common.internal.functions.Functions;
@@ -551,6 +551,14 @@ public class ParamValidationCheckerTest {
 
         ignores = new HashMap<String, List<ParamIgnore>>();
 
+        addIgnore(new ParamIgnore(Flowable.class, "forEachWhile", Function1.class));
+        addIgnore(new ParamIgnore(Flowable.class, "forEachWhile", Function1.class, Function1.class));
+        addIgnore(new ParamIgnore(Flowable.class, "forEachWhile", Function1.class, Function1.class, Function0.class));
+
+        addIgnore(new ParamIgnore(Observable.class, "forEachWhile", Function1.class));
+        addIgnore(new ParamIgnore(Observable.class, "forEachWhile", Function1.class, Function1.class));
+        addIgnore(new ParamIgnore(Observable.class, "forEachWhile", Function1.class, Function1.class, Function0.class));
+
         // needs special param validation due to (long)start + end - 1 <= Integer.MAX_VALUE
         addIgnore(new ParamIgnore(Flowable.class, "range", Integer.TYPE, Integer.TYPE));
         addIgnore(new ParamIgnore(Flowable.class, "rangeLong", Long.TYPE, Long.TYPE));
@@ -598,15 +606,12 @@ public class ParamValidationCheckerTest {
         defaultValues.put(CompletableSource.class, new NeverCompletable());
         defaultValues.put(Completable.class, new NeverCompletable());
 
-        defaultValues.put(Function0.class, Functions.EMPTY_ACTION);
         defaultValues.put(Runnable.class, Functions.EMPTY_RUNNABLE);
-        defaultValues.put(Function1.class, Functions.emptyConsumer());
-        defaultValues.put(Function1.class, Functions.EMPTY_LONG_CONSUMER);
-        defaultValues.put(Function1.class, Functions.justFunction(1));
         defaultValues.put(Callable.class, Functions.justCallable(1));
         defaultValues.put(Iterable.class, Collections.emptyList());
         defaultValues.put(Object.class, 1);
         defaultValues.put(Class.class, Integer.class);
+
         Object af = new AllFunctionals();
         for (Class<?> interfaces : AllFunctionals.class.getInterfaces()) {
             defaultValues.put(interfaces, af);
@@ -761,7 +766,7 @@ public class ParamValidationCheckerTest {
                 }
 
                 String key = clazz.getName() + " " + m.getName();
-
+                System.out.println(key + " " + fail);
                 List<ParamIgnore> ignoreList = ignores.get(key);
                 if (ignoreList != null) {
                     for (ParamIgnore e : ignoreList) {
@@ -916,9 +921,8 @@ public class ParamValidationCheckerTest {
 
     @SuppressWarnings("rawtypes")
     static final class AllFunctionals
-            implements Function2,
-            Function1, Function2, Function0,
-    Function3, Function4, Function5, Function6, Function7, Function8, Function9,
+            implements Function0, Function1, Function2, Function3, Function4, Function5, Function6,
+            Function7, Function8, Function9,
     FlowableOnSubscribe, ObservableOnSubscribe, SingleOnSubscribe, MaybeOnSubscribe, CompletableOnSubscribe,
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,
     Subscriber, RelaxedSubscriber, Observer, SingleObserver, MaybeObserver, CompletableObserver,
@@ -953,17 +957,17 @@ public class ParamValidationCheckerTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5) {
             return null;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4) {
             return null;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3) {
             return null;
         }
 

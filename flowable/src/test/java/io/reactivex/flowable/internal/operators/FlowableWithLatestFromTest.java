@@ -25,9 +25,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingMappedIterable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -35,6 +33,8 @@ import io.reactivex.flowable.internal.subscriptions.BooleanSubscription;
 import io.reactivex.flowable.processors.PublishProcessor;
 import io.reactivex.flowable.subscribers.TestSubscriber;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -543,7 +543,7 @@ public class FlowableWithLatestFromTest {
 
         just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c) {
+            public List<Integer> invoke(Integer a, Integer b, Integer c) {
                 return Arrays.asList(a, b, c);
             }
         })
@@ -562,7 +562,7 @@ public class FlowableWithLatestFromTest {
 
         just.withLatestFrom(just, just, just, new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d) {
+            public List<Integer> invoke(Integer a, Integer b, Integer c, Integer d) {
                 return Arrays.asList(a, b, c, d);
             }
         })
@@ -581,7 +581,7 @@ public class FlowableWithLatestFromTest {
 
         just.withLatestFrom(just, just, just, just, new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e) {
+            public List<Integer> invoke(Integer a, Integer b, Integer c, Integer d, Integer e) {
                 return Arrays.asList(a, b, c, d, e);
             }
         })
@@ -603,7 +603,7 @@ public class FlowableWithLatestFromTest {
 
         TestHelper.checkDisposed(Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
+            public Object invoke(Integer a, Integer b, Integer c) {
                 return a;
             }
         }));
@@ -631,7 +631,7 @@ public class FlowableWithLatestFromTest {
     public void manyCombinerThrows() {
         Flowable.just(1).withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
+            public Object invoke(Integer a, Integer b, Integer c) {
                 throw new TestException();
             }
         })
@@ -654,7 +654,7 @@ public class FlowableWithLatestFromTest {
                 }
             }.withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c) {
                     return a;
                 }
             })

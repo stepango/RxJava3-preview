@@ -450,17 +450,17 @@ public class ObservableNullTests {
         }).blockingLast();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void generateStateConsumerInitialStateNull() {
-        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
-            @Override
-            public Unit invoke(Integer s, Emitter<Integer> o) {
-                o.onNext(1);
-                return Unit.INSTANCE;
-            }
-        };
-        Observable.generate(null, generator);
-    }
+//    @Test(expected = NullPointerException.class)
+//    public void generateStateConsumerInitialStateNull() {
+//        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
+//            @Override
+//            public Unit invoke(Integer s, Emitter<Integer> o) {
+//                o.onNext(1);
+//                return Unit.INSTANCE;
+//            }
+//        };
+//        Observable.generate(null, generator);
+//    }
 
     @Test(expected = NullPointerException.class)
     public void generateStateFunctionInitialStateNull() {
@@ -470,32 +470,32 @@ public class ObservableNullTests {
         });
     }
 
-    @Test(expected = NullPointerException.class)
-    public void generateStateConsumerNull() {
-        Observable.generate(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return 1;
-            }
-        }, (Function2<Integer, Emitter<Object>, kotlin.Unit>) null);
-    }
-
-    @Test
-    public void generateConsumerStateNullAllowed() {
-        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
-            @Override
-            public Unit invoke(Integer s, Emitter<Integer> o) {
-                o.onComplete();
-                return Unit.INSTANCE;
-            }
-        };
-        Observable.generate(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return null;
-            }
-        }, generator).blockingSubscribe();
-    }
+//    @Test(expected = NullPointerException.class)
+//    public void generateStateConsumerNull() {
+//        Observable.generate(new Callable<Integer>() {
+//            @Override
+//            public Integer call() {
+//                return 1;
+//            }
+//        }, (Function2<Integer, Emitter<Object>, kotlin.Unit>) null);
+//    }
+//
+//    @Test
+//    public void generateConsumerStateNullAllowed() {
+//        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
+//            @Override
+//            public Unit invoke(Integer s, Emitter<Integer> o) {
+//                o.onComplete();
+//                return Unit.INSTANCE;
+//            }
+//        };
+//        Observable.generate(new Callable<Integer>() {
+//            @Override
+//            public Integer call() {
+//                return null;
+//            }
+//        }, generator).blockingSubscribe();
+//    }
 
     @Test
     public void generateFunctionStateNullAllowed() {
@@ -510,22 +510,22 @@ public class ObservableNullTests {
         }).blockingSubscribe();
     }
 
-    @Test(expected = NullPointerException.class)
-    public void generateConsumerDisposeNull() {
-        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
-            @Override
-            public Unit invoke(Integer s, Emitter<Integer> o) {
-                o.onNext(1);
-                return Unit.INSTANCE;
-            }
-        };
-        Observable.generate(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return 1;
-            }
-        }, generator, null);
-    }
+//    @Test(expected = NullPointerException.class)
+//    public void generateConsumerDisposeNull() {
+//        Function2<Integer, Emitter<Integer>, kotlin.Unit> generator = new Function2<Integer, Emitter<Integer>, kotlin.Unit>() {
+//            @Override
+//            public Unit invoke(Integer s, Emitter<Integer> o) {
+//                o.onNext(1);
+//                return Unit.INSTANCE;
+//            }
+//        };
+//        Observable.generate(new Callable<Integer>() {
+//            @Override
+//            public Integer call() {
+//                return 1;
+//            }
+//        }, generator, null);
+//    }
 
     @Test(expected = NullPointerException.class)
     public void generateFunctionDisposeNull() {

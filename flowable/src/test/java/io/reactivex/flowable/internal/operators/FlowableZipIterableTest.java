@@ -27,7 +27,7 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
+import kotlin.jvm.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
 import io.reactivex.flowable.Flowable;
 import io.reactivex.flowable.TestHelper;
@@ -81,7 +81,7 @@ public class FlowableZipIterableTest {
     Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2, Object t3) {
+        public String invoke(Object t1, Object t2, Object t3) {
             return "" + t1 + t2 + t3;
         }
 

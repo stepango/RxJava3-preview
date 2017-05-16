@@ -19,9 +19,9 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -51,7 +51,7 @@ public class SingleZipTest {
     public void zip3() {
         Single.zip(Single.just(1), Single.just(2), Single.just(3), new Function3<Integer, Integer, Integer, Object>() {
             @Override
-            public Object apply(Integer a, Integer b, Integer c) throws Exception {
+            public Object invoke(Integer a, Integer b, Integer c) {
                 return a + "" + b + c;
             }
         })
@@ -65,7 +65,7 @@ public class SingleZipTest {
                 Single.just(4),
                 new Function4<Integer, Integer, Integer, Integer, Object>() {
                     @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
+                    public Object invoke(Integer a, Integer b, Integer c, Integer d) {
                         return a + "" + b + c + d;
                     }
                 })
@@ -79,7 +79,7 @@ public class SingleZipTest {
                 Single.just(4), Single.just(5),
                 new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
                     @Override
-                    public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
+                    public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e) {
                         return a + "" + b + c + d + e;
                     }
                 })

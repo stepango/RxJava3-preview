@@ -19,9 +19,9 @@ import java.lang.reflect.Method;
 
 import io.reactivex.common.TestCommonHelper;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -115,7 +115,7 @@ public class FunctionsTest {
     public void toFunction3() throws Exception {
         Functions.toFunction(new Function3<Integer, Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3) throws Exception {
+            public Integer invoke(Integer t1, Integer t2, Integer t3) {
                 return null;
             }
         }).invoke(new Object[20]);
@@ -125,7 +125,7 @@ public class FunctionsTest {
     public void toFunction4() throws Exception {
         Functions.toFunction(new Function4<Integer, Integer, Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4) throws Exception {
+            public Integer invoke(Integer t1, Integer t2, Integer t3, Integer t4) {
                 return null;
             }
         }).invoke(new Object[20]);
@@ -135,7 +135,7 @@ public class FunctionsTest {
     public void toFunction5() throws Exception {
         Functions.toFunction(new Function5<Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
-            public Integer apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) throws Exception {
+            public Integer invoke(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
                 return null;
             }
         }).invoke(new Object[20]);

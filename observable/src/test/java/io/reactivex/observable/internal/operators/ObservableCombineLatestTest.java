@@ -34,9 +34,9 @@ import io.reactivex.common.TestScheduler;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -251,7 +251,7 @@ public class ObservableCombineLatestTest {
     private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
         Function3<String, String, String, String> combineLatestFunction = new Function3<String, String, String, String>() {
             @Override
-            public String apply(String a1, String a2, String a3) {
+            public String invoke(String a1, String a2, String a3) {
                 if (a1 == null) {
                     a1 = "";
                 }
@@ -280,7 +280,7 @@ public class ObservableCombineLatestTest {
     private Function3<String, Integer, int[], String> getConcatStringIntegerIntArrayCombineLatestFunction() {
         return new Function3<String, Integer, int[], String>() {
             @Override
-            public String apply(String s, Integer i, int[] iArray) {
+            public String invoke(String s, Integer i, int[] iArray) {
                 return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
             }
         };
@@ -572,7 +572,7 @@ public class ObservableCombineLatestTest {
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3,
                 new Function3<Integer, Integer, Integer, List<Integer>>() {
             @Override
-            public List<Integer> apply(Integer t1, Integer t2, Integer t3) {
+            public List<Integer> invoke(Integer t1, Integer t2, Integer t3) {
                 return Arrays.asList(t1, t2, t3);
             }
         });
@@ -596,7 +596,7 @@ public class ObservableCombineLatestTest {
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4,
                 new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
                     @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4) {
+                    public List<Integer> invoke(Integer t1, Integer t2, Integer t3, Integer t4) {
                         return Arrays.asList(t1, t2, t3, t4);
                     }
                 });
@@ -621,7 +621,7 @@ public class ObservableCombineLatestTest {
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5,
                 new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
                     @Override
-                    public List<Integer> apply(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
+                    public List<Integer> invoke(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
                         return Arrays.asList(t1, t2, t3, t4, t5);
                     }
                 });

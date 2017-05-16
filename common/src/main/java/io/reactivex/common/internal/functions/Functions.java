@@ -30,9 +30,9 @@ import io.reactivex.common.Scheduler;
 import io.reactivex.common.Timed;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -614,7 +614,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -637,7 +637,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;
@@ -660,7 +660,7 @@ public final class Functions {
                 throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
             }
             try {
-                return f.apply((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4]);
+                return f.invoke((T1) a[0], (T2) a[1], (T3) a[2], (T4) a[3], (T5) a[4]);
             } catch (Exception e) {
                 //TODO checked exceptions
                 if (e instanceof RuntimeException) throw (RuntimeException) e;

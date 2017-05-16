@@ -427,7 +427,7 @@ public class SingleNullTests {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount + 1];
                 Arrays.fill(params, SingleSource.class);
-                Class<?> fniClass = Class.forName("io.reactivex.common.functions.Function" + argCount);
+                Class<?> fniClass = Class.forName("kotlin.jvm.functions.Function" + argCount);
                 params[argCount] = fniClass;
 
                 Object[] values = new Object[argCount + 1];
@@ -470,7 +470,7 @@ public class SingleNullTests {
 
             Class<?>[] params = new Class[argCount + 1];
             Arrays.fill(params, SingleSource.class);
-            Class<?> fniClass = Class.forName("io.reactivex.common.functions.Function" + argCount);
+            Class<?> fniClass = Class.forName("kotlin.jvm.functions.Function" + argCount);
             params[argCount] = fniClass;
 
             Object[] values = new Object[argCount + 1];

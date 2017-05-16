@@ -42,9 +42,9 @@ import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.OnErrorNotImplementedException;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -2802,17 +2802,17 @@ public class MaybeTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5) {
             return "" + t1 + t2 + t3 + t4 + t5;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4) {
             return "" + t1 + t2 + t3 + t4;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3) {
             return "" + t1 + t2 + t3;
         }
 

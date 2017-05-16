@@ -42,9 +42,9 @@ import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.CompositeException;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
-import io.reactivex.common.functions.Function4;
-import io.reactivex.common.functions.Function5;
+import kotlin.jvm.functions.Function3;
+import kotlin.jvm.functions.Function4;
+import kotlin.jvm.functions.Function5;
 import kotlin.jvm.functions.Function6;
 import kotlin.jvm.functions.Function7;
 import kotlin.jvm.functions.Function8;
@@ -197,7 +197,7 @@ public class FlowableZipTest {
     Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2, Object t3) {
+        public String invoke(Object t1, Object t2, Object t3) {
             return "" + t1 + t2 + t3;
         }
 
@@ -597,7 +597,7 @@ public class FlowableZipTest {
         Function3<String, String, String, String> zipr = new Function3<String, String, String, String>() {
 
             @Override
-            public String apply(String a1, String a2, String a3) {
+            public String invoke(String a1, String a2, String a3) {
                 if (a1 == null) {
                     a1 = "";
                 }
@@ -630,7 +630,7 @@ public class FlowableZipTest {
         Function3<String, Integer, int[], String> zipr = new Function3<String, Integer, int[], String>() {
 
             @Override
-            public String apply(String s, Integer i, int[] iArray) {
+            public String invoke(String s, Integer i, int[] iArray) {
                 return getStringValue(s) + getStringValue(i) + getStringValue(iArray);
             }
 
@@ -1335,7 +1335,7 @@ public class FlowableZipTest {
         for (int i = 2; i < 10; i++) {
             Class<?>[] types = new Class[i + 1];
             Arrays.fill(types, Publisher.class);
-            types[i] = i == 2 ? Function2.class : Class.forName("io.reactivex.common.functions.Function" + i);
+            types[i] = i == 2 ? Function2.class : Class.forName("kotlin.jvm.functions.Function" + i);
 
             Method m = Flowable.class.getMethod("zip", types);
 
@@ -1399,17 +1399,17 @@ public class FlowableZipTest {
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4, Object t5) {
             return "" + t1 + t2 + t3 + t4 + t5;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3, Object t4) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3, Object t4) {
             return "" + t1 + t2 + t3 + t4;
         }
 
         @Override
-        public Object apply(Object t1, Object t2, Object t3) throws Exception {
+        public Object invoke(Object t1, Object t2, Object t3) {
             return "" + t1 + t2 + t3;
         }
 
@@ -1513,7 +1513,7 @@ public class FlowableZipTest {
                 Flowable.just(2), Flowable.just(3),
             new Function3<Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c) {
                     return "" + a + b + c;
                 }
             }
@@ -1529,7 +1529,7 @@ public class FlowableZipTest {
                 Flowable.just(4),
             new Function4<Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d) {
                     return "" + a + b + c + d;
                 }
             }
@@ -1545,7 +1545,7 @@ public class FlowableZipTest {
                 Flowable.just(4), Flowable.just(5),
             new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
-                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
+                public Object invoke(Integer a, Integer b, Integer c, Integer d, Integer e) {
                     return "" + a + b + c + d + e;
                 }
             }

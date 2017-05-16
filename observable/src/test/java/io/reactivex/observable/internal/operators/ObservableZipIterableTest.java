@@ -27,7 +27,6 @@ import io.reactivex.common.RxJavaCommonPlugins;
 import io.reactivex.common.TestCommonHelper;
 import io.reactivex.common.exceptions.TestException;
 import kotlin.jvm.functions.Function2;
-import io.reactivex.common.functions.Function3;
 import io.reactivex.common.internal.utils.CrashingIterable;
 import io.reactivex.observable.Observable;
 import io.reactivex.observable.ObservableSource;
@@ -36,6 +35,7 @@ import io.reactivex.observable.TestHelper;
 import io.reactivex.observable.subjects.PublishSubject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function3;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +82,7 @@ public class ObservableZipIterableTest {
     Function3<Object, Object, Object, String> zipr3 = new Function3<Object, Object, Object, String>() {
 
         @Override
-        public String apply(Object t1, Object t2, Object t3) {
+        public String invoke(Object t1, Object t2, Object t3) {
             return "" + t1 + t2 + t3;
         }
 
